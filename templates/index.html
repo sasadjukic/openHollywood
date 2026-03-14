@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Open Hollywood - AI Scene Execution</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🎬 Open Hollywood</h1>
+            <p class="subtitle">AI-Powered Scene Execution Engine</p>
+        </header>
+
+        <main>
+            <!-- Setup Panel -->
+            <div id="setupPanel" class="panel panel-active">
+                <h2>Setup Scene</h2>
+                
+                <form id="sceneForm">
+                    <div class="form-group">
+                        <label for="sceneTitle">Scene Title</label>
+                        <input type="text" id="sceneTitle" placeholder="e.g., Confession" required value="Confession">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="genre">Genre</label>
+                        <select id="genre" required>
+                            <option value="">Select a genre...</option>
+                            <option value="dark_comedy" selected>Dark Comedy</option>
+                            <option value="drama">Drama</option>
+                            <option value="thriller">Thriller</option>
+                            <option value="comedy">Comedy</option>
+                            <option value="tragedy">Tragedy</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="sceneContext">Scene Context</label>
+                        <textarea id="sceneContext" rows="4" required placeholder="Describe the scene setup...">A Catholic confessional booth on a Tuesday evening in November. Father Aldric waits. Marco Bellini enters.</textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="maxTurns">Maximum Turns</label>
+                        <input type="number" id="maxTurns" min="6" value="30">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Start Scene</button>
+                </form>
+            </div>
+
+            <!-- Scene Execution Panel -->
+            <div id="scenePanel" class="panel">
+                <div class="scene-header">
+                    <div>
+                        <h2 id="sceneTitle2">Scene</h2>
+                        <p id="genreDisplay" class="genre-tag">Genre: —</p>
+                    </div>
+                    <div class="controls">
+                        <button id="stopBtn" class="btn btn-secondary" disabled>Stop</button>
+                        <button id="resetBtn" class="btn btn-secondary">Reset</button>
+                    </div>
+                </div>
+
+                <!-- Scene Progress -->
+                <div id="progressBar" class="progress-bar">
+                    <div id="progressFill" class="progress-fill"></div>
+                </div>
+
+                <div class="scene-info">
+                    <span>Turn: <span id="turnCount">0</span></span>
+                    <span>Arc: <span id="arcStage">—</span></span>
+                    <span>Ending: <span id="endingType">—</span></span>
+                </div>
+
+                <!-- Dialogue Display -->
+                <div id="dialogueBox" class="dialogue-box">
+                    <div id="dialogueContent" class="dialogue-content">
+                        <p class="info-message">Waiting for scene to start...</p>
+                    </div>
+                </div>
+
+                <!-- Stage Directions -->
+                <div id="stageDirections" class="stage-directions hidden">
+                    <p><strong>Director's Note:</strong> <span id="directionText"></span></p>
+                </div>
+
+                <!-- Scene Threads -->
+                <div class="threads-container">
+                    <div class="threads-column">
+                        <h4>Unresolved Threads</h4>
+                        <ul id="unresolvedThreads" class="thread-list"></ul>
+                    </div>
+                    <div class="threads-column">
+                        <h4>Resolved Threads</h4>
+                        <ul id="resolvedThreads" class="thread-list"></ul>
+                    </div>
+                </div>
+
+                <!-- Completion Message -->
+                <div id="completionMessage" class="completion-message hidden">
+                    <p id="completionText"></p>
+                </div>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <p>Open Hollywood © 2026 - AI Scene Execution Engine</p>
+        </footer>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>
