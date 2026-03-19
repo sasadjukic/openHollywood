@@ -27,6 +27,59 @@ class AgentManager:
         self.llm_server = llm_server
         self.client = ollama.Client(host=llm_server)
 
+    def _clean_agent_response(self, response: str, character_name: str) -> str:
+        """
+        Clean agent response to ensure it contains only dialogue for this turn.
+        
+        Args:
+            response: Raw response from LLM
+            character_name: Character name for logging
+            
+        Returns:
+            Cleaned dialogue response
+        """
+        # Remove leading/trailing whitespace
+        response = response.strip()
+        
+        # If response starts with character name followed by colon, remove it
+        if response.startswith(character_name + ":"):
+            response = response[len(character_name) + 1:].strip()
+        
+        # Remove common stage direction markers
+        # Remove lines that are purely stage directions (in asterisks or brackets)
+        lines = response.split('\n')
+        dialogue_lines = []
+        
+        for line in lines:
+            line = line.strip()
+            if not line:
+                continue
+            
+            # Skip lines that are purely action/stage directions
+            if (line.startswith('*') and line.endswith('*')) or \
+               (line.startswith('[') and line.endswith(']')) or \
+               (line.startswith('(') and line.endswith(')')):
+                continue
+            
+            # Skip lines that are other characters speaking
+            if ':' in line:
+                potential_name, _ = line.split(':', 1)
+                if potential_name.strip() and potential_name.strip() != character_name:
+                    # This looks like another character speaking, skip it
+                    continue
+            
+            dialogue_lines.append(line)
+        
+        # Join dialogue lines back together
+        cleaned = ' '.join(dialogue_lines)
+        
+        # Limit to first few sentences to ensure single turn
+        sentences = cleaned.split('.')
+        if len(sentences) > 4:  # Allow up to 3-4 sentences
+            cleaned = '.'.join(sentences[:3]) + '.' if sentences[0] else ''
+        
+        return cleaned.strip()
+
     def get_agent_response(
         self,
         character_name: str,
@@ -89,6 +142,10 @@ class AgentManager:
 
             # Extract the response text
             agent_response = response["message"]["content"].strip()
+            
+            # Clean the response to ensure it's just dialogue for this turn
+            agent_response = self._clean_agent_response(agent_response, character_name)
+            
             logger.info(f"{character_name} responded: {agent_response[:100]}...")
 
             return agent_response
