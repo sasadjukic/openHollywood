@@ -32,6 +32,14 @@ SCENE CONTEXT:
 
 GENRE: {genre_block.genre.value.upper().replace('_', ' ')}
 {genre_block.performance_directions}
+
+CRITICAL INSTRUCTIONS FOR THIS TURN:
+- Generate ONLY your character's next line of dialogue for this turn
+- Do not generate dialogue for other characters
+- Do not generate stage directions, narration, or scene descriptions
+- Do not write in asterisks (*), brackets, or action descriptions
+- Do not start with your character name (just the dialogue)
+- Respond naturally and maintain the conversation flow based on what was said before
 """
         return prompt.strip()
 
