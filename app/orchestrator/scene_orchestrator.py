@@ -128,70 +128,71 @@ class SceneOrchestrator:
                 self.current_turn += 1
                 logger.info(f"Turn {self.current_turn}")
 
-                # Get next speaker (alternate between characters)
-                current_speaker = self.scene_config.characters[scene_state.current_speaker_index]
-                next_speaker_index = (scene_state.current_speaker_index + 1) % len(self.scene_config.characters)
+                # Each turn is a complete round where each character gets a chance to speak
+                for character_index in range(len(self.scene_config.characters)):
+                    current_speaker = self.scene_config.characters[character_index]
 
-                # Get stage direction from previous director evaluation (if any)
-                stage_direction = ""
-                if scene_state.director_state:
-                    stage_direction = scene_state.director_state.stage_direction
+                    # Get stage direction from previous director evaluation (if any)
+                    stage_direction = ""
+                    if scene_state.director_state:
+                        stage_direction = scene_state.director_state.stage_direction
 
-                # Build this character's system prompt
-                character_prompt = self.prompt_builder.build_character_prompt(
-                    current_speaker,
-                    self.genre_block,
-                    self.scene_config.scene_context,
-                )
+                    # Build this character's system prompt
+                    character_prompt = self.prompt_builder.build_character_prompt(
+                        current_speaker,
+                        self.genre_block,
+                        self.scene_config.scene_context,
+                    )
 
-                # Get agent response
-                agent_response = self.agent_manager.get_agent_response(
-                    character_name=current_speaker.name,
-                    system_prompt=character_prompt,
-                    dialogue_history=self.dialogue_history,
-                    stage_direction=stage_direction,
-                )
+                    # Get agent response
+                    agent_response = self.agent_manager.get_agent_response(
+                        character_name=current_speaker.name,
+                        system_prompt=character_prompt,
+                        dialogue_history=self.dialogue_history,
+                        stage_direction=stage_direction,
+                    )
 
-                # Add to dialogue history
-                turn = DialogueTurn(
-                    turn_number=self.current_turn,
-                    character_name=current_speaker.name,
-                    dialogue=agent_response,
-                    stage_direction=stage_direction,
-                    timestamp=time.time(),
-                )
-                self.dialogue_history.append(turn)
-                scene_state.dialogue_history.append(turn)
+                    # Add to dialogue history
+                    turn = DialogueTurn(
+                        turn_number=self.current_turn,
+                        character_name=current_speaker.name,
+                        dialogue=agent_response,
+                        stage_direction=stage_direction,
+                        timestamp=time.time(),
+                    )
+                    self.dialogue_history.append(turn)
+                    scene_state.dialogue_history.append(turn)
 
-                # Get director evaluation
-                director_prompt = self.prompt_builder.build_director_prompt(
-                    self.scene_config,
-                    self.genre_block,
-                )
-                director_response = self.agent_manager.get_director_response(
-                    director_system_prompt=director_prompt,
-                    dialogue_history=self.dialogue_history,
-                    current_turn_count=self.current_turn,
-                )
+                    # Get director evaluation
+                    director_prompt = self.prompt_builder.build_director_prompt(
+                        self.scene_config,
+                        self.genre_block,
+                    )
+                    director_response = self.agent_manager.get_director_response(
+                        director_system_prompt=director_prompt,
+                        dialogue_history=self.dialogue_history,
+                        current_turn_count=self.current_turn,
+                    )
 
-                # Convert to DirectorState
-                scene_state.director_state = DirectorState(**director_response)
+                    # Convert to DirectorState
+                    scene_state.director_state = DirectorState(**director_response)
 
-                logger.info(f"Director state: arc={scene_state.director_state.emotional_arc}, "
-                           f"end={scene_state.director_state.scene_end}")
+                    logger.info(f"Director state: arc={scene_state.director_state.emotional_arc}, "
+                               f"end={scene_state.director_state.scene_end}")
 
-                # Call callback if provided
-                if on_turn_callback:
-                    on_turn_callback(turn, scene_state.director_state)
+                    # Call callback if provided
+                    if on_turn_callback:
+                        on_turn_callback(turn, scene_state.director_state)
 
-                # Check if scene should end
+                    # Check if scene should end
+                    if self._should_end_scene(scene_state):
+                        scene_state.completion_reason = f"Director called end at turn {self.current_turn}"
+                        logger.info(f"Scene ended: {scene_state.completion_reason}")
+                        break
+
+                # Check if we should break out of the turn loop
                 if self._should_end_scene(scene_state):
-                    scene_state.completion_reason = f"Director called end at turn {self.current_turn}"
-                    logger.info(f"Scene ended: {scene_state.completion_reason}")
                     break
-
-                # Switch to next speaker
-                scene_state.current_speaker_index = next_speaker_index
 
             if self.current_turn >= self.scene_config.max_turns:
                 scene_state.completion_reason = f"Reached maximum turns ({self.scene_config.max_turns})"
