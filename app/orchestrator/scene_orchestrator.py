@@ -181,14 +181,10 @@ class SceneOrchestrator:
                     if on_turn_callback:
                         on_turn_callback(turn, scene_state.director_state)
 
-                    # Check if scene should end
-                    if self._should_end_scene(scene_state):
-                        scene_state.completion_reason = f"Director called end at turn {self.current_turn}"
-                        logger.info(f"Scene ended: {scene_state.completion_reason}")
-                        break
-
-                # Check if we should break out of the turn loop
+                # After all characters in this turn have spoken, check if scene should end
                 if self._should_end_scene(scene_state):
+                    scene_state.completion_reason = f"Director called end at turn {self.current_turn}"
+                    logger.info(f"Scene ended: {scene_state.completion_reason}")
                     break
 
             if self.current_turn >= self.scene_config.max_turns:
