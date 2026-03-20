@@ -69,6 +69,7 @@ class SceneUI {
             // Update scene display
             document.getElementById('sceneTitle2').textContent = title;
             document.getElementById('genreDisplay').textContent = `Genre: ${genre.replace('_', ' ').toUpperCase()}`;
+            document.getElementById('turnCount').textContent = '1';
 
             // Connect WebSocket
             this.connectWebSocket();
@@ -134,7 +135,7 @@ class SceneUI {
         this.currentTurn = message.turn_number;
 
         // Update scene info
-        document.getElementById('turnCount').textContent = message.turn_number;
+        document.getElementById('turnCount').textContent = message.turn_number + 1;
 
         const directorState = message.director_state;
         document.getElementById('arcStage').textContent = directorState.emotional_arc || '—';
