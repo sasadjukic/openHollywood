@@ -209,7 +209,7 @@ async def _execute_scene(scene_id: str):
         message = {
             "type": "scene_end",
             "completion_reason": result.completion_reason,
-            "total_turns": len(result.dialogue_history),
+            "total_turns": orchestrator.current_turn,
             "ending_type": result.director_state.ending_type if result.director_state else None,
         }
 
