@@ -122,13 +122,10 @@ class SceneOrchestrator:
         )
 
         try:
-            self.current_turn = 0
-
-            while self.current_turn < self.scene_config.max_turns:
-                self.current_turn += 1
+            # Each turn is a complete round where each character gets a chance to speak
+            for self.current_turn in range(1, self.scene_config.max_turns + 1):
                 logger.info(f"Turn {self.current_turn}")
 
-                # Each turn is a complete round where each character gets a chance to speak
                 for character_index in range(len(self.scene_config.characters)):
                     current_speaker = self.scene_config.characters[character_index]
 
