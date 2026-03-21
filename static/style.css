@@ -220,11 +220,35 @@ main {
 }
 
 .dialogue-entry {
-    padding: 12px;
-    background: rgba(0, 212, 255, 0.05);
-    border-left: 3px solid #00d4ff;
-    border-radius: 3px;
+    padding: 15px;
+    background: rgba(0, 212, 255, 0.03);
+    border-left: 4px solid rgba(0, 212, 255, 0.4);
+    border-radius: 6px;
     animation: slideIn 0.3s ease;
+    transition: background 0.3s ease;
+}
+
+.dialogue-entry:hover {
+    background: rgba(0, 212, 255, 0.06);
+}
+
+/* Character-specific styles */
+.dialogue-entry.character-father-aldric {
+    border-left-color: #ffd700; /* Gold for the priest */
+    background: rgba(255, 215, 0, 0.02);
+}
+
+.dialogue-entry.character-father-aldric .character-name {
+    color: #ffd700;
+}
+
+.dialogue-entry.character-marco {
+    border-left-color: #00ff88; /* Green for Marco */
+    background: rgba(0, 255, 136, 0.02);
+}
+
+.dialogue-entry.character-marco .character-name {
+    color: #00ff88;
 }
 
 @keyframes slideIn {
@@ -239,15 +263,17 @@ main {
 }
 
 .character-name {
-    color: #00ff88;
     font-weight: 700;
-    margin-bottom: 5px;
-    font-size: 0.95em;
+    margin-bottom: 8px;
+    font-size: 0.85em;
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
 .dialogue-text {
-    color: #d0d0d0;
+    color: #e0e0e0;
     line-height: 1.6;
+    font-size: 1.05em;
 }
 
 .info-message {
