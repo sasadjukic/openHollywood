@@ -6,6 +6,7 @@ class SceneUI {
         this.isSceneRunning = false;
         this.maxTurns = 30;
         this.currentTurn = 0;
+        this.dialogueHistory = [];
 
         this.setupEventListeners();
     }
@@ -25,6 +26,7 @@ class SceneUI {
         const maxTurns = parseInt(document.getElementById('maxTurns').value);
 
         this.maxTurns = maxTurns;
+        this.dialogueHistory = []; // Reset history for new scene
 
         // Create scene configuration
         const config = {
@@ -45,7 +47,7 @@ class SceneUI {
                     description: "A man seeking confession after eleven years"
                 }
             ],
-            director_system_prompt: "You are the Director of a two-person theater scene. Your job is to track the scene's state after each turn and return a structured JSON object. Emotional arc stages: opening → tension → climax → resolution. Return ONLY valid JSON with no other text.",
+            director_system_prompt: "You are the Director of a two-person theater scene. Your job is to track the scene's state after each turn and return a structured JSON object. Emotional arc stages: opening \u2192 tension \u2192 climax \u2192 resolution. Return ONLY valid JSON with no other text.",
             llm_model: "gemma3:4b",
             llm_server: "http://localhost:11434"
         };
@@ -115,7 +117,7 @@ class SceneUI {
 
         if (type === 'connected') {
             console.log('Connected to scene:', message.scene_id);
-            document.getElementById('dialogueContent').innerHTML = '';
+            // Don't clear here, handleTurn will manage the "waiting" message
         }
 
         else if (type === 'turn') {
@@ -132,25 +134,39 @@ class SceneUI {
     }
 
     handleTurn(message) {
+        // Clear "waiting" message on the very first turn arriving
+        const dialogueContent = document.getElementById('dialogueContent');
+        if (this.dialogueHistory.length === 0) {
+            dialogueContent.innerHTML = '';
+        }
+
         this.currentTurn = message.turn_number;
 
         // Update scene info
-        document.getElementById('turnCount').textContent = message.turn_number + 1;
+        document.getElementById('turnCount').textContent = message.turn_number;
 
         const directorState = message.director_state;
-        document.getElementById('arcStage').textContent = directorState.emotional_arc || '—';
-        document.getElementById('endingType').textContent = directorState.ending_type || '—';
+        document.getElementById('arcStage').textContent = directorState.emotional_arc || '\u2014';
+        document.getElementById('endingType').textContent = directorState.ending_type || '\u2014';
 
         // Update progress
         const progress = (this.currentTurn / this.maxTurns) * 100;
         document.getElementById('progressFill').style.width = `${progress}%`;
 
-        // Add dialogue entry
-        const dialogueContent = document.getElementById('dialogueContent');
-        dialogueContent.innerHTML = ''; // Clear "waiting" message if first turn
+        // Add to history
+        const turnData = {
+            character: message.character,
+            dialogue: message.dialogue,
+            turn: message.turn_number
+        };
+        this.dialogueHistory.push(turnData);
 
+        // Add dialogue entry UI
         const entry = document.createElement('div');
-        entry.className = 'dialogue-entry';
+        // Add character-specific class (e.g., character-father-aldric)
+        const charClass = `character-${message.character.toLowerCase().replace(/\s+/g, '-')}`;
+        entry.className = `dialogue-entry ${charClass}`;
+        
         entry.innerHTML = `
             <div class="character-name">${message.character}</div>
             <div class="dialogue-text">${this.escapeHtml(message.dialogue)}</div>
@@ -159,8 +175,9 @@ class SceneUI {
 
         // Scroll to bottom
         setTimeout(() => {
-            document.getElementById('dialogueBox').scrollTop = document.getElementById('dialogueBox').scrollHeight;
-        }, 100);
+            const dialogueBox = document.getElementById('dialogueBox');
+            dialogueBox.scrollTop = dialogueBox.scrollHeight;
+        }, 50);
 
         // Update stage directions
         if (message.stage_direction) {
