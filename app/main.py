@@ -15,6 +15,7 @@ import time
 
 from app.models.types import SceneConfig, Character, Genre
 from app.orchestrator.scene_orchestrator import SceneOrchestrator
+from app.core.scene_templates import list_templates, get_template
 
 # Configure logging
 logging.basicConfig(
@@ -57,6 +58,22 @@ async def get_genres():
             for g in Genre
         ]
     }
+
+
+@app.get("/api/templates")
+async def get_templates():
+    """Get available scene templates."""
+    return {"templates": list_templates()}
+
+
+@app.get("/api/templates/{template_id}")
+async def get_scene_template(template_id: str):
+    """Get a specific scene template."""
+    try:
+        template = get_template(template_id)
+        return template
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
 
 
 @app.post("/api/scenes")
