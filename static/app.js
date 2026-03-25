@@ -7,14 +7,66 @@ class SceneUI {
         this.maxTurns = 30;
         this.currentTurn = 0;
         this.dialogueHistory = [];
+        this.currentTemplate = null;
 
         this.setupEventListeners();
+        this.fetchTemplates();
     }
 
     setupEventListeners() {
+        document.getElementById('templateSelect').addEventListener('change', (e) => this.handleTemplateChange(e));
         document.getElementById('sceneForm').addEventListener('submit', (e) => this.handleFormSubmit(e));
         document.getElementById('stopBtn').addEventListener('click', () => this.stopScene());
         document.getElementById('resetBtn').addEventListener('click', () => this.resetUI());
+    }
+
+    async fetchTemplates() {
+        try {
+            const response = await fetch('/api/templates');
+            const data = await response.json();
+            const select = document.getElementById('templateSelect');
+
+            data.templates.forEach(templateId => {
+                const option = document.createElement('option');
+                option.value = templateId;
+                option.textContent = templateId.charAt(0).toUpperCase() + templateId.slice(1);
+                select.appendChild(option);
+            });
+
+            // If "confession" is available, select it by default
+            if (data.templates.includes('confession')) {
+                select.value = 'confession';
+                this.loadTemplate('confession');
+            }
+        } catch (error) {
+            console.error('Error fetching templates:', error);
+        }
+    }
+
+    async handleTemplateChange(e) {
+        const templateId = e.target.value;
+        if (templateId === 'custom') {
+            this.currentTemplate = null;
+            return;
+        }
+        await this.loadTemplate(templateId);
+    }
+
+    async loadTemplate(templateId) {
+        try {
+            const response = await fetch(`/api/templates/${templateId}`);
+            const template = await response.json();
+            this.currentTemplate = template;
+
+            // Populate form
+            document.getElementById('sceneTitle').value = template.title;
+            document.getElementById('genre').value = template.genre;
+            document.getElementById('sceneContext').value = template.scene_context;
+            document.getElementById('maxTurns').value = template.max_turns;
+
+        } catch (error) {
+            console.error('Error loading template:', error);
+        }
     }
 
     async handleFormSubmit(e) {
@@ -29,28 +81,42 @@ class SceneUI {
         this.dialogueHistory = []; // Reset history for new scene
 
         // Create scene configuration
-        const config = {
-            title: title,
-            genre: genre,
-            scene_context: context,
-            max_turns: maxTurns,
-            min_turns: 6,
-            characters: [
-                {
-                    name: "Father Aldric",
-                    constitution: "You are Father Aldric Voss, 61 years old, a Catholic priest who has served the same parish for 34 years. You are not a simple man. You have heard thousands of confessions. You have lost your faith twice and found it again. You speak with formal, measured cadences — short sentences that carry weight. You do not perform warmth; when it comes, it is real. You are tired but not broken. You believe in the ritual of confession not merely as sacrament but as the only honest conversation most people ever have.",
-                    description: "A weary, perceptive Catholic priest"
-                },
-                {
-                    name: "Marco",
-                    constitution: "You are Marco Bellini, 38 years old, a man who has not been to confession in eleven years. You are not here out of piety. Something happened three weeks ago that you cannot stop thinking about. You have not told anyone. You came here because you ran out of other options. You are not a villain. You are a person who made choices, and the choices made more choices, and now you are here. You are evasive at first — you make small confessions before the real one. You deflect with humor when cornered. You are not stupid; you know the priest sees through the deflection.",
-                    description: "A man seeking confession after eleven years"
-                }
-            ],
-            director_system_prompt: "You are the Director of a two-person theater scene. Your job is to track the scene's state after each turn and return a structured JSON object. Emotional arc stages: opening \u2192 tension \u2192 climax \u2192 resolution. Return ONLY valid JSON with no other text.",
-            llm_model: "gemma3:4b",
-            llm_server: "http://localhost:11434"
-        };
+        let config;
+
+        if (this.currentTemplate) {
+            // Use template as base, but allow overrides from form
+            config = {
+                ...this.currentTemplate,
+                title: title,
+                genre: genre,
+                scene_context: context,
+                max_turns: maxTurns
+            };
+        } else {
+            // Default "Custom" configuration (minimal fallback)
+            config = {
+                title: title,
+                genre: genre,
+                scene_context: context,
+                max_turns: maxTurns,
+                min_turns: 6,
+                characters: [
+                    {
+                        name: "Actor 1",
+                        constitution: "You are Actor 1. Play your part based on the context.",
+                        description: "First character"
+                    },
+                    {
+                        name: "Actor 2",
+                        constitution: "You are Actor 2. Play your part based on the context.",
+                        description: "Second character"
+                    }
+                ],
+                director_system_prompt: "You are the Director. Track the scene state and return JSON.",
+                llm_model: "gemma3:4b",
+                llm_server: "http://localhost:11434"
+            };
+        }
 
         try {
             const response = await fetch('/api/scenes', {
