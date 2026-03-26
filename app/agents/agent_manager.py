@@ -86,6 +86,7 @@ class AgentManager:
         system_prompt: str,
         dialogue_history: List[DialogueTurn],
         stage_direction: str = "",
+        llm_options: dict = None,
     ) -> str:
         """
         Get a response from an agent.
@@ -95,6 +96,7 @@ class AgentManager:
             system_prompt: The character's system prompt
             dialogue_history: Conversation history so far
             stage_direction: Optional director's stage direction
+            llm_options: Optional LLM parameters (temperature, top_p, etc.)
 
         Returns:
             The agent's response dialogue
@@ -138,6 +140,7 @@ class AgentManager:
                 model=self.llm_model,
                 messages=messages,
                 stream=False,
+                options=llm_options,
             )
 
             # Extract the response text
@@ -319,6 +322,7 @@ class AgentManager:
         director_system_prompt: str,
         dialogue_history: List[DialogueTurn],
         current_turn_count: int,
+        llm_options: dict = None,
     ) -> dict:
         """
         Get the director agent's scene state evaluation.
@@ -327,6 +331,7 @@ class AgentManager:
             director_system_prompt: Director's system prompt
             dialogue_history: Full conversation history
             current_turn_count: Current turn number
+            llm_options: Optional LLM parameters (temperature, top_p, etc.)
 
         Returns:
             Parsed director state dictionary
@@ -360,6 +365,7 @@ Return ONLY valid JSON with no other text."""
                     }
                 ] + messages,
                 stream=False,
+                options=llm_options,
             )
 
             response_text = response["message"]["content"].strip()
