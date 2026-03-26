@@ -46,6 +46,9 @@ class SceneConfig(BaseModel):
     min_turns: int = Field(default=6, description="Minimum turns before ending allowed")
     llm_model: str = Field(default="gemma3:4b", description="LLM model name")
     llm_server: str = Field(default="http://localhost:11434", description="Ollama server URL")
+    temperature: float = Field(default=0.7, description="LLM temperature")
+    top_p: float = Field(default=0.9, description="LLM top_p")
+    repeat_penalty: float = Field(default=1.1, description="LLM repeat_penalty")
 
 
 class DialogueTurn(BaseModel):
