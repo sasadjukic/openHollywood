@@ -141,12 +141,20 @@ class SceneOrchestrator:
                         self.scene_config.scene_context,
                     )
 
+                    # Prepare LLM options
+                    llm_options = {
+                        "temperature": self.scene_config.temperature,
+                        "top_p": self.scene_config.top_p,
+                        "repeat_penalty": self.scene_config.repeat_penalty,
+                    }
+
                     # Get agent response
                     agent_response = self.agent_manager.get_agent_response(
                         character_name=current_speaker.name,
                         system_prompt=character_prompt,
                         dialogue_history=self.dialogue_history,
                         stage_direction=stage_direction,
+                        llm_options=llm_options,
                     )
 
                     # Add to dialogue history
@@ -169,6 +177,7 @@ class SceneOrchestrator:
                         director_system_prompt=director_prompt,
                         dialogue_history=self.dialogue_history,
                         current_turn_count=self.current_turn,
+                        llm_options=llm_options,
                     )
 
                     # Convert to DirectorState
