@@ -4,7 +4,7 @@ Agent Manager: Handles LLM calls for character agents.
 
 import json
 import logging
-from typing import List, Tuple
+from typing import List, Tuple, Optional
 import ollama
 
 from app.models.types import DialogueTurn
@@ -157,6 +157,50 @@ class AgentManager:
             logger.error(f"Error calling LLM for {character_name}: {e}")
             raise
 
+    def _parse_json_from_response(self, response_text: str) -> Optional[dict]:
+        """
+        Extract and parse JSON from an LLM response with robustness for control characters.
+        
+        Args:
+            response_text: Raw response string
+            
+        Returns:
+            Parsed dictionary or None if parsing fails
+        """
+        try:
+            # Try to extract JSON from the response
+            json_start = response_text.find('{')
+            json_end = response_text.rfind('}') + 1
+
+            if json_start == -1 or json_end == 0:
+                return None
+
+            json_str = response_text[json_start:json_end]
+            
+            try:
+                return json.loads(json_str)
+            except json.JSONDecodeError:
+                # Try to fix unescaped control characters
+                fixed_chars = []
+                i = 0
+                while i < len(json_str):
+                    ch = json_str[i]
+                    if ch == '\n': fixed_chars.append('\\n')
+                    elif ch == '\r': fixed_chars.append('\\r')
+                    elif ch == '\t': fixed_chars.append('\\t')
+                    elif ch == '\b': fixed_chars.append('\\b')
+                    elif ch == '\f': fixed_chars.append('\\f')
+                    elif ord(ch) < 32: fixed_chars.append(f'\\u{ord(ch):04x}')
+                    else: fixed_chars.append(ch)
+                    i += 1
+                
+                fixed_str = ''.join(fixed_chars)
+                return json.loads(fixed_str)
+
+        except Exception as e:
+            logger.debug(f"JSON parsing failed: {e}")
+            return None
+
     def parse_director_response(self, response_text: str) -> dict:
         """
         Parse the director agent's JSON response.
@@ -166,92 +210,11 @@ class AgentManager:
 
         Returns:
             Parsed JSON as dictionary
-
-        Raises:
-            ValueError: If response cannot be parsed as valid JSON
         """
-        try:
-            # Try to extract JSON from the response
-            json_start = response_text.find('{')
-            json_end = response_text.rfind('}') + 1
-
-            if json_start == -1 or json_end == 0:
-                logger.warning(f"No JSON found in director response, using defaults")
-                logger.debug(f"Response was: {response_text[:200]}")
-                return self._normalize_director_fields({
-                    'turn_count': 0,
-                    'emotional_arc': 'resolution',
-                    'closure_detected': True,
-                    'scene_end': True,
-                    'ending_type': None,
-                    'stage_direction': '',
-                    'arc_stages_hit': ['opening', 'tension', 'climax', 'resolution'],
-                    'unresolved_threads': [],
-                    'resolved_threads': []
-                })
-
-            json_str = response_text[json_start:json_end]
-            parsed = json.loads(json_str)
-            
-            return self._normalize_director_fields(parsed)
-
-        except json.JSONDecodeError as e:
-            logger.debug(f"Failed to parse director JSON: {e}")
-            logger.debug(f"Response was: {response_text[:500]}")
-            
-            # Try to fix unescaped control characters
-            json_start = response_text.find('{')
-            json_end = response_text.rfind('}') + 1
-            if json_start != -1 and json_end > 0:
-                json_str = response_text[json_start:json_end]
-                
-                # More robust control character fixing:
-                # Replace control characters (except within already-escaped sequences)
-                fixed_chars = []
-                i = 0
-                while i < len(json_str):
-                    ch = json_str[i]
-                    
-                    # Check for control characters that need escaping
-                    if ch == '\n':
-                        fixed_chars.append('\\n')
-                    elif ch == '\r':
-                        fixed_chars.append('\\r')
-                    elif ch == '\t':
-                        fixed_chars.append('\\t')
-                    elif ch == '\b':
-                        fixed_chars.append('\\b')
-                    elif ch == '\f':
-                        fixed_chars.append('\\f')
-                    elif ord(ch) < 32:  # Other control characters
-                        fixed_chars.append(f'\\u{ord(ch):04x}')
-                    else:
-                        fixed_chars.append(ch)
-                    i += 1
-                
-                fixed_str = ''.join(fixed_chars)
-                try:
-                    parsed = json.loads(fixed_str)
-                    logger.info("Successfully parsed JSON after fixing control characters")
-                    return self._normalize_director_fields(parsed)
-                except json.JSONDecodeError as e2:
-                    logger.error(f"Still failed after control character fix: {e2}")
-                    # As last resort, return defaults
-                    logger.warning("Falling back to default director state")
-                    return self._normalize_director_fields({
-                        'turn_count': 0,
-                        'emotional_arc': 'resolution',
-                        'closure_detected': True,
-                        'scene_end': True,
-                        'ending_type': None,
-                        'stage_direction': '',
-                        'arc_stages_hit': ['opening', 'tension', 'climax', 'resolution'],
-                        'unresolved_threads': [],
-                        'resolved_threads': []
-                    })
-            
-            # If we can't extract JSON at all, return defaults
-            logger.warning("Could not extract JSON from director response, using defaults")
+        parsed = self._parse_json_from_response(response_text)
+        
+        if parsed is None:
+            logger.warning(f"Failed to parse director response, using defaults")
             return self._normalize_director_fields({
                 'turn_count': 0,
                 'emotional_arc': 'resolution',
@@ -263,6 +226,8 @@ class AgentManager:
                 'unresolved_threads': [],
                 'resolved_threads': []
             })
+            
+        return self._normalize_director_fields(parsed)
 
     def _normalize_director_fields(self, parsed: dict) -> dict:
         """Helper to normalize director response fields."""
@@ -316,6 +281,54 @@ class AgentManager:
             normalized['ending_type'] = None
         
         return normalized
+
+    def get_director_briefing(
+        self,
+        briefing_prompt: str,
+        llm_options: dict = None,
+    ) -> dict:
+        """
+        Get the director's initial scene vision (chosen ending and pacing).
+
+        Args:
+            briefing_prompt: The director briefing prompt
+            llm_options: Optional LLM parameters
+
+        Returns:
+            Dictionary with chosen_ending and pacing_notes
+        """
+        logger.info("Calling director for pre-scene briefing")
+
+        try:
+            response = self.client.chat(
+                model=self.llm_model,
+                messages=[
+                    {
+                        "role": "system",
+                        "content": briefing_prompt
+                    },
+                    {
+                        "role": "user",
+                        "content": "Analyze the scene and decide on the vision. Return ONLY JSON."
+                    }
+                ],
+                stream=False,
+                options=llm_options,
+            )
+
+            response_text = response["message"]["content"].strip()
+            logger.info(f"Director briefing response: {response_text[:200]}...")
+
+            parsed = self._parse_json_from_response(response_text)
+            if parsed is None:
+                logger.warning("Failed to parse director briefing, using defaults")
+                return {"chosen_ending": None, "pacing_notes": ""}
+
+            return parsed
+
+        except Exception as e:
+            logger.error(f"Error getting director briefing: {e}")
+            return {"chosen_ending": None, "pacing_notes": f"Error: {str(e)}"}
 
     def get_director_response(
         self,
