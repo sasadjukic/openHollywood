@@ -69,6 +69,8 @@ class DirectorState(BaseModel):
     resolved_threads: List[str]
     closure_detected: bool
     ending_type: Optional[str] = None
+    target_ending: Optional[str] = None
+    pacing_notes: str = ""
     stage_direction: str = ""
     scene_end: bool = False
 
