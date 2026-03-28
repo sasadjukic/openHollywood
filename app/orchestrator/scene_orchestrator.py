@@ -98,6 +98,8 @@ class SceneOrchestrator:
         self.prompt_builder = PromptBuilder()
         self.dialogue_history: List[DialogueTurn] = []
         self.current_turn = 0
+        self.chosen_ending: Optional[str] = None
+        self.pacing_notes: str = ""
 
     def execute_scene(
         self,
@@ -122,10 +124,29 @@ class SceneOrchestrator:
         )
 
         try:
+            # --- Pre-scene director briefing ---
+            self._run_director_briefing()
+            logger.info(f"Director session started with ending: {self.chosen_ending}")
+
+            # Initialize director state with the vision
+            scene_state.director_state = DirectorState(
+                turn_count=0,
+                emotional_arc="opening",
+                arc_stages_hit=["opening"],
+                unresolved_threads=[],
+                resolved_threads=[],
+                closure_detected=False,
+                target_ending=self.chosen_ending,
+                pacing_notes=self.pacing_notes,
+                stage_direction="",
+                scene_end=False
+            )
+
             # Each turn is a complete round where each character gets a chance to speak
             for self.current_turn in range(1, self.scene_config.max_turns + 1):
                 logger.info(f"Turn {self.current_turn}")
 
+                # 1. All characters speak in sequence
                 for character_index in range(len(self.scene_config.characters)):
                     current_speaker = self.scene_config.characters[character_index]
 
@@ -168,27 +189,44 @@ class SceneOrchestrator:
                     self.dialogue_history.append(turn)
                     scene_state.dialogue_history.append(turn)
 
-                    # Get director evaluation
-                    director_prompt = self.prompt_builder.build_director_prompt(
-                        self.scene_config,
-                        self.genre_block,
-                    )
-                    director_response = self.agent_manager.get_director_response(
-                        director_system_prompt=director_prompt,
-                        dialogue_history=self.dialogue_history,
-                        current_turn_count=self.current_turn,
-                        llm_options=llm_options,
-                    )
-
-                    # Convert to DirectorState
-                    scene_state.director_state = DirectorState(**director_response)
-
-                    logger.info(f"Director state: arc={scene_state.director_state.emotional_arc}, "
-                               f"end={scene_state.director_state.scene_end}")
-
-                    # Call callback if provided
-                    if on_turn_callback:
+                    # Optional: interim notification if needed, but director state isn't updated yet
+                    if on_turn_callback and character_index < len(self.scene_config.characters) - 1:
                         on_turn_callback(turn, scene_state.director_state)
+
+                # 2. Director evaluates ONCE after all characters have spoken
+                director_prompt = self.prompt_builder.build_director_prompt(
+                    self.scene_config,
+                    self.genre_block,
+                    chosen_ending=self.chosen_ending,
+                    pacing_notes=self.pacing_notes
+                )
+                
+                llm_options = {
+                    "temperature": self.scene_config.temperature,
+                    "top_p": self.scene_config.top_p,
+                    "repeat_penalty": self.scene_config.repeat_penalty,
+                }
+
+                director_response = self.agent_manager.get_director_response(
+                    director_system_prompt=director_prompt,
+                    dialogue_history=self.dialogue_history,
+                    current_turn_count=self.current_turn,
+                    llm_options=llm_options,
+                )
+
+                # Convert to DirectorState and preserve briefing info
+                director_state = DirectorState(**director_response)
+                director_state.target_ending = self.chosen_ending
+                director_state.pacing_notes = self.pacing_notes
+                scene_state.director_state = director_state
+
+                logger.info(f"Director state: arc={scene_state.director_state.emotional_arc}, "
+                           f"end={scene_state.director_state.scene_end}")
+
+                # Call callback after director evaluation if it's the last character or once per turn
+                if on_turn_callback:
+                    # We call it with the last turn's dialogue and the fresh director state
+                    on_turn_callback(self.dialogue_history[-1], scene_state.director_state)
 
                 # After all characters in this turn have spoken, check if scene should end
                 if self._should_end_scene(scene_state):
@@ -211,6 +249,31 @@ class SceneOrchestrator:
             raise
 
         return scene_state
+
+    def _run_director_briefing(self) -> str:
+        """
+        One-time call before the scene starts. Director reads everything
+        and commits to a chosen ending and pacing strategy.
+        """
+        briefing_prompt = self.prompt_builder.build_director_briefing_prompt(
+            self.scene_config,
+            self.genre_block,
+        )
+
+        llm_options = {
+            "temperature": self.scene_config.temperature,
+            "top_p": self.scene_config.top_p,
+        }
+
+        briefing = self.agent_manager.get_director_briefing(briefing_prompt, llm_options=llm_options)
+        
+        self.chosen_ending = briefing.get("chosen_ending")
+        if not self.chosen_ending and self.genre_block.ending_types:
+             self.chosen_ending = self.genre_block.ending_types[0]
+             
+        self.pacing_notes = briefing.get("pacing_notes", "")
+        
+        return self.chosen_ending
 
     def _should_end_scene(self, scene_state: SceneState) -> bool:
         """
