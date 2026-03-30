@@ -41,7 +41,7 @@ class SceneConfig(BaseModel):
     genre: Genre = Field(..., description="Genre of the scene")
     characters: List[Character] = Field(..., description="Characters in the scene")
     scene_context: str = Field(..., description="Scene context and setup")
-    director_system_prompt: str = Field(..., description="Director's system prompt")
+    director_system_prompt: Optional[str] = Field(None, description="Director's system prompt (optional, will be auto-generated if not provided)")
     max_turns: int = Field(default=30, description="Maximum number of turns")
     min_turns: int = Field(default=6, description="Minimum turns before ending allowed")
     llm_model: str = Field(default="gemma3:4b", description="LLM model name")
