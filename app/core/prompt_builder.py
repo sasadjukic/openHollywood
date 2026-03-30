@@ -119,13 +119,48 @@ Return ONLY this JSON:
             [f'"{et}"' for et in genre_block.ending_types]
         )
 
-        prompt = f"""{scene_config.director_system_prompt}
+        # If director_system_prompt is provided, use manual prompt; otherwise auto-generate
+        if scene_config.director_system_prompt:
+            director_intro = scene_config.director_system_prompt
+        else:
+            # Build character summary dynamically from whoever is in the scene
+            character_summary = " and ".join(
+                f"{c.name} ({c.description})" for c in scene_config.characters
+            )
+
+            # Build ending descriptions block
+            ending_descriptions = "\n".join(
+                f"  - {et}: weight {genre_block.ending_weights.get(et, 0.0)}"
+                for et in genre_block.ending_types
+            )
+
+            # Auto-generate director intro from character and genre data
+            director_intro = f"""You are the Director of a theatrical scene.
+The characters are {character_summary}.
+Your job is to track the scene's state after each turn and return a structured JSON object.
+
+Ending types for this scene:
+{ending_descriptions}
+
+Emotional arc stages: opening → tension → climax → resolution
+
+After each exchange, return ONLY this JSON with no other text:
+{{
+  "turn_count": <number>,
+  "emotional_arc": "<stage>",
+  "arc_stages_hit": [<stages reached so far>],
+  "unresolved_threads": [<list of open emotional threads>],
+  "resolved_threads": [<list of closed threads>],
+  "closure_detected": <true|false>,
+  "ending_type": <{ending_types_str}|null>,
+  "stage_direction": "<one sentence nudge for the next speaker, or empty string>",
+  "scene_end": <true|false>
+}}"""
+
+        prompt = f"""{director_intro}
 
 SCENE SETUP:
 {scene_config.scene_context}
-
-POSSIBLE ENDING TYPES FOR THIS GENRE:
-{', '.join(genre_block.ending_types)}
 
 ENDING PREFERENCES (higher = more likely):
 """
