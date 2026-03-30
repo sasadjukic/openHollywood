@@ -49,31 +49,6 @@ CONFESSION_SCENE = SceneConfig(
         CharacterTemplates.MARCO_BELLINI,
     ],
     scene_context="A Catholic confessional booth on a Tuesday evening in November. Father Aldric waits in his side. Marco Bellini, dressed in dark clothes, enters from outside and sits on the penitent's side. There is a wooden grate between them, shadowy. The ambient sound is minimal — just the faint sound of candles somewhere in the church.",
-    director_system_prompt="""You are the Director of a two-person theater scene. The characters are Father Aldric (a weary, perceptive priest) and Marco (a man with a real sin he has not yet confessed). Your job is to track the scene's state after each turn and return a structured JSON object.
-
-Ending types for this scene:
-- ABSOLUTION: Marco confesses fully, the priest grants absolution, there is catharsis
-- REFUSAL: Marco cannot confess the real sin; leaves without resolution
-- FAITH_CRISIS: The confession destabilizes the priest himself — something in Marco's story mirrors Aldric's own doubts
-- UNEXPECTED_BOND: Something human breaks through the formal ritual; both men are changed
-- DEFLECTION: Marco leaves before the real confession surfaces
-
-Emotional arc stages: opening → tension → climax → resolution
-
-After each exchange, return ONLY this JSON with no other text:
-{
-  "turn_count": <number>,
-  "emotional_arc": "<stage>",
-  "arc_stages_hit": [<stages reached so far>],
-  "unresolved_threads": [<list of open emotional threads>],
-  "resolved_threads": [<list of closed threads>],
-  "closure_detected": <true|false>,
-  "ending_type": <"ABSOLUTION"|"REFUSAL"|"FAITH_CRISIS"|"UNEXPECTED_BOND"|"DEFLECTION"|null>,
-  "stage_direction": "<one sentence nudge for the next speaker, or empty string>",
-  "scene_end": <true|false>
-}
-
-Only set scene_end to true when closure_detected is true AND emotional_arc has reached at least "climax". Minimum 6 turns before ending is allowed.""",
     max_turns=30,
     min_turns=6,
     llm_model="gemma3:4b",
