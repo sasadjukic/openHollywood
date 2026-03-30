@@ -5,17 +5,42 @@ class SceneUI {
         this.ws = null;
         this.isSceneRunning = false;
         this.maxTurns = 30;
+        this.minTurns = 6;
         this.currentTurn = 0;
         this.dialogueHistory = [];
         this.currentTemplate = null;
+        this.characterColors = [];
+        
+        // Color palette for dynamic character assignment
+        this.colorPalette = [
+            { name: 'cyan', hex: '#00d4ff', rgb: '0, 212, 255' },
+            { name: 'lime', hex: '#00ff88', rgb: '0, 255, 136' },
+            { name: 'gold', hex: '#ffd700', rgb: '255, 215, 0' },
+            { name: 'coral', hex: '#ff6b6b', rgb: '255, 107, 107' },
+            { name: 'purple', hex: '#aa96da', rgb: '170, 150, 218' },
+            { name: 'orange', hex: '#ffb347', rgb: '255, 179, 71' },
+            { name: 'pink', hex: '#ff69b4', rgb: '255, 105, 180' },
+            { name: 'teal', hex: '#20b2aa', rgb: '32, 178, 170' }
+        ];
 
         this.setupEventListeners();
         this.fetchTemplates();
     }
 
     setupEventListeners() {
-        document.getElementById('templateSelect').addEventListener('change', (e) => this.handleTemplateChange(e));
+        // Landing page buttons
+        document.getElementById('defaultSceneBtn').addEventListener('click', () => this.handleDefaultSceneChoice());
+        document.getElementById('customSceneBtn').addEventListener('click', () => this.handleCustomSceneChoice());
+        
+        // Setup form
         document.getElementById('sceneForm').addEventListener('submit', (e) => this.handleFormSubmit(e));
+        document.getElementById('backBtn').addEventListener('click', () => this.backToLanding());
+        
+        // Character constitution counters
+        document.getElementById('char1Constitution').addEventListener('input', (e) => this.updateCharCounter(e, 'char1Constitution'));
+        document.getElementById('char2Constitution').addEventListener('input', (e) => this.updateCharCounter(e, 'char2Constitution'));
+        
+        // Scene controls
         document.getElementById('stopBtn').addEventListener('click', () => this.stopScene());
         document.getElementById('resetBtn').addEventListener('click', () => this.resetUI());
     }
@@ -24,49 +49,111 @@ class SceneUI {
         try {
             const response = await fetch('/api/templates');
             const data = await response.json();
-            const select = document.getElementById('templateSelect');
-
-            data.templates.forEach(templateId => {
-                const option = document.createElement('option');
-                option.value = templateId;
-                option.textContent = templateId.charAt(0).toUpperCase() + templateId.slice(1);
-                select.appendChild(option);
-            });
-
-            // If "confession" is available, select it by default
-            if (data.templates.includes('confession')) {
-                select.value = 'confession';
-                this.loadTemplate('confession');
-            }
+            console.log('Templates fetched:', data);
         } catch (error) {
             console.error('Error fetching templates:', error);
         }
     }
 
-    async handleTemplateChange(e) {
-        const templateId = e.target.value;
-        if (templateId === 'custom') {
-            this.currentTemplate = null;
-            return;
-        }
-        await this.loadTemplate(templateId);
+    handleDefaultSceneChoice() {
+        console.log('User chose: Use default scene');
+        // Hide landing panel
+        document.getElementById('landingPanel').classList.remove('panel-active');
+        
+        // Load default scene and prepare for immediate start
+        this.loadDefaultScene();
     }
 
-    async loadTemplate(templateId) {
+    handleCustomSceneChoice() {
+        console.log('User chose: Build custom scene');
+        // Hide landing panel, show setup panel
+        document.getElementById('landingPanel').classList.remove('panel-active');
+        document.getElementById('setupPanel').classList.add('panel-active');
+    }
+
+    backToLanding() {
+        // Hide setup panel, show landing panel
+        document.getElementById('setupPanel').classList.remove('panel-active');
+        document.getElementById('landingPanel').classList.add('panel-active');
+    }
+
+    async loadDefaultScene() {
         try {
-            const response = await fetch(`/api/templates/${templateId}`);
-            const template = await response.json();
-            this.currentTemplate = template;
-
-            // Populate form
-            document.getElementById('sceneTitle').value = template.title;
-            document.getElementById('genre').value = template.genre;
-            document.getElementById('sceneContext').value = template.scene_context;
-            document.getElementById('maxTurns').value = template.max_turns;
-
+            const response = await fetch('/api/templates/default');
+            if (!response.ok) throw new Error('Failed to load default scene');
+            
+            const defaultScene = await response.json();
+            this.currentTemplate = defaultScene;
+            
+            // Pre-populate form (read-only view)
+            document.getElementById('sceneTitle').value = defaultScene.title;
+            document.getElementById('genre').value = defaultScene.genre;
+            document.getElementById('sceneContext').value = defaultScene.scene_context;
+            document.getElementById('maxTurns').value = defaultScene.max_turns;
+            document.getElementById('minTurns').value = defaultScene.min_turns;
+            
+            // Populate characters
+            if (defaultScene.characters && defaultScene.characters.length >= 2) {
+                document.getElementById('char1Name').value = defaultScene.characters[0].name;
+                document.getElementById('char1Desc').value = defaultScene.characters[0].description;
+                document.getElementById('char1Constitution').value = defaultScene.characters[0].constitution;
+                this.updateCharCounter({ target: document.getElementById('char1Constitution') }, 'char1Constitution');
+                
+                document.getElementById('char2Name').value = defaultScene.characters[1].name;
+                document.getElementById('char2Desc').value = defaultScene.characters[1].description;
+                document.getElementById('char2Constitution').value = defaultScene.characters[1].constitution;
+                this.updateCharCounter({ target: document.getElementById('char2Constitution') }, 'char2Constitution');
+            }
+            
+            // Show setup panel (read-only)
+            document.getElementById('setupPanel').classList.add('panel-active');
+            
+            // Make form fields read-only to indicate default scene
+            this.setFormReadOnly(true);
+            
         } catch (error) {
-            console.error('Error loading template:', error);
+            console.error('Error loading default scene:', error);
+            alert('Error loading default scene: ' + error.message);
+            // Go back to landing if loading fails
+            document.getElementById('landingPanel').classList.add('panel-active');
         }
+    }
+
+    setFormReadOnly(readOnly) {
+        const formInputs = document.querySelectorAll('#sceneForm input, #sceneForm textarea, #sceneForm select');
+        formInputs.forEach(input => {
+            input.readOnly = readOnly;
+            input.disabled = readOnly;
+            if (readOnly) {
+                input.classList.add('disabled-field');
+            } else {
+                input.classList.remove('disabled-field');
+            }
+        });
+        
+        // Back button should still be enabled
+        document.getElementById('backBtn').disabled = false;
+    }
+
+    updateCharCounter(event, fieldId) {
+        const textarea = event.target;
+        const length = textarea.value.length;
+        const limit = textarea.maxLength;
+        const label = document.querySelector(`label[for="${fieldId}"] .char-limit`);
+        if (label) {
+            label.textContent = `(${length}/${limit})`;
+        }
+    }
+
+    assignCharacterColors(characters) {
+        // Assign colors sequentially from the palette
+        this.characterColors = {};
+        characters.forEach((char, index) => {
+            if (index < this.colorPalette.length) {
+                this.characterColors[char.name] = this.colorPalette[index];
+            }
+        });
+        return this.characterColors;
     }
 
     async handleFormSubmit(e) {
@@ -76,43 +163,53 @@ class SceneUI {
         const genre = document.getElementById('genre').value;
         const context = document.getElementById('sceneContext').value;
         const maxTurns = parseInt(document.getElementById('maxTurns').value);
+        const minTurns = parseInt(document.getElementById('minTurns').value);
 
         this.maxTurns = maxTurns;
+        this.minTurns = minTurns;
         this.dialogueHistory = []; // Reset history for new scene
+
+        // Collect character data from form
+        const characters = [
+            {
+                name: document.getElementById('char1Name').value,
+                description: document.getElementById('char1Desc').value,
+                constitution: document.getElementById('char1Constitution').value
+            },
+            {
+                name: document.getElementById('char2Name').value,
+                description: document.getElementById('char2Desc').value,
+                constitution: document.getElementById('char2Constitution').value
+            }
+        ];
+
+        // Assign colors to characters
+        this.assignCharacterColors(characters);
 
         // Create scene configuration
         let config;
 
-        if (this.currentTemplate) {
+        if (this.currentTemplate && Object.keys(this.currentTemplate).length > 0) {
             // Use template as base, but allow overrides from form
             config = {
                 ...this.currentTemplate,
                 title: title,
                 genre: genre,
                 scene_context: context,
-                max_turns: maxTurns
+                max_turns: maxTurns,
+                min_turns: minTurns,
+                characters: characters
             };
         } else {
-            // Default "Custom" configuration (minimal fallback)
+            // Custom scene configuration
             config = {
                 title: title,
                 genre: genre,
                 scene_context: context,
                 max_turns: maxTurns,
-                min_turns: 6,
-                characters: [
-                    {
-                        name: "Actor 1",
-                        constitution: "You are Actor 1. Play your part based on the context.",
-                        description: "First character"
-                    },
-                    {
-                        name: "Actor 2",
-                        constitution: "You are Actor 2. Play your part based on the context.",
-                        description: "Second character"
-                    }
-                ],
-                director_system_prompt: "You are the Director. Track the scene state and return JSON.",
+                min_turns: minTurns,
+                characters: characters,
+                // Note: director_system_prompt is now optional and will be auto-generated
                 llm_model: "gemma3:4b",
                 llm_server: "http://localhost:11434"
             };
@@ -227,14 +324,22 @@ class SceneUI {
         };
         this.dialogueHistory.push(turnData);
 
-        // Add dialogue entry UI
+        // Add dialogue entry UI with dynamic character colors
         const entry = document.createElement('div');
-        // Add character-specific class (e.g., character-father-aldric)
         const charClass = `character-${message.character.toLowerCase().replace(/\s+/g, '-')}`;
         entry.className = `dialogue-entry ${charClass}`;
         
+        // Apply dynamic color if available
+        const charColor = this.characterColors[message.character];
+        if (charColor) {
+            entry.style.setProperty('--char-color', charColor.hex);
+            entry.style.setProperty('--char-color-rgb', charColor.rgb);
+            entry.style.borderLeftColor = charColor.hex;
+            entry.style.background = `rgba(${charColor.rgb}, 0.02)`;
+        }
+        
         entry.innerHTML = `
-            <div class="character-name">${message.character}</div>
+            <div class="character-name" style="color: ${charColor ? charColor.hex : ''}">${message.character}</div>
             <div class="dialogue-text">${this.escapeHtml(message.dialogue)}</div>
         `;
         dialogueContent.appendChild(entry);
