@@ -14,47 +14,110 @@
         </header>
 
         <main>
+            <!-- Landing Page -->
+            <div id="landingPanel" class="panel panel-active">
+                <h2>Welcome to Open Hollywood</h2>
+                <p class="landing-intro">Choose how you'd like to experience the engine:</p>
+                
+                <div class="landing-choices">
+                    <button id="defaultSceneBtn" class="btn btn-choice btn-choice-default">
+                        <div class="choice-icon">📺</div>
+                        <div class="choice-title">Use Default Scene</div>
+                        <div class="choice-desc">Watch the Confession scene with Father Aldric and Marco Bellini</div>
+                    </button>
+                    
+                    <button id="customSceneBtn" class="btn btn-choice btn-choice-custom">
+                        <div class="choice-icon">✨</div>
+                        <div class="choice-title">Build Custom Scene</div>
+                        <div class="choice-desc">Create your own characters and scene</div>
+                    </button>
+                </div>
+            </div>
+
             <!-- Setup Panel -->
-            <div id="setupPanel" class="panel panel-active">
+            <div id="setupPanel" class="panel">
                 <h2>Setup Scene</h2>
                 
                 <form id="sceneForm">
-                    <div class="form-group">
-                        <label for="templateSelect">Scene Template</label>
-                        <select id="templateSelect">
-                            <option value="custom">-- Custom Scene --</option>
-                            <!-- Templates will be loaded here -->
-                        </select>
+                    <!-- Character 1 Section -->
+                    <div class="characters-section">
+                        <h3>Character 1</h3>
+                        <div class="form-group">
+                            <label for="char1Name">Name</label>
+                            <input type="text" id="char1Name" placeholder="e.g., Father Aldric" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="char1Desc">Description</label>
+                            <input type="text" id="char1Desc" placeholder="e.g., A weary, perceptive Catholic priest" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="char1Constitution">Constitution <span class="char-limit">(0/1000)</span></label>
+                            <textarea id="char1Constitution" rows="6" placeholder="In-depth character background, personality traits, speech patterns..." required maxlength="1000"></textarea>
+                        </div>
                     </div>
 
-                    <div class="form-group">
-                        <label for="sceneTitle">Scene Title</label>
-                        <input type="text" id="sceneTitle" placeholder="e.g., Confession" required value="Confession">
+                    <!-- Character 2 Section -->
+                    <div class="characters-section">
+                        <h3>Character 2</h3>
+                        <div class="form-group">
+                            <label for="char2Name">Name</label>
+                            <input type="text" id="char2Name" placeholder="e.g., Marco Bellini" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="char2Desc">Description</label>
+                            <input type="text" id="char2Desc" placeholder="e.g., A loose cannon cop" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="char2Constitution">Constitution <span class="char-limit">(0/1000)</span></label>
+                            <textarea id="char2Constitution" rows="6" placeholder="In-depth character background, personality traits, speech patterns..." required maxlength="1000"></textarea>
+                        </div>
                     </div>
 
-                    <div class="form-group">
-                        <label for="genre">Genre</label>
-                        <select id="genre" required>
-                            <option value="" selected disabled>Select a genre...</option>
-                            <option value="dark_comedy">Dark Comedy</option>
-                            <option value="drama">Drama</option>
-                            <option value="thriller">Thriller</option>
-                            <option value="comedy">Comedy</option>
-                            <option value="tragedy">Tragedy</option>
-                        </select>
+                    <!-- Scene Settings -->
+                    <div class="scene-settings">
+                        <h3>Scene Settings</h3>
+                        
+                        <div class="form-group">
+                            <label for="sceneTitle">Scene Title</label>
+                            <input type="text" id="sceneTitle" placeholder="e.g., Confession" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="genre">Genre</label>
+                            <select id="genre" required>
+                                <option value="" selected disabled>Select a genre...</option>
+                                <option value="dark_comedy">Dark Comedy</option>
+                                <option value="drama">Drama</option>
+                                <option value="thriller">Thriller</option>
+                                <option value="comedy">Comedy</option>
+                                <option value="tragedy">Tragedy</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="sceneContext">Scene Context</label>
+                            <textarea id="sceneContext" rows="4" required placeholder="Describe the scene setup, location, and initial conditions..."></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="maxTurns">Maximum Turns</label>
+                            <input type="number" id="maxTurns" min="6" value="30">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="minTurns">Minimum Turns</label>
+                            <input type="number" id="minTurns" min="1" value="6">
+                        </div>
                     </div>
 
-                    <div class="form-group">
-                        <label for="sceneContext">Scene Context</label>
-                        <textarea id="sceneContext" rows="4" required placeholder="Describe the scene setup...">A Catholic confessional booth on a Tuesday evening in November. Father Aldric waits. Marco Bellini enters.</textarea>
+                    <div class="form-actions">
+                        <button type="button" id="backBtn" class="btn btn-secondary">Back</button>
+                        <button type="submit" class="btn btn-primary">Start Scene</button>
                     </div>
-
-                    <div class="form-group">
-                        <label for="maxTurns">Maximum Turns</label>
-                        <input type="number" id="maxTurns" min="6" value="30">
-                    </div>
-
-                    <button type="submit" class="btn btn-primary">Start Scene</button>
                 </form>
             </div>
 
