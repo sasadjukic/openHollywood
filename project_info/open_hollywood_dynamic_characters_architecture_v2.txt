@@ -1,0 +1,271 @@
+Open Hollywood v2.0 - Dynamic Characters Architecture (March 30th, 2026)
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                     WEB UI - LANDING PAGE                                   │
+│                                                                              │
+│   ┌─────────────────────────────────┬──────────────────────────────────┐   │
+│   │  📺 Use Default Scene           │  ✨ Build Custom Scene           │   │
+│   │  (Father Aldric + Marco)        │  (User-defined characters)       │   │
+│   └────────────┬────────────────────┴──────────────┬───────────────────┘   │
+│                │                                   │                        │
+│                ↓                                   ↓                        │
+│   ┌─────────────────────────┐      ┌──────────────────────────────────┐   │
+│   │  LOAD DEFAULT SCENE     │      │  CHARACTER FORM                  │   │
+│   │                         │      │                                  │   │
+│   │ GET /api/templates/     │      │  Character 1:                    │   │
+│   │     default             │      │  - Name                          │   │
+│   │                         │      │  - Description                   │   │
+│   │ Pre-fills form          │      │  - Constitution (1000 char max)  │   │
+│   │ (read-only display)     │      │                                  │   │
+│   └──────────┬──────────────┘      │  Character 2:                    │   │
+│              │                      │  - Name                          │   │
+│              │                      │  - Description                   │   │
+│              │                      │  - Constitution (1000 char max)  │   │
+│              │                      │                                  │   │
+│              │                      │  Scene Settings:                 │   │
+│              │                      │  - Title                         │   │
+│              │                      │  - Genre (5 options)             │   │
+│              │                      │  - Context                       │   │
+│              │                      │  - Max/Min Turns                 │   │
+│              │                      │                                  │   │
+│              │                      │  Submit → POST /api/scenes       │   │
+│              │                      └──────────────┬───────────────────┘   │
+│              │                                    │                        │
+│              └────────────────┬───────────────────┘                        │
+│                               ↓                                            │
+│              ┌────────────────────────────────────┐                        │
+│              │   CREATE SCENE CONFIG              │                        │
+│              │   (Characters + Genre + Context)   │                        │
+│              └────────────────────┬────────────────┘                        │
+│                                   ↓                                        │
+└───────────────────────────────────┼────────────────────────────────────────┘
+                                    │
+                                    ↓
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                      THEATER ENGINE - CORE SYSTEM                           │
+│                                                                              │
+│  ┌─────────────────────────────────────────────────────────────────────┐   │
+│  │                    PROMPT BUILDER                                   │   │
+│  │                                                                     │   │
+│  │  Character Constitution + Genre Block + Scene Context              │   │
+│  │                         ↓                                           │   │
+│  │  Check: director_system_prompt provided?                           │   │
+│  │  ├─ YES: Use explicit prompt (backward compat)                     │   │
+│  │  └─ NO:  Auto-generate from GenreBlock                            │   │
+│  │         (character names/descriptions + ending types)             │   │
+│  │                                                                     │   │
+│  │          = Final System Prompt (Character + Director)             │   │
+│  └─────────────────────┬─────────────────────────────────────────────┘   │
+│                        ↓                                                   │
+│  ┌─────────────────────────────────────────────────────────────────────┐   │
+│  │                    ORCHESTRATOR                                     │   │
+│  │  - Manages turn order between characters                           │   │
+│  │  - Passes dialogue between agents                                  │   │
+│  │  - Maintains conversation history                                  │   │
+│  │  - Assigns character colors (sequential from 8-color palette)      │   │
+│  │  - Triggers Director after each turn                               │   │
+│  └────────┬────────────────────────────────────────────┬──────────────┘   │
+│           ↓                                            ↓                   │
+│  ┌─────────────────────────────────┐    ┌──────────────────────────────┐ │
+│  │      AGENT 1 (Dynamic)          │    │    AGENT 2 (Dynamic)         │ │
+│  │                                 │    │                              │ │
+│  │  System Prompt:                 │    │  System Prompt:              │ │
+│  │  - Character Constitution       │    │  - Character Constitution    │ │
+│  │  - Genre Directions             │    │  - Genre Directions          │ │
+│  │  - Scene Context                │    │  - Scene Context             │ │
+│  │  - Dialogue History             │    │  - Dialogue History          │ │
+│  │                                 │    │                              │ │
+│  │  Powered by LLM                 │    │  Powered by LLM              │ │
+│  │  (Gemma3:4b via Ollama)         │    │  (Gemma3:4b via Ollama)      │ │
+│  └──────────┬──────────────────────┘    └────────────┬─────────────────┘ │
+│             │                                         │                   │
+│             │  Dialogue Exchange                      │                   │
+│             └────────────────┬────────────────────────┘                   │
+│                              ↓                                            │
+│  ┌─────────────────────────────────────────────────────────────────────┐   │
+│  │                    DIRECTOR AGENT                                   │   │
+│  │                                                                     │   │
+│  │  System Prompt (Auto-generated or explicit):                       │   │
+│  │  - Character Summary (name + description)                          │   │
+│  │  - Ending Types & Weights (from GenreBlock)                        │   │
+│  │  - Emotional Arc Stages                                            │   │
+│  │                                                                     │   │
+│  │  Evaluates each turn and returns JSON:                             │   │
+│  │  {                                                                  │   │
+│  │    "turn_count": <number>,                                         │   │
+│  │    "emotional_arc": "<stage>",                                     │   │
+│  │    "arc_stages_hit": [...],                                        │   │
+│  │    "unresolved_threads": [...],                                    │   │
+│  │    "resolved_threads": [...],                                      │   │
+│  │    "closure_detected": <boolean>,                                  │   │
+│  │    "ending_type": <type|null>,                                     │   │
+│  │    "stage_direction": "<guidance>",                                │   │
+│  │    "scene_end": <boolean>                                          │   │
+│  │  }                                                                  │   │
+│  └─────────────────────────────────┬──────────────────────────────────┘   │
+│                                    ↓                                       │
+│              ┌─────────────────────────────────────┐                      │
+│              │  SCENE STATE                        │                      │
+│              │  (Dialogue History + Director State)│                      │
+│              └─────────────────────┬───────────────┘                      │
+│                                    ↓                                       │
+└────────────────────────────────────┼───────────────────────────────────────┘
+                                     │
+                                     ↓ WebSocket Broadcast
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    WEB UI - SCENE EXECUTION                                 │
+│                                                                              │
+│  ┌──────────────────────────────────────────────────────────────────────┐   │
+│  │  DIALOGUE BOX (Real-time streaming)                                  │   │
+│  │                                                                      │   │
+│  │  [Character 1]  ← Color 1 (cyan)                                    │   │
+│  │  "I see you've carried this burden a long time..."                  │   │
+│  │                                                                      │   │
+│  │  [Character 2]  ← Color 2 (lime)                                    │   │
+│  │  "Yeah, but I don't know how to put it down."                       │   │
+│  │                                                                      │   │
+│  │  ─────────────────────────────────────────                          │   │
+│  │  Turn: 3 | Arc: tension | Ending: — | Progress: [████░░░░░░]       │   │
+│  └──────────────────────────────────────────────────────────────────────┘   │
+│                                                                              │
+│  ┌──────────────────────────────────────────────────────────────────────┐   │
+│  │  DIRECTOR'S NOTE (Stage Direction)                                   │   │
+│  │  "Character 2 begins to crack - push toward the real confession"     │   │
+│  └──────────────────────────────────────────────────────────────────────┘   │
+│                                                                              │
+│  ┌──────────────────────┐        ┌──────────────────────┐                   │
+│  │  Unresolved Threads  │        │  Resolved Threads    │                   │
+│  │  • Withheld evidence │        │  ✓ Initial evasion   │                   │
+│  │  • Real guilt        │        │  ✓ Priest's empathy  │                   │
+│  │  • Redemption path   │        │                      │                   │
+│  └──────────────────────┘        └──────────────────────┘                   │
+│                                                                              │
+│  [Stop Scene]  [Reset to Landing]                                           │
+│                                                                              │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+
+KEY IMPROVEMENTS IN v2.0
+========================
+
+1. DYNAMIC CHARACTER CREATION
+   • Characters can be defined at runtime via web form
+   • 1000-character limit on constitution (with live counter)
+   • Supports unlimited custom scenes with different character pairs
+
+2. AUTO-GENERATED DIRECTOR PROMPTS
+   • Director system prompt is now Optional[str]
+   • Auto-generated from GenreBlock when not explicitly provided
+   • Ensures consistency across all custom scenes
+   • Backward compatible with pre-built hardcoded prompts
+
+3. OPTIONAL DIRECTOR_SYSTEM_PROMPT
+   • SceneConfig.director_system_prompt: Optional[str] = None
+   • If None: PromptBuilder generates from GenreBlock
+   • If provided: Uses explicit prompt (for special scenes like Confession)
+
+4. COLOR-CODED CHARACTER DISPLAY
+   • 8-color palette defined in JavaScript
+   • Colors assigned sequentially (Char1→Color1, Char2→Color2, etc.)
+   • Each dialogue entry shows character name with assigned color
+   • Makes multi-character tracking easier for viewers
+
+5. LANDING PAGE CHOICE SYSTEM
+   • Users choose: Default Scene (pre-built) or Build Custom Scene
+   • Default scene shows read-only form with pre-filled data
+   • Custom scene form accepts dynamic character input
+   • Back button allows pivoting between choices
+
+6. API ENHANCEMENTS
+   • GET /api/templates/default - Returns pre-built Confession scene
+   • POST /api/scenes - Accepts custom character data
+   • All custom characters support same features as defaults
+
+
+DATA FLOW: CUSTOM SCENE EXAMPLE
+================================
+
+User Input:
+├─ Character 1: "Detective Maria" (description, constitution)
+├─ Character 2: "Suspect David" (description, constitution)
+├─ Title: "The Interrogation"
+├─ Genre: THRILLER
+└─ Context: "A police interrogation room..."
+
+                    ↓ POST /api/scenes
+
+SceneConfig Creation:
+├─ title: "The Interrogation"
+├─ genre: "thriller"
+├─ characters: [Character(...), Character(...)]
+├─ scene_context: "A police interrogation room..."
+└─ director_system_prompt: None  ← Will be auto-generated
+
+                    ↓
+
+Prompt Builder (build_director_prompt):
+├─ Check: director_system_prompt is None? YES
+├─ Auto-generate intro:
+│  ├─ Character summary: "Detective Maria (Sharp investigator) and 
+│  │                     Suspect David (Nervous suspect)"
+│  ├─ Ending types from GenreBlock: CONFESSION, DENIAL, ESCAPE, PLEA
+│  └─ JSON structure template
+├─ Append scene context
+├─ Append safety limits (6-30 turns)
+└─ Return full director prompt (1700+ chars)
+
+                    ↓
+
+Orchestrator executes:
+├─ Agent 1 (Detective): Uses custom character prompt
+├─ Agent 2 (Suspect): Uses custom character prompt
+├─ Director: Uses auto-generated prompt
+└─ Assign colors: Detective→Cyan, Suspect→Lime
+
+                    ↓
+
+Scene Execution:
+├─ Turn 1: Detective speaks (cyan text)
+├─ Turn 2: Suspect speaks (lime text)
+├─ Director evaluates emotional state
+├─ Director injects stage direction
+└─ Continue until scene_end=true
+
+                    ↓
+
+WebSocket to Browser:
+├─ Stream each dialogue update
+├─ Include character name + color
+├─ Update emotional arc progress
+├─ Display director notes
+└─ Auto-update thread lists
+
+
+BACKWARD COMPATIBILITY
+======================
+
+Default Confession Scene:
+├─ CONFESSION_SCENE defined in scene_templates.py
+├─ director_system_prompt: None (now uses auto-generation)
+├─ Characters: Father Aldric + Marco Bellini
+├─ Behavior: Identical to v1.0 (auto-generated prompt is equivalent)
+└─ Result: Zero breaking changes
+
+
+EXTENSIBILITY POINTS
+====================
+
+1. Add New Genres:
+   └─ Edit app/orchestrator/scene_orchestrator.py → GENRE_BLOCKS
+
+2. Create Custom Characters:
+   └─ Use web form (no code needed)
+
+3. Override Director Prompt:
+   └─ Set SceneConfig.director_system_prompt to custom string
+
+4. Modify Character Colors:
+   └─ Edit colorPalette array in static/app.js
+
+5. Create New Default Scenes:
+   └─ Add to SCENE_TEMPLATES in app/core/scene_templates.py
