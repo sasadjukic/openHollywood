@@ -15,7 +15,7 @@ import time
 
 from app.models.types import SceneConfig, Character, Genre
 from app.orchestrator.scene_orchestrator import SceneOrchestrator
-from app.core.scene_templates import list_templates, get_template
+from app.core.scene_templates import list_templates, get_template, CONFESSION_SCENE
 
 # Configure logging
 logging.basicConfig(
@@ -64,6 +64,12 @@ async def get_genres():
 async def get_templates():
     """Get available scene templates."""
     return {"templates": list_templates()}
+
+
+@app.get("/api/templates/default")
+async def get_default_template():
+    """Get the default (Confession) scene template."""
+    return CONFESSION_SCENE
 
 
 @app.get("/api/templates/{template_id}")
