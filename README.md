@@ -1,3 +1,11 @@
+<div align="center">
+
+<img src="images/open_hollywood_logo.png" width="150" alt="Open Hollywood Logo">
+
+</div>
+
+
+
 # 🎬 Open Hollywood - AI Scene Execution Engine
 
 Open Hollywood is a system where AI agents execute theatrical scenes like actors in Hollywood movies and Broadway theater shows, with Zero human involvement during execution (only setup required). Open Hollywood is a sibling project to [SammyAI](https://github.com/sasadjukic/sammyai) that tries to solve a few important issues when LLMs are tasked to generate creative content. Both SammyAI and Open Hollywood are currently developed and tested separately to give a chance for troubleshooting problems in isolated, smaller environments.
