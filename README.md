@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="images/open_hollywood_logo.png" width="150" alt="Open Hollywood Logo">
+<img src="images/open_hollywood_logo.png" width="600" alt="Open Hollywood Logo">
 
 </div>
 
