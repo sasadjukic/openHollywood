@@ -62,9 +62,25 @@ body {
     background-clip: text;
 }
 
+.header .logo {
+    height: 150px;
+    width: auto;
+    object-fit: contain;
+    margin-bottom: 15px;
+    filter: drop-shadow(0 2px 4px rgba(129, 193, 217, 0.2));
+}
+
 .subtitle {
     color: var(--text-muted);
     font-size: 1.1em;
+}
+
+/* SVG Icons */
+.icon-svg {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+    filter: drop-shadow(0 2px 8px rgba(129, 193, 217, 0.15));
 }
 
 /* Main Content */
