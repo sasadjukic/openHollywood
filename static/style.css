@@ -1,14 +1,39 @@
-
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
+/* =============================================
+   OPEN HOLLYWOOD — Design Tokens
+   Gradient palette: #e9a5a5 (rose) · #b8c1c0 (slate) · #65c0e0 (sky) · #aea2db (lavender) · #81c1d9 (steel blue)
+   ============================================= */
+
+:root {
+    --accent-rose:     #e9a5a5;
+    --accent-sky:      #81c1d9;
+    --accent-lavender: #aea2db;
+    --accent-slate:    #b8c1c0;
+    --accent-cyan:     #65c0e0;
+
+    --bg-primary:      #1e1918;
+    --bg-panel:        rgba(30, 25, 24, 0.85);
+    --bg-surface:      rgba(255, 255, 255, 0.04);
+    --bg-surface-hover:rgba(255, 255, 255, 0.07);
+
+    --text-primary:    #e8e0de;
+    --text-muted:      #a09898;
+    --text-faint:      #6a6060;
+
+    --border-default:  rgba(255, 255, 255, 0.08);
+    --border-accent:   rgba(129, 193, 217, 0.25);
+    --border-rose:     rgba(233, 165, 165, 0.25);
+}
+
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-    color: #e0e0e0;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
     min-height: 100vh;
     padding: 20px;
 }
@@ -23,20 +48,22 @@ body {
     text-align: center;
     margin-bottom: 40px;
     padding: 20px;
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--bg-surface);
     border-radius: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--border-default);
 }
 
 .header h1 {
     font-size: 2.5em;
     margin-bottom: 10px;
-    color: #00d4ff;
-    text-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+    background: linear-gradient(90deg, var(--accent-rose), var(--accent-slate), var(--accent-sky));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
 .subtitle {
-    color: #a0a0a0;
+    color: var(--text-muted);
     font-size: 1.1em;
 }
 
@@ -47,8 +74,8 @@ main {
 
 /* Panels */
 .panel {
-    background: rgba(22, 33, 62, 0.8);
-    border: 1px solid rgba(0, 212, 255, 0.2);
+    background: var(--bg-panel);
+    border: 1px solid var(--border-accent);
     border-radius: 10px;
     padding: 30px;
     margin-bottom: 20px;
@@ -61,7 +88,7 @@ main {
 }
 
 .panel h2 {
-    color: #00d4ff;
+    color: var(--accent-sky);
     margin-bottom: 20px;
     font-size: 1.8em;
 }
@@ -74,7 +101,7 @@ main {
 .form-group label {
     display: block;
     margin-bottom: 8px;
-    color: #b0b0b0;
+    color: var(--text-muted);
     font-weight: 500;
 }
 
@@ -83,10 +110,10 @@ main {
 .form-group select {
     width: 100%;
     padding: 12px;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(0, 212, 255, 0.3);
+    background: var(--bg-surface);
+    border: 1px solid var(--border-accent);
     border-radius: 5px;
-    color: #e0e0e0;
+    color: var(--text-primary);
     font-size: 1em;
     font-family: inherit;
     transition: all 0.3s ease;
@@ -96,9 +123,9 @@ main {
 .form-group textarea:focus,
 .form-group select:focus {
     outline: none;
-    background: rgba(255, 255, 255, 0.08);
-    border-color: #00d4ff;
-    box-shadow: 0 0 10px rgba(0, 212, 255, 0.2);
+    background: var(--bg-surface-hover);
+    border-color: var(--accent-sky);
+    box-shadow: 0 0 10px rgba(129, 193, 217, 0.15);
 }
 
 /* Buttons */
@@ -113,26 +140,26 @@ main {
 }
 
 .btn-primary {
-    background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%);
-    color: #000;
+    background: linear-gradient(135deg, var(--accent-rose) 0%, var(--accent-sky) 100%);
+    color: #1e1918;
     width: 100%;
     margin-top: 20px;
 }
 
 .btn-primary:hover:not(:disabled) {
     transform: translateY(-2px);
-    box-shadow: 0 10px 20px rgba(0, 212, 255, 0.3);
+    box-shadow: 0 10px 20px rgba(233, 165, 165, 0.2);
 }
 
 .btn-secondary {
-    background: rgba(255, 255, 255, 0.1);
-    color: #e0e0e0;
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    background: var(--bg-surface);
+    color: var(--text-primary);
+    border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .btn-secondary:hover:not(:disabled) {
-    background: rgba(255, 255, 255, 0.15);
-    border-color: rgba(255, 255, 255, 0.5);
+    background: var(--bg-surface-hover);
+    border-color: rgba(255, 255, 255, 0.35);
 }
 
 .btn:disabled {
@@ -147,7 +174,7 @@ main {
     align-items: flex-start;
     margin-bottom: 25px;
     padding-bottom: 15px;
-    border-bottom: 1px solid rgba(0, 212, 255, 0.2);
+    border-bottom: 1px solid var(--border-accent);
 }
 
 .scene-header h2 {
@@ -155,7 +182,7 @@ main {
 }
 
 .genre-tag {
-    color: #00d4ff;
+    color: var(--accent-rose);
     font-size: 0.95em;
 }
 
@@ -168,7 +195,7 @@ main {
 .progress-bar {
     width: 100%;
     height: 4px;
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.08);
     border-radius: 2px;
     margin-bottom: 15px;
     overflow: hidden;
@@ -177,7 +204,7 @@ main {
 .progress-fill {
     height: 100%;
     width: 0%;
-    background: linear-gradient(90deg, #00d4ff, #00ff88);
+    background: linear-gradient(90deg, var(--accent-rose), var(--accent-sky));
     transition: width 0.3s ease;
 }
 
@@ -187,24 +214,24 @@ main {
     gap: 30px;
     margin-bottom: 25px;
     padding: 15px;
-    background: rgba(0, 212, 255, 0.05);
+    background: rgba(129, 193, 217, 0.04);
     border-radius: 5px;
     font-size: 0.95em;
 }
 
 .scene-info span {
-    color: #b0b0b0;
+    color: var(--text-muted);
 }
 
 .scene-info span span {
-    color: #00d4ff;
+    color: var(--accent-sky);
     font-weight: 600;
 }
 
 /* Dialogue Box */
 .dialogue-box {
-    background: rgba(0, 0, 0, 0.3);
-    border: 1px solid rgba(0, 212, 255, 0.1);
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px solid var(--border-default);
     border-radius: 8px;
     padding: 25px;
     margin-bottom: 20px;
@@ -221,34 +248,34 @@ main {
 
 .dialogue-entry {
     padding: 15px;
-    background: rgba(0, 212, 255, 0.03);
-    border-left: 4px solid rgba(0, 212, 255, 0.4);
+    background: rgba(129, 193, 217, 0.03);
+    border-left: 4px solid rgba(129, 193, 217, 0.35);
     border-radius: 6px;
     animation: slideIn 0.3s ease;
     transition: background 0.3s ease;
 }
 
 .dialogue-entry:hover {
-    background: rgba(0, 212, 255, 0.06);
+    background: rgba(129, 193, 217, 0.06);
 }
 
 /* Character-specific styles */
 .dialogue-entry.character-father-aldric {
-    border-left-color: #ffd700; /* Gold for the priest */
-    background: rgba(255, 215, 0, 0.02);
+    border-left-color: #e9c97a;
+    background: rgba(233, 201, 122, 0.03);
 }
 
 .dialogue-entry.character-father-aldric .character-name {
-    color: #ffd700;
+    color: #e9c97a;
 }
 
 .dialogue-entry.character-marco {
-    border-left-color: #00ff88; /* Green for Marco */
-    background: rgba(0, 255, 136, 0.02);
+    border-left-color: var(--accent-rose);
+    background: rgba(233, 165, 165, 0.03);
 }
 
 .dialogue-entry.character-marco .character-name {
-    color: #00ff88;
+    color: var(--accent-rose);
 }
 
 @keyframes slideIn {
@@ -271,13 +298,13 @@ main {
 }
 
 .dialogue-text {
-    color: #e0e0e0;
+    color: var(--text-primary);
     line-height: 1.6;
     font-size: 1.05em;
 }
 
 .info-message {
-    color: #707070;
+    color: var(--text-faint);
     font-style: italic;
     text-align: center;
     padding: 20px;
@@ -285,12 +312,12 @@ main {
 
 /* Stage Directions */
 .stage-directions {
-    background: rgba(0, 212, 255, 0.08);
-    border-left: 4px solid #00d4ff;
+    background: rgba(174, 162, 219, 0.08);
+    border-left: 4px solid var(--accent-lavender);
     padding: 15px;
     border-radius: 5px;
     margin-bottom: 20px;
-    color: #a0d4ff;
+    color: #c8c0e0;
     font-style: italic;
 }
 
@@ -311,7 +338,7 @@ main {
 }
 
 .threads-column h4 {
-    color: #00d4ff;
+    color: var(--accent-sky);
     margin-bottom: 12px;
     font-size: 0.95em;
 }
@@ -322,24 +349,24 @@ main {
 
 .thread-list li {
     padding: 8px 12px;
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--bg-surface);
     border-radius: 4px;
     margin-bottom: 8px;
-    color: #d0d0d0;
+    color: #d0c8c8;
     font-size: 0.9em;
-    border-left: 2px solid #00d4ff;
+    border-left: 2px solid var(--accent-sky);
 }
 
 .thread-list.resolved li {
     opacity: 0.6;
     text-decoration: line-through;
-    border-left-color: #00ff88;
+    border-left-color: var(--accent-rose);
 }
 
 /* Completion Message */
 .completion-message {
-    background: rgba(0, 255, 136, 0.1);
-    border: 1px solid rgba(0, 255, 136, 0.3);
+    background: rgba(233, 165, 165, 0.08);
+    border: 1px solid rgba(233, 165, 165, 0.25);
     border-radius: 8px;
     padding: 20px;
     margin-top: 20px;
@@ -351,7 +378,7 @@ main {
 }
 
 #completionText {
-    color: #00ff88;
+    color: var(--accent-rose);
     font-weight: 600;
     font-size: 1.1em;
 }
@@ -360,8 +387,8 @@ main {
 .footer {
     text-align: center;
     padding: 20px;
-    color: #606060;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--text-faint);
+    border-top: 1px solid var(--border-default);
 }
 
 /* Scrollbar Styling */
@@ -370,17 +397,17 @@ main {
 }
 
 .dialogue-box::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(255, 255, 255, 0.04);
     border-radius: 10px;
 }
 
 .dialogue-box::-webkit-scrollbar-thumb {
-    background: rgba(0, 212, 255, 0.3);
+    background: rgba(129, 193, 217, 0.25);
     border-radius: 10px;
 }
 
 .dialogue-box::-webkit-scrollbar-thumb:hover {
-    background: rgba(0, 212, 255, 0.5);
+    background: rgba(129, 193, 217, 0.45);
 }
 
 /* Responsive Design */
@@ -415,7 +442,7 @@ main {
 /* Landing Page */
 .landing-intro {
     text-align: center;
-    color: #a0a0a0;
+    color: var(--text-muted);
     font-size: 1.1em;
     margin-bottom: 40px;
 }
@@ -435,20 +462,20 @@ main {
     gap: 15px;
     padding: 30px 20px;
     min-height: 200px;
-    background: rgba(0, 212, 255, 0.05);
-    border: 2px solid rgba(0, 212, 255, 0.2);
+    background: rgba(129, 193, 217, 0.04);
+    border: 2px solid var(--border-accent);
     border-radius: 10px;
-    color: #e0e0e0;
+    color: var(--text-primary);
     transition: all 0.3s ease;
     width: auto;
     margin-top: 0;
 }
 
 .btn-choice:hover {
-    background: rgba(0, 212, 255, 0.1);
-    border-color: rgba(0, 212, 255, 0.5);
+    background: rgba(129, 193, 217, 0.08);
+    border-color: rgba(129, 193, 217, 0.5);
     transform: translateY(-5px);
-    box-shadow: 0 15px 30px rgba(0, 212, 255, 0.2);
+    box-shadow: 0 15px 30px rgba(233, 165, 165, 0.1);
 }
 
 .choice-icon {
@@ -459,12 +486,12 @@ main {
 .choice-title {
     font-size: 1.3em;
     font-weight: 700;
-    color: #00d4ff;
+    color: var(--accent-sky);
 }
 
 .choice-desc {
     font-size: 0.9em;
-    color: #a0a0a0;
+    color: var(--text-muted);
     text-align: center;
 }
 
@@ -476,8 +503,8 @@ main {
 
 /* Character Form Sections */
 .characters-section {
-    background: rgba(0, 212, 255, 0.03);
-    border: 1px solid rgba(0, 212, 255, 0.1);
+    background: rgba(129, 193, 217, 0.03);
+    border: 1px solid var(--border-accent);
     border-radius: 8px;
     padding: 20px;
     margin-bottom: 25px;
@@ -485,16 +512,16 @@ main {
 
 .characters-section h3,
 .scene-settings h3 {
-    color: #00d4ff;
+    color: var(--accent-sky);
     margin-bottom: 15px;
     font-size: 1.2em;
-    border-bottom: 1px solid rgba(0, 212, 255, 0.2);
+    border-bottom: 1px solid var(--border-accent);
     padding-bottom: 10px;
 }
 
 .scene-settings {
-    background: rgba(0, 212, 255, 0.03);
-    border: 1px solid rgba(0, 212, 255, 0.1);
+    background: rgba(129, 193, 217, 0.03);
+    border: 1px solid var(--border-accent);
     border-radius: 8px;
     padding: 20px;
     margin-bottom: 25px;
@@ -502,7 +529,7 @@ main {
 
 .char-limit {
     font-size: 0.85em;
-    color: #707070;
+    color: var(--text-faint);
     font-weight: normal;
 }
 
@@ -522,10 +549,10 @@ main {
     flex: 0 1 150px;
 }
 
-/* Disabled field styling (for default scene read-only view) */
+/* Disabled field styling */
 .disabled-field {
     background: rgba(255, 255, 255, 0.02) !important;
-    color: #888 !important;
+    color: var(--text-faint) !important;
     cursor: not-allowed !important;
     opacity: 0.7 !important;
 }
@@ -540,7 +567,7 @@ main {
 }
 
 .dialogue-text {
-    color: #e0e0e0;
+    color: var(--text-primary);
     line-height: 1.6;
     font-size: 1.05em;
 }
