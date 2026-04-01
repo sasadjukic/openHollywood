@@ -39,6 +39,11 @@ static_dir = os.path.join(os.path.dirname(__file__), "..", "static")
 if os.path.exists(static_dir):
     app.mount("/static", StaticFiles(directory=static_dir), name="static")
 
+# Serve images
+images_dir = os.path.join(os.path.dirname(__file__), "..", "images")
+if os.path.exists(images_dir):
+    app.mount("/images", StaticFiles(directory=images_dir), name="images")
+
 
 @app.get("/")
 async def root():
