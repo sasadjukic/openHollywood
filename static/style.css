@@ -280,12 +280,12 @@ main {
 
 /* Character-specific styles */
 .dialogue-entry.character-father-aldric {
-    border-left-color: #e9c97a;
+    border-left-color: var(--accent-sky);
     background: rgba(233, 201, 122, 0.03);
 }
 
 .dialogue-entry.character-father-aldric .character-name {
-    color: #e9c97a;
+    color: var(--accent-sky);
 }
 
 .dialogue-entry.character-marco {
