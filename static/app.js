@@ -13,8 +13,8 @@ class SceneUI {
         
         // Color palette for dynamic character assignment
         this.colorPalette = [
-            { name: 'cyan', hex: '#00d4ff', rgb: '0, 212, 255' },
-            { name: 'lime', hex: '#00ff88', rgb: '0, 255, 136' },
+            { name: 'steel-blue', hex: '#81c1d9', rgb: '129, 193, 217' },
+            { name: 'rose', hex: '#e9a5a5', rgb: '233, 165, 165' },
             { name: 'gold', hex: '#ffd700', rgb: '255, 215, 0' },
             { name: 'coral', hex: '#ff6b6b', rgb: '255, 107, 107' },
             { name: 'purple', hex: '#aa96da', rgb: '170, 150, 218' },
