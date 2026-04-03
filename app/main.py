@@ -159,9 +159,16 @@ async def websocket_endpoint(websocket: WebSocket, scene_id: str):
                 elif message.get("type") == "stop":
                     # Stop the scene (if running)
                     logger.info(f"Stop command received for {scene_id}")
+                    if scene_id in active_scenes:
+                        active_scenes[scene_id].stop_scene()
+                        logger.info(f"Stop signal sent to orchestrator for {scene_id}")
 
             except json.JSONDecodeError:
                 await websocket.send_json({"type": "error", "message": "Invalid JSON"})
+            except RuntimeError as e:
+                # WebSocket connection was closed
+                logger.info(f"WebSocket connection closed for scene {scene_id}: {str(e)}")
+                break
 
     except WebSocketDisconnect:
         logger.info(f"WebSocket disconnected for scene {scene_id}")
@@ -223,6 +230,9 @@ async def _execute_scene(scene_id: str):
                     for connection in connections:
                         try:
                             await connection.send_json(message)
+                        except RuntimeError as e:
+                            # Connection closed, expected when user stops scene
+                            logger.debug(f"WebSocket closed while sending message: {e}")
                         except Exception as e:
                             logger.error(f"Error sending message: {e}")
 
@@ -244,6 +254,9 @@ async def _execute_scene(scene_id: str):
         for connection in connections:
             try:
                 await connection.send_json(message)
+            except RuntimeError as e:
+                # Connection closed, expected when user stops scene
+                logger.debug(f"WebSocket closed while sending completion message: {e}")
             except Exception as e:
                 logger.error(f"Error sending completion message: {e}")
 
@@ -264,6 +277,9 @@ async def _execute_scene(scene_id: str):
         for connection in connections:
             try:
                 await connection.send_json(message)
+            except RuntimeError as ex:
+                # Connection closed, expected when user stops scene
+                logger.debug(f"WebSocket closed while sending error message: {ex}")
             except Exception as ex:
                 logger.error(f"Error sending error message: {ex}")
 
@@ -286,6 +302,26 @@ async def get_scene(scene_id: str):
         return scene_results[scene_id]
 
     raise HTTPException(status_code=404, detail="Scene not found")
+
+
+@app.post("/api/scenes/{scene_id}/stop")
+async def stop_scene_endpoint(scene_id: str):
+    """Stop an active scene execution."""
+    if scene_id not in active_scenes:
+        raise HTTPException(status_code=404, detail="Scene not found or already completed")
+    
+    try:
+        orchestrator = active_scenes[scene_id]
+        orchestrator.stop_scene()
+        logger.info(f"Stop request processed for scene {scene_id}")
+        return {
+            "status": "stopped",
+            "scene_id": scene_id,
+            "message": "Scene stop signal sent"
+        }
+    except Exception as e:
+        logger.error(f"Error stopping scene {scene_id}: {e}")
+        raise HTTPException(status_code=500, detail=f"Error stopping scene: {str(e)}")
 
 
 @app.get("/api/health")
