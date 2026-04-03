@@ -410,8 +410,16 @@ class SceneUI {
     }
 
     stopScene() {
+        if (this.sceneId) {
+            // Use REST endpoint to stop (doesn't depend on WebSocket connection)
+            fetch(`/api/scenes/${this.sceneId}/stop`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            })
+            .then(() => console.log("Stop request sent to backend"))
+            .catch(error => console.error("Error stopping scene:", error));
+        }
         if (this.ws) {
-            this.sendMessage({ type: 'stop' });
             this.ws.close();
         }
         this.isSceneRunning = false;
