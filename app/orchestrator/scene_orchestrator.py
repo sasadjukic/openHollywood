@@ -100,6 +100,14 @@ class SceneOrchestrator:
         self.current_turn = 0
         self.chosen_ending: Optional[str] = None
         self.pacing_notes: str = ""
+        self.should_stop = False
+
+    def stop_scene(self):
+        """
+        Signal the scene to stop execution.
+        """
+        logger.info("Stop signal received for scene")
+        self.should_stop = True
 
     def execute_scene(
         self,
@@ -227,6 +235,12 @@ class SceneOrchestrator:
                 if on_turn_callback:
                     # We call it with the last turn's dialogue and the fresh director state
                     on_turn_callback(self.dialogue_history[-1], scene_state.director_state)
+
+                # Check if user requested scene to stop
+                if self.should_stop:
+                    scene_state.completion_reason = f"Stopped by user at turn {self.current_turn}"
+                    logger.info(f"Scene ended: {scene_state.completion_reason}")
+                    break
 
                 # After all characters in this turn have spoken, check if scene should end
                 if self._should_end_scene(scene_state):
