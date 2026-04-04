@@ -50,7 +50,7 @@ def demo():
     """Run a demo scene execution."""
     print_separator("Open Hollywood - Demo Scene Execution")
     print("This script will execute a complete scene using the AI agents.")
-    print("Make sure Ollama is running with gemma3:4b model!\n")
+    print("Make sure Ollama is running with gemma4:e4b model!\n")
 
     # Load the confession scene template
     print("Loading 'Confession' scene template...")
