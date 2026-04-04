@@ -4,10 +4,10 @@ Agent Manager: Handles LLM calls for character agents.
 
 import json
 import logging
-from typing import List, Tuple, Optional
-import ollama
+from typing import List, Tuple, Optional, Dict, Any
 
 from app.models.types import DialogueTurn
+from app.core.llm_provider import LLMClientFactory, ChatMessage
 
 logger = logging.getLogger(__name__)
 
@@ -15,17 +15,26 @@ logger = logging.getLogger(__name__)
 class AgentManager:
     """Manages individual agent LLM calls."""
 
-    def __init__(self, llm_model: str = "gemma3:4b", llm_server: str = "http://localhost:11434"):
+    def __init__(self, llm_model: str = "ollama://gemma4:e4b", llm_server: str = "http://localhost:11434"):
         """
         Initialize the agent manager.
 
         Args:
-            llm_model: Name of the LLM model to use
-            llm_server: URL to the Ollama server
+            llm_model: LLM model URI (format: 'provider://model-name').
+                      Defaults to 'ollama://gemma4:e4b'. 
+                      Supports ollama://, openai://, anthropic://, google://.
+                      Plain model names (backward compat) auto-prepend ollama://
+            llm_server: Ollama server URL (used only for ollama:// models)
         """
         self.llm_model = llm_model
         self.llm_server = llm_server
-        self.client = ollama.Client(host=llm_server)
+        
+        # Create the appropriate LLM client based on the model URI
+        # For Ollama, pass the server URL; for cloud providers, they use env vars
+        if llm_model.startswith("ollama://"):
+            self.llm_client = LLMClientFactory.create(llm_model, server_url=llm_server)
+        else:
+            self.llm_client = LLMClientFactory.create(llm_model)
 
     def _clean_agent_response(self, response: str, character_name: str) -> str:
         """
@@ -136,15 +145,14 @@ class AgentManager:
         logger.info(f"Calling LLM for {character_name} with {len(messages)} messages")
 
         try:
-            response = self.client.chat(
-                model=self.llm_model,
-                messages=messages,
-                stream=False,
-                options=llm_options,
+            response = self.llm_client.chat(
+                messages=[ChatMessage(role=msg["role"], content=msg["content"]) for msg in messages],
+                model_name=self.llm_model,
+                options=llm_options or {},
             )
 
             # Extract the response text
-            agent_response = response["message"]["content"].strip()
+            agent_response = response.message.strip()
             
             # Clean the response to ensure it's just dialogue for this turn
             agent_response = self._clean_agent_response(agent_response, character_name)
@@ -300,23 +308,18 @@ class AgentManager:
         logger.info("Calling director for pre-scene briefing")
 
         try:
-            response = self.client.chat(
-                model=self.llm_model,
-                messages=[
-                    {
-                        "role": "system",
-                        "content": briefing_prompt
-                    },
-                    {
-                        "role": "user",
-                        "content": "Analyze the scene and decide on the vision. Return ONLY JSON."
-                    }
-                ],
-                stream=False,
-                options=llm_options,
+            messages = [
+                ChatMessage(role="system", content=briefing_prompt),
+                ChatMessage(role="user", content="Analyze the scene and decide on the vision. Return ONLY JSON."),
+            ]
+            
+            response = self.llm_client.chat(
+                messages=messages,
+                model_name=self.llm_model,
+                options=llm_options or {},
             )
 
-            response_text = response["message"]["content"].strip()
+            response_text = response.message.strip()
             logger.info(f"Director briefing response: {response_text[:200]}...")
 
             parsed = self._parse_json_from_response(response_text)
@@ -369,19 +372,28 @@ Return ONLY valid JSON with no other text."""
         logger.info(f"Calling director agent for turn {current_turn_count}")
 
         try:
-            response = self.client.chat(
-                model=self.llm_model,
-                messages=[
-                    {
-                        "role": "system",
-                        "content": director_system_prompt
-                    }
-                ] + messages,
-                stream=False,
-                options=llm_options,
+            messages = [
+                ChatMessage(
+                    role="system",
+                    content=director_system_prompt
+                ),
+                ChatMessage(
+                    role="user",
+                    content=f"""Evaluate this scene after turn {current_turn_count}:
+
+{dialogue_text}
+
+Return ONLY valid JSON with no other text."""
+                )
+            ]
+            
+            response = self.llm_client.chat(
+                messages=messages,
+                model_name=self.llm_model,
+                options=llm_options or {},
             )
 
-            response_text = response["message"]["content"].strip()
+            response_text = response.message.strip()
             logger.info(f"Director response: {response_text[:200]}...")
 
             return self.parse_director_response(response_text)
