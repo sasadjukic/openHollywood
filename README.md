@@ -5,12 +5,16 @@
 </div>
 
 
-
 # 🎬 Open Hollywood - AI Scene Execution Engine
 
-Open Hollywood is a system where AI agents execute theatrical scenes like actors in Hollywood movies and Broadway theater shows, with Zero human involvement during execution (only setup required). Open Hollywood is a sibling project to [SammyAI](https://github.com/sasadjukic/sammyai) that tries to solve a few important issues when LLMs are tasked to generate creative content. Both SammyAI and Open Hollywood are currently developed and tested separately to give a chance for troubleshooting problems in isolated, smaller environments.
+Open Hollywood is a system where AI agents execute theatrical scenes like actors in Hollywood movies and Broadway theater shows, with Zero human involvement during execution (only setup required). 
 
-In this testing phase, Open Hollywood is using local LLM models (Gemma3:4b) to perfect the engine dynamics. Once the engine dynamics are sorted out, Open Hollywood will be ready for use with all other LLM models. 
+Open Hollywood is a sibling project to [SammyAI](https://github.com/sasadjukic/sammyai) that tries to solve a few important issues when LLMs are tasked to generate creative content. Both SammyAI and Open Hollywood are currently developed and tested separately to give a chance for troubleshooting problems in isolated, smaller environments.
+
+>[!NOTE]
+>As of April 4, 2026 Open Hollywood uses Gemma4:e4b model as the engine testing model
+
+In this testing phase, Open Hollywood is using local LLM models to perfect the engine dynamics. Once the engine dynamics are sorted out, Open Hollywood will be ready for use with all other LLM models. 
 
 In this very early stage of development, Open Hollywood tests scenes with two actors (AI agents) with the ability to create custom characters on the fly.
 
@@ -39,7 +43,7 @@ Assembles final system prompts from three building blocks:
 Two isolated LLM instances with independent perspectives:
 - Each agent has their own system prompt
 - Each sees the other's dialogue as "user" messages
-- Powered by Ollama's Gemma3:4b model
+- Powered by Ollama's Gemma4:e4b model
 - Supports custom character definitions created at runtime
 
 ### 3. **Orchestrator**
@@ -70,10 +74,10 @@ Real-time scene viewer with:
 ## Prerequisites
 
 1. **Python 3.10+** (already set up in virtual environment)
-2. **Ollama** installed and running with `gemma3:4b` model
+2. **Ollama** installed and running with `gemma4:e4b` model
    ```bash
    # Install Ollama from https://ollama.ai
-   ollama pull gemma3:4b
+   ollama pull gemma4:e4b
    ollama serve
    ```
 
