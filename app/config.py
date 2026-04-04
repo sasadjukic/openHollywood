@@ -26,11 +26,33 @@ class EmotionalArcStage(str, Enum):
     RESOLUTION = "resolution"
 
 
-# Ollama Configuration
+# LLM Provider Configuration
+# Model URIs follow the format: "provider://model-identifier"
+# Examples: "ollama://gemma4:e4b", "openai://gpt-4", "anthropic://claude-3-opus"
 OLLAMA_CONFIG = {
-    "default_model": "gemma3:4b",
+    "default_model": "ollama://gemma4:e4b",
     "default_server": "http://localhost:11434",
     "timeout": 300,  # seconds
+}
+
+# Cloud Provider API Configuration
+# These are sourced from environment variables at runtime:
+# - OPENAI_API_KEY for OpenAI models
+# - ANTHROPIC_API_KEY for Anthropic Claude models
+# - GOOGLE_API_KEY for Google Gemini models
+PROVIDER_CONFIG = {
+    "openai": {
+        "env_var": "OPENAI_API_KEY",
+        "endpoint": "https://api.openai.com/v1",
+    },
+    "anthropic": {
+        "env_var": "ANTHROPIC_API_KEY",
+        "endpoint": "https://api.anthropic.com",
+    },
+    "google": {
+        "env_var": "GOOGLE_API_KEY",
+        "endpoint": "https://generativelanguage.googleapis.com",
+    },
 }
 
 # Scene Execution Configuration
