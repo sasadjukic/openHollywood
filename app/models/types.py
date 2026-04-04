@@ -2,7 +2,7 @@
 Data models for the Open Hollywood scene execution engine.
 """
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 from typing import List, Optional, Dict, Any
 from enum import Enum
 
@@ -44,11 +44,30 @@ class SceneConfig(BaseModel):
     director_system_prompt: Optional[str] = Field(None, description="Director's system prompt (optional, will be auto-generated if not provided)")
     max_turns: int = Field(default=30, description="Maximum number of turns")
     min_turns: int = Field(default=6, description="Minimum turns before ending allowed")
-    llm_model: str = Field(default="gemma3:4b", description="LLM model name")
-    llm_server: str = Field(default="http://localhost:11434", description="Ollama server URL")
+    llm_model: str = Field(
+        default="ollama://gemma4:e4b",
+        description="LLM model URI (format: 'provider://model'). "
+                    "Supports: ollama://, openai://, anthropic://, google://. "
+                    "Plain model names (backward compat) default to ollama://"
+    )
+    llm_server: str = Field(
+        default="http://localhost:11434",
+        description="Ollama server URL (used only for ollama:// models)"
+    )
     temperature: float = Field(default=0.7, description="LLM temperature")
     top_p: float = Field(default=0.9, description="LLM top_p")
     repeat_penalty: float = Field(default=1.1, description="LLM repeat_penalty")
+
+    @field_validator("llm_model", mode="before")
+    @classmethod
+    def normalize_model_uri(cls, v: str) -> str:
+        """
+        Normalize model URIs for backward compatibility.
+        Plain model names (e.g., 'gemma4:e4b') are converted to 'ollama://gemma4:e4b'.
+        """
+        if v and "://" not in v:
+            return f"ollama://{v}"
+        return v
 
 
 class DialogueTurn(BaseModel):
