@@ -4,6 +4,7 @@ from unittest.mock import MagicMock, patch
 from app.models.types import SceneConfig, Character, Genre
 from app.orchestrator.scene_orchestrator import SceneOrchestrator
 from app.models.types import DialogueTurn, DirectorState
+from app.core.llm_provider import ChatResponse
 
 class TestDirectorFlow(unittest.TestCase):
     def setUp(self):
@@ -19,33 +20,34 @@ class TestDirectorFlow(unittest.TestCase):
             min_turns=1
         )
 
-    @patch('app.agents.agent_manager.ollama.Client')
-    def test_execute_scene_flow(self, mock_ollama_client):
-        # Mock responses
-        mock_client_instance = mock_ollama_client.return_value
+    @patch('app.core.llm_provider.LLMClientFactory.create')
+    def test_execute_scene_flow(self, mock_factory_create):
+        # Mock LLM client
+        mock_llm_client = MagicMock()
+        mock_factory_create.return_value = mock_llm_client
         
         # 1. Briefing response
-        briefing_response = {
-            "message": {
-                "content": '{"chosen_ending": "ABSOLUTION", "pacing_notes": "Start slow, end with mercy."}'
-            }
-        }
+        briefing_response = ChatResponse(
+            message='{"chosen_ending": "ABSOLUTION", "pacing_notes": "Start slow, end with mercy."}',
+            stop_reason="end_turn",
+            provider="ollama"
+        )
         
         # 2. Character response
-        character_response = {
-            "message": {
-                "content": "Hello my son."
-            }
-        }
+        character_response = ChatResponse(
+            message="Hello my son.",
+            stop_reason="end_turn",
+            provider="ollama"
+        )
         
         # 3. Director evaluation response
-        director_eval_response = {
-            "message": {
-                "content": '{"turn_count": 1, "emotional_arc": "tension", "arc_stages_hit": ["opening"], "unresolved_threads": ["sin"], "resolved_threads": [], "closure_detected": false, "scene_end": false, "stage_direction": "Keep it tense."}'
-            }
-        }
+        director_eval_response = ChatResponse(
+            message='{"turn_count": 1, "emotional_arc": "tension", "arc_stages_hit": ["opening"], "unresolved_threads": ["sin"], "resolved_threads": [], "closure_detected": false, "scene_end": false, "stage_direction": "Keep it tense."}',
+            stop_reason="end_turn",
+            provider="ollama"
+        )
         
-        mock_client_instance.chat.side_effect = [
+        mock_llm_client.chat.side_effect = [
             briefing_response,      # Briefing
             character_response,      # Priest turn 1
             character_response,      # Sinner turn 1
@@ -70,7 +72,7 @@ class TestDirectorFlow(unittest.TestCase):
         
         # Verify orchestration calls
         # 1 briefing + 2 turns * (2 characters + 1 director) = 7 calls
-        self.assertEqual(mock_client_instance.chat.call_count, 7)
+        self.assertEqual(mock_llm_client.chat.call_count, 7)
         
         # Verify director state in result
         self.assertEqual(result.director_state.target_ending, "ABSOLUTION")
