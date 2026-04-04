@@ -6,7 +6,7 @@
 - [ ] Virtual environment `openHollywood` created
 - [ ] Dependencies installed: `pip install -r requirements.txt`
 - [ ] Ollama installed from https://ollama.ai
-- [ ] Ollama gemma3:4b model downloaded: `ollama pull gemma3:4b`
+- [ ] Ollama gemma4:e4b model downloaded: `ollama pull gemma4:e4b`
 
 ## System Verification
 

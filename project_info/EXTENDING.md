@@ -86,7 +86,7 @@ YOUR_SCENE = SceneConfig(
     director_system_prompt="""Your director prompt...""",
     max_turns=30,
     min_turns=6,
-    llm_model="gemma3:4b",
+    llm_model="gemma4:e4b",
     llm_server="http://localhost:11434",
 )
 

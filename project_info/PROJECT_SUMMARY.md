@@ -29,7 +29,7 @@ The Open Hollywood AI Scene Execution Engine is fully implemented with all core 
 ✓ Beautiful dark theme UI
 
 ### 3. **LLM Integration**
-✓ Ollama/Gemma3:4b support
+✓ Ollama/gemma4:e4b support
 ✓ Isolated agent perspectives
 ✓ JSON director state parsing
 ✓ Configurable model and server
@@ -52,7 +52,7 @@ The Open Hollywood AI Scene Execution Engine is fully implemented with all core 
 
 ### 1. Start Ollama
 ```bash
-ollama pull gemma3:4b
+ollama pull gemma4:e4b
 ollama serve
 ```
 
@@ -124,14 +124,14 @@ Navigate to: **http://127.0.0.1:8000**
   │Prompt  │ │Agent   │ │Director Agent  │
   │Builder │ │Mgr     │ │Evaluator       │
   └────────┘ └─────┬──┘ └────────┬───────┘
-                   │            │
-                   └─────┬──────┘
+                   │             │
+                   └─────┬───────┘
                          ↓
-                   ┌──────────┐
-                   │ Ollama   │
-                   │ LLM      │
-                   │ Gemma3:4b│
-                   └──────────┘
+                   ┌───────────┐
+                   │ Ollama    │
+                   │ LLM       │
+                   │ gemma4:e4b│
+                   └───────────┘
 ```
 
 ## Data Flow
@@ -169,7 +169,7 @@ Navigate to: **http://127.0.0.1:8000**
 
 - **Backend**: Python 3.10+, FastAPI, Uvicorn
 - **Frontend**: Modern HTML5, CSS3, JavaScript (ES6+)
-- **LLM**: Ollama + Gemma3:4b (quantized)
+- **LLM**: Ollama + gemma4:e4b (quantized)
 - **Real-time**: WebSocket (built into FastAPI)
 - **Validation**: Pydantic
 - **Server**: Uvicorn ASGI
@@ -178,7 +178,7 @@ Navigate to: **http://127.0.0.1:8000**
 
 - **First Run**: 30-60 seconds (model loading)
 - **Subsequent Runs**: 2-10 seconds per turn
-- **Memory**: ~4GB (with Gemma3:4b)
+- **Memory**: ~4GB (with gemma4:e4b)
 - **Concurrency**: Handles multiple scenes simultaneously
 - **Latency**: <1 second WebSocket broadcast
 

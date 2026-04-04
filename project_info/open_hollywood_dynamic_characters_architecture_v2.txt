@@ -65,7 +65,7 @@ Open Hollywood v2.0 - Dynamic Characters Architecture (March 30th, 2026)
 │  │  - Assigns character colors (sequential from 8-color palette)      │   │
 │  │  - Triggers Director after each turn                               │   │
 │  └────────┬────────────────────────────────────────────┬──────────────┘   │
-│           ↓                                            ↓                   │
+│           ↓                                            ↓                  │
 │  ┌─────────────────────────────────┐    ┌──────────────────────────────┐ │
 │  │      AGENT 1 (Dynamic)          │    │    AGENT 2 (Dynamic)         │ │
 │  │                                 │    │                              │ │
@@ -76,7 +76,7 @@ Open Hollywood v2.0 - Dynamic Characters Architecture (March 30th, 2026)
 │  │  - Dialogue History             │    │  - Dialogue History          │ │
 │  │                                 │    │                              │ │
 │  │  Powered by LLM                 │    │  Powered by LLM              │ │
-│  │  (Gemma3:4b via Ollama)         │    │  (Gemma3:4b via Ollama)      │ │
+│  │  (gemma4:e4b via Ollama)        │    │  (gemma4:e4b via Ollama)     │ │
 │  └──────────┬──────────────────────┘    └────────────┬─────────────────┘ │
 │             │                                         │                   │
 │             │  Dialogue Exchange                      │                   │

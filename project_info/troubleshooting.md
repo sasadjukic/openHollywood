@@ -5,8 +5,8 @@
 - Check it's accessible: `curl http://localhost:11434/api/tags`
 
 ### Slow responses
-- Gemma3:4b is optimized for speed; if still slow, reduce model size or upgrade hardware
-- You can try: `ollama pull gemma2:2b` for faster responses
+- Gemma4:e4b is optimized for speed; if still slow, reduce model size or upgrade hardware
+- You can try: `ollama pull gemma3:4b` for faster responses
 
 ### JSON parsing errors from Director
 - The director prompt expects structured JSON output
