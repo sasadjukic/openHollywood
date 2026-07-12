@@ -5,6 +5,9 @@ __pycache__/
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
+Lib/
+Scripts/
+pyvenv.cfg
 
 # JavaScript
 node_modules/
@@ -35,5 +38,6 @@ Thumbs.db
 # Logs
 *.log
 
-# Files
+# Help files
 open_hollywood_future.md
+open_hollywood_bible/
