@@ -1,0 +1,30 @@
+{
+  "source_ref": "legacy-v2-final",
+  "title": "Confession",
+  "genre": "dark_comedy",
+  "characters": [
+    {
+      "name": "Father Aldric",
+      "description": "A weary, perceptive Catholic priest",
+      "prompt_file": "father_aldric_prompt.md"
+    },
+    {
+      "name": "Marco",
+      "description": "A man seeking confession after eleven years",
+      "prompt_file": "marco_bellini_prompt.md"
+    }
+  ],
+  "director_prompt_file": "director_prompt.md",
+  "scene_context": "A Catholic confessional booth on a Tuesday evening in November. Father Aldric waits in his side. Marco Bellini, dressed in dark clothes, enters from outside and sits on the penitent's side. There is a wooden grate between them, shadowy. The ambient sound is minimal — just the faint sound of candles somewhere in the church.",
+  "limits": {
+    "minimum_turns": 6,
+    "maximum_turns": 30
+  },
+  "legacy_model_profile": {
+    "model": "ollama://gemma4:e4b",
+    "base_url": "http://localhost:11434",
+    "temperature": 0.9,
+    "top_p": 0.9,
+    "repeat_penalty": 1.1
+  }
+}

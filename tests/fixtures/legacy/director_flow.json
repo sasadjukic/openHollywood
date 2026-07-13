@@ -1,0 +1,32 @@
+{
+  "source_ref": "legacy-v2-final",
+  "source_test": "tests/test_director_flow.py",
+  "contract": {
+    "briefing_calls_before_scene": 1,
+    "characters_per_round": 2,
+    "director_evaluations_per_round": 1,
+    "rounds_in_legacy_test": 2,
+    "expected_total_model_calls": 7,
+    "expected_dialogue_callbacks": 4
+  },
+  "briefing_result": {
+    "chosen_ending": "ABSOLUTION",
+    "pacing_notes": "Start slow, end with mercy."
+  },
+  "director_result": {
+    "turn_count": 1,
+    "emotional_arc": "tension",
+    "arc_stages_hit": ["opening"],
+    "unresolved_threads": ["sin"],
+    "resolved_threads": [],
+    "closure_detected": false,
+    "scene_end": false,
+    "stage_direction": "Keep it tense."
+  },
+  "termination_invariants": [
+    "minimum turn count reached",
+    "director requested scene_end",
+    "emotional arc reached climax or resolution",
+    "closure_detected is true"
+  ]
+}

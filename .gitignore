@@ -34,3 +34,12 @@ Thumbs.db
 
 # Logs
 *.log
+
+# Runtime data
+data/
+
+# Test and tooling output
+.coverage
+htmlcov/
+playwright-report/
+test-results/
