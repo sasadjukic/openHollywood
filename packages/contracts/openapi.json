@@ -1,0 +1,59 @@
+{
+  "components": {
+    "schemas": {
+      "ServiceState": {
+        "description": "Availability state exposed by the API boundary.",
+        "enum": ["ok"],
+        "title": "ServiceState",
+        "type": "string"
+      },
+      "ServiceStatus": {
+        "description": "Typed response proving the client-to-API contract is available.",
+        "properties": {
+          "api_version": {
+            "title": "Api Version",
+            "type": "string"
+          },
+          "service": {
+            "title": "Service",
+            "type": "string"
+          },
+          "state": {
+            "$ref": "#/components/schemas/ServiceState"
+          }
+        },
+        "required": ["service", "state", "api_version"],
+        "title": "ServiceStatus",
+        "type": "object"
+      }
+    }
+  },
+  "info": {
+    "summary": "Local API for the Open Hollywood creative-writing workspace.",
+    "title": "Open Hollywood API",
+    "version": "0.1.0"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/api/v1/health": {
+      "get": {
+        "description": "Return stable service metadata without touching external dependencies.",
+        "operationId": "getHealth",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServiceStatus"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Report API availability",
+        "tags": ["system"]
+      }
+    }
+  }
+}

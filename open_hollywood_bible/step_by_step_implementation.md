@@ -1,8 +1,7 @@
 # Step-by-step implementation sequence
 
 This file is the authoritative implementation progress tracker. Mark a step
-complete only when its deliverables exist and the relevant checks pass. Update
-the completion date and evidence in the same change.
+complete only when its deliverables exist and the relevant checks pass. Update the completion date and evidence in the same change.
 
 ## Status legend
 
@@ -35,60 +34,51 @@ the completion date and evidence in the same change.
    scene configuration, director state, call order, and termination invariants
    are captured under `tests/fixtures/legacy/`.
 
-3. [ ] **Create the React/TypeScript client and FastAPI application with a
-   shared generated OpenAPI client.**
+3. [x] **COMPLETED 2026-07-21 — Create the React/TypeScript client and FastAPI application with a shared generated OpenAPI client.** The branded React/Vite shell consumes a typed FastAPI health boundary through an exactly pinned Hey API SDK generated from OpenAPI 3.1. Evidence:
+`apps/web/`, `apps/api/open_hollywood_api/`, `packages/contracts/`, and
+`tests/api/`. Ruff, mypy, pytest, Prettier, ESLint, TypeScript, Vitest, the
+production build, and desktop/mobile browser verification pass.
 
 4. [ ] **Add SQLite, SQLAlchemy, and Alembic.** Implement `Project`,
-   `Conversation`, `Message`, `Artifact`, `ArtifactVersion`, `WorkflowRun`,
-   `AgentInvocation`, `ModelProfile`, and `Evaluation`.
+`Conversation`, `Message`, `Artifact`, `ArtifactVersion`, `WorkflowRun`,
+`AgentInvocation`, `ModelProfile`, and `Evaluation`.
 
-5. [ ] **Implement an append-only workflow event stream.** The UI must be able
-   to reconnect and request events after its last event ID.
+5. [ ] **Implement an append-only workflow event stream.** The UI must be able to reconnect and request events after its last event ID.
 
-6. [ ] **Build `ModelGateway` and `ModelCapabilities`.** Add Ollama first, one
-   cloud provider second, and only then potentially generalize through LiteLLM.
+6. [ ] **Build `ModelGateway` and `ModelCapabilities`.** Add Ollama first, one cloud provider second, and only then potentially generalize through LiteLLM.
 
 7. [ ] **Add secure secret handling.** Ensure model keys never enter story
-   artifacts, prompts, traces, fixtures, or database exports.
+artifacts, prompts, traces, fixtures, or database exports.
 
-8. [ ] **Define Pydantic artifact schemas.** Include Creative Brief, Character,
-   Relationship, Location, World Rule, Beat, Scene Plan, Critique, Continuity
-   Finding, and Story Blueprint.
+8. [ ] **Define Pydantic artifact schemas.** Include Creative Brief, Character, Relationship, Location, World Rule, Beat, Scene Plan, Critique, Continuity Finding, and Story Blueprint.
 
-9. [ ] **Build the context-packet compiler** with per-agent dependency manifests
-   and token budgets.
+9. [ ] **Build the context-packet compiler** with per-agent dependency manifests and token budgets.
 
 10. [ ] **Create the first persisted LangGraph:**
-    `intake → brief → premise → parallel specialists → integration → evaluation → approval`.
+`intake → brief → premise → parallel specialists → integration → evaluation → approval`.
 
 11. [ ] **Implement human interrupts** for approve, revise, reject, and fork.
 
-12. [ ] **Build the workspace UI around persisted data:** projects, chat, event
-    timeline, artifact viewer, versions, and run status.
+12. [ ] **Build the workspace UI around persisted data:** projects, chat, event timeline, artifact viewer, versions, and run status.
 
 13. [ ] **Add model presets:** Local, Cloud, and Hybrid.
 
-14. [ ] **Port the legacy character-agent dialogue experiment** into an isolated
-    subgraph with typed inputs, outputs, and regression tests.
+14. [ ] **Port the legacy character-agent dialogue experiment** into an isolated subgraph with typed inputs, outputs, and regression tests.
 
-15. [ ] **Implement the scene/chapter production loop** with bounded critique
-    and revision.
+15. [ ] **Implement the scene/chapter production loop** with bounded critique and revision.
 
 16. [ ] **Add deterministic story-bible updates and continuity invariants**
-    after every accepted unit.
+after every accepted unit.
 
 17. [ ] **Add run controls:** stop, pause, resume, retry-from-node, and budgets.
 
 18. [ ] **Implement Fountain/Markdown renderers and PDF/DOCX export.**
 
 19. [ ] **Build the evaluation harness** and run the benchmark corpus across
-    local, cloud, and hybrid profiles.
+local, cloud, and hybrid profiles.
 
-20. [ ] **Tune prompts and graph routing** based on blind human preference—not
-    isolated attractive examples.
+20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 
-21. [ ] **Package the stable system with Tauri** and test crash/restart, offline,
-    missing-model, invalid-key, provider-timeout, and low-disk-space behavior.
+21. [ ] **Package the stable system with Tauri** and test crash/restart, offline, missing-model, invalid-key, provider-timeout, and low-disk-space behavior.
 
-22. [ ] **Consider broader formats and hosted features only after the core is
-    proven:** songs, poems, video scripts, collaboration, or hosted accounts.
+22. [ ] **Consider broader formats and hosted features only after the core is proven:** songs, poems, video scripts, collaboration, or hosted accounts.

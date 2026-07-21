@@ -1,16 +1,11 @@
 # Open Hollywood rewrite report
 
-This document is the consolidated archive of the initial rewrite analysis. The
-focused documents in this directory and accepted ADRs contain the canonical,
-maintained wording for implementation.
+This document is the consolidated archive of the initial rewrite analysis. The focused documents in this directory and accepted ADRs contain the canonical, maintained wording for implementation.
 
 ## Executive conclusion
 
 Open Hollywood can become a fully agentic creative-writing application. The
-target is not an unconstrained swarm. It is a durable, bounded creative workflow
-in which an orchestrator delegates to registered specialist agents, persists
-meaningful artifacts, validates work, and pauses at deliberate human approval
-points.
+target is not an unconstrained swarm. It is a durable, bounded creative workflow in which an orchestrator delegates to registered specialist agents, persists meaningful artifacts, validates work, and pauses at deliberate human approval points.
 
 The human supplies a premise and occasional direction. Agents develop the
 story world, characters, structure, scenes, dialogue, revisions, continuity,
@@ -30,11 +25,9 @@ rebuilding the product infrastructure.
 1. Autonomous planning: infer a creative brief from sparse user input.
 2. Autonomous production: create structured story artifacts and a complete
    work through specialist passes.
-3. Sparse human governance: pause at major approval points and allow revision,
-   rejection, comparison, or branching.
+3. Sparse human governance: pause at major approval points and allow revision, rejection, comparison, or branching.
 
-The orchestrator chooses from registered capabilities. Every specialist has a
-typed input, typed output, allowed tools, model assignment, token budget,
+The orchestrator chooses from registered capabilities. Every specialist has a typed input, typed output, allowed tools, model assignment, token budget,
 attempt limit, rubric, and completion condition. Recursive, arbitrary agent
 creation is prohibited.
 
@@ -52,17 +45,14 @@ Build a local-first modular monolith:
 4. Provider-neutral creative engine
 
 Use LangGraph for explicit durable workflow execution, SQLite for local
-persistence, SQLAlchemy and Alembic for domain storage, and an internal model
-gateway for Ollama and cloud providers. Package the stable browser-based system
-with Tauri later.
+persistence, SQLAlchemy and Alembic for domain storage, and an internal model gateway for Ollama and cloud providers. Package the stable browser-based system with Tauri later.
 
 See `recommended_tech_stack.md` and `docs/adr/` for accepted decisions and
 tradeoffs.
 
 ## Memory direction
 
-Do not represent memory as an ever-growing transcript or one vector database.
-Maintain five layers:
+Do not represent memory as an ever-growing transcript or one vector database. Maintain five layers:
 
 1. Authoritative user intent
 2. Structured canonical story bible
@@ -85,12 +75,10 @@ Begin with three model profiles:
 - Cloud quality
 
 Record exact provider, model, profile, prompt version, artifact inputs,
-settings, token use, latency, cost, retries, schema validity, evaluation scores,
-and human preference for every invocation.
+settings, token use, latency, cost, retries, schema validity, evaluation scores, and human preference for every invocation.
 
 Compare the agentic workflow blindly against a direct single-model baseline.
-Human preference is the highest-weight quality signal; model critics are useful
-filters, not proof of human-level quality.
+Human preference is the highest-weight quality signal; model critics are useful filters, not proof of human-level quality.
 
 See `model_configuration.md` and
 `product_contract_and_benchmarks.md` for the canonical experiment plan.
@@ -103,9 +91,7 @@ Use a three-panel workspace:
 - Chat and workflow timeline in the center
 - Artifact inspection, versions, diffs, provenance, and evaluation on the right
 
-There is no general-purpose editor. Revision happens through chat and targeted
-artifact actions. Agent activity is transparent but collapsible, and private
-reasoning is never exposed as chain-of-thought.
+There is no general-purpose editor. Revision happens through chat and targeted artifact actions. Agent activity is transparent but collapsible, and private reasoning is never exposed as chain-of-thought.
 
 See `ui_ux.md` for the canonical experience definition.
 
@@ -116,9 +102,7 @@ model calls, tokens, monetary cost, wall-clock time, retries, and schema
 failures. Runs support cancellation, pause/resume, idempotency, and provider
 circuit breaking. Budget exhaustion preserves partial work and pauses safely.
 
-Formatting is deterministic. Prose uses structured Markdown/HTML; screenplays
-later use Fountain as a canonical intermediate format. Renderers—not language
-models—produce final PDF, DOCX, HTML, or other exports.
+Formatting is deterministic. Prose uses structured Markdown/HTML; screenplays later use Fountain as a canonical intermediate format. Renderers—not language models—produce final PDF, DOCX, HTML, or other exports.
 
 See `guardrails.md` and `formatting_strategy.md` for canonical requirements.
 
@@ -136,9 +120,7 @@ The rewrite proceeds through:
 8. Desktop delivery
 
 The first meaningful milestone is a durable blueprint workflow: premise to
-structured blueprint, human revision/approval, restart recovery, and complete
-invocation/artifact/cost records. Autonomous drafting begins only after that
-foundation works.
+structured blueprint, human revision/approval, restart recovery, and complete invocation/artifact/cost records. Autonomous drafting begins only after that foundation works.
 
 Implementation status is maintained exclusively in
 `step_by_step_implementation.md`.
