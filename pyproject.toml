@@ -5,7 +5,10 @@ description = "Local-first agentic creative writing studio"
 readme = "README.md"
 license = "MIT"
 requires-python = ">=3.13,<3.14"
-dependencies = []
+dependencies = [
+  "alembic>=1.16.4,<2.0",
+  "sqlalchemy>=2.0.41,<3.0",
+]
 
 [dependency-groups]
 dev = [
