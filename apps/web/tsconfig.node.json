@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "composite": true,
+    "lib": ["ES2024"],
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "noEmit": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "types": ["node"],
+    "verbatimModuleSyntax": true
+  },
+  "include": ["eslint.config.js", "vite.config.ts"]
+}

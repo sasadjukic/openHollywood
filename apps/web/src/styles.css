@@ -1,0 +1,271 @@
+:root {
+  color: #f4f1ef;
+  background: #262626;
+  font-family:
+    Inter,
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background:
+    radial-gradient(
+      circle at 78% 18%,
+      rgb(174 162 219 / 12%),
+      transparent 28rem
+    ),
+    radial-gradient(
+      circle at 20% 85%,
+      rgb(101 192 224 / 9%),
+      transparent 30rem
+    ),
+    #262626;
+}
+
+button {
+  font: inherit;
+}
+
+.app-shell {
+  display: flex;
+  flex-direction: column;
+  width: min(1180px, 100%);
+  min-height: 100vh;
+  margin: 0 auto;
+  padding: 0 40px;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 96px;
+  border-bottom: 1px solid rgb(184 193 192 / 14%);
+}
+
+.brand-logo {
+  width: auto;
+  height: 44px;
+  object-fit: contain;
+}
+
+.version-label,
+.eyebrow,
+.status-label,
+.service-details dt,
+.footer-note {
+  color: #b8c1c0;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.welcome-layout {
+  display: grid;
+  flex: 1;
+  grid-template-columns: minmax(0, 1.5fr) minmax(300px, 0.75fr);
+  gap: clamp(48px, 8vw, 112px);
+  align-items: center;
+  padding: 80px 0;
+}
+
+.welcome-copy {
+  max-width: 720px;
+}
+
+.eyebrow {
+  margin: 0 0 18px;
+  color: #81c1d9;
+}
+
+h1 {
+  max-width: 680px;
+  margin: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(3rem, 7vw, 6.5rem);
+  font-weight: 500;
+  letter-spacing: -0.055em;
+  line-height: 0.94;
+}
+
+.introduction {
+  max-width: 610px;
+  margin: 32px 0;
+  color: #c9cecd;
+  font-size: clamp(1rem, 1.8vw, 1.2rem);
+  line-height: 1.75;
+}
+
+.workflow-preview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  color: #e9a5a5;
+  font-size: 0.88rem;
+  font-weight: 650;
+}
+
+.workflow-preview span:nth-child(even) {
+  color: #777f7e;
+}
+
+.status-card {
+  padding: 30px;
+  border: 1px solid rgb(184 193 192 / 16%);
+  border-radius: 22px;
+  background: rgb(34 34 34 / 78%);
+  box-shadow: 0 24px 80px rgb(0 0 0 / 24%);
+  backdrop-filter: blur(16px);
+}
+
+.status-heading {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+}
+
+.status-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #b8c1c0;
+  box-shadow: 0 0 0 6px rgb(184 193 192 / 8%);
+}
+
+.status-dot--connecting {
+  animation: pulse 1.2s ease-in-out infinite;
+}
+
+.status-dot--connected {
+  background: #81c1d9;
+  box-shadow: 0 0 0 6px rgb(129 193 217 / 10%);
+}
+
+.status-dot--unavailable {
+  background: #e9a5a5;
+  box-shadow: 0 0 0 6px rgb(233 165 165 / 10%);
+}
+
+.status-label {
+  margin: 0 0 4px;
+}
+
+.status-card h2 {
+  margin: 0;
+  font-size: 1.35rem;
+}
+
+.service-details {
+  display: grid;
+  gap: 16px;
+  margin: 28px 0 0;
+  padding-top: 24px;
+  border-top: 1px solid rgb(184 193 192 / 12%);
+}
+
+.service-details div {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.service-details dd {
+  margin: 0;
+  color: #d9dcdb;
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: 0.82rem;
+}
+
+.connection-help {
+  margin-top: 24px;
+  color: #c9cecd;
+  font-size: 0.9rem;
+  line-height: 1.55;
+}
+
+.connection-help button {
+  padding: 10px 14px;
+  border: 1px solid rgb(233 165 165 / 35%);
+  border-radius: 10px;
+  color: #f6d1d1;
+  background: rgb(233 165 165 / 9%);
+  cursor: pointer;
+}
+
+.connection-help button:hover {
+  background: rgb(233 165 165 / 15%);
+}
+
+.connection-help button:focus-visible {
+  outline: 2px solid #65c0e0;
+  outline-offset: 3px;
+}
+
+.footer-note {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 24px 0 32px;
+  border-top: 1px solid rgb(184 193 192 / 14%);
+  color: #7f8887;
+  letter-spacing: 0.08em;
+}
+
+@keyframes pulse {
+  50% {
+    opacity: 0.4;
+  }
+}
+
+@media (max-width: 760px) {
+  .app-shell {
+    padding: 0 22px;
+  }
+
+  .topbar {
+    min-height: 80px;
+  }
+
+  .brand-logo {
+    height: 34px;
+  }
+
+  .version-label {
+    display: none;
+  }
+
+  .welcome-layout {
+    grid-template-columns: 1fr;
+    gap: 44px;
+    padding: 56px 0;
+  }
+
+  h1 {
+    font-size: clamp(3.4rem, 15vw, 5rem);
+  }
+
+  .status-card {
+    padding: 24px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .status-dot--connecting {
+    animation: none;
+  }
+}

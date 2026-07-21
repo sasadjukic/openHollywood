@@ -1,14 +1,11 @@
 # Open Hollywood project bible
 
-This directory is the durable product and architecture reference for the Open
-Hollywood rewrite. Read the smallest relevant document before making a product,
-workflow, model, memory, or UI decision.
+This directory is the durable product and architecture reference for the Open Hollywood rewrite. Read the smallest relevant document before making a product, workflow, model, memory, or UI decision.
 
 ## Authority and status
 
 The focused documents below are canonical. The complete rewrite report is an
-archive of the original analysis and may contain older or broader wording. When
-documents conflict, use this priority:
+archive of the original analysis and may contain older or broader wording. When documents conflict, use this priority:
 
 1. `product_contract_and_benchmarks.md`
 2. `important_decisions.md`
@@ -36,9 +33,7 @@ documents conflict, use this priority:
 ## Maintenance rules
 
 - Update focused documents when a decision changes.
-- Record durable architecture changes as new ADRs instead of silently rewriting
-  an accepted decision.
-- Update `step_by_step_implementation.md` in the same change that completes a
-  step.
+- Record durable architecture changes as new ADRs instead of silently rewriting an accepted decision.
+- Update `step_by_step_implementation.md` in the same change that completes a step.
 - Use ISO dates (`YYYY-MM-DD`) for status updates.
 - Keep all documents UTF-8.

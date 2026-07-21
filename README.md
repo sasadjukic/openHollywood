@@ -8,8 +8,9 @@ evaluated, properly formatted work through a durable specialist-agent workflow.
 
 The legacy scene-execution prototype is preserved on the
 `openHollywood-legacy` branch and at the immutable `legacy-v2-final` tag. The
-active branch is establishing the foundation for the complete rewrite; no new
-application runtime exists yet.
+active rewrite now includes a browser-based React client, a local FastAPI
+service, and a generated TypeScript SDK shared through the contracts package.
+Persistence and creative workflows begin in subsequent implementation steps.
 
 The v0.1 target is deliberately narrow: short prose fiction, local-first
 storage, optional local/cloud/hybrid inference, and one mandatory story
@@ -49,16 +50,46 @@ images/        Open Hollywood brand assets
 
 ## Development
 
-The repository is not ready to run an application yet. Foundation validation:
+Install the pinned Python and JavaScript dependencies from the repository root:
 
 ```powershell
-node --version
-pnpm --version
-uv --version
-py -3.13 --version
+uv sync --extra api
+pnpm install
 ```
 
-Application setup and run commands will be added with implementation step 3.
+Start the API and web client in separate terminals:
+
+```powershell
+uv run --extra api uvicorn --app-dir apps/api open_hollywood_api.app:app --reload
+```
+
+```powershell
+pnpm --filter @open-hollywood/web dev
+```
+
+The client runs at `http://127.0.0.1:5173` and the API documentation is at
+`http://127.0.0.1:8000/docs`. Set `VITE_API_URL` when the API uses another
+origin.
+
+When a FastAPI route or response model changes, regenerate the shared SDK:
+
+```powershell
+pnpm contracts:generate
+```
+
+Run the applicable quality checks before handing off a change:
+
+```powershell
+uv run --extra api ruff check apps/api scripts tests
+uv run --extra api ruff format --check apps/api scripts tests
+uv run --extra api mypy apps/api scripts tests
+uv run --extra api pytest
+pnpm format:check
+pnpm lint
+pnpm typecheck
+pnpm test
+pnpm build
+```
 
 ## License
 
