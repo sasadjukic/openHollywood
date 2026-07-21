@@ -9,14 +9,14 @@
   },
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
-    "format": "prettier --write .",
-    "format:check": "prettier --check .",
+    "format": "prettier --write . --ignore-path ../../.gitignore",
+    "format:check": "prettier --check . --ignore-path ../../.gitignore",
     "generate": "openapi-ts",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
     "@hey-api/openapi-ts": "0.99.0",
-    "prettier": "3.9.6",
+    "prettier": "3.9.5",
     "typescript": "5.9.3"
   }
 }
