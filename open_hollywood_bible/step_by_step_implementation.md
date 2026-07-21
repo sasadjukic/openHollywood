@@ -39,9 +39,11 @@ complete only when its deliverables exist and the relevant checks pass. Update t
 `tests/api/`. Ruff, mypy, pytest, Prettier, ESLint, TypeScript, Vitest, the
 production build, and desktop/mobile browser verification pass.
 
-4. [ ] **Add SQLite, SQLAlchemy, and Alembic.** Implement `Project`,
-`Conversation`, `Message`, `Artifact`, `ArtifactVersion`, `WorkflowRun`,
-`AgentInvocation`, `ModelProfile`, and `Evaluation`.
+4. [x] **COMPLETED 2026-07-21 — Add SQLite, SQLAlchemy, and Alembic.** The
+migration-managed SQLite layer implements `Project`, `Conversation`,`Message`, `Artifact`, immutable `ArtifactVersion` lineage, `WorkflowRun`,
+observable `AgentInvocation` records with exact input-version links,
+secret-free `ModelProfile` configuration, and `Evaluation`. Evidence:
+`apps/api/open_hollywood_api/persistence/`, `alembic.ini`, `migrations/`, and `tests/persistence/`. Migration upgrade/downgrade and metadata parity, Ruff, mypy, pytest, Prettier, ESLint, TypeScript, Vitest, and the production build pass.
 
 5. [ ] **Implement an append-only workflow event stream.** The UI must be able to reconnect and request events after its last event ID.
 

@@ -9,8 +9,10 @@ evaluated, properly formatted work through a durable specialist-agent workflow.
 The legacy scene-execution prototype is preserved on the
 `openHollywood-legacy` branch and at the immutable `legacy-v2-final` tag. The
 active rewrite now includes a browser-based React client, a local FastAPI
-service, and a generated TypeScript SDK shared through the contracts package.
-Persistence and creative workflows begin in subsequent implementation steps.
+service, a generated TypeScript SDK shared through the contracts package, and a
+migration-managed SQLite persistence layer for projects, conversations,
+artifacts, workflow runs, model invocations, profiles, and evaluations. Creative
+workflow implementation begins in subsequent steps.
 
 The v0.1 target is deliberately narrow: short prose fiction, local-first
 storage, optional local/cloud/hybrid inference, and one mandatory story
@@ -77,12 +79,26 @@ When a FastAPI route or response model changes, regenerate the shared SDK:
 pnpm contracts:generate
 ```
 
+Create or upgrade the local SQLite database using the path in
+`OPEN_HOLLYWOOD_DB_PATH` (default: `./data/open_hollywood.db`):
+
+```powershell
+uv run alembic upgrade head
+```
+
+Inspect the active revision or roll back one migration during development:
+
+```powershell
+uv run alembic current
+uv run alembic downgrade -1
+```
+
 Run the applicable quality checks before handing off a change:
 
 ```powershell
-uv run --extra api ruff check apps/api scripts tests
-uv run --extra api ruff format --check apps/api scripts tests
-uv run --extra api mypy apps/api scripts tests
+uv run --extra api ruff check apps/api scripts tests migrations
+uv run --extra api ruff format --check apps/api scripts tests migrations
+uv run --extra api mypy apps/api scripts tests migrations
 uv run --extra api pytest
 pnpm format:check
 pnpm lint
