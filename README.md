@@ -11,8 +11,10 @@ The legacy scene-execution prototype is preserved on the
 active rewrite now includes a browser-based React client, a local FastAPI
 service, a generated TypeScript SDK shared through the contracts package, and a
 migration-managed SQLite persistence layer for projects, conversations,
-artifacts, workflow runs, model invocations, profiles, and evaluations. Creative
-workflow implementation begins in subsequent steps.
+artifacts, workflow runs, model invocations, profiles, and evaluations. Workflow
+activity is exposed through a durable append-only event log with paginated
+cursor replay and resumable Server-Sent Events. Creative workflow implementation
+begins in subsequent steps.
 
 The v0.1 target is deliberately narrow: short prose fiction, local-first
 storage, optional local/cloud/hybrid inference, and one mandatory story

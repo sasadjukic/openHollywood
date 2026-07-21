@@ -45,7 +45,15 @@ observable `AgentInvocation` records with exact input-version links,
 secret-free `ModelProfile` configuration, and `Evaluation`. Evidence:
 `apps/api/open_hollywood_api/persistence/`, `alembic.ini`, `migrations/`, and `tests/persistence/`. Migration upgrade/downgrade and metadata parity, Ruff, mypy, pytest, Prettier, ESLint, TypeScript, Vitest, and the production build pass.
 
-5. [ ] **Implement an append-only workflow event stream.** The UI must be able to reconnect and request events after its last event ID.
+5. [x] **COMPLETED 2026-07-21 — Implement an append-only workflow event
+stream.** Workflow events use globally ordered durable IDs and SQLite
+mutation-rejection triggers. The API exposes typed paginated replay after an
+exclusive event cursor plus an SSE feed that replays missed events before
+following new rows; reconnects accept both `after` and `Last-Event-ID`.
+Evidence: `migrations/versions/0002_append_only_workflow_events.py`, `apps/api/open_hollywood_api/services/workflow_events.py`, `apps/api/open_hollywood_api/routes/workflow_events.py`, generated contracts,
+and persistence/API integration tests. Migration upgrade/downgrade and
+metadata parity, Ruff, mypy, pytest, Prettier, ESLint, TypeScript, Vitest,
+and the production build pass.
 
 6. [ ] **Build `ModelGateway` and `ModelCapabilities`.** Add Ollama first, one cloud provider second, and only then potentially generalize through LiteLLM.
 

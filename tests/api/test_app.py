@@ -71,3 +71,18 @@ async def test_local_web_origin_is_allowed(client: AsyncClient) -> None:
 
     assert response.status_code == 200
     assert response.headers["access-control-allow-origin"] == "http://localhost:5173"
+
+
+async def test_event_reconnect_header_is_allowed_by_cors(client: AsyncClient) -> None:
+    response = await client.options(
+        "/api/v1/workflow-runs/00000000-0000-0000-0000-000000000000/events/stream",
+        headers={
+            "Access-Control-Request-Headers": "Last-Event-ID",
+            "Access-Control-Request-Method": "GET",
+            "Origin": "http://localhost:5173",
+        },
+    )
+
+    assert response.status_code == 200
+    allowed_headers = response.headers["access-control-allow-headers"].lower()
+    assert "last-event-id" in allowed_headers
