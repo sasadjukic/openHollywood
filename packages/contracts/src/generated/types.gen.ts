@@ -5,6 +5,16 @@ export type ClientOptions = {
 };
 
 /**
+ * HTTPValidationError
+ */
+export type HttpValidationError = {
+  /**
+   * Detail
+   */
+  detail?: Array<ValidationError>;
+};
+
+/**
  * ServiceState
  *
  * Availability state exposed by the API boundary.
@@ -28,6 +38,92 @@ export type ServiceStatus = {
   state: ServiceState;
 };
 
+/**
+ * ValidationError
+ */
+export type ValidationError = {
+  /**
+   * Context
+   */
+  ctx?: {
+    [key: string]: unknown;
+  };
+  /**
+   * Input
+   */
+  input?: unknown;
+  /**
+   * Location
+   */
+  loc: Array<string | number>;
+  /**
+   * Message
+   */
+  msg: string;
+  /**
+   * Error Type
+   */
+  type: string;
+};
+
+/**
+ * WorkflowEventEnvelope
+ *
+ * One durable, UI-safe workflow timeline event.
+ */
+export type WorkflowEventEnvelope = {
+  /**
+   * Event Type
+   */
+  event_type: string;
+  /**
+   * Id
+   */
+  id: number;
+  /**
+   * Occurred At
+   */
+  occurred_at: string;
+  /**
+   * Payload
+   */
+  payload: {
+    [key: string]: unknown;
+  };
+  /**
+   * Schema Version
+   */
+  schema_version: string;
+  /**
+   * Source
+   */
+  source: string | null;
+  /**
+   * Workflow Run Id
+   */
+  workflow_run_id: string;
+};
+
+/**
+ * WorkflowEventPage
+ *
+ * Exclusive-cursor replay page for a workflow run.
+ */
+export type WorkflowEventPage = {
+  /**
+   * Events
+   */
+  events: Array<WorkflowEventEnvelope>;
+  /**
+   * Has More
+   */
+  has_more: boolean;
+  /**
+   * Next After
+   */
+  next_after: number;
+};
+
 export type GetHealthData = {
   body?: never;
   path?: never;
@@ -43,3 +139,99 @@ export type GetHealthResponses = {
 };
 
 export type GetHealthResponse = GetHealthResponses[keyof GetHealthResponses];
+
+export type ListWorkflowRunEventsData = {
+  body?: never;
+  path: {
+    /**
+     * Workflow Run Id
+     */
+    workflow_run_id: string;
+  };
+  query?: {
+    /**
+     * After
+     */
+    after?: number;
+    /**
+     * Limit
+     */
+    limit?: number;
+  };
+  url: "/api/v1/workflow-runs/{workflow_run_id}/events";
+};
+
+export type ListWorkflowRunEventsErrors = {
+  /**
+   * Workflow run not found
+   */
+  404: unknown;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type ListWorkflowRunEventsError =
+  ListWorkflowRunEventsErrors[keyof ListWorkflowRunEventsErrors];
+
+export type ListWorkflowRunEventsResponses = {
+  /**
+   * Successful Response
+   */
+  200: WorkflowEventPage;
+};
+
+export type ListWorkflowRunEventsResponse =
+  ListWorkflowRunEventsResponses[keyof ListWorkflowRunEventsResponses];
+
+export type StreamWorkflowRunEventsData = {
+  body?: never;
+  headers?: {
+    /**
+     * Last-Event-Id
+     */
+    "Last-Event-ID"?: number | null;
+  };
+  path: {
+    /**
+     * Workflow Run Id
+     */
+    workflow_run_id: string;
+  };
+  query?: {
+    /**
+     * After
+     */
+    after?: number;
+    /**
+     * Follow
+     */
+    follow?: boolean;
+  };
+  url: "/api/v1/workflow-runs/{workflow_run_id}/events/stream";
+};
+
+export type StreamWorkflowRunEventsErrors = {
+  /**
+   * Workflow run not found
+   */
+  404: unknown;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type StreamWorkflowRunEventsError =
+  StreamWorkflowRunEventsErrors[keyof StreamWorkflowRunEventsErrors];
+
+export type StreamWorkflowRunEventsResponses = {
+  /**
+   * SSE frames whose data field is a WorkflowEventEnvelope JSON object.
+   */
+  200: string;
+};
+
+export type StreamWorkflowRunEventsResponse =
+  StreamWorkflowRunEventsResponses[keyof StreamWorkflowRunEventsResponses];

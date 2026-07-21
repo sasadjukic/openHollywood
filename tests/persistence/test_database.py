@@ -13,7 +13,7 @@ from open_hollywood_api.persistence.database import (
 )
 from sqlalchemy import create_engine, inspect
 
-from tests.persistence.conftest import alembic_config
+from tests.conftest import alembic_config
 
 EXPECTED_TABLES = {
     "agent_invocation_inputs",
@@ -27,6 +27,7 @@ EXPECTED_TABLES = {
     "model_profiles",
     "projects",
     "workflow_runs",
+    "workflow_events",
 }
 
 

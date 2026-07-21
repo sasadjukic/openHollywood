@@ -1,6 +1,19 @@
 {
   "components": {
     "schemas": {
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "title": "Detail",
+            "type": "array"
+          }
+        },
+        "title": "HTTPValidationError",
+        "type": "object"
+      },
       "ServiceState": {
         "description": "Availability state exposed by the API boundary.",
         "enum": ["ok"],
@@ -24,6 +37,119 @@
         },
         "required": ["service", "state", "api_version"],
         "title": "ServiceStatus",
+        "type": "object"
+      },
+      "ValidationError": {
+        "properties": {
+          "ctx": {
+            "title": "Context",
+            "type": "object"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "title": "Location",
+            "type": "array"
+          },
+          "msg": {
+            "title": "Message",
+            "type": "string"
+          },
+          "type": {
+            "title": "Error Type",
+            "type": "string"
+          }
+        },
+        "required": ["loc", "msg", "type"],
+        "title": "ValidationError",
+        "type": "object"
+      },
+      "WorkflowEventEnvelope": {
+        "description": "One durable, UI-safe workflow timeline event.",
+        "properties": {
+          "event_type": {
+            "title": "Event Type",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "occurred_at": {
+            "format": "date-time",
+            "title": "Occurred At",
+            "type": "string"
+          },
+          "payload": {
+            "additionalProperties": true,
+            "title": "Payload",
+            "type": "object"
+          },
+          "schema_version": {
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "source": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source"
+          },
+          "workflow_run_id": {
+            "format": "uuid",
+            "title": "Workflow Run Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "workflow_run_id",
+          "event_type",
+          "source",
+          "schema_version",
+          "payload",
+          "occurred_at"
+        ],
+        "title": "WorkflowEventEnvelope",
+        "type": "object"
+      },
+      "WorkflowEventPage": {
+        "description": "Exclusive-cursor replay page for a workflow run.",
+        "properties": {
+          "events": {
+            "items": {
+              "$ref": "#/components/schemas/WorkflowEventEnvelope"
+            },
+            "title": "Events",
+            "type": "array"
+          },
+          "has_more": {
+            "title": "Has More",
+            "type": "boolean"
+          },
+          "next_after": {
+            "title": "Next After",
+            "type": "integer"
+          }
+        },
+        "required": ["events", "next_after", "has_more"],
+        "title": "WorkflowEventPage",
         "type": "object"
       }
     }
@@ -53,6 +179,157 @@
         },
         "summary": "Report API availability",
         "tags": ["system"]
+      }
+    },
+    "/api/v1/workflow-runs/{workflow_run_id}/events": {
+      "get": {
+        "description": "Return an exclusive-cursor page ordered by global event ID.",
+        "operationId": "listWorkflowRunEvents",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workflow_run_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Workflow Run Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "after",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "minimum": 0,
+              "title": "After",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 100,
+              "maximum": 500,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkflowEventPage"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "description": "Workflow run not found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Replay workflow events after a durable cursor",
+        "tags": ["workflow-events"]
+      }
+    },
+    "/api/v1/workflow-runs/{workflow_run_id}/events/stream": {
+      "get": {
+        "description": "Replay missed events, then follow new rows until the client disconnects.",
+        "operationId": "streamWorkflowRunEvents",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workflow_run_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Workflow Run Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "after",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "minimum": 0,
+              "title": "After",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "follow",
+            "required": false,
+            "schema": {
+              "default": true,
+              "title": "Follow",
+              "type": "boolean"
+            }
+          },
+          {
+            "in": "header",
+            "name": "Last-Event-ID",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Last-Event-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "text/event-stream": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": "SSE frames whose data field is a WorkflowEventEnvelope JSON object."
+          },
+          "404": {
+            "description": "Workflow run not found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Stream workflow events from a durable cursor",
+        "tags": ["workflow-events"]
       }
     }
   }

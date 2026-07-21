@@ -9,7 +9,7 @@ from alembic.config import Config
 from open_hollywood_api.persistence.database import create_sqlite_engine
 from sqlalchemy import Engine
 
-WORKSPACE_ROOT = Path(__file__).resolve().parents[2]
+WORKSPACE_ROOT = Path(__file__).resolve().parents[1]
 
 
 def alembic_config() -> Config:

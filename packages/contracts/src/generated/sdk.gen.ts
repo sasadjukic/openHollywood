@@ -5,10 +5,21 @@ import type {
   ClientMeta,
   Options as Options2,
   RequestResult,
+  ServerSentEventsResult,
   TDataShape,
 } from "./client";
 import { client } from "./client.gen";
-import type { GetHealthData, GetHealthResponses } from "./types.gen";
+import type {
+  GetHealthData,
+  GetHealthResponses,
+  ListWorkflowRunEventsData,
+  ListWorkflowRunEventsErrors,
+  ListWorkflowRunEventsResponses,
+  StreamWorkflowRunEventsData,
+  StreamWorkflowRunEventsErrors,
+  StreamWorkflowRunEventsResponse,
+  StreamWorkflowRunEventsResponses,
+} from "./types.gen";
 
 export type Options<
   TData extends TDataShape = TDataShape,
@@ -38,5 +49,44 @@ export const getHealth = <ThrowOnError extends boolean = false>(
 ): RequestResult<GetHealthResponses, unknown, ThrowOnError> =>
   (options?.client ?? client).get<GetHealthResponses, unknown, ThrowOnError>({
     url: "/api/v1/health",
+    ...options,
+  });
+
+/**
+ * Replay workflow events after a durable cursor
+ *
+ * Return an exclusive-cursor page ordered by global event ID.
+ */
+export const listWorkflowRunEvents = <ThrowOnError extends boolean = false>(
+  options: Options<ListWorkflowRunEventsData, ThrowOnError>,
+): RequestResult<
+  ListWorkflowRunEventsResponses,
+  ListWorkflowRunEventsErrors,
+  ThrowOnError
+> =>
+  (options.client ?? client).get<
+    ListWorkflowRunEventsResponses,
+    ListWorkflowRunEventsErrors,
+    ThrowOnError
+  >({ url: "/api/v1/workflow-runs/{workflow_run_id}/events", ...options });
+
+/**
+ * Stream workflow events from a durable cursor
+ *
+ * Replay missed events, then follow new rows until the client disconnects.
+ */
+export const streamWorkflowRunEvents = <ThrowOnError extends boolean = false>(
+  options: Options<
+    StreamWorkflowRunEventsData,
+    ThrowOnError,
+    StreamWorkflowRunEventsResponse
+  >,
+): Promise<ServerSentEventsResult<StreamWorkflowRunEventsResponses>> =>
+  (options.client ?? client).sse.get<
+    StreamWorkflowRunEventsResponses,
+    StreamWorkflowRunEventsErrors,
+    ThrowOnError
+  >({
+    url: "/api/v1/workflow-runs/{workflow_run_id}/events/stream",
     ...options,
   });

@@ -11,7 +11,7 @@
   },
   "scripts": {
     "build": "pnpm --recursive --if-present build",
-    "contracts:generate": "uv run --extra api python scripts/export_openapi.py && pnpm --filter @open-hollywood/contracts generate",
+    "contracts:generate": "uv run --extra api python scripts/export_openapi.py && pnpm --filter @open-hollywood/contracts exec prettier --write openapi.json && pnpm --filter @open-hollywood/contracts generate",
     "format": "pnpm --recursive --if-present format",
     "format:check": "pnpm --recursive --if-present format:check",
     "lint": "pnpm --recursive --if-present lint",
