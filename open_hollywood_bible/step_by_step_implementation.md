@@ -71,7 +71,7 @@ dependency was added because Ollama Local plus Ollama Cloud is sufficient for th
 `engine/artifacts/README.md`. Ruff, mypy, 66 pytest tests, Prettier, ESLint,
 TypeScript, Vitest, and the production build pass.
 
-9. [ ] **Build the context-packet compiler** with per-agent dependency manifests and token budgets.
+9. [x] **COMPLETED 2026-07-22 — Build the context-packet compiler.** Versioned per-specialist manifests declare artifact cardinalities, exact story-bible sections, nearby-summary bounds, and structured output types. The deterministic compiler rejects undeclared or ambiguous versions, renders canonical packets with assignments, constraints, dependencies, output JSON Schema, and rubrics, and carries exact input-version lineage into model invocations. Mandatory context fails closed when it exceeds the reserved input-token envelope; budget-optional context is included in stable priority order or omitted with an observable reason. Token counting is injectable and versioned, with a conservative provider-neutral UTF-8 byte fallback. Evidence: `engine/open_hollywood_engine/context/`, `tests/context/`, and `engine/context/README.md`. Ruff, mypy, 76 pytest tests, Prettier, ESLint, TypeScript, Vitest, and the production build pass.
 
 10. [ ] **Create the first persisted LangGraph:**
 `intake → brief → premise → parallel specialists → integration → evaluation → approval`.
