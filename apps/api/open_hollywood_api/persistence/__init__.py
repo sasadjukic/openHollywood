@@ -7,9 +7,11 @@ from open_hollywood_api.persistence.database import (
     database_path_from_environment,
     sqlite_url,
 )
+from open_hollywood_api.persistence.secret_policy import audit_database_export
 
 __all__ = [
     "Base",
+    "audit_database_export",
     "create_session_factory",
     "create_sqlite_engine",
     "database_path_from_environment",

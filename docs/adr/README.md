@@ -10,3 +10,4 @@ tradeoffs. Status values are `Proposed`, `Accepted`, `Superseded`, or `Rejected`
 | 0003 | SQLite persistence for v0.1 | Accepted |
 | 0004 | Provider-neutral model gateway | Accepted |
 | 0005 | Versioned artifacts and bounded context | Accepted |
+| 0006 | Runtime secret handles and leak guards | Accepted |

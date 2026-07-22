@@ -15,8 +15,10 @@ artifacts, workflow runs, model invocations, profiles, and evaluations. Workflow
 activity is exposed through a durable append-only event log with paginated
 cursor replay and resumable Server-Sent Events. The provider-neutral model
 gateway supports dynamically discovered local Ollama models and optional Ollama
-Cloud inference with explicit per-model capabilities and budgeted calls. Creative
-workflow implementation begins in subsequent steps.
+Cloud inference with explicit per-model capabilities and budgeted calls. Runtime
+secret handles and fail-closed gateway, persistence, fixture, and database-export
+guards keep model credentials outside story data and observability records.
+Creative workflow implementation begins in subsequent steps.
 
 The v0.1 target is deliberately narrow: short prose fiction, local-first
 storage, optional local/cloud/hybrid inference, and one mandatory story

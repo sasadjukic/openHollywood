@@ -20,8 +20,10 @@ from open_hollywood_engine.models.gateway import (
     ModelGatewayErrorCode,
 )
 from open_hollywood_engine.models.ollama import OllamaGateway, OllamaHost
+from open_hollywood_engine.secrets import EnvironmentSecretStore, ModelSecret, SecretValue
 
 __all__ = [
+    "EnvironmentSecretStore",
     "InvocationContext",
     "MessageRole",
     "ModelCallBudget",
@@ -34,9 +36,11 @@ __all__ = [
     "ModelMessage",
     "ModelRequest",
     "ModelResponse",
+    "ModelSecret",
     "ModelSettings",
     "ModelTiming",
     "ModelUsage",
     "OllamaGateway",
     "OllamaHost",
+    "SecretValue",
 ]

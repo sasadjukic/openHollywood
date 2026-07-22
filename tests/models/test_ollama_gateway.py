@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 from collections.abc import Callable
+from dataclasses import replace
 from typing import Any
 
 import httpx
@@ -21,6 +22,7 @@ from open_hollywood_engine.models import (
     OllamaGateway,
     OllamaHost,
 )
+from open_hollywood_engine.secrets import EnvironmentSecretStore, SecretValue
 
 pytestmark = pytest.mark.anyio
 
@@ -33,6 +35,10 @@ def anyio_backend() -> str:
 
 def _transport(handler: Callable[[httpx.Request], httpx.Response]) -> httpx.MockTransport:
     return httpx.MockTransport(handler)
+
+
+def _cloud_secret() -> SecretValue:
+    return SecretValue("unit-test-runtime-credential")
 
 
 def _request(*, response_schema: dict[str, Any] | None = None) -> ModelRequest:
@@ -221,12 +227,12 @@ async def test_generate_maps_portable_settings_budget_schema_and_usage() -> None
 
 async def test_direct_cloud_uses_bearer_authentication() -> None:
     def handler(request: httpx.Request) -> httpx.Response:
-        assert request.headers["Authorization"] == "Bearer cloud-secret"
+        assert request.headers["Authorization"] == "Bearer unit-test-runtime-credential"
         return httpx.Response(200, json={"models": []})
 
     async with OllamaGateway(
         host=OllamaHost.CLOUD,
-        api_key="cloud-secret",
+        api_key=_cloud_secret(),
         transport=_transport(handler),
     ) as gateway:
         assert await gateway.list_models() == ()
@@ -250,7 +256,7 @@ async def test_cloud_structured_output_is_rejected_before_network_call() -> None
     )
     async with OllamaGateway(
         host=OllamaHost.CLOUD,
-        api_key="cloud-secret",
+        api_key=_cloud_secret(),
         transport=_transport(handler),
     ) as gateway:
         with pytest.raises(ModelGatewayError) as error:
@@ -265,12 +271,12 @@ async def test_authentication_failure_is_normalized_without_secret_or_body() -> 
     transport = _transport(
         lambda _request: httpx.Response(
             401,
-            json={"error": "bad cloud-secret for prompt Create a supernatural premise"},
+            json={"error": "credential rejected for prompt Create a supernatural premise"},
         )
     )
     async with OllamaGateway(
         host=OllamaHost.CLOUD,
-        api_key="cloud-secret",
+        api_key=_cloud_secret(),
         transport=transport,
     ) as gateway:
         with pytest.raises(ModelGatewayError) as error:
@@ -278,8 +284,69 @@ async def test_authentication_failure_is_normalized_without_secret_or_body() -> 
 
     assert error.value.code is ModelGatewayErrorCode.AUTHENTICATION
     assert error.value.retryable is False
-    assert "cloud-secret" not in str(error.value)
+    assert "unit-test-runtime-credential" not in str(error.value)
     assert "supernatural" not in str(error.value)
+
+
+async def test_direct_cloud_resolves_credential_from_runtime_store() -> None:
+    store = EnvironmentSecretStore({"OLLAMA_API_KEY": "unit-test-runtime-credential"})
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        assert request.headers["Authorization"] == "Bearer unit-test-runtime-credential"
+        return httpx.Response(200, json={"models": []})
+
+    async with OllamaGateway.from_secret_store(
+        store,
+        host=OllamaHost.CLOUD,
+        transport=_transport(handler),
+    ) as gateway:
+        assert await gateway.list_models() == ()
+
+
+async def test_secret_material_is_rejected_before_prompt_leaves_process() -> None:
+    called = False
+
+    def handler(_request: httpx.Request) -> httpx.Response:
+        nonlocal called
+        called = True
+        return httpx.Response(200, json=_chat_response())
+
+    request = _request()
+    request = replace(
+        request,
+        messages=(ModelMessage(MessageRole.USER, "Use unit-test-runtime-credential"),),
+    )
+    async with OllamaGateway(
+        host=OllamaHost.CLOUD,
+        api_key=_cloud_secret(),
+        transport=_transport(handler),
+    ) as gateway:
+        with pytest.raises(ModelGatewayError) as error:
+            await gateway.generate(request)
+
+    assert error.value.code is ModelGatewayErrorCode.SECRET_EXPOSURE
+    assert "unit-test-runtime-credential" not in str(error.value)
+    assert called is False
+
+
+async def test_secret_material_is_rejected_in_provider_response() -> None:
+    response = _chat_response()
+    response["message"] = {
+        "role": "assistant",
+        "content": "unit-test-runtime-credential",
+    }
+    transport = _transport(lambda _request: httpx.Response(200, json=response))
+
+    async with OllamaGateway(
+        host=OllamaHost.CLOUD,
+        api_key=_cloud_secret(),
+        transport=transport,
+    ) as gateway:
+        with pytest.raises(ModelGatewayError) as error:
+            await gateway.generate(_request())
+
+    assert error.value.code is ModelGatewayErrorCode.SECRET_EXPOSURE
+    assert "unit-test-runtime-credential" not in str(error.value)
 
 
 async def test_provider_reported_usage_cannot_silently_exceed_budget() -> None:
