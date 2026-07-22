@@ -8,6 +8,7 @@ will be named `open_hollywood_engine` and will contain:
 - `context/`: bounded context-packet construction
 - `evaluations/`: rubrics and evaluation records
 - `models/`: provider-neutral model gateway contracts
+- `secrets/`: runtime-only credential resolution and leak guards
 - `workflows/`: explicit durable graphs and subgraphs
 
 This package must not depend on FastAPI, React, Tauri, or provider-specific

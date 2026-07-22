@@ -20,6 +20,13 @@ from open_hollywood_engine.models.contracts import (
     ModelUsage,
 )
 from open_hollywood_engine.models.gateway import ModelGatewayError, ModelGatewayErrorCode
+from open_hollywood_engine.secrets import (
+    ModelSecret,
+    SecretLeakError,
+    SecretLeakGuard,
+    SecretStore,
+    SecretValue,
+)
 
 OLLAMA_PROVIDER = "ollama"
 DEFAULT_LOCAL_BASE_URL = "http://127.0.0.1:11434"
@@ -41,7 +48,7 @@ class OllamaGateway:
         *,
         host: OllamaHost = OllamaHost.LOCAL,
         base_url: str | None = None,
-        api_key: str | None = None,
+        api_key: SecretValue | None = None,
         timeout_seconds: float = 120.0,
         client: httpx.AsyncClient | None = None,
         transport: httpx.AsyncBaseTransport | None = None,
@@ -58,14 +65,41 @@ class OllamaGateway:
         )
         headers = {"Accept": "application/json"}
         if api_key:
-            headers["Authorization"] = f"Bearer {api_key}"
+            headers["Authorization"] = f"Bearer {api_key.reveal()}"
 
         self._host = host
+        self._secret_guard = SecretLeakGuard((api_key,) if api_key is not None else ())
         self._owns_client = client is None
         self._client = client or httpx.AsyncClient(
             base_url=resolved_base_url.rstrip("/"),
             headers=headers,
             timeout=timeout_seconds,
+            transport=transport,
+        )
+
+    @classmethod
+    def from_secret_store(
+        cls,
+        secret_store: SecretStore,
+        *,
+        host: OllamaHost = OllamaHost.LOCAL,
+        base_url: str | None = None,
+        timeout_seconds: float = 120.0,
+        client: httpx.AsyncClient | None = None,
+        transport: httpx.AsyncBaseTransport | None = None,
+    ) -> Self:
+        """Resolve direct-cloud authentication only while constructing the transport."""
+        api_key = (
+            secret_store.require(ModelSecret.OLLAMA_API_KEY)
+            if host is OllamaHost.CLOUD and client is None
+            else None
+        )
+        return cls(
+            host=host,
+            base_url=base_url,
+            api_key=api_key,
+            timeout_seconds=timeout_seconds,
+            client=client,
             transport=transport,
         )
 
@@ -222,6 +256,14 @@ class OllamaGateway:
         json: Mapping[str, Any] | None = None,
     ) -> Mapping[str, Any]:
         try:
+            self._secret_guard.ensure_safe(json, destination="model request")
+        except SecretLeakError as exc:
+            raise ModelGatewayError(
+                ModelGatewayErrorCode.SECRET_EXPOSURE,
+                "model request rejected by the secret policy",
+                retryable=False,
+            ) from exc
+        try:
             response = await self._client.request(method, path, json=json)
         except httpx.TransportError as exc:
             raise ModelGatewayError(
@@ -238,7 +280,16 @@ class OllamaGateway:
                 "Ollama returned invalid JSON",
                 retryable=False,
             ) from exc
-        return _require_mapping(payload, field_name="response")
+        parsed_payload = _require_mapping(payload, field_name="response")
+        try:
+            self._secret_guard.ensure_safe(parsed_payload, destination="provider response")
+        except SecretLeakError as exc:
+            raise ModelGatewayError(
+                ModelGatewayErrorCode.SECRET_EXPOSURE,
+                "provider response rejected by the secret policy",
+                retryable=False,
+            ) from exc
+        return parsed_payload
 
     def _raise_for_status(self, response: httpx.Response) -> None:
         status_code = response.status_code

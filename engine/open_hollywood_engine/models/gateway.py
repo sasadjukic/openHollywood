@@ -22,6 +22,7 @@ class ModelGatewayErrorCode(StrEnum):
     MODEL_NOT_FOUND = "model_not_found"
     PROVIDER_UNAVAILABLE = "provider_unavailable"
     RATE_LIMITED = "rate_limited"
+    SECRET_EXPOSURE = "secret_exposure"
     UNSUPPORTED_CAPABILITY = "unsupported_capability"
 
 
