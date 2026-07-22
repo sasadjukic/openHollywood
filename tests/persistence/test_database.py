@@ -21,6 +21,7 @@ EXPECTED_TABLES = {
     "alembic_version",
     "artifact_versions",
     "artifacts",
+    "checkpoints",
     "conversations",
     "evaluations",
     "messages",
@@ -28,6 +29,7 @@ EXPECTED_TABLES = {
     "projects",
     "workflow_runs",
     "workflow_events",
+    "writes",
 }
 
 

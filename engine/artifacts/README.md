@@ -2,8 +2,8 @@
 
 `open_hollywood_engine.artifacts` owns the provider-neutral Pydantic contracts
 for structured creative output. The v0.1 catalog includes creative briefs,
-characters, relationships, locations, world rules, beats, scene plans,
-critiques, continuity findings, and the assembled story blueprint.
+developed premises, characters, relationships, locations, world rules, beats,
+scene plans, critiques, continuity findings, and the assembled story blueprint.
 
 All models reject unknown fields, strip surrounding whitespace, and are frozen
 after validation. Collection fields use tuples so nested artifact content is

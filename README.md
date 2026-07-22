@@ -23,7 +23,12 @@ v0.1 planning artifact, including an integrated Story Blueprint with validated
 character, location, beat, and scene references. A deterministic context-packet
 compiler assembles only manifest-declared artifact versions, story-bible
 sections, and nearby summaries under explicit input-token budgets. Creative
-workflow execution begins in subsequent steps.
+workflow execution now begins with a fixed, SQLite-checkpointed Story Blueprint
+LangGraph. It runs the brief and premise stages, parallel world and character
+specialists, integration, and evaluation before pausing at the mandatory
+blueprint review boundary. Checkpoints retain only orchestration state and exact
+immutable artifact-version references, and failed parallel work resumes without
+repeating a successful sibling branch.
 
 The v0.1 target is deliberately narrow: short prose fiction, local-first
 storage, optional local/cloud/hybrid inference, and one mandatory story
