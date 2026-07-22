@@ -20,8 +20,10 @@ secret handles and fail-closed gateway, persistence, fixture, and database-expor
 guards keep model credentials outside story data and observability records.
 The provider-neutral engine now exposes immutable Pydantic schemas for every
 v0.1 planning artifact, including an integrated Story Blueprint with validated
-character, location, beat, and scene references. Creative workflow execution
-begins in subsequent steps.
+character, location, beat, and scene references. A deterministic context-packet
+compiler assembles only manifest-declared artifact versions, story-bible
+sections, and nearby summaries under explicit input-token budgets. Creative
+workflow execution begins in subsequent steps.
 
 The v0.1 target is deliberately narrow: short prose fiction, local-first
 storage, optional local/cloud/hybrid inference, and one mandatory story
