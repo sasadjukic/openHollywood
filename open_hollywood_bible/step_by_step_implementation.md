@@ -55,7 +55,14 @@ and persistence/API integration tests. Migration upgrade/downgrade and
 metadata parity, Ruff, mypy, pytest, Prettier, ESLint, TypeScript, Vitest,
 and the production build pass.
 
-6. [ ] **Build `ModelGateway` and `ModelCapabilities`.** Add Ollama first, one cloud provider second, and only then potentially generalize through LiteLLM.
+6. [x] **COMPLETED 2026-07-22 — Build `ModelGateway` and `ModelCapabilities`.** Provider-neutral, immutable call contracts require
+explicit token/cost budgets and reproducibility identifiers. The first
+adapter dynamically discovers local Ollama and Ollama Cloud models, inspects
+per-model features and context windows, classifies cloud offload correctly,
+supports runtime-injected cloud bearer authentication, normalizes usage,
+timing, finish state, and retryable errors, and rejects unsupported cloud
+structured-output calls before inference. No Google, OpenAI, or LiteLLM
+dependency was added because Ollama Local plus Ollama Cloud is sufficient for the initial short-fiction slice. Evidence: `engine/open_hollywood_engine/models/`, `tests/models/`, `engine/models/README.md`, and `open_hollywood_bible/model_configuration.md`. Ruff, mypy, pytest (including 16 model-gateway tests), Prettier, ESLint, TypeScript, Vitest, and the production build pass. Live discovery against the development Ollama server also classified two installed local models and two cloud-offloaded models with their reported context windows.
 
 7. [ ] **Add secure secret handling.** Ensure model keys never enter story
 artifacts, prompts, traces, fixtures, or database exports.

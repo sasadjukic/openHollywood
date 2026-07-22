@@ -7,12 +7,12 @@ license = "MIT"
 requires-python = ">=3.13,<3.14"
 dependencies = [
   "alembic>=1.16.4,<2.0",
+  "httpx>=0.28.1,<1.0",
   "sqlalchemy>=2.0.41,<3.0",
 ]
 
 [dependency-groups]
 dev = [
-  "httpx>=0.28.1,<1.0",
   "mypy>=1.17.0,<2.0",
   "pytest>=8.4.1,<9.0",
   "ruff>=0.12.4,<1.0",
@@ -36,7 +36,7 @@ select = ["E", "F", "I", "UP", "B", "SIM"]
 
 [tool.pytest.ini_options]
 addopts = "-ra --strict-config --strict-markers"
-pythonpath = ["apps/api"]
+pythonpath = ["apps/api", "engine"]
 testpaths = ["tests"]
 
 [tool.mypy]
