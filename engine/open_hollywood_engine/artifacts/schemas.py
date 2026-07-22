@@ -46,6 +46,7 @@ class ArtifactKind(StrEnum):
     """Stable persisted type names for the initial artifact catalog."""
 
     CREATIVE_BRIEF = "creative_brief"
+    PREMISE = "premise"
     CHARACTER = "character"
     RELATIONSHIP = "relationship"
     LOCATION = "location"
@@ -143,6 +144,19 @@ class CreativeBrief(ArtifactSchema):
     forbidden_elements: tuple[NonEmptyText, ...] = ()
     style_constraints: tuple[NonEmptyText, ...] = ()
     authorized_ambiguities: tuple[NonEmptyText, ...] = ()
+
+
+class Premise(ArtifactSchema):
+    """Story proposition and thematic direction developed from the creative brief."""
+
+    logline: NonEmptyText
+    thematic_thesis: NonEmptyText
+    central_conflict: NonEmptyText
+    story_arc: NonEmptyText
+    proposed_ending: NonEmptyText
+    voice_and_style_guide: NonEmptyText
+    potential_risks: tuple[NonEmptyText, ...] = ()
+    unresolved_decisions: tuple[NonEmptyText, ...] = ()
 
 
 class Character(ArtifactSchema):
@@ -429,6 +443,7 @@ type ArtifactSchemaType = type[ArtifactSchema]
 ARTIFACT_SCHEMAS: Mapping[ArtifactKind, ArtifactSchemaType] = MappingProxyType(
     {
         ArtifactKind.CREATIVE_BRIEF: CreativeBrief,
+        ArtifactKind.PREMISE: Premise,
         ArtifactKind.CHARACTER: Character,
         ArtifactKind.RELATIONSHIP: Relationship,
         ArtifactKind.LOCATION: Location,

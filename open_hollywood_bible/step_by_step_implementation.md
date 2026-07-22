@@ -73,8 +73,12 @@ TypeScript, Vitest, and the production build pass.
 
 9. [x] **COMPLETED 2026-07-22 — Build the context-packet compiler.** Versioned per-specialist manifests declare artifact cardinalities, exact story-bible sections, nearby-summary bounds, and structured output types. The deterministic compiler rejects undeclared or ambiguous versions, renders canonical packets with assignments, constraints, dependencies, output JSON Schema, and rubrics, and carries exact input-version lineage into model invocations. Mandatory context fails closed when it exceeds the reserved input-token envelope; budget-optional context is included in stable priority order or omitted with an observable reason. Token counting is injectable and versioned, with a conservative provider-neutral UTF-8 byte fallback. Evidence: `engine/open_hollywood_engine/context/`, `tests/context/`, and `engine/context/README.md`. Ruff, mypy, 76 pytest tests, Prettier, ESLint, TypeScript, Vitest, and the production build pass.
 
-10. [ ] **Create the first persisted LangGraph:**
-`intake → brief → premise → parallel specialists → integration → evaluation → approval`.
+10. [x] **COMPLETED 2026-07-22 — Create the first persisted LangGraph.** The
+fixed, versioned Story Blueprint graph runs `intake → brief → premise → parallel world and character specialists → integration → evaluation → approval` with registered node contracts, bounded timeouts, and retries limited to explicit retryable specialist failures. SQLite checkpoints store only JSON-safe coordination state and exact immutable artifact-version references; the workflow run mirrors its latest checkpoint and lifecycle events. A failed parallel super-step resumes in a fresh service without repeating the successful sibling, and the approval boundary leaves the run paused for Step 11. Evidence: `engine/open_hollywood_engine/workflows/`,
+`apps/api/open_hollywood_api/services/blueprint_workflow.py`,
+`migrations/versions/0003_langgraph_checkpoints.py`, `tests/workflows/`, and
+`engine/workflows/README.md`. Ruff, mypy, 80 pytest tests, Prettier, ESLint,
+TypeScript, Vitest, and the production build pass.
 
 11. [ ] **Implement human interrupts** for approve, revise, reject, and fork.
 

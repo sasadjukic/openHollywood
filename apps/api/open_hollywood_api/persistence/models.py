@@ -18,6 +18,7 @@ from sqlalchemy import (
     ForeignKey,
     Index,
     Integer,
+    LargeBinary,
     Numeric,
     String,
     Table,
@@ -30,6 +31,34 @@ from sqlalchemy import (
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from open_hollywood_api.persistence.base import Base as Base
+
+# LangGraph owns the row format and access patterns for these infrastructure
+# tables. Declaring them in application metadata keeps Alembic drift checks
+# authoritative without leaking checkpoint types into domain models.
+langgraph_checkpoints = Table(
+    "checkpoints",
+    Base.metadata,
+    Column("thread_id", Text, primary_key=True),
+    Column("checkpoint_ns", Text, primary_key=True, server_default=""),
+    Column("checkpoint_id", Text, primary_key=True),
+    Column("parent_checkpoint_id", Text),
+    Column("type", Text),
+    Column("checkpoint", LargeBinary),
+    Column("metadata", LargeBinary),
+)
+
+langgraph_writes = Table(
+    "writes",
+    Base.metadata,
+    Column("thread_id", Text, primary_key=True),
+    Column("checkpoint_ns", Text, primary_key=True, server_default=""),
+    Column("checkpoint_id", Text, primary_key=True),
+    Column("task_id", Text, primary_key=True),
+    Column("idx", Integer, primary_key=True),
+    Column("channel", Text, nullable=False),
+    Column("type", Text),
+    Column("value", LargeBinary),
+)
 
 
 def utc_now() -> datetime:
