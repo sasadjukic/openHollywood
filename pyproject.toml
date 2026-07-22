@@ -8,6 +8,7 @@ requires-python = ">=3.13,<3.14"
 dependencies = [
   "alembic>=1.16.4,<2.0",
   "httpx>=0.28.1,<1.0",
+  "pydantic>=2.13.4,<3.0",
   "sqlalchemy>=2.0.41,<3.0",
 ]
 
