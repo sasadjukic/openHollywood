@@ -13,8 +13,10 @@ service, a generated TypeScript SDK shared through the contracts package, and a
 migration-managed SQLite persistence layer for projects, conversations,
 artifacts, workflow runs, model invocations, profiles, and evaluations. Workflow
 activity is exposed through a durable append-only event log with paginated
-cursor replay and resumable Server-Sent Events. Creative workflow implementation
-begins in subsequent steps.
+cursor replay and resumable Server-Sent Events. The provider-neutral model
+gateway supports dynamically discovered local Ollama models and optional Ollama
+Cloud inference with explicit per-model capabilities and budgeted calls. Creative
+workflow implementation begins in subsequent steps.
 
 The v0.1 target is deliberately narrow: short prose fiction, local-first
 storage, optional local/cloud/hybrid inference, and one mandatory story
@@ -98,9 +100,9 @@ uv run alembic downgrade -1
 Run the applicable quality checks before handing off a change:
 
 ```powershell
-uv run --extra api ruff check apps/api scripts tests migrations
-uv run --extra api ruff format --check apps/api scripts tests migrations
-uv run --extra api mypy apps/api scripts tests migrations
+uv run --extra api ruff check apps/api engine scripts tests migrations
+uv run --extra api ruff format --check apps/api engine scripts tests migrations
+uv run --extra api mypy apps/api engine scripts tests migrations
 uv run --extra api pytest
 pnpm format:check
 pnpm lint

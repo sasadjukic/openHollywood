@@ -19,6 +19,32 @@ An Advanced view exposes a role matrix:
 
 The application should discover Ollama models through its API and query provider model catalogs where available. Context limits and supported capabilities must be recorded per model rather than assumed. Ollama exposes response timing, prompt token counts, generated token counts, tool calls, and other execution metadata through its chat API. [Ollama chat API](https://docs.ollama.com/api/chat).
 
+### Initial v0.1 provider boundary
+
+Start with one Ollama adapter in two deployment modes:
+
+- **Ollama Local:** requests go to the user's local Ollama server without API-key authentication.
+- **Ollama Cloud:** requests go directly to `ollama.com` with an API key, or use a `-cloud` model through a signed-in local Ollama server.
+
+This is sufficient for the first short-fiction vertical slice. Do not add Google,
+OpenAI, or LiteLLM until experiments show a concrete capability or quality gap.
+Keep local/cloud/hybrid profiles provider-neutral so another adapter can be added
+without changing workflow contracts.
+
+Discover cloud models dynamically rather than maintaining a hard-coded list of
+free models. As of 2026-07-22, Ollama's cloud catalog includes `gpt-oss`,
+`gemma4:31b-cloud`, and `nemotron-3-super:120b-cloud`, while the Free plan grants
+limited cloud access with one concurrent cloud model. Availability and plan access
+can change independently. [Ollama cloud models](https://ollama.com/search?c=cloud),
+[Ollama pricing](https://ollama.com/pricing).
+
+Capability routing must account for inference placement, not only the model name.
+In particular, Ollama currently documents schema-enforced structured outputs for
+local inference but not Ollama Cloud. A cloud-offloaded model must therefore report
+`supports_structured_output = false` even when accessed through the local Ollama
+endpoint. [Ollama structured outputs](https://docs.ollama.com/capabilities/structured-outputs),
+[Ollama Cloud authentication](https://docs.ollama.com/api/authentication).
+
 ## Experiment framework
 
 Every invocation should record:
