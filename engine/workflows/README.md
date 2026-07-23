@@ -101,5 +101,50 @@ artifact kinds fail immediately.
 Checkpoint state contains no dialogue, pacing notes, prompts, credentials, or
 provider objects. It stores the per-call budget and prompt-template version,
 workflow/model-profile identifiers, counters, completion reason, and immutable
-artifact references. The subgraph can inherit a parent checkpointer when Step
-15 embeds it in the scene-production loop.
+artifact references. The subgraph inherits the parent checkpointer when the
+scene-production loop embeds it.
+
+## Scene-production graph
+
+After Story Blueprint approval, v0.1 uses the versioned `scene_production`
+graph:
+
+```text
+START -> writer -----------------------------> critic
+            |                                    |
+            +-> character_dialogue -> integrate-+
+                                                 |
+                        attempts remain <--- revise?
+                                                 |
+                                              accept
+                                                 |
+                                      next scene or END
+```
+
+The input contains the exact approved Story Blueprint, three-to-eight ordered
+Scene Plan versions, participating Character versions, bounded context
+references, one model profile, per-call budget, and a hard revision limit. The
+graph cannot invent units or reorder them. `scene_writer` produces the initial
+and revised prose artifacts, while the independent `scene_critic` evaluates an
+exact `SceneDraft` version. Hybrid profiles route high-impact writing to cloud
+and routine critique locally.
+
+An optional two-character pass is declared per scene. On every writing attempt,
+the Step 14 subgraph runs under the production graph's checkpoint namespace;
+the writer then persists a new prose version integrating its briefing, turns,
+and evaluation. Scenes without that declaration go directly to critique.
+
+A passing critique accepts the current immutable draft. A non-passing critique
+returns to the writer only while revision attempts remain. At the hard limit,
+the best available complete draft is accepted with
+`revision_limit_reached`, preserving a deterministic and observable
+disposition rather than looping. Incomplete/truncated drafts, critiques aimed
+at another version, undeclared artifact kinds, reused input versions, and
+malformed checkpoint state fail closed.
+
+Parent checkpoints retain only budgets, graph configuration, counters,
+deterministic dispositions, and artifact references. Scene prose, critique
+bodies, dialogue, prompts, credentials, and provider objects remain in their
+own application-owned records. Accepted scenes are supplied to later scenes by
+exact version reference. Story-bible mutation and continuity acceptance remain
+Step 16 responsibilities.

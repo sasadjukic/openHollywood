@@ -99,27 +99,16 @@ data.** The responsive three-panel React workspace now lists durable projects an
 presets.** Provider-neutral, schema-versioned preset contracts now route every registered Story Blueprint specialist to an exact local or cloud model. Local keeps all roles on-device, Cloud assigns all roles to cloud inference, and Hybrid keeps structured preparation and evaluation local while sending high-impact creative reasoning to cloud. The three presets are seeded idempotently into SQLite without guessed model names, cannot activate until every required model slot is configured, and resolve exact role assignments for future invocations. FastAPI exposes durable configuration, atomic activation, and failure-isolated dynamic Ollama catalog discovery; the responsive workspace settings surface uses the generated SDK and persists no credentials. Evidence: `engine/open_hollywood_engine/models/profiles.py`, `apps/api/open_hollywood_api/services/model_profiles.py`, `apps/api/open_hollywood_api/routes/model_profiles.py`, `apps/web/src/components/ModelSettings.tsx`, generated contracts, and engine/API/React tests. Ruff, mypy, 99 pytest tests, Prettier, ESLint, TypeScript, 4 Vitest tests, and the production build pass.
 
 14. [x] **COMPLETED 2026-07-23 — Port the legacy character-agent dialogue
-experiment into an isolated subgraph.** The preserved two-actor/director concept
-now runs as a fixed LangGraph topology: one director briefing, character one,
-character two, and one director evaluation per bounded round. Typed scene,
-actor, briefing, dialogue-turn, evaluation, and completion contracts replace
-legacy mutable state and provider-specific calls. Checkpoints contain only
-JSON-safe budgets, counters, profile identifiers, and exact immutable artifact
-references; model output bodies remain validated artifact versions. Minimum
-rounds, climax-or-resolution closure, declared endings, maximum rounds,
-timeouts, and retryable failures are enforced deterministically. Step 13
-profiles upgrade in memory from schema v1 and route the registered
-`character_actor` and `dialogue_director` roles without breaking existing
-profiles. Regression tests use the preserved `legacy-v2-final` director-flow
-fixture to retain its one-briefing, two-actors-per-round, one-evaluation, and
-seven-call/two-round behavior. Evidence:
-`engine/open_hollywood_engine/workflows/dialogue_contracts.py`,
-`engine/open_hollywood_engine/workflows/dialogue_graph.py`, typed dialogue
-artifact schemas, and `tests/workflows/test_dialogue_subgraph.py`. Ruff, mypy,
-106 pytest tests, Prettier, ESLint, TypeScript, 4 Vitest tests, and the
-production build pass.
+experiment into an isolated subgraph.** The preserved two-actor/director concept now runs as a fixed LangGraph topology: one director briefing, character one, character two, and one director evaluation per bounded round. Typed scene, actor, briefing, dialogue-turn, evaluation, and completion contracts replace legacy mutable state and provider-specific calls. Checkpoints contain only JSON-safe budgets, counters, profile identifiers, and exact immutable artifact references; model output bodies remain validated artifact versions. Minimum rounds, climax-or-resolution closure, declared endings, maximum rounds, timeouts, and retryable failures are enforced deterministically. Step 13 profiles upgrade in memory from schema v1 and route the registered `character_actor` and `dialogue_director` roles without breaking existing profiles. Regression tests use the preserved `legacy-v2-final` director-flow fixture to retain its one-briefing, two-actors-per-round, one-evaluation, and seven-call/two-round behavior. Evidence: `engine/open_hollywood_engine/workflows/dialogue_contracts.py`, `engine/open_hollywood_engine/workflows/dialogue_graph.py`, typed dialogue artifact schemas, and `tests/workflows/test_dialogue_subgraph.py`. Ruff, mypy, 106 pytest tests, Prettier, ESLint, TypeScript, 4 Vitest tests, and the production build pass.
 
-15. [ ] **Implement the scene/chapter production loop** with bounded critique and revision.
+15. [x] **COMPLETED 2026-07-23 — Implement the scene/chapter production
+loop with bounded critique and revision.** The fixed `scene_production`
+LangGraph consumes an approved Story Blueprint plus three-to-eight ordered
+Scene Plan assignments, writes immutable prose versions, optionally embeds the Step 14 two-character dialogue subgraph and integrates its outputs, and sends each exact draft version to an independent critic. Non-passing drafts return to the writer only while the configured revision allowance remains; each canonical scene records whether it passed the rubric or reached the hard limit. Incomplete drafts, mismatched critique targets, reused versions, invalid artifact kinds, and malformed state fail closed. Checkpoints retain only budgets, counters, deterministic dispositions, and immutable artifact references—not prose, dialogue, critique bodies, prompts, or provider objects. Model-profile schema v3 adds `scene_writer` and `scene_critic` while upgrading Step 13 and Step 14 profiles in memory. The unit abstraction is ready for a later chapter format, while v0.1 remains intentionally limited to prose scenes. Evidence:
+`engine/open_hollywood_engine/workflows/production_contracts.py`,
+`engine/open_hollywood_engine/workflows/production_graph.py`, the typed
+`SceneDraft` artifact, and `tests/workflows/test_scene_production.py`. Ruff,
+mypy, 112 pytest tests, Prettier, ESLint, TypeScript, 4 Vitest tests, and the production build pass.
 
 16. [ ] **Add deterministic story-bible updates and continuity invariants**
 after every accepted unit.

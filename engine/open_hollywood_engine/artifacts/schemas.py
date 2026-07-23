@@ -59,6 +59,7 @@ class ArtifactKind(StrEnum):
     DIALOGUE_BRIEFING = "dialogue_briefing"
     DIALOGUE_TURN = "dialogue_turn"
     DIALOGUE_EVALUATION = "dialogue_evaluation"
+    SCENE_DRAFT = "scene_draft"
 
 
 class StoryFormat(StrEnum):
@@ -415,6 +416,17 @@ class DialogueEvaluation(ArtifactSchema):
         return self
 
 
+class SceneDraft(ArtifactSchema):
+    """One complete prose scene produced from an exact Scene Plan version."""
+
+    scene_id: ReferenceId
+    scene_number: Annotated[StrictInt, Field(ge=1)]
+    title: NonEmptyText
+    revision_number: Annotated[StrictInt, Field(ge=0)]
+    prose: NonEmptyText
+    is_complete: StrictBool
+
+
 class StoryBlueprint(ArtifactSchema):
     """Complete human-review checkpoint assembled from specialist artifacts."""
 
@@ -521,6 +533,7 @@ ARTIFACT_SCHEMAS: Mapping[ArtifactKind, ArtifactSchemaType] = MappingProxyType(
         ArtifactKind.DIALOGUE_BRIEFING: DialogueBriefing,
         ArtifactKind.DIALOGUE_TURN: DialogueTurn,
         ArtifactKind.DIALOGUE_EVALUATION: DialogueEvaluation,
+        ArtifactKind.SCENE_DRAFT: SceneDraft,
     }
 )
 

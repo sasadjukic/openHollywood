@@ -55,9 +55,20 @@ Two registered character actors speak in sequence under a dialogue director
 that briefs once and evaluates after each round. Dialogue bodies and director
 assessments use typed immutable artifacts, while checkpoint state retains only
 budgets, counters, model-profile IDs, and exact version references. This
-subgraph is ready to become an optional specialist pass inside the production
-loop in Step 15; it does not add a second human checkpoint or a standalone
-scene editor.
+subgraph is now an optional specialist pass inside the bounded scene-production
+loop; it does not add a second human checkpoint or a standalone scene editor.
+
+After blueprint approval, the provider-neutral production graph processes the
+three-to-eight planned prose scenes in stable order. Each scene receives an
+initial writer pass, an optional embedded dialogue pass and prose integration,
+and an independent critique against the exact draft version. Non-passing scenes
+return to the writer only while the configured revision allowance remains.
+Every accepted scene records whether it passed the rubric or reached that hard
+limit, and later scenes receive only immutable references to earlier accepted
+work. Checkpoints contain plans, counters, dispositions, and artifact-version
+references—not prose, critiques, prompts, or conversation history. The same
+unit contract can support chapters when a later product version adds a
+long-form format; v0.1 deliberately produces scenes only.
 
 The v0.1 target is deliberately narrow: short prose fiction, local-first
 storage, optional local/cloud/hybrid inference, and one mandatory story

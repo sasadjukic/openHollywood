@@ -17,7 +17,8 @@
           "story_blueprint",
           "dialogue_briefing",
           "dialogue_turn",
-          "dialogue_evaluation"
+          "dialogue_evaluation",
+          "scene_draft"
         ],
         "title": "ArtifactKind",
         "type": "string"

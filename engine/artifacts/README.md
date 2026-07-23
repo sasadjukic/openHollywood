@@ -8,6 +8,10 @@ The dialogue experiment adds a one-time director briefing, isolated character
 turns, and structured director evaluations. Director evaluations validate
 ordered emotional-arc progress, unambiguous thread status, and the closure
 conditions required for a requested scene ending.
+Scene production adds immutable `SceneDraft` versions with stable scene
+identity, sequence, revision number, complete prose, and an explicit completion
+flag. A draft advances only when its content validates and the production graph
+has an independent `Critique` targeting that exact version.
 
 All models reject unknown fields, strip surrounding whitespace, and are frozen
 after validation. Collection fields use tuples so nested artifact content is

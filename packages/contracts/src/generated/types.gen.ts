@@ -23,7 +23,8 @@ export type ArtifactKind =
   | "story_blueprint"
   | "dialogue_briefing"
   | "dialogue_turn"
-  | "dialogue_evaluation";
+  | "dialogue_evaluation"
+  | "scene_draft";
 
 /**
  * ArtifactReferenceEnvelope

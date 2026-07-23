@@ -8,3 +8,8 @@ next to their implementation when that improves ownership.
 prototype without restoring its application code. The dialogue-subgraph
 regression suite consumes `director_flow.json` to verify the preserved call
 order, round cardinality, and termination invariants.
+
+`workflows/test_scene_production.py` verifies ordered scene production,
+embedded dialogue passes, exact-version critique targets, bounded revision,
+hard-limit dispositions, isolated retries, incomplete-output rejection, and
+content-free checkpoint state.
