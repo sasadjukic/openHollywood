@@ -1,4 +1,4 @@
-"""SQLite-backed execution service for the first persisted LangGraph."""
+"""SQLite-backed execution and human-interrupt service for Story Blueprints."""
 
 from __future__ import annotations
 
@@ -13,23 +13,39 @@ import aiosqlite
 from langchain_core.runnables import RunnableConfig
 from langgraph.checkpoint.serde.jsonplus import JsonPlusSerializer
 from langgraph.checkpoint.sqlite.aio import AsyncSqliteSaver
+from langgraph.types import Command, Interrupt, StateSnapshot
+from open_hollywood_engine.artifacts import ArtifactKind
 from open_hollywood_engine.workflows import (
     DEFAULT_MAX_GRAPH_STEPS,
     STORY_BLUEPRINT_GRAPH_VERSION,
     STORY_BLUEPRINT_WORKFLOW_NAME,
     ArtifactReference,
     BlueprintCompiledGraph,
+    BlueprintDecisionAction,
     BlueprintGraphState,
+    BlueprintHumanDecision,
     BlueprintNode,
     BlueprintNodeExecutor,
     BlueprintWorkflowObserver,
     artifact_references_from_state,
     build_blueprint_graph,
+    initial_blueprint_fork_state,
     initial_blueprint_state,
 )
+from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session, sessionmaker
 
-from open_hollywood_api.persistence.models import RunStatus, WorkflowEvent, WorkflowRun
+from open_hollywood_api.persistence.models import (
+    Artifact,
+    ArtifactStatus,
+    ArtifactVersion,
+    HumanDecision,
+    HumanDecisionStatus,
+    RunStatus,
+    WorkflowEvent,
+    WorkflowRun,
+)
 from open_hollywood_api.persistence.secret_policy import active_secret_guard
 
 _MIN_GRAPH_STEPS = 8
@@ -38,16 +54,17 @@ _MAX_GRAPH_STEPS = 64
 
 @dataclass(frozen=True, slots=True)
 class BlueprintWorkflowExecution:
-    """Durable result returned when the graph reaches blueprint review."""
+    """Durable workflow state after execution, interruption, or approval."""
 
     workflow_run_id: UUID
     checkpoint_id: str
     artifacts: tuple[ArtifactReference, ...]
     awaiting_approval: bool
+    interrupt_id: str | None = None
 
 
 class BlueprintWorkflowRunError(RuntimeError):
-    """Raised for unknown or incompatible persisted workflow runs."""
+    """Raised for unknown, incompatible, or invalid workflow transitions."""
 
 
 class SqlAlchemyBlueprintWorkflowObserver(BlueprintWorkflowObserver):
@@ -106,27 +123,75 @@ class SqlAlchemyBlueprintWorkflowObserver(BlueprintWorkflowObserver):
         self,
         workflow_run_id: UUID,
         artifacts: tuple[ArtifactReference, ...],
+        interrupt_id: str,
     ) -> None:
-        await asyncio.to_thread(self._awaiting_approval, workflow_run_id, artifacts)
+        await asyncio.to_thread(
+            self._awaiting_approval,
+            workflow_run_id,
+            artifacts,
+            interrupt_id,
+        )
 
     def _awaiting_approval(
         self,
         workflow_run_id: UUID,
         artifacts: tuple[ArtifactReference, ...],
+        interrupt_id: str,
     ) -> None:
         with self._session_factory.begin() as session:
             workflow_run = _require_run(session, workflow_run_id)
             workflow_run.status = RunStatus.PAUSED
             workflow_run.current_node = BlueprintNode.APPROVAL.value
+            workflow_run.error_code = None
+            workflow_run.error_message = None
+            if _approval_event_exists(session, workflow_run_id, interrupt_id):
+                return
+            _add_event(
+                session,
+                workflow_run_id,
+                "workflow.node.started",
+                {"node": BlueprintNode.APPROVAL.value},
+                source=BlueprintNode.APPROVAL.value,
+            )
             _add_event(
                 session,
                 workflow_run_id,
                 "workflow.awaiting_approval",
                 {
+                    "allowed_actions": [action.value for action in BlueprintDecisionAction],
                     "artifacts": [_artifact_payload(artifact) for artifact in artifacts],
                     "checkpoint": "story_blueprint",
+                    "interrupt_id": interrupt_id,
                 },
                 source=BlueprintNode.APPROVAL.value,
+            )
+
+    async def decision_received(
+        self,
+        workflow_run_id: UUID,
+        decision: BlueprintHumanDecision,
+    ) -> None:
+        await asyncio.to_thread(self._decision_received, workflow_run_id, decision)
+
+    def _decision_received(
+        self,
+        workflow_run_id: UUID,
+        decision: BlueprintHumanDecision,
+    ) -> None:
+        with self._session_factory.begin() as session:
+            _require_run(session, workflow_run_id)
+            if _decision_event_exists(session, workflow_run_id, decision.id):
+                return
+            _add_event(
+                session,
+                workflow_run_id,
+                "workflow.human_decision.received",
+                {
+                    "action": decision.action.value,
+                    "decision_id": str(decision.id),
+                    "interrupt_id": decision.interrupt_id,
+                },
+                source="human",
             )
 
     async def workflow_failed(self, workflow_run_id: UUID, error: Exception) -> None:
@@ -152,7 +217,7 @@ class SqlAlchemyBlueprintWorkflowObserver(BlueprintWorkflowObserver):
 
 
 class BlueprintWorkflowService:
-    """Own the async SQLite checkpointer and execute or resume one graph thread."""
+    """Own the SQLite checkpointer and apply durable human decisions."""
 
     def __init__(
         self,
@@ -166,6 +231,7 @@ class BlueprintWorkflowService:
         self._connection: aiosqlite.Connection | None = None
         self._checkpointer: AsyncSqliteSaver | None = None
         self._graph: BlueprintCompiledGraph | None = None
+        self._observer = SqlAlchemyBlueprintWorkflowObserver(session_factory)
 
     async def __aenter__(self) -> BlueprintWorkflowService:
         self._connection = await aiosqlite.connect(str(self._database_path))
@@ -177,7 +243,7 @@ class BlueprintWorkflowService:
         self._graph = build_blueprint_graph(
             self._executor,
             checkpointer=self._checkpointer,
-            observer=SqlAlchemyBlueprintWorkflowObserver(self._session_factory),
+            observer=self._observer,
         )
         return self
 
@@ -195,7 +261,7 @@ class BlueprintWorkflowService:
         self._graph = None
 
     async def execute(self, workflow_run_id: UUID) -> BlueprintWorkflowExecution:
-        """Start a new graph thread or resume its latest failed super-step."""
+        """Start a graph thread or resume its latest failed super-step."""
         graph, checkpointer = self._require_open()
         max_graph_steps, status = self._run_configuration(workflow_run_id)
         if status is RunStatus.PAUSED:
@@ -203,31 +269,354 @@ class BlueprintWorkflowService:
         if status not in {RunStatus.PENDING, RunStatus.RUNNING, RunStatus.FAILED}:
             raise BlueprintWorkflowRunError(f"workflow cannot execute from status {status.value}")
 
-        config: RunnableConfig = {
-            "configurable": {"thread_id": str(workflow_run_id)},
-            "recursion_limit": max_graph_steps,
-        }
+        config = _graph_config(workflow_run_id, max_graph_steps)
         existing = await checkpointer.aget_tuple(config)
+        graph_input: BlueprintGraphState | None
         graph_input = None if existing is not None else initial_blueprint_state(workflow_run_id)
-        observer = SqlAlchemyBlueprintWorkflowObserver(self._session_factory)
+        return await self._invoke(workflow_run_id, graph_input, config=config)
+
+    async def resume(
+        self,
+        workflow_run_id: UUID,
+        decision: BlueprintHumanDecision,
+    ) -> BlueprintWorkflowExecution:
+        """Idempotently resolve the run's current human interrupt."""
+        graph, _ = self._require_open()
+        max_graph_steps, status = self._run_configuration(workflow_run_id)
+        config = _graph_config(workflow_run_id, max_graph_steps)
+        existing_decision = self._existing_decision(decision.id)
+        if existing_decision is not None:
+            _require_same_decision(existing_decision, workflow_run_id, decision)
+        if (
+            existing_decision is not None
+            and existing_decision.status is HumanDecisionStatus.APPLIED
+        ):
+            result_run_id = existing_decision.resulting_workflow_run_id or workflow_run_id
+            return await self._execution_from_current_state(result_run_id)
+
+        if status is not RunStatus.PAUSED:
+            raise BlueprintWorkflowRunError(
+                f"workflow cannot accept a human decision from status {status.value}"
+            )
+        snapshot = await graph.aget_state(config)
+        interrupt_value = _single_interrupt(snapshot)
+        if interrupt_value.id != decision.interrupt_id:
+            raise BlueprintWorkflowRunError("decision does not match the active interrupt")
+        if existing_decision is None:
+            self._record_decision(
+                workflow_run_id,
+                decision,
+                checkpoint_id=_checkpoint_id(snapshot),
+            )
+
+        await self._observer.decision_received(workflow_run_id, decision)
+        if decision.action is BlueprintDecisionAction.FORK:
+            return await self._fork(workflow_run_id, decision, snapshot)
+
         try:
-            result = cast(BlueprintGraphState, await graph.ainvoke(graph_input, config=config))
+            result = await self._invoke(
+                workflow_run_id,
+                Command(resume=decision.resume_payload()),
+                config=config,
+            )
         except Exception as exc:
-            await observer.workflow_failed(workflow_run_id, exc)
+            self._mark_decision_failed(decision.id, exc)
+            raise
+
+        self._mark_decision_applied(decision.id, workflow_run_id)
+        return result
+
+    async def _invoke(
+        self,
+        workflow_run_id: UUID,
+        graph_input: BlueprintGraphState | Command[Any] | None,
+        *,
+        config: RunnableConfig,
+    ) -> BlueprintWorkflowExecution:
+        graph, _ = self._require_open()
+        try:
+            await graph.ainvoke(graph_input, config=config)
+        except Exception as exc:
+            await self._observer.workflow_failed(workflow_run_id, exc)
             await self._sync_checkpoint_id(workflow_run_id, graph, config)
             raise
 
-        checkpoint_id = await self._sync_checkpoint_id(workflow_run_id, graph, config)
-        awaiting_approval = bool(result.get("awaiting_approval"))
-        if not awaiting_approval:
-            error = BlueprintWorkflowRunError("blueprint graph ended before approval")
-            await observer.workflow_failed(workflow_run_id, error)
+        snapshot = await graph.aget_state(config)
+        checkpoint_id = await self._sync_checkpoint_id(
+            workflow_run_id,
+            graph,
+            config,
+            snapshot=snapshot,
+        )
+        state = _snapshot_state(snapshot)
+        artifacts = artifact_references_from_state(state)
+        if snapshot.interrupts:
+            active_interrupt = _single_interrupt(snapshot)
+            review_artifacts = _review_artifacts(artifacts)
+            await self._observer.awaiting_approval(
+                workflow_run_id,
+                review_artifacts,
+                active_interrupt.id,
+            )
+            self._apply_checkpoint_decision(state, workflow_run_id)
+            return BlueprintWorkflowExecution(
+                workflow_run_id=workflow_run_id,
+                checkpoint_id=checkpoint_id,
+                artifacts=artifacts,
+                awaiting_approval=True,
+                interrupt_id=active_interrupt.id,
+            )
+
+        action = _state_action(state)
+        if action is not BlueprintDecisionAction.APPROVE:
+            error = BlueprintWorkflowRunError("blueprint graph ended without an approval decision")
+            await self._observer.workflow_failed(workflow_run_id, error)
             raise error
+        self._approve_blueprint(workflow_run_id, artifacts)
+        self._apply_checkpoint_decision(state, workflow_run_id)
         return BlueprintWorkflowExecution(
             workflow_run_id=workflow_run_id,
             checkpoint_id=checkpoint_id,
-            artifacts=artifact_references_from_state(result),
-            awaiting_approval=True,
+            artifacts=artifacts,
+            awaiting_approval=False,
+        )
+
+    async def _fork(
+        self,
+        workflow_run_id: UUID,
+        decision: BlueprintHumanDecision,
+        source_snapshot: StateSnapshot,
+    ) -> BlueprintWorkflowExecution:
+        source_state = _snapshot_state(source_snapshot)
+        source_artifacts = artifact_references_from_state(source_state)
+        source_checkpoint_id = _checkpoint_id(source_snapshot)
+        child_run_id = self._create_fork_run(
+            workflow_run_id,
+            decision,
+            source_checkpoint_id,
+        )
+        child_steps, _ = self._run_configuration(child_run_id)
+        child_config = _graph_config(child_run_id, child_steps)
+        child_state = initial_blueprint_fork_state(
+            child_run_id,
+            source_artifacts,
+            decision.id,
+        )
+        try:
+            result = await self._invoke(child_run_id, child_state, config=child_config)
+        except Exception as exc:
+            self._mark_decision_failed(decision.id, exc)
+            raise
+        self._mark_decision_applied(decision.id, child_run_id)
+        return result
+
+    def _create_fork_run(
+        self,
+        source_run_id: UUID,
+        decision: BlueprintHumanDecision,
+        source_checkpoint_id: str,
+    ) -> UUID:
+        with self._session_factory.begin() as session:
+            persisted_decision = _require_decision(session, decision.id)
+            if persisted_decision.resulting_workflow_run_id is not None:
+                return persisted_decision.resulting_workflow_run_id
+            source = _require_run(session, source_run_id)
+            child = WorkflowRun(
+                project_id=source.project_id,
+                conversation_id=source.conversation_id,
+                parent_workflow_run_id=source.id,
+                forked_from_checkpoint_id=source_checkpoint_id,
+                workflow_name=source.workflow_name,
+                graph_version=source.graph_version,
+                status=RunStatus.PENDING,
+                input_state={
+                    **source.input_state,
+                    "fork_decision_id": str(decision.id),
+                    "forked_from_workflow_run_id": str(source.id),
+                },
+                budget=dict(source.budget),
+            )
+            session.add(child)
+            session.flush()
+            persisted_decision.resulting_workflow_run_id = child.id
+            source.status = RunStatus.CANCELLED
+            source.completed_at = datetime.now(UTC)
+            _add_event(
+                session,
+                source.id,
+                "workflow.forked",
+                {
+                    "decision_id": str(decision.id),
+                    "forked_workflow_run_id": str(child.id),
+                    "source_checkpoint_id": source_checkpoint_id,
+                },
+                source="human",
+            )
+            _add_event(
+                session,
+                child.id,
+                "workflow.fork.started",
+                {
+                    "decision_id": str(decision.id),
+                    "source_workflow_run_id": str(source.id),
+                    "source_checkpoint_id": source_checkpoint_id,
+                },
+                source="human",
+            )
+            return child.id
+
+    def _record_decision(
+        self,
+        workflow_run_id: UUID,
+        decision: BlueprintHumanDecision,
+        *,
+        checkpoint_id: str,
+    ) -> HumanDecision:
+        try:
+            with self._session_factory.begin() as session:
+                existing = session.get(HumanDecision, decision.id)
+                if existing is not None:
+                    _require_same_decision(existing, workflow_run_id, decision)
+                    session.expunge(existing)
+                    return existing
+                interrupt_decision = session.scalar(
+                    select(HumanDecision).where(
+                        HumanDecision.workflow_run_id == workflow_run_id,
+                        HumanDecision.interrupt_id == decision.interrupt_id,
+                    )
+                )
+                if interrupt_decision is not None:
+                    raise BlueprintWorkflowRunError(
+                        "the active interrupt already has a different decision"
+                    )
+                record = HumanDecision(
+                    id=decision.id,
+                    workflow_run_id=workflow_run_id,
+                    interrupt_id=decision.interrupt_id,
+                    checkpoint_id=checkpoint_id,
+                    action=decision.action.value,
+                    instruction=decision.instruction,
+                    status=HumanDecisionStatus.PENDING,
+                )
+                session.add(record)
+                session.flush()
+                session.expunge(record)
+                return record
+        except IntegrityError as exc:
+            with self._session_factory() as session:
+                existing = session.get(HumanDecision, decision.id)
+                if existing is not None:
+                    _require_same_decision(existing, workflow_run_id, decision)
+                    session.expunge(existing)
+                    return existing
+                interrupt_decision = session.scalar(
+                    select(HumanDecision).where(
+                        HumanDecision.workflow_run_id == workflow_run_id,
+                        HumanDecision.interrupt_id == decision.interrupt_id,
+                    )
+                )
+                if interrupt_decision is not None:
+                    raise BlueprintWorkflowRunError(
+                        "the active interrupt already has a different decision"
+                    ) from exc
+            raise
+
+    def _existing_decision(self, decision_id: UUID) -> HumanDecision | None:
+        with self._session_factory() as session:
+            decision = session.get(HumanDecision, decision_id)
+            if decision is not None:
+                session.expunge(decision)
+            return decision
+
+    def _mark_decision_applied(
+        self,
+        decision_id: UUID,
+        resulting_workflow_run_id: UUID,
+    ) -> None:
+        with self._session_factory.begin() as session:
+            decision = _require_decision(session, decision_id)
+            decision.status = HumanDecisionStatus.APPLIED
+            decision.resulting_workflow_run_id = resulting_workflow_run_id
+            decision.applied_at = datetime.now(UTC)
+            decision.error_message = None
+
+    def _mark_decision_failed(self, decision_id: UUID, error: Exception) -> None:
+        safe_message = active_secret_guard().redact_text(str(error))[:2000]
+        with self._session_factory.begin() as session:
+            decision = _require_decision(session, decision_id)
+            decision.status = HumanDecisionStatus.FAILED
+            decision.error_message = safe_message
+
+    def _apply_checkpoint_decision(
+        self,
+        state: BlueprintGraphState,
+        resulting_workflow_run_id: UUID,
+    ) -> None:
+        raw_decision_id = state.get("human_decision_id")
+        if raw_decision_id is None:
+            return
+        try:
+            decision_id = UUID(raw_decision_id)
+        except ValueError as exc:
+            raise BlueprintWorkflowRunError(
+                "checkpoint contains an invalid human_decision_id"
+            ) from exc
+        with self._session_factory() as session:
+            decision = session.get(HumanDecision, decision_id)
+            if decision is None or decision.status is HumanDecisionStatus.APPLIED:
+                return
+        self._mark_decision_applied(decision_id, resulting_workflow_run_id)
+
+    def _approve_blueprint(
+        self,
+        workflow_run_id: UUID,
+        artifacts: tuple[ArtifactReference, ...],
+    ) -> None:
+        blueprint = _single_blueprint(artifacts)
+        with self._session_factory.begin() as session:
+            workflow_run = _require_run(session, workflow_run_id)
+            version = session.get(ArtifactVersion, blueprint.version_id)
+            if version is None:
+                raise BlueprintWorkflowRunError("approved blueprint version does not exist")
+            artifact = session.get(Artifact, version.artifact_id)
+            if artifact is None or artifact.project_id != workflow_run.project_id:
+                raise BlueprintWorkflowRunError(
+                    "approved blueprint does not belong to the workflow project"
+                )
+            artifact.status = ArtifactStatus.APPROVED
+            workflow_run.status = RunStatus.SUCCEEDED
+            workflow_run.completed_at = datetime.now(UTC)
+            workflow_run.error_code = None
+            workflow_run.error_message = None
+            _add_event(
+                session,
+                workflow_run_id,
+                "workflow.blueprint.approved",
+                {
+                    "artifact": _artifact_payload(blueprint),
+                    "decision_id": _state_decision_id_from_run(session, workflow_run_id),
+                },
+                source="human",
+            )
+
+    async def _execution_from_current_state(
+        self,
+        workflow_run_id: UUID,
+    ) -> BlueprintWorkflowExecution:
+        graph, _ = self._require_open()
+        max_steps, _ = self._run_configuration(workflow_run_id)
+        config = _graph_config(workflow_run_id, max_steps)
+        snapshot = await graph.aget_state(config)
+        checkpoint_id = _checkpoint_id(snapshot)
+        state = _snapshot_state(snapshot)
+        artifacts = artifact_references_from_state(state)
+        interrupt_id = snapshot.interrupts[0].id if snapshot.interrupts else None
+        return BlueprintWorkflowExecution(
+            workflow_run_id=workflow_run_id,
+            checkpoint_id=checkpoint_id,
+            artifacts=artifacts,
+            awaiting_approval=interrupt_id is not None,
+            interrupt_id=interrupt_id,
         )
 
     def _run_configuration(self, workflow_run_id: UUID) -> tuple[int, RunStatus]:
@@ -237,7 +626,10 @@ class BlueprintWorkflowService:
                 raise BlueprintWorkflowRunError("workflow_run has an incompatible workflow_name")
             if workflow_run.graph_version != STORY_BLUEPRINT_GRAPH_VERSION:
                 raise BlueprintWorkflowRunError("workflow_run has an incompatible graph_version")
-            raw_steps = workflow_run.budget.get("max_graph_steps", DEFAULT_MAX_GRAPH_STEPS)
+            raw_steps = workflow_run.budget.get(
+                "max_graph_steps",
+                DEFAULT_MAX_GRAPH_STEPS,
+            )
             if (
                 not isinstance(raw_steps, int)
                 or isinstance(raw_steps, bool)
@@ -253,12 +645,11 @@ class BlueprintWorkflowService:
         workflow_run_id: UUID,
         graph: BlueprintCompiledGraph,
         config: RunnableConfig,
+        *,
+        snapshot: StateSnapshot | None = None,
     ) -> str:
-        snapshot = await graph.aget_state(config)
-        configurable = snapshot.config.get("configurable", {})
-        checkpoint_id = configurable.get("checkpoint_id")
-        if not isinstance(checkpoint_id, str) or not checkpoint_id:
-            raise BlueprintWorkflowRunError("LangGraph did not persist a checkpoint ID")
+        current = snapshot or await graph.aget_state(config)
+        checkpoint_id = _checkpoint_id(current)
         with self._session_factory.begin() as session:
             workflow_run = _require_run(session, workflow_run_id)
             workflow_run.checkpoint_id = checkpoint_id
@@ -270,11 +661,135 @@ class BlueprintWorkflowService:
         return self._graph, self._checkpointer
 
 
+def _graph_config(workflow_run_id: UUID, max_graph_steps: int) -> RunnableConfig:
+    return {
+        "configurable": {"thread_id": str(workflow_run_id)},
+        "recursion_limit": max_graph_steps,
+    }
+
+
+def _snapshot_state(snapshot: StateSnapshot) -> BlueprintGraphState:
+    if not isinstance(snapshot.values, dict):
+        raise BlueprintWorkflowRunError("LangGraph checkpoint state is invalid")
+    return cast(BlueprintGraphState, snapshot.values)
+
+
+def _checkpoint_id(snapshot: StateSnapshot) -> str:
+    configurable = snapshot.config.get("configurable", {})
+    checkpoint_id = configurable.get("checkpoint_id")
+    if not isinstance(checkpoint_id, str) or not checkpoint_id:
+        raise BlueprintWorkflowRunError("LangGraph did not persist a checkpoint ID")
+    return checkpoint_id
+
+
+def _single_interrupt(snapshot: StateSnapshot) -> Interrupt:
+    if len(snapshot.interrupts) != 1:
+        raise BlueprintWorkflowRunError("workflow must expose exactly one active human interrupt")
+    active_interrupt = snapshot.interrupts[0]
+    if not isinstance(active_interrupt.value, dict):
+        raise BlueprintWorkflowRunError("human interrupt payload is invalid")
+    return active_interrupt
+
+
+def _state_action(state: BlueprintGraphState) -> BlueprintDecisionAction | None:
+    raw_action = state.get("human_action")
+    if raw_action is None:
+        return None
+    try:
+        return BlueprintDecisionAction(raw_action)
+    except ValueError as exc:
+        raise BlueprintWorkflowRunError("checkpoint contains an invalid human action") from exc
+
+
+def _review_artifacts(
+    artifacts: tuple[ArtifactReference, ...],
+) -> tuple[ArtifactReference, ...]:
+    return tuple(
+        artifact
+        for artifact in artifacts
+        if artifact.kind in {ArtifactKind.STORY_BLUEPRINT, ArtifactKind.CRITIQUE}
+    )
+
+
+def _single_blueprint(
+    artifacts: tuple[ArtifactReference, ...],
+) -> ArtifactReference:
+    blueprints = tuple(
+        artifact for artifact in artifacts if artifact.kind is ArtifactKind.STORY_BLUEPRINT
+    )
+    if len(blueprints) != 1:
+        raise BlueprintWorkflowRunError(
+            "approval requires exactly one active Story Blueprint version"
+        )
+    return blueprints[0]
+
+
 def _require_run(session: Session, workflow_run_id: UUID) -> WorkflowRun:
     workflow_run = session.get(WorkflowRun, workflow_run_id)
     if workflow_run is None:
         raise BlueprintWorkflowRunError(f"unknown workflow run {workflow_run_id}")
     return workflow_run
+
+
+def _require_decision(session: Session, decision_id: UUID) -> HumanDecision:
+    decision = session.get(HumanDecision, decision_id)
+    if decision is None:
+        raise BlueprintWorkflowRunError(f"unknown human decision {decision_id}")
+    return decision
+
+
+def _require_same_decision(
+    record: HumanDecision,
+    workflow_run_id: UUID,
+    decision: BlueprintHumanDecision,
+) -> None:
+    if (
+        record.workflow_run_id != workflow_run_id
+        or record.interrupt_id != decision.interrupt_id
+        or record.action != decision.action.value
+        or record.instruction != decision.instruction
+    ):
+        raise BlueprintWorkflowRunError("decision ID was already used with different command data")
+
+
+def _approval_event_exists(
+    session: Session,
+    workflow_run_id: UUID,
+    interrupt_id: str,
+) -> bool:
+    events = session.scalars(
+        select(WorkflowEvent).where(
+            WorkflowEvent.workflow_run_id == workflow_run_id,
+            WorkflowEvent.event_type == "workflow.awaiting_approval",
+        )
+    )
+    return any(event.payload.get("interrupt_id") == interrupt_id for event in events)
+
+
+def _decision_event_exists(
+    session: Session,
+    workflow_run_id: UUID,
+    decision_id: UUID,
+) -> bool:
+    events = session.scalars(
+        select(WorkflowEvent).where(
+            WorkflowEvent.workflow_run_id == workflow_run_id,
+            WorkflowEvent.event_type == "workflow.human_decision.received",
+        )
+    )
+    return any(event.payload.get("decision_id") == str(decision_id) for event in events)
+
+
+def _state_decision_id_from_run(session: Session, workflow_run_id: UUID) -> str:
+    decision = session.scalar(
+        select(HumanDecision)
+        .where(HumanDecision.workflow_run_id == workflow_run_id)
+        .order_by(HumanDecision.created_at.desc())
+        .limit(1)
+    )
+    if decision is None:
+        raise BlueprintWorkflowRunError("approved workflow has no human decision")
+    return str(decision.id)
 
 
 def _add_event(

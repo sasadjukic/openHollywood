@@ -11,13 +11,15 @@ from langchain_core.runnables import Runnable, RunnableLambda
 from langgraph.checkpoint.base import BaseCheckpointSaver
 from langgraph.graph import END, START, StateGraph
 from langgraph.graph.state import CompiledStateGraph
-from langgraph.types import RetryPolicy
+from langgraph.types import RetryPolicy, interrupt
 
 from open_hollywood_engine.artifacts import ArtifactKind
 from open_hollywood_engine.workflows.contracts import (
     BLUEPRINT_NODE_DEFINITIONS,
     BLUEPRINT_NODE_ORDER,
     ArtifactReference,
+    BlueprintDecisionAction,
+    BlueprintDecisionResume,
     BlueprintNode,
     BlueprintNodeDefinition,
     BlueprintNodeExecutor,
@@ -47,6 +49,9 @@ class BlueprintGraphState(TypedDict, total=False):
     artifacts: Annotated[list[ArtifactReferenceState], _merge_artifact_states]
     completed_nodes: Annotated[list[str], _merge_completed_nodes]
     awaiting_approval: bool
+    entry_mode: str
+    human_decision_id: str
+    human_action: str
 
 
 type BlueprintCompiledGraph = CompiledStateGraph[
@@ -65,6 +70,24 @@ def initial_blueprint_state(workflow_run_id: UUID) -> BlueprintGraphState:
         "artifacts": [],
         "completed_nodes": [],
         "awaiting_approval": False,
+        "entry_mode": "new",
+    }
+
+
+def initial_blueprint_fork_state(
+    workflow_run_id: UUID,
+    artifacts: tuple[ArtifactReference, ...],
+    human_decision_id: UUID,
+) -> BlueprintGraphState:
+    """Seed a child thread from exact parent versions before regenerating it."""
+    return {
+        "workflow_run_id": str(workflow_run_id),
+        "artifacts": [_artifact_to_state(artifact) for artifact in artifacts],
+        "completed_nodes": [],
+        "awaiting_approval": False,
+        "entry_mode": "fork",
+        "human_decision_id": str(human_decision_id),
+        "human_action": BlueprintDecisionAction.FORK.value,
     }
 
 
@@ -102,7 +125,14 @@ def build_blueprint_graph(
         )
 
     builder.add_node(BlueprintNode.APPROVAL.value, _runnable(_approval_node(lifecycle)))
-    builder.add_edge(START, BlueprintNode.INTAKE.value)
+    builder.add_conditional_edges(
+        START,
+        _route_entry,
+        {
+            "new": BlueprintNode.INTAKE.value,
+            "fork": BlueprintNode.PREMISE.value,
+        },
+    )
     builder.add_edge(BlueprintNode.INTAKE.value, BlueprintNode.BRIEF.value)
     builder.add_edge(BlueprintNode.BRIEF.value, BlueprintNode.PREMISE.value)
     builder.add_edge(BlueprintNode.PREMISE.value, BlueprintNode.WORLD_SPECIALIST.value)
@@ -111,7 +141,16 @@ def build_blueprint_graph(
     builder.add_edge(BlueprintNode.CHARACTER_SPECIALIST.value, BlueprintNode.INTEGRATION.value)
     builder.add_edge(BlueprintNode.INTEGRATION.value, BlueprintNode.EVALUATION.value)
     builder.add_edge(BlueprintNode.EVALUATION.value, BlueprintNode.APPROVAL.value)
-    builder.add_edge(BlueprintNode.APPROVAL.value, END)
+    builder.add_conditional_edges(
+        BlueprintNode.APPROVAL.value,
+        _route_after_approval,
+        {
+            BlueprintDecisionAction.APPROVE.value: END,
+            BlueprintDecisionAction.REVISE.value: BlueprintNode.INTEGRATION.value,
+            BlueprintDecisionAction.REJECT.value: BlueprintNode.PREMISE.value,
+            BlueprintDecisionAction.FORK.value: END,
+        },
+    )
     return builder.compile(checkpointer=checkpointer)
 
 
@@ -145,6 +184,8 @@ def _specialist_node(
                 node=definition.node,
                 specialist_role=role,
                 input_artifacts=inputs,
+                human_decision_id=_human_decision_id(state),
+                reviewed_artifacts=_reviewed_artifacts(state),
             )
         )
         _validate_outputs(definition, result)
@@ -168,11 +209,21 @@ def _approval_node(
         workflow_run_id = _workflow_run_id(state)
         definition = BLUEPRINT_NODE_DEFINITIONS[BlueprintNode.APPROVAL]
         artifacts = _select_inputs(state, definition)
-        await observer.node_started(workflow_run_id, BlueprintNode.APPROVAL)
-        await observer.awaiting_approval(workflow_run_id, artifacts)
+        resumed = BlueprintDecisionResume.from_payload(
+            interrupt(
+                {
+                    "kind": "story_blueprint_approval",
+                    "allowed_actions": [action.value for action in BlueprintDecisionAction],
+                    "artifacts": [_artifact_to_state(artifact) for artifact in artifacts],
+                }
+            )
+        )
+        await observer.node_completed(workflow_run_id, BlueprintNode.APPROVAL, artifacts)
         return {
-            "awaiting_approval": True,
+            "awaiting_approval": False,
             "completed_nodes": [BlueprintNode.APPROVAL.value],
+            "human_decision_id": str(resumed.decision_id),
+            "human_action": resumed.action.value,
         }
 
     return approval
@@ -239,6 +290,51 @@ def _workflow_run_id(state: BlueprintGraphState) -> UUID:
         raise BlueprintStateError("workflow_run_id is not a valid UUID") from exc
 
 
+def _human_decision_id(state: BlueprintGraphState) -> UUID | None:
+    value = state.get("human_decision_id")
+    if value is None:
+        return None
+    try:
+        return UUID(value)
+    except ValueError as exc:
+        raise BlueprintStateError("human_decision_id is not a valid UUID") from exc
+
+
+def _reviewed_artifacts(
+    state: BlueprintGraphState,
+) -> tuple[ArtifactReference, ...]:
+    if _human_decision_id(state) is None:
+        return ()
+    reviewed_kinds = {ArtifactKind.STORY_BLUEPRINT, ArtifactKind.CRITIQUE}
+    return tuple(
+        sorted(
+            (
+                _artifact_from_state(item)
+                for item in state.get("artifacts", [])
+                if ArtifactKind(item["kind"]) in reviewed_kinds
+            ),
+            key=_artifact_sort_key,
+        )
+    )
+
+
+def _route_entry(state: BlueprintGraphState) -> str:
+    mode = state.get("entry_mode", "new")
+    if mode not in {"new", "fork"}:
+        raise BlueprintStateError("checkpoint contains an invalid entry_mode")
+    return mode
+
+
+def _route_after_approval(state: BlueprintGraphState) -> str:
+    raw_action = state.get("human_action")
+    if raw_action is None:
+        raise BlueprintStateError("approval completed without a human action")
+    try:
+        return BlueprintDecisionAction(raw_action).value
+    except ValueError as exc:
+        raise BlueprintStateError("approval completed without a valid human action") from exc
+
+
 def _artifact_to_state(reference: ArtifactReference) -> ArtifactReferenceState:
     return {
         "kind": reference.kind.value,
@@ -264,15 +360,19 @@ def _merge_artifact_states(
     left: list[ArtifactReferenceState],
     right: list[ArtifactReferenceState],
 ) -> list[ArtifactReferenceState]:
-    by_version: dict[str, ArtifactReferenceState] = {}
+    by_key: dict[str, ArtifactReferenceState] = {}
     for item in [*left, *right]:
-        version_id = item["version_id"]
-        previous = by_version.get(version_id)
-        if previous is not None and previous != item:
+        artifact_key = item["artifact_key"]
+        previous = by_key.get(artifact_key)
+        if (
+            previous is not None
+            and previous["version_id"] == item["version_id"]
+            and previous != item
+        ):
             raise BlueprintStateError("one artifact version has conflicting checkpoint references")
-        by_version[version_id] = item
+        by_key[artifact_key] = item
     return sorted(
-        by_version.values(),
+        by_key.values(),
         key=lambda item: (
             item["kind"],
             item["artifact_key"],

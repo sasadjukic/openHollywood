@@ -13,8 +13,10 @@ from open_hollywood_api.persistence.database import (
     create_sqlite_engine,
     database_path_from_environment,
 )
+from open_hollywood_api.routes.blueprint_decisions import router as blueprint_decisions_router
 from open_hollywood_api.routes.health import router as health_router
 from open_hollywood_api.routes.workflow_events import router as workflow_events_router
+from open_hollywood_api.services.blueprint_workflow import BlueprintWorkflowService
 from open_hollywood_api.services.workflow_events import WorkflowEventStore
 
 LOCAL_WEB_ORIGINS = (
@@ -40,7 +42,10 @@ async def lifespan(application: FastAPI) -> AsyncIterator[None]:
             application.state.workflow_event_store = None
 
 
-def create_app(workflow_event_store: WorkflowEventStore | None = None) -> FastAPI:
+def create_app(
+    workflow_event_store: WorkflowEventStore | None = None,
+    blueprint_workflow_service: BlueprintWorkflowService | None = None,
+) -> FastAPI:
     """Build the API application without starting process-level side effects."""
     application = FastAPI(
         title="Open Hollywood API",
@@ -49,15 +54,17 @@ def create_app(workflow_event_store: WorkflowEventStore | None = None) -> FastAP
         lifespan=lifespan,
     )
     application.state.workflow_event_store = workflow_event_store
+    application.state.blueprint_workflow_service = blueprint_workflow_service
     application.add_middleware(
         CORSMiddleware,
         allow_origins=list(LOCAL_WEB_ORIGINS),
         allow_credentials=False,
-        allow_methods=["GET"],
+        allow_methods=["GET", "POST"],
         allow_headers=["Accept", "Content-Type", "Last-Event-ID"],
     )
     application.include_router(health_router, prefix="/api/v1")
     application.include_router(workflow_events_router, prefix="/api/v1")
+    application.include_router(blueprint_decisions_router, prefix="/api/v1")
     return application
 
 

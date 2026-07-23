@@ -80,7 +80,16 @@ fixed, versioned Story Blueprint graph runs `intake → brief → premise → pa
 `engine/workflows/README.md`. Ruff, mypy, 80 pytest tests, Prettier, ESLint,
 TypeScript, Vitest, and the production build pass.
 
-11. [ ] **Implement human interrupts** for approve, revise, reject, and fork.
+11. [x] **COMPLETED 2026-07-23 — Implement human interrupts for approve,
+revise, reject, and fork.** The Story Blueprint review is a real
+SQLite-checkpointed LangGraph interrupt with typed, idempotent human decisions. Approval succeeds the run and marks the exact active blueprint version approved; revision reruns integration and evaluation; rejection regenerates from premise through the parallel specialists; and fork freezes the source lineage while creating an explicitly linked child checkpoint thread. Free-form instructions live once in secret-guarded application persistence while graph state and events carry only decision and artifact-version references. The FastAPI command endpoint and generated TypeScript SDK expose the same durable contract for Step 12. Evidence:
+`engine/open_hollywood_engine/workflows/`,
+`apps/api/open_hollywood_api/services/blueprint_workflow.py`,
+`apps/api/open_hollywood_api/routes/blueprint_decisions.py`,
+`migrations/versions/0004_human_interrupts.py`, generated contracts, and
+workflow/API/persistence integration tests. Migration upgrade/downgrade and
+metadata parity, Ruff, mypy, 86 pytest tests, Prettier, ESLint, TypeScript,
+Vitest, and the production build pass.
 
 12. [ ] **Build the workspace UI around persisted data:** projects, chat, event timeline, artifact viewer, versions, and run status.
 

@@ -108,6 +108,14 @@ class RunStatus(StrEnum):
     CANCELLED = "cancelled"
 
 
+class HumanDecisionStatus(StrEnum):
+    """Application state for one idempotent interrupt resolution."""
+
+    PENDING = "pending"
+    APPLIED = "applied"
+    FAILED = "failed"
+
+
 class InvocationStatus(StrEnum):
     """Durable state for one budgeted model call."""
 
@@ -266,6 +274,10 @@ class WorkflowRun(TimestampedRecord, Base):
     conversation_id: Mapped[UUID | None] = mapped_column(
         Uuid, ForeignKey("conversations.id", ondelete="SET NULL"), index=True
     )
+    parent_workflow_run_id: Mapped[UUID | None] = mapped_column(
+        Uuid, ForeignKey("workflow_runs.id", ondelete="SET NULL"), index=True
+    )
+    forked_from_checkpoint_id: Mapped[str | None] = mapped_column(String(200))
     workflow_name: Mapped[str] = mapped_column(String(100), nullable=False)
     graph_version: Mapped[str] = mapped_column(String(50), nullable=False)
     status: Mapped[RunStatus] = mapped_column(
@@ -298,6 +310,66 @@ class WorkflowRun(TimestampedRecord, Base):
         back_populates="workflow_run",
         order_by="WorkflowEvent.id",
         passive_deletes=True,
+    )
+    parent_workflow_run: Mapped[WorkflowRun | None] = relationship(
+        remote_side="WorkflowRun.id",
+        back_populates="child_workflow_runs",
+        foreign_keys=[parent_workflow_run_id],
+    )
+    child_workflow_runs: Mapped[list[WorkflowRun]] = relationship(
+        back_populates="parent_workflow_run",
+        foreign_keys=[parent_workflow_run_id],
+    )
+    human_decisions: Mapped[list[HumanDecision]] = relationship(
+        back_populates="workflow_run",
+        cascade="all, delete-orphan",
+        foreign_keys="HumanDecision.workflow_run_id",
+    )
+
+
+class HumanDecision(TimestampedRecord, Base):
+    """Durable, idempotent resolution of one LangGraph human interrupt."""
+
+    __tablename__ = "human_decisions"
+    __table_args__ = (
+        UniqueConstraint("workflow_run_id", "interrupt_id"),
+        CheckConstraint(
+            "action IN ('approve', 'revise', 'reject', 'fork')",
+            name="human_decision_action",
+        ),
+    )
+
+    id: Mapped[UUID] = mapped_column(Uuid, primary_key=True)
+    workflow_run_id: Mapped[UUID] = mapped_column(
+        Uuid, ForeignKey("workflow_runs.id", ondelete="CASCADE"), index=True, nullable=False
+    )
+    interrupt_id: Mapped[str] = mapped_column(String(200), nullable=False)
+    checkpoint_id: Mapped[str] = mapped_column(String(200), nullable=False)
+    action: Mapped[str] = mapped_column(String(20), nullable=False)
+    instruction: Mapped[str | None] = mapped_column(Text)
+    status: Mapped[HumanDecisionStatus] = mapped_column(
+        Enum(
+            HumanDecisionStatus,
+            name="human_decision_status",
+            native_enum=False,
+            create_constraint=True,
+            validate_strings=True,
+        ),
+        default=HumanDecisionStatus.PENDING,
+        nullable=False,
+    )
+    resulting_workflow_run_id: Mapped[UUID | None] = mapped_column(
+        Uuid, ForeignKey("workflow_runs.id", ondelete="SET NULL"), index=True
+    )
+    applied_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    error_message: Mapped[str | None] = mapped_column(Text)
+
+    workflow_run: Mapped[WorkflowRun] = relationship(
+        back_populates="human_decisions",
+        foreign_keys=[workflow_run_id],
+    )
+    resulting_workflow_run: Mapped[WorkflowRun | None] = relationship(
+        foreign_keys=[resulting_workflow_run_id]
     )
 
 

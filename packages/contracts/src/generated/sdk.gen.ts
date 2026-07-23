@@ -19,6 +19,9 @@ import type {
   StreamWorkflowRunEventsErrors,
   StreamWorkflowRunEventsResponse,
   StreamWorkflowRunEventsResponses,
+  SubmitBlueprintDecisionData,
+  SubmitBlueprintDecisionErrors,
+  SubmitBlueprintDecisionResponses,
 } from "./types.gen";
 
 export type Options<
@@ -50,6 +53,31 @@ export const getHealth = <ThrowOnError extends boolean = false>(
   (options?.client ?? client).get<GetHealthResponses, unknown, ThrowOnError>({
     url: "/api/v1/health",
     ...options,
+  });
+
+/**
+ * Resolve the active Story Blueprint human interrupt
+ *
+ * Apply an idempotent approve, revise, reject, or fork command.
+ */
+export const submitBlueprintDecision = <ThrowOnError extends boolean = false>(
+  options: Options<SubmitBlueprintDecisionData, ThrowOnError>,
+): RequestResult<
+  SubmitBlueprintDecisionResponses,
+  SubmitBlueprintDecisionErrors,
+  ThrowOnError
+> =>
+  (options.client ?? client).post<
+    SubmitBlueprintDecisionResponses,
+    SubmitBlueprintDecisionErrors,
+    ThrowOnError
+  >({
+    url: "/api/v1/workflow-runs/{workflow_run_id}/decisions",
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      ...options.headers,
+    },
   });
 
 /**

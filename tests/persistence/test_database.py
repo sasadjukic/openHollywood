@@ -24,6 +24,7 @@ EXPECTED_TABLES = {
     "checkpoints",
     "conversations",
     "evaluations",
+    "human_decisions",
     "messages",
     "model_profiles",
     "projects",

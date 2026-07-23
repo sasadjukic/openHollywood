@@ -28,7 +28,13 @@ LangGraph. It runs the brief and premise stages, parallel world and character
 specialists, integration, and evaluation before pausing at the mandatory
 blueprint review boundary. Checkpoints retain only orchestration state and exact
 immutable artifact-version references, and failed parallel work resumes without
-repeating a successful sibling branch.
+repeating a successful sibling branch. The review is now a real durable human
+interrupt with typed, idempotent approve, revise, reject, and fork commands.
+Approval marks the exact blueprint version accepted; revision and rejection
+create immutable descendant versions through bounded graph routes; forks create
+linked child workflow threads without discarding the source lineage. The
+FastAPI command boundary and generated TypeScript SDK expose the same durable
+transition contract for the upcoming workspace UI.
 
 The v0.1 target is deliberately narrow: short prose fiction, local-first
 storage, optional local/cloud/hybrid inference, and one mandatory story

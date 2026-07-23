@@ -6,6 +6,7 @@ from open_hollywood_engine.workflows.blueprint_graph import (
     BlueprintGraphState,
     artifact_references_from_state,
     build_blueprint_graph,
+    initial_blueprint_fork_state,
     initial_blueprint_state,
 )
 from open_hollywood_engine.workflows.contracts import (
@@ -16,6 +17,9 @@ from open_hollywood_engine.workflows.contracts import (
     STORY_BLUEPRINT_WORKFLOW_NAME,
     ArtifactOutputRequirement,
     ArtifactReference,
+    BlueprintDecisionAction,
+    BlueprintDecisionResume,
+    BlueprintHumanDecision,
     BlueprintNode,
     BlueprintNodeDefinition,
     BlueprintNodeExecutor,
@@ -38,7 +42,10 @@ __all__ = [
     "ArtifactReference",
     "ArtifactReferenceState",
     "BlueprintCompiledGraph",
+    "BlueprintDecisionAction",
+    "BlueprintDecisionResume",
     "BlueprintGraphState",
+    "BlueprintHumanDecision",
     "BlueprintNode",
     "BlueprintNodeDefinition",
     "BlueprintNodeExecutor",
@@ -51,5 +58,6 @@ __all__ = [
     "RetryableSpecialistError",
     "build_blueprint_graph",
     "artifact_references_from_state",
+    "initial_blueprint_fork_state",
     "initial_blueprint_state",
 ]

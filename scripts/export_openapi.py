@@ -7,6 +7,7 @@ from pathlib import Path
 WORKSPACE_ROOT = Path(__file__).resolve().parents[1]
 OUTPUT_PATH = WORKSPACE_ROOT / "packages" / "contracts" / "openapi.json"
 sys.path.insert(0, str(WORKSPACE_ROOT / "apps" / "api"))
+sys.path.insert(0, str(WORKSPACE_ROOT / "engine"))
 
 from open_hollywood_api.app import app  # noqa: E402
 

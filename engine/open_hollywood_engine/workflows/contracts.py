@@ -6,13 +6,13 @@ from collections.abc import Iterable, Mapping
 from dataclasses import dataclass
 from enum import StrEnum
 from types import MappingProxyType
-from typing import Protocol
+from typing import Any, Protocol
 from uuid import UUID
 
 from open_hollywood_engine.artifacts import ArtifactKind
 
 STORY_BLUEPRINT_WORKFLOW_NAME = "story_blueprint"
-STORY_BLUEPRINT_GRAPH_VERSION = "1"
+STORY_BLUEPRINT_GRAPH_VERSION = "2"
 DEFAULT_MAX_GRAPH_STEPS = 12
 
 
@@ -27,6 +27,15 @@ class BlueprintNode(StrEnum):
     INTEGRATION = "integration"
     EVALUATION = "evaluation"
     APPROVAL = "approval"
+
+
+class BlueprintDecisionAction(StrEnum):
+    """Human choices accepted at the mandatory Story Blueprint interrupt."""
+
+    APPROVE = "approve"
+    REVISE = "revise"
+    REJECT = "reject"
+    FORK = "fork"
 
 
 BLUEPRINT_NODE_ORDER = (
@@ -183,6 +192,8 @@ class BlueprintNodeTask:
     node: BlueprintNode
     specialist_role: str
     input_artifacts: tuple[ArtifactReference, ...]
+    human_decision_id: UUID | None = None
+    reviewed_artifacts: tuple[ArtifactReference, ...] = ()
 
 
 @dataclass(frozen=True, slots=True)
@@ -190,6 +201,67 @@ class BlueprintNodeResult:
     """Validated artifact references emitted by a specialist execution."""
 
     artifacts: tuple[ArtifactReference, ...]
+
+
+@dataclass(frozen=True, slots=True)
+class BlueprintHumanDecision:
+    """Validated, idempotent command used to resume one graph interrupt."""
+
+    id: UUID
+    interrupt_id: str
+    action: BlueprintDecisionAction
+    instruction: str | None = None
+
+    def __post_init__(self) -> None:
+        if not self.interrupt_id or not self.interrupt_id.strip():
+            raise ValueError("interrupt_id must not be empty")
+        normalized = self.instruction.strip() if self.instruction is not None else None
+        if normalized is not None and len(normalized) > 10_000:
+            raise ValueError("instruction must not exceed 10000 characters")
+        if (
+            self.action
+            in {
+                BlueprintDecisionAction.REVISE,
+                BlueprintDecisionAction.REJECT,
+                BlueprintDecisionAction.FORK,
+            }
+            and not normalized
+        ):
+            raise ValueError(f"{self.action.value} requires a non-empty instruction")
+        if self.action is BlueprintDecisionAction.APPROVE and normalized:
+            raise ValueError("approve does not accept an instruction")
+        object.__setattr__(self, "instruction", normalized)
+
+    def resume_payload(self) -> dict[str, str]:
+        """Return the JSON-safe value supplied to LangGraph's interrupt."""
+        return {
+            "decision_id": str(self.id),
+            "action": self.action.value,
+        }
+
+
+@dataclass(frozen=True, slots=True)
+class BlueprintDecisionResume:
+    """Coordination-only decision data restored inside the graph."""
+
+    decision_id: UUID
+    action: BlueprintDecisionAction
+
+    @classmethod
+    def from_payload(cls, payload: Any) -> BlueprintDecisionResume:
+        """Validate the coordination-only value returned by an interrupt."""
+        if not isinstance(payload, dict):
+            raise BlueprintStateError("human decision payload must be an object")
+        if set(payload) != {"decision_id", "action"}:
+            raise BlueprintStateError(
+                "human decision payload must contain only decision_id and action"
+            )
+        try:
+            decision_id = UUID(payload["decision_id"])
+            action = BlueprintDecisionAction(payload["action"])
+        except (KeyError, TypeError, ValueError) as exc:
+            raise BlueprintStateError("human decision payload is invalid") from exc
+        return cls(decision_id=decision_id, action=action)
 
 
 class BlueprintNodeExecutor(Protocol):
@@ -220,6 +292,7 @@ class BlueprintWorkflowObserver(Protocol):
         self,
         workflow_run_id: UUID,
         artifacts: tuple[ArtifactReference, ...],
+        interrupt_id: str,
     ) -> None:
         """Record that autonomous blueprint construction reached review."""
         ...
@@ -247,8 +320,9 @@ class NullBlueprintWorkflowObserver:
         self,
         workflow_run_id: UUID,
         artifacts: tuple[ArtifactReference, ...],
+        interrupt_id: str,
     ) -> None:
-        del workflow_run_id, artifacts
+        del workflow_run_id, artifacts, interrupt_id
 
     async def workflow_failed(self, workflow_run_id: UUID, error: Exception) -> None:
         del workflow_run_id, error
