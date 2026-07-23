@@ -16,6 +16,14 @@ The gateway currently provides:
 - Runtime-only bearer authentication resolved through opaque secret handles
 - Preflight rejection when a credential reaches a model prompt or response
 
+The same package owns schema-versioned `Local`, `Cloud`, and `Hybrid` preset
+contracts. Each preset assigns every registered Story Blueprint specialist to
+local or cloud inference, then binds those deployment slots to exact discovered
+model identifiers. Configurations fail closed on unknown roles, mismatched
+deployment slots, unsupported schema versions, or missing required models.
+They remain independent from SQLAlchemy, FastAPI, Ollama response types, and
+provider credentials.
+
 Cloud model names are never hard-coded because availability and free-plan access
 can change. Ollama models reached through a local host with a `-cloud` suffix are
 still classified as cloud inference. Schema-enforced structured output is

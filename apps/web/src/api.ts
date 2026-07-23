@@ -1,13 +1,21 @@
 import {
+  activateModelProfile,
+  configureModelProfile,
   getArtifactVersion,
   getHealth,
   getProjectWorkspace,
+  listModelCatalog,
+  listModelProfiles,
   listProjects,
   listWorkflowRunEvents,
   submitBlueprintDecision,
   type ArtifactVersionDetail,
   type BlueprintDecisionAction,
   type BlueprintDecisionResponse,
+  type ConfigureModelProfileRequest,
+  type ModelCatalog,
+  type ModelProfileList,
+  type ModelProfileSummary,
   type ProjectList,
   type ProjectWorkspace,
   type ServiceStatus,
@@ -58,6 +66,36 @@ export async function fetchWorkflowEvents(
     query: { after: 0, limit: 500 },
   });
   return requireData(result, "The workflow timeline could not be loaded.");
+}
+
+export async function fetchModelProfiles(): Promise<ModelProfileList> {
+  const result = await listModelProfiles();
+  return requireData(result, "The model presets could not be loaded.");
+}
+
+export async function fetchModelCatalog(): Promise<ModelCatalog> {
+  const result = await listModelCatalog();
+  return requireData(result, "The Ollama model catalog could not be loaded.");
+}
+
+export async function saveModelProfile(
+  profileId: string,
+  configuration: ConfigureModelProfileRequest,
+): Promise<ModelProfileSummary> {
+  const result = await configureModelProfile({
+    body: configuration,
+    path: { profile_id: profileId },
+  });
+  return requireData(result, "The model preset could not be saved.");
+}
+
+export async function selectModelProfile(
+  profileId: string,
+): Promise<ModelProfileSummary> {
+  const result = await activateModelProfile({
+    path: { profile_id: profileId },
+  });
+  return requireData(result, "The model preset could not be activated.");
 }
 
 export interface SubmitDecisionInput {

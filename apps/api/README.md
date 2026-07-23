@@ -40,6 +40,27 @@ version metadata. Full artifact bodies and evaluation summaries are fetched for
 one selected version at a time. These responses deliberately exclude workflow
 checkpoint state, model prompts, credentials, and private reasoning.
 
+## Model presets and discovery
+
+Local, Cloud, and Hybrid are fixed, versioned role-routing policies persisted
+through the existing `model_profiles` table:
+
+```text
+GET  /api/v1/model-profiles
+PUT  /api/v1/model-profiles/{profile_id}
+POST /api/v1/model-profiles/{profile_id}/activate
+GET  /api/v1/models/catalog
+```
+
+The first read idempotently creates any missing built-in presets without
+guessing model names. Configuration stores exact provider/model identifiers and
+local-or-cloud placement only. Activation fails until all required slots are
+configured and atomically clears the previous default. Catalog discovery
+queries local Ollama and, when `OLLAMA_API_KEY` is available, direct Ollama
+Cloud independently so one unavailable source does not hide another source's
+models. Credentials never appear in these requests, responses, or persisted
+profiles.
+
 ## Workflow events
 
 Workflow producers append UI-safe summaries through `WorkflowEventStore`.

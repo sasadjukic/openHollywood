@@ -23,3 +23,9 @@ shows the Story Blueprint decision composer while a run is paused. The right
 inspector renders the selected immutable artifact version, provenance, and
 evaluation summary. On narrow screens, navigation and inspection become
 dismissible drawers.
+
+`Model setup` opens the Local, Cloud, and Hybrid preset surface. It displays
+dynamic Ollama catalog availability, the role allocation for each preset, and
+only the model selectors required by that allocation. Saving a preset records
+exact model identifiers before atomically activating it; incomplete presets
+remain visibly unavailable.
