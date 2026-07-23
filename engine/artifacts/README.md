@@ -4,6 +4,10 @@
 for structured creative output. The v0.1 catalog includes creative briefs,
 developed premises, characters, relationships, locations, world rules, beats,
 scene plans, critiques, continuity findings, and the assembled story blueprint.
+The dialogue experiment adds a one-time director briefing, isolated character
+turns, and structured director evaluations. Director evaluations validate
+ordered emotional-arc progress, unambiguous thread status, and the closure
+conditions required for a requested scene ending.
 
 All models reject unknown fields, strip surrounding whitespace, and are frozen
 after validation. Collection fields use tuples so nested artifact content is

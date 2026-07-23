@@ -20,7 +20,10 @@ export type ArtifactKind =
   | "scene_plan"
   | "critique"
   | "continuity_finding"
-  | "story_blueprint";
+  | "story_blueprint"
+  | "dialogue_briefing"
+  | "dialogue_turn"
+  | "dialogue_evaluation";
 
 /**
  * ArtifactReferenceEnvelope

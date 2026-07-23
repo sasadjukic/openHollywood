@@ -69,3 +69,37 @@ Every path returns to a new approval interrupt except `approve`. Artifact
 reducers replace active references by logical artifact key while immutable
 older versions and their parent lineage remain in SQLite. Decision UUIDs are
 idempotency keys, and each interrupt accepts at most one decision.
+
+## Character-dialogue subgraph
+
+The legacy dialogue experiment is preserved as the isolated versioned
+`character_dialogue` subgraph:
+
+```text
+START -> director_briefing -> character_one -> character_two
+                                      ^              |
+                                      +-- director_evaluation
+                                             |
+                                       complete -> END
+```
+
+It deliberately supports exactly two character actors. Actor identity and
+scene context arrive through exact Character, Scene Plan, and optional context
+artifact-version references. The application executor loads those immutable
+inputs, performs a budgeted call associated with the selected model profile,
+validates a `DialogueBriefing`, `DialogueTurn`, or `DialogueEvaluation`, and
+persists the output before returning its reference to the graph.
+
+Each round always calls both actors in stable order and evaluates once
+afterward. The director may end only after the configured minimum round, with
+closure detected at climax or resolution and a declared ending. Otherwise the
+graph continues until its hard maximum. Only explicitly retryable dialogue
+failures receive the registered bounded retry; malformed state, mismatched
+turns, duplicate input/output versions, undeclared endings, and incorrect
+artifact kinds fail immediately.
+
+Checkpoint state contains no dialogue, pacing notes, prompts, credentials, or
+provider objects. It stores the per-call budget and prompt-template version,
+workflow/model-profile identifiers, counters, completion reason, and immutable
+artifact references. The subgraph can inherit a parent checkpointer when Step
+15 embeds it in the scene-production loop.

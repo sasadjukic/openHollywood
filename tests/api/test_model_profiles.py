@@ -133,6 +133,8 @@ async def test_presets_seed_in_product_order_without_model_guesses(
     assert all(profile["is_complete"] is False for profile in profiles)
     assert profiles[2]["role_assignments"]["brief_architect"] == "local"
     assert profiles[2]["role_assignments"]["blueprint_integrator"] == "cloud"
+    assert profiles[2]["role_assignments"]["character_actor"] == "cloud"
+    assert profiles[2]["role_assignments"]["dialogue_director"] == "cloud"
 
 
 async def test_configure_and_activate_local_preset_routes_every_role(
@@ -160,6 +162,13 @@ async def test_configure_and_activate_local_preset_routes_every_role(
     selection = store.resolve_role(profile_id, "character_architect")
     assert selection.model_identifier == "qwen3:8b"
     assert selection.deployment is ModelDeployment.LOCAL
+    assert (
+        store.resolve_role(
+            profile_id,
+            "character_actor",
+        ).model_identifier
+        == "qwen3:8b"
+    )
 
 
 async def test_incomplete_hybrid_preset_cannot_be_activated(

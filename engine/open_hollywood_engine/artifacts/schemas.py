@@ -56,6 +56,9 @@ class ArtifactKind(StrEnum):
     CRITIQUE = "critique"
     CONTINUITY_FINDING = "continuity_finding"
     STORY_BLUEPRINT = "story_blueprint"
+    DIALOGUE_BRIEFING = "dialogue_briefing"
+    DIALOGUE_TURN = "dialogue_turn"
+    DIALOGUE_EVALUATION = "dialogue_evaluation"
 
 
 class StoryFormat(StrEnum):
@@ -109,6 +112,15 @@ class ContinuityCategory(StrEnum):
     LOCATION = "location"
     WORLD_RULE = "world_rule"
     SETUP_PAYOFF = "setup_payoff"
+
+
+class EmotionalArcStage(StrEnum):
+    """Bounded dramatic progression tracked by the dialogue director."""
+
+    OPENING = "opening"
+    TENSION = "tension"
+    CLIMAX = "climax"
+    RESOLUTION = "resolution"
 
 
 class ArtifactSchema(BaseModel):
@@ -350,6 +362,59 @@ class ContinuityFinding(ArtifactSchema):
         return self
 
 
+class DialogueBriefing(ArtifactSchema):
+    """Director's one-time dramatic destination and pacing plan."""
+
+    chosen_ending: NonEmptyText
+    pacing_notes: NonEmptyText
+
+
+class DialogueTurn(ArtifactSchema):
+    """One character actor's isolated dialogue contribution."""
+
+    scene_id: ReferenceId
+    round_number: Annotated[StrictInt, Field(ge=1)]
+    sequence_number: Annotated[StrictInt, Field(ge=1)]
+    character_id: ReferenceId
+    dialogue: NonEmptyText
+    director_instruction: NonEmptyText | None = None
+
+
+class DialogueEvaluation(ArtifactSchema):
+    """Director's structured assessment after both actors complete a round."""
+
+    round_number: Annotated[StrictInt, Field(ge=1)]
+    emotional_arc: EmotionalArcStage
+    arc_stages_hit: Annotated[tuple[EmotionalArcStage, ...], Field(min_length=1)]
+    unresolved_threads: tuple[NonEmptyText, ...] = ()
+    resolved_threads: tuple[NonEmptyText, ...] = ()
+    closure_detected: StrictBool
+    ending_type: NonEmptyText | None = None
+    stage_direction: NonEmptyText | None = None
+    scene_end: StrictBool = False
+
+    @model_validator(mode="after")
+    def validate_director_state(self) -> Self:
+        """Keep arc history ordered and thread accounting unambiguous."""
+        stage_order = tuple(EmotionalArcStage)
+        expected_prefix = stage_order[: len(self.arc_stages_hit)]
+        if self.arc_stages_hit != expected_prefix or stage_order.index(
+            self.arc_stages_hit[-1]
+        ) > stage_order.index(self.emotional_arc):
+            raise ValueError("arc_stages_hit must be an ordered prefix no later than emotional_arc")
+        overlap = set(self.unresolved_threads) & set(self.resolved_threads)
+        if overlap:
+            raise ValueError(
+                f"dialogue threads cannot be both resolved and unresolved: {sorted(overlap)}"
+            )
+        if self.scene_end and (
+            not self.closure_detected
+            or self.emotional_arc not in {EmotionalArcStage.CLIMAX, EmotionalArcStage.RESOLUTION}
+        ):
+            raise ValueError("scene_end requires closure at the climax or resolution stage")
+        return self
+
+
 class StoryBlueprint(ArtifactSchema):
     """Complete human-review checkpoint assembled from specialist artifacts."""
 
@@ -453,6 +518,9 @@ ARTIFACT_SCHEMAS: Mapping[ArtifactKind, ArtifactSchemaType] = MappingProxyType(
         ArtifactKind.CRITIQUE: Critique,
         ArtifactKind.CONTINUITY_FINDING: ContinuityFinding,
         ArtifactKind.STORY_BLUEPRINT: StoryBlueprint,
+        ArtifactKind.DIALOGUE_BRIEFING: DialogueBriefing,
+        ArtifactKind.DIALOGUE_TURN: DialogueTurn,
+        ArtifactKind.DIALOGUE_EVALUATION: DialogueEvaluation,
     }
 )
 

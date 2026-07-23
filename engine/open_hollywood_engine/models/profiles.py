@@ -10,7 +10,7 @@ from typing import Any
 
 from open_hollywood_engine.models.contracts import ModelDeployment
 
-MODEL_PROFILE_SCHEMA_VERSION = "1"
+MODEL_PROFILE_SCHEMA_VERSION = "2"
 BLUEPRINT_SPECIALIST_ROLES = (
     "brief_architect",
     "premise_architect",
@@ -18,6 +18,14 @@ BLUEPRINT_SPECIALIST_ROLES = (
     "character_architect",
     "blueprint_integrator",
     "blueprint_critic",
+)
+DIALOGUE_SPECIALIST_ROLES = (
+    "character_actor",
+    "dialogue_director",
+)
+REGISTERED_SPECIALIST_ROLES = (
+    *BLUEPRINT_SPECIALIST_ROLES,
+    *DIALOGUE_SPECIALIST_ROLES,
 )
 
 
@@ -81,8 +89,8 @@ class ModelPreset:
         if not self.name.strip() or not self.description.strip():
             raise ValueError("preset name and description must not be empty")
         assignments = dict(self.role_assignments)
-        if set(assignments) != set(BLUEPRINT_SPECIALIST_ROLES):
-            raise ValueError("preset must assign every registered blueprint role exactly once")
+        if set(assignments) != set(REGISTERED_SPECIALIST_ROLES):
+            raise ValueError("preset must assign every registered specialist role exactly once")
         deployments = set(assignments.values())
         if self.mode is ModelProfileMode.LOCAL and deployments != {ModelDeployment.LOCAL}:
             raise ValueError("Local preset must route every role locally")
@@ -218,6 +226,20 @@ class ModelProfileConfiguration:
             models[deployment] = (
                 None if selection_data is None else ModelSelection.from_data(selection_data)
             )
+        if schema_version == "1":
+            expected_legacy = {
+                role: MODEL_PRESETS[mode].role_assignments[role]
+                for role in BLUEPRINT_SPECIALIST_ROLES
+            }
+            if role_assignments != expected_legacy:
+                raise ValueError("legacy role assignments do not match the selected preset")
+            role_assignments.update(
+                {
+                    role: MODEL_PRESETS[mode].role_assignments[role]
+                    for role in DIALOGUE_SPECIALIST_ROLES
+                }
+            )
+            schema_version = MODEL_PROFILE_SCHEMA_VERSION
         return cls(
             mode=mode,
             role_assignments=role_assignments,
@@ -232,13 +254,13 @@ MODEL_PRESETS: Mapping[ModelProfileMode, ModelPreset] = MappingProxyType(
             mode=ModelProfileMode.LOCAL,
             name="Local",
             description="Keep every specialist on this device through Ollama.",
-            role_assignments={role: ModelDeployment.LOCAL for role in BLUEPRINT_SPECIALIST_ROLES},
+            role_assignments={role: ModelDeployment.LOCAL for role in REGISTERED_SPECIALIST_ROLES},
         ),
         ModelProfileMode.CLOUD: ModelPreset(
             mode=ModelProfileMode.CLOUD,
             name="Cloud",
             description="Use the selected cloud model for every specialist.",
-            role_assignments={role: ModelDeployment.CLOUD for role in BLUEPRINT_SPECIALIST_ROLES},
+            role_assignments={role: ModelDeployment.CLOUD for role in REGISTERED_SPECIALIST_ROLES},
         ),
         ModelProfileMode.HYBRID: ModelPreset(
             mode=ModelProfileMode.HYBRID,
@@ -254,6 +276,8 @@ MODEL_PRESETS: Mapping[ModelProfileMode, ModelPreset] = MappingProxyType(
                 "character_architect": ModelDeployment.CLOUD,
                 "blueprint_integrator": ModelDeployment.CLOUD,
                 "blueprint_critic": ModelDeployment.LOCAL,
+                "character_actor": ModelDeployment.CLOUD,
+                "dialogue_director": ModelDeployment.CLOUD,
             },
         ),
     }

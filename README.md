@@ -49,6 +49,16 @@ slots are configured. Stored profiles contain model identifiers and inference
 placement only; cloud credentials continue to resolve from runtime secret
 handles and never enter SQLite or the generated API contract.
 
+The useful legacy character-agent dialogue experiment has also been ported as
+an isolated, bounded subgraph rather than restored as an application module.
+Two registered character actors speak in sequence under a dialogue director
+that briefs once and evaluates after each round. Dialogue bodies and director
+assessments use typed immutable artifacts, while checkpoint state retains only
+budgets, counters, model-profile IDs, and exact version references. This
+subgraph is ready to become an optional specialist pass inside the production
+loop in Step 15; it does not add a second human checkpoint or a standalone
+scene editor.
+
 The v0.1 target is deliberately narrow: short prose fiction, local-first
 storage, optional local/cloud/hybrid inference, and one mandatory story
 blueprint approval before autonomous drafting.
