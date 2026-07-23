@@ -1,6 +1,6 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { client } from "@open-hollywood/contracts/client";
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 
@@ -12,6 +12,7 @@ const artifactId = "33333333-3333-3333-3333-333333333333";
 const versionId = "44444444-4444-4444-4444-444444444444";
 const firstVersionId = "55555555-5555-5555-5555-555555555555";
 const now = "2026-07-23T10:00:00Z";
+const localProfileId = "00000000-0000-4000-8000-000000000131";
 
 function renderApp() {
   const queryClient = new QueryClient({
@@ -57,6 +58,37 @@ function configureWorkspaceApi() {
               updated_at: now,
             },
           ],
+        }),
+      );
+    }
+    if (url.endsWith("/api/v1/model-profiles") && method === "GET") {
+      return Promise.resolve(jsonResponse(modelProfilesResponse()));
+    }
+    if (url.endsWith("/api/v1/models/catalog")) {
+      return Promise.resolve(jsonResponse(modelCatalogResponse()));
+    }
+    if (
+      url.endsWith(`/api/v1/model-profiles/${localProfileId}`) &&
+      method === "PUT"
+    ) {
+      return Promise.resolve(
+        jsonResponse({
+          ...modelProfilesResponse().profiles[0],
+          is_complete: true,
+          local_model: localModel(),
+        }),
+      );
+    }
+    if (
+      url.endsWith(`/api/v1/model-profiles/${localProfileId}/activate`) &&
+      method === "POST"
+    ) {
+      return Promise.resolve(
+        jsonResponse({
+          ...modelProfilesResponse().profiles[0],
+          is_complete: true,
+          is_default: true,
+          local_model: localModel(),
         }),
       );
     }
@@ -202,6 +234,53 @@ describe("App", () => {
       screen.getByRole("button", { name: "Retry connection" }),
     ).toBeInTheDocument();
   });
+
+  it("configures and activates a discovered Local model preset", async () => {
+    const user = userEvent.setup();
+    const fetchMock = configureWorkspaceApi();
+    renderApp();
+
+    await user.click(
+      await screen.findByRole("button", { name: "Model setup" }),
+    );
+    expect(
+      await screen.findByRole("heading", {
+        name: "Choose how the studio thinks.",
+      }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("2 models discovered")).toBeInTheDocument();
+
+    const localCard = screen
+      .getByRole("heading", { name: "Local" })
+      .closest("article");
+    if (!(localCard instanceof HTMLElement)) {
+      throw new Error("Local preset card was not rendered.");
+    }
+    const localControls = within(localCard);
+    const action = localControls.getByRole("button", {
+      name: "Use Local",
+    });
+    expect(action).toBeDisabled();
+
+    await user.selectOptions(
+      localControls.getByRole("combobox", { name: "Local model" }),
+      "ollama:local:qwen3:8b",
+    );
+    await user.click(action);
+
+    await waitFor(() => {
+      expect(
+        fetchMock.mock.calls.some(([input, init]) => {
+          const request = input instanceof Request ? input : null;
+          return (
+            requestUrl(input).endsWith(
+              `/model-profiles/${localProfileId}/activate`,
+            ) && (request?.method ?? init?.method) === "POST"
+          );
+        }),
+      ).toBe(true);
+    });
+  });
 });
 
 function workspaceResponse() {
@@ -329,6 +408,113 @@ function artifactDetailResponse() {
       },
     ],
     selected_version: artifact.versions[0],
+  };
+}
+
+function modelProfilesResponse() {
+  const roleAssignments = {
+    blueprint_critic: "local",
+    blueprint_integrator: "local",
+    brief_architect: "local",
+    character_architect: "local",
+    premise_architect: "local",
+    world_builder: "local",
+  };
+  return {
+    profiles: [
+      {
+        cloud_model: null,
+        created_at: now,
+        description: "Keep every specialist on this device through Ollama.",
+        id: localProfileId,
+        is_complete: false,
+        is_default: false,
+        local_model: null,
+        mode: "local",
+        name: "Local",
+        required_deployments: ["local"],
+        role_assignments: roleAssignments,
+        updated_at: now,
+      },
+      {
+        cloud_model: null,
+        created_at: now,
+        description: "Use the selected cloud model for every specialist.",
+        id: "00000000-0000-4000-8000-000000000132",
+        is_complete: false,
+        is_default: false,
+        local_model: null,
+        mode: "cloud",
+        name: "Cloud",
+        required_deployments: ["cloud"],
+        role_assignments: Object.fromEntries(
+          Object.keys(roleAssignments).map((role) => [role, "cloud"]),
+        ),
+        updated_at: now,
+      },
+      {
+        cloud_model: null,
+        created_at: now,
+        description: "Keep routine work local and creative reasoning in cloud.",
+        id: "00000000-0000-4000-8000-000000000133",
+        is_complete: false,
+        is_default: false,
+        local_model: null,
+        mode: "hybrid",
+        name: "Hybrid",
+        required_deployments: ["local", "cloud"],
+        role_assignments: {
+          ...roleAssignments,
+          blueprint_integrator: "cloud",
+          character_architect: "cloud",
+          premise_architect: "cloud",
+          world_builder: "cloud",
+        },
+        updated_at: now,
+      },
+    ],
+  };
+}
+
+function modelCatalogResponse() {
+  return {
+    models: [
+      {
+        deployment: "local",
+        digest: "local-digest",
+        model_identifier: "qwen3:8b",
+        parameter_size: "8.2B",
+        provider: "ollama",
+        quantization_level: "Q4_K_M",
+        size_bytes: 5_000_000_000,
+      },
+      {
+        deployment: "cloud",
+        digest: null,
+        model_identifier: "creative-cloud",
+        parameter_size: null,
+        provider: "ollama",
+        quantization_level: null,
+        size_bytes: null,
+      },
+    ],
+    sources: [
+      {
+        detail: null,
+        key: "ollama_local",
+        label: "Ollama on this device",
+        provider: "ollama",
+        status: "available",
+      },
+    ],
+  };
+}
+
+function localModel() {
+  return {
+    deployment: "local",
+    model_identifier: "qwen3:8b",
+    provider: "ollama",
   };
 }
 

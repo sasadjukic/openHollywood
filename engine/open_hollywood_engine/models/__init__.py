@@ -20,6 +20,15 @@ from open_hollywood_engine.models.gateway import (
     ModelGatewayErrorCode,
 )
 from open_hollywood_engine.models.ollama import OllamaGateway, OllamaHost
+from open_hollywood_engine.models.profiles import (
+    BLUEPRINT_SPECIALIST_ROLES,
+    MODEL_PRESETS,
+    MODEL_PROFILE_SCHEMA_VERSION,
+    ModelPreset,
+    ModelProfileConfiguration,
+    ModelProfileMode,
+    ModelSelection,
+)
 from open_hollywood_engine.secrets import EnvironmentSecretStore, ModelSecret, SecretValue
 
 __all__ = [
@@ -34,13 +43,20 @@ __all__ = [
     "ModelGatewayError",
     "ModelGatewayErrorCode",
     "ModelMessage",
+    "ModelProfileConfiguration",
+    "ModelProfileMode",
+    "ModelPreset",
     "ModelRequest",
     "ModelResponse",
     "ModelSecret",
     "ModelSettings",
     "ModelTiming",
     "ModelUsage",
+    "ModelSelection",
+    "MODEL_PRESETS",
+    "MODEL_PROFILE_SCHEMA_VERSION",
     "OllamaGateway",
     "OllamaHost",
     "SecretValue",
+    "BLUEPRINT_SPECIALIST_ROLES",
 ]

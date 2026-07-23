@@ -1,19 +1,26 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type {
   BlueprintDecisionAction,
+  ModelProfileSummary,
+  ModelSelectionInput,
   WorkspaceArtifact,
 } from "@open-hollywood/contracts";
 import { useState } from "react";
 
 import {
   fetchArtifactVersion,
+  fetchModelCatalog,
+  fetchModelProfiles,
   fetchProjects,
   fetchProjectWorkspace,
   fetchServiceStatus,
   fetchWorkflowEvents,
+  saveModelProfile,
+  selectModelProfile,
   submitDecision,
 } from "./api";
 import { ArtifactInspector } from "./components/ArtifactInspector";
+import { ModelSettings } from "./components/ModelSettings";
 import { Timeline } from "./components/Timeline";
 
 const serviceQueryKey = ["service-status"] as const;
@@ -33,6 +40,7 @@ export function App() {
   const [instruction, setInstruction] = useState("");
   const [isNavigationOpen, setNavigationOpen] = useState(false);
   const [isInspectorOpen, setInspectorOpen] = useState(false);
+  const [isSettingsOpen, setSettingsOpen] = useState(false);
 
   const serviceStatus = useQuery({
     queryFn: fetchServiceStatus,
@@ -43,6 +51,16 @@ export function App() {
     queryFn: fetchProjects,
     queryKey: projectsQueryKey,
     retry: 1,
+  });
+  const modelProfilesQuery = useQuery({
+    enabled: isSettingsOpen,
+    queryFn: fetchModelProfiles,
+    queryKey: ["model-profiles"],
+  });
+  const modelCatalogQuery = useQuery({
+    enabled: isSettingsOpen,
+    queryFn: fetchModelCatalog,
+    queryKey: ["model-catalog"],
   });
 
   const projects = projectsQuery.data?.projects ?? [];
@@ -136,6 +154,26 @@ export function App() {
       ]);
     },
   });
+  const profileMutation = useMutation({
+    mutationFn: async ({
+      cloudModel,
+      localModel,
+      profile,
+    }: {
+      cloudModel: ModelSelectionInput | null;
+      localModel: ModelSelectionInput | null;
+      profile: ModelProfileSummary;
+    }) => {
+      await saveModelProfile(profile.id, {
+        cloud_model: cloudModel,
+        local_model: localModel,
+      });
+      return selectModelProfile(profile.id);
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["model-profiles"] });
+    },
+  });
 
   const connectionState = serviceStatus.isPending
     ? "connecting"
@@ -166,6 +204,9 @@ export function App() {
         connectionState={connectionState}
         onOpenNavigation={() => {
           setNavigationOpen(true);
+        }}
+        onOpenSettings={() => {
+          setSettingsOpen(true);
         }}
       />
 
@@ -355,6 +396,29 @@ export function App() {
           }}
         />
       )}
+      <ModelSettings
+        catalog={modelCatalogQuery.data}
+        error={
+          profileMutation.error instanceof Error
+            ? profileMutation.error.message
+            : modelProfilesQuery.error instanceof Error
+              ? modelProfilesQuery.error.message
+              : modelCatalogQuery.error instanceof Error
+                ? modelCatalogQuery.error.message
+                : null
+        }
+        isCatalogLoading={modelCatalogQuery.isPending}
+        isOpen={isSettingsOpen}
+        isProfilesLoading={modelProfilesQuery.isPending}
+        isSaving={profileMutation.isPending}
+        onClose={() => {
+          setSettingsOpen(false);
+        }}
+        onSaveAndActivate={(profile, localModel, cloudModel) => {
+          profileMutation.mutate({ cloudModel, localModel, profile });
+        }}
+        profiles={modelProfilesQuery.data?.profiles ?? []}
+      />
     </div>
   );
 }
@@ -362,9 +426,11 @@ export function App() {
 function Topbar({
   connectionState,
   onOpenNavigation,
+  onOpenSettings,
 }: {
   connectionState: "connected" | "connecting" | "unavailable";
   onOpenNavigation?: () => void;
+  onOpenSettings?: () => void;
 }) {
   return (
     <header className="topbar">
@@ -393,6 +459,15 @@ function Topbar({
               : "Offline"}
         </span>
         <span className="version-label">v0.1</span>
+        {onOpenSettings && (
+          <button
+            className="settings-button"
+            type="button"
+            onClick={onOpenSettings}
+          >
+            Model setup
+          </button>
+        )}
       </div>
     </header>
   );

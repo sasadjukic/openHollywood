@@ -41,6 +41,14 @@ It keeps the Story Blueprint decision beside its source artifact and activity
 timeline while preserving the product boundary against a general-purpose
 manuscript editor.
 
+Model configuration is now a first-class persisted workflow surface. The
+workspace offers Local, Cloud, and Hybrid presets backed by fixed,
+provider-neutral role-routing policies and dynamically discovered Ollama model
+catalogs. A preset cannot become active until all of its required exact model
+slots are configured. Stored profiles contain model identifiers and inference
+placement only; cloud credentials continue to resolve from runtime secret
+handles and never enter SQLite or the generated API contract.
+
 The v0.1 target is deliberately narrow: short prose fiction, local-first
 storage, optional local/cloud/hybrid inference, and one mandatory story
 blueprint approval before autonomous drafting.

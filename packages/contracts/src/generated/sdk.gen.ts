@@ -10,6 +10,12 @@ import type {
 } from "./client";
 import { client } from "./client.gen";
 import type {
+  ActivateModelProfileData,
+  ActivateModelProfileErrors,
+  ActivateModelProfileResponses,
+  ConfigureModelProfileData,
+  ConfigureModelProfileErrors,
+  ConfigureModelProfileResponses,
   GetArtifactVersionData,
   GetArtifactVersionErrors,
   GetArtifactVersionResponses,
@@ -18,6 +24,10 @@ import type {
   GetProjectWorkspaceData,
   GetProjectWorkspaceErrors,
   GetProjectWorkspaceResponses,
+  ListModelCatalogData,
+  ListModelCatalogResponses,
+  ListModelProfilesData,
+  ListModelProfilesResponses,
   ListProjectsData,
   ListProjectsResponses,
   ListWorkflowRunEventsData,
@@ -80,6 +90,77 @@ export const getHealth = <ThrowOnError extends boolean = false>(
     url: "/api/v1/health",
     ...options,
   });
+
+/**
+ * List durable Local, Cloud, and Hybrid presets
+ *
+ * Return the fixed v0.1 presets and their exact selected models.
+ */
+export const listModelProfiles = <ThrowOnError extends boolean = false>(
+  options?: Options<ListModelProfilesData, ThrowOnError>,
+): RequestResult<ListModelProfilesResponses, unknown, ThrowOnError> =>
+  (options?.client ?? client).get<
+    ListModelProfilesResponses,
+    unknown,
+    ThrowOnError
+  >({ url: "/api/v1/model-profiles", ...options });
+
+/**
+ * Configure exact models for one preset
+ *
+ * Persist only provider, exact identifier, and inference placement.
+ */
+export const configureModelProfile = <ThrowOnError extends boolean = false>(
+  options: Options<ConfigureModelProfileData, ThrowOnError>,
+): RequestResult<
+  ConfigureModelProfileResponses,
+  ConfigureModelProfileErrors,
+  ThrowOnError
+> =>
+  (options.client ?? client).put<
+    ConfigureModelProfileResponses,
+    ConfigureModelProfileErrors,
+    ThrowOnError
+  >({
+    url: "/api/v1/model-profiles/{profile_id}",
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      ...options.headers,
+    },
+  });
+
+/**
+ * Select one complete preset as the default
+ *
+ * Atomically activate one complete secret-free preset.
+ */
+export const activateModelProfile = <ThrowOnError extends boolean = false>(
+  options: Options<ActivateModelProfileData, ThrowOnError>,
+): RequestResult<
+  ActivateModelProfileResponses,
+  ActivateModelProfileErrors,
+  ThrowOnError
+> =>
+  (options.client ?? client).post<
+    ActivateModelProfileResponses,
+    ActivateModelProfileErrors,
+    ThrowOnError
+  >({ url: "/api/v1/model-profiles/{profile_id}/activate", ...options });
+
+/**
+ * Discover configured Ollama model catalogs
+ *
+ * Return dynamic models while reporting each source independently.
+ */
+export const listModelCatalog = <ThrowOnError extends boolean = false>(
+  options?: Options<ListModelCatalogData, ThrowOnError>,
+): RequestResult<ListModelCatalogResponses, unknown, ThrowOnError> =>
+  (options?.client ?? client).get<
+    ListModelCatalogResponses,
+    unknown,
+    ThrowOnError
+  >({ url: "/api/v1/models/catalog", ...options });
 
 /**
  * List locally persisted story projects

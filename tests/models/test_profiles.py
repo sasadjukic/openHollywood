@@ -1,0 +1,76 @@
+"""Provider-neutral Local, Cloud, and Hybrid preset tests."""
+
+import pytest
+from open_hollywood_engine.models import (
+    BLUEPRINT_SPECIALIST_ROLES,
+    MODEL_PRESETS,
+    ModelDeployment,
+    ModelProfileConfiguration,
+    ModelProfileMode,
+    ModelSelection,
+)
+
+
+def _selection(
+    deployment: ModelDeployment,
+    identifier: str,
+) -> ModelSelection:
+    return ModelSelection(
+        provider="ollama",
+        model_identifier=identifier,
+        deployment=deployment,
+    )
+
+
+def test_presets_assign_every_registered_blueprint_role() -> None:
+    for preset in MODEL_PRESETS.values():
+        assert set(preset.role_assignments) == set(BLUEPRINT_SPECIALIST_ROLES)
+
+
+def test_local_and_cloud_presets_route_every_role_to_one_model() -> None:
+    local_model = _selection(ModelDeployment.LOCAL, "qwen3:8b")
+    cloud_model = _selection(ModelDeployment.CLOUD, "creative-cloud")
+    local = MODEL_PRESETS[ModelProfileMode.LOCAL].configuration(local_model=local_model)
+    cloud = MODEL_PRESETS[ModelProfileMode.CLOUD].configuration(cloud_model=cloud_model)
+
+    assert all(local.selection_for(role) == local_model for role in BLUEPRINT_SPECIALIST_ROLES)
+    assert all(cloud.selection_for(role) == cloud_model for role in BLUEPRINT_SPECIALIST_ROLES)
+
+
+def test_hybrid_routes_structured_preparation_and_evaluation_locally() -> None:
+    local_model = _selection(ModelDeployment.LOCAL, "qwen3:8b")
+    cloud_model = _selection(ModelDeployment.CLOUD, "creative-cloud")
+    hybrid = MODEL_PRESETS[ModelProfileMode.HYBRID].configuration(
+        local_model=local_model,
+        cloud_model=cloud_model,
+    )
+
+    assert hybrid.selection_for("brief_architect") == local_model
+    assert hybrid.selection_for("blueprint_critic") == local_model
+    assert hybrid.selection_for("character_architect") == cloud_model
+    assert hybrid.selection_for("blueprint_integrator") == cloud_model
+
+
+def test_configuration_round_trips_through_secret_free_json() -> None:
+    configured = MODEL_PRESETS[ModelProfileMode.HYBRID].configuration(
+        local_model=_selection(ModelDeployment.LOCAL, "qwen3:8b"),
+        cloud_model=_selection(ModelDeployment.CLOUD, "creative-cloud"),
+    )
+
+    restored = ModelProfileConfiguration.from_data(configured.to_data())
+
+    assert restored == configured
+    assert restored.is_complete
+    assert "api_key" not in str(restored.to_data())
+
+
+def test_incomplete_and_mismatched_model_slots_fail_closed() -> None:
+    incomplete = MODEL_PRESETS[ModelProfileMode.HYBRID].configuration()
+    assert not incomplete.is_complete
+    with pytest.raises(LookupError, match="local model is not configured"):
+        incomplete.selection_for("brief_architect")
+
+    with pytest.raises(ValueError, match="local model slot"):
+        MODEL_PRESETS[ModelProfileMode.LOCAL].configuration(
+            local_model=_selection(ModelDeployment.CLOUD, "creative-cloud")
+        )

@@ -262,6 +262,139 @@
         "title": "BlueprintDecisionResponse",
         "type": "object"
       },
+      "CatalogModel": {
+        "description": "One dynamically discovered provider model.",
+        "properties": {
+          "deployment": {
+            "$ref": "#/components/schemas/ModelDeployment"
+          },
+          "digest": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Digest"
+          },
+          "model_identifier": {
+            "title": "Model Identifier",
+            "type": "string"
+          },
+          "parameter_size": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Parameter Size"
+          },
+          "provider": {
+            "title": "Provider",
+            "type": "string"
+          },
+          "quantization_level": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Quantization Level"
+          },
+          "size_bytes": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Size Bytes"
+          }
+        },
+        "required": [
+          "provider",
+          "model_identifier",
+          "deployment",
+          "digest",
+          "parameter_size",
+          "quantization_level",
+          "size_bytes"
+        ],
+        "title": "CatalogModel",
+        "type": "object"
+      },
+      "CatalogSourceStatus": {
+        "description": "Availability of one credential-free catalog source.",
+        "properties": {
+          "detail": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Detail"
+          },
+          "key": {
+            "title": "Key",
+            "type": "string"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "provider": {
+            "title": "Provider",
+            "type": "string"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": ["key", "label", "provider", "status", "detail"],
+        "title": "CatalogSourceStatus",
+        "type": "object"
+      },
+      "ConfigureModelProfileRequest": {
+        "description": "Exact model slots for one fixed preset policy.",
+        "properties": {
+          "cloud_model": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ModelSelectionInput"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "local_model": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ModelSelectionInput"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "title": "ConfigureModelProfileRequest",
+        "type": "object"
+      },
       "HTTPValidationError": {
         "properties": {
           "detail": {
@@ -273,6 +406,163 @@
           }
         },
         "title": "HTTPValidationError",
+        "type": "object"
+      },
+      "ModelCatalog": {
+        "description": "Combined discovered models and provider-source status.",
+        "properties": {
+          "models": {
+            "items": {
+              "$ref": "#/components/schemas/CatalogModel"
+            },
+            "title": "Models",
+            "type": "array"
+          },
+          "sources": {
+            "items": {
+              "$ref": "#/components/schemas/CatalogSourceStatus"
+            },
+            "title": "Sources",
+            "type": "array"
+          }
+        },
+        "required": ["models", "sources"],
+        "title": "ModelCatalog",
+        "type": "object"
+      },
+      "ModelDeployment": {
+        "description": "Where inference for a model is performed.",
+        "enum": ["local", "cloud"],
+        "title": "ModelDeployment",
+        "type": "string"
+      },
+      "ModelProfileList": {
+        "description": "The three built-in model presets.",
+        "properties": {
+          "profiles": {
+            "items": {
+              "$ref": "#/components/schemas/ModelProfileSummary"
+            },
+            "title": "Profiles",
+            "type": "array"
+          }
+        },
+        "required": ["profiles"],
+        "title": "ModelProfileList",
+        "type": "object"
+      },
+      "ModelProfileMode": {
+        "description": "User-facing inference allocation preset.",
+        "enum": ["local", "cloud", "hybrid"],
+        "title": "ModelProfileMode",
+        "type": "string"
+      },
+      "ModelProfileSummary": {
+        "description": "One durable Local, Cloud, or Hybrid preset.",
+        "properties": {
+          "cloud_model": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ModelSelectionInput"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "description": {
+            "title": "Description",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "is_complete": {
+            "title": "Is Complete",
+            "type": "boolean"
+          },
+          "is_default": {
+            "title": "Is Default",
+            "type": "boolean"
+          },
+          "local_model": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ModelSelectionInput"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "mode": {
+            "$ref": "#/components/schemas/ModelProfileMode"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "required_deployments": {
+            "items": {
+              "$ref": "#/components/schemas/ModelDeployment"
+            },
+            "title": "Required Deployments",
+            "type": "array"
+          },
+          "role_assignments": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/ModelDeployment"
+            },
+            "title": "Role Assignments",
+            "type": "object"
+          },
+          "updated_at": {
+            "format": "date-time",
+            "title": "Updated At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "description",
+          "mode",
+          "is_default",
+          "is_complete",
+          "required_deployments",
+          "role_assignments",
+          "local_model",
+          "cloud_model",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "ModelProfileSummary",
+        "type": "object"
+      },
+      "ModelSelectionInput": {
+        "description": "One exact model selected from a dynamically discovered catalog.",
+        "properties": {
+          "deployment": {
+            "$ref": "#/components/schemas/ModelDeployment"
+          },
+          "model_identifier": {
+            "title": "Model Identifier",
+            "type": "string"
+          },
+          "provider": {
+            "title": "Provider",
+            "type": "string"
+          }
+        },
+        "required": ["provider", "model_identifier", "deployment"],
+        "title": "ModelSelectionInput",
         "type": "object"
       },
       "ProjectList": {
@@ -933,6 +1223,149 @@
         },
         "summary": "Report API availability",
         "tags": ["system"]
+      }
+    },
+    "/api/v1/model-profiles": {
+      "get": {
+        "description": "Return the fixed v0.1 presets and their exact selected models.",
+        "operationId": "listModelProfiles",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModelProfileList"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "List durable Local, Cloud, and Hybrid presets",
+        "tags": ["model profiles"]
+      }
+    },
+    "/api/v1/model-profiles/{profile_id}": {
+      "put": {
+        "description": "Persist only provider, exact identifier, and inference placement.",
+        "operationId": "configureModelProfile",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "profile_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Profile Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConfigureModelProfileRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModelProfileSummary"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "description": "Model profile not found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Configure exact models for one preset",
+        "tags": ["model profiles"]
+      }
+    },
+    "/api/v1/model-profiles/{profile_id}/activate": {
+      "post": {
+        "description": "Atomically activate one complete secret-free preset.",
+        "operationId": "activateModelProfile",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "profile_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Profile Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModelProfileSummary"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "description": "Model profile not found"
+          },
+          "409": {
+            "description": "Required models are not configured"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Select one complete preset as the default",
+        "tags": ["model profiles"]
+      }
+    },
+    "/api/v1/models/catalog": {
+      "get": {
+        "description": "Return dynamic models while reporting each source independently.",
+        "operationId": "listModelCatalog",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModelCatalog"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Discover configured Ollama model catalogs",
+        "tags": ["model profiles"]
       }
     },
     "/api/v1/projects": {

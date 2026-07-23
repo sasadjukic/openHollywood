@@ -168,6 +168,77 @@ export type BlueprintDecisionResponse = {
 };
 
 /**
+ * CatalogModel
+ *
+ * One dynamically discovered provider model.
+ */
+export type CatalogModel = {
+  deployment: ModelDeployment;
+  /**
+   * Digest
+   */
+  digest: string | null;
+  /**
+   * Model Identifier
+   */
+  model_identifier: string;
+  /**
+   * Parameter Size
+   */
+  parameter_size: string | null;
+  /**
+   * Provider
+   */
+  provider: string;
+  /**
+   * Quantization Level
+   */
+  quantization_level: string | null;
+  /**
+   * Size Bytes
+   */
+  size_bytes: number | null;
+};
+
+/**
+ * CatalogSourceStatus
+ *
+ * Availability of one credential-free catalog source.
+ */
+export type CatalogSourceStatus = {
+  /**
+   * Detail
+   */
+  detail: string | null;
+  /**
+   * Key
+   */
+  key: string;
+  /**
+   * Label
+   */
+  label: string;
+  /**
+   * Provider
+   */
+  provider: string;
+  /**
+   * Status
+   */
+  status: string;
+};
+
+/**
+ * ConfigureModelProfileRequest
+ *
+ * Exact model slots for one fixed preset policy.
+ */
+export type ConfigureModelProfileRequest = {
+  cloud_model?: ModelSelectionInput | null;
+  local_model?: ModelSelectionInput | null;
+};
+
+/**
  * HTTPValidationError
  */
 export type HttpValidationError = {
@@ -175,6 +246,114 @@ export type HttpValidationError = {
    * Detail
    */
   detail?: Array<ValidationError>;
+};
+
+/**
+ * ModelCatalog
+ *
+ * Combined discovered models and provider-source status.
+ */
+export type ModelCatalog = {
+  /**
+   * Models
+   */
+  models: Array<CatalogModel>;
+  /**
+   * Sources
+   */
+  sources: Array<CatalogSourceStatus>;
+};
+
+/**
+ * ModelDeployment
+ *
+ * Where inference for a model is performed.
+ */
+export type ModelDeployment = "local" | "cloud";
+
+/**
+ * ModelProfileList
+ *
+ * The three built-in model presets.
+ */
+export type ModelProfileList = {
+  /**
+   * Profiles
+   */
+  profiles: Array<ModelProfileSummary>;
+};
+
+/**
+ * ModelProfileMode
+ *
+ * User-facing inference allocation preset.
+ */
+export type ModelProfileMode = "local" | "cloud" | "hybrid";
+
+/**
+ * ModelProfileSummary
+ *
+ * One durable Local, Cloud, or Hybrid preset.
+ */
+export type ModelProfileSummary = {
+  cloud_model: ModelSelectionInput | null;
+  /**
+   * Created At
+   */
+  created_at: string;
+  /**
+   * Description
+   */
+  description: string;
+  /**
+   * Id
+   */
+  id: string;
+  /**
+   * Is Complete
+   */
+  is_complete: boolean;
+  /**
+   * Is Default
+   */
+  is_default: boolean;
+  local_model: ModelSelectionInput | null;
+  mode: ModelProfileMode;
+  /**
+   * Name
+   */
+  name: string;
+  /**
+   * Required Deployments
+   */
+  required_deployments: Array<ModelDeployment>;
+  /**
+   * Role Assignments
+   */
+  role_assignments: {
+    [key: string]: ModelDeployment;
+  };
+  /**
+   * Updated At
+   */
+  updated_at: string;
+};
+
+/**
+ * ModelSelectionInput
+ *
+ * One exact model selected from a dynamically discovered catalog.
+ */
+export type ModelSelectionInput = {
+  deployment: ModelDeployment;
+  /**
+   * Model Identifier
+   */
+  model_identifier: string;
+  /**
+   * Provider
+   */
+  provider: string;
 };
 
 /**
@@ -605,6 +784,116 @@ export type GetHealthResponses = {
 };
 
 export type GetHealthResponse = GetHealthResponses[keyof GetHealthResponses];
+
+export type ListModelProfilesData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: "/api/v1/model-profiles";
+};
+
+export type ListModelProfilesResponses = {
+  /**
+   * Successful Response
+   */
+  200: ModelProfileList;
+};
+
+export type ListModelProfilesResponse =
+  ListModelProfilesResponses[keyof ListModelProfilesResponses];
+
+export type ConfigureModelProfileData = {
+  body: ConfigureModelProfileRequest;
+  path: {
+    /**
+     * Profile Id
+     */
+    profile_id: string;
+  };
+  query?: never;
+  url: "/api/v1/model-profiles/{profile_id}";
+};
+
+export type ConfigureModelProfileErrors = {
+  /**
+   * Model profile not found
+   */
+  404: unknown;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type ConfigureModelProfileError =
+  ConfigureModelProfileErrors[keyof ConfigureModelProfileErrors];
+
+export type ConfigureModelProfileResponses = {
+  /**
+   * Successful Response
+   */
+  200: ModelProfileSummary;
+};
+
+export type ConfigureModelProfileResponse =
+  ConfigureModelProfileResponses[keyof ConfigureModelProfileResponses];
+
+export type ActivateModelProfileData = {
+  body?: never;
+  path: {
+    /**
+     * Profile Id
+     */
+    profile_id: string;
+  };
+  query?: never;
+  url: "/api/v1/model-profiles/{profile_id}/activate";
+};
+
+export type ActivateModelProfileErrors = {
+  /**
+   * Model profile not found
+   */
+  404: unknown;
+  /**
+   * Required models are not configured
+   */
+  409: unknown;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type ActivateModelProfileError =
+  ActivateModelProfileErrors[keyof ActivateModelProfileErrors];
+
+export type ActivateModelProfileResponses = {
+  /**
+   * Successful Response
+   */
+  200: ModelProfileSummary;
+};
+
+export type ActivateModelProfileResponse =
+  ActivateModelProfileResponses[keyof ActivateModelProfileResponses];
+
+export type ListModelCatalogData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: "/api/v1/models/catalog";
+};
+
+export type ListModelCatalogResponses = {
+  /**
+   * Successful Response
+   */
+  200: ModelCatalog;
+};
+
+export type ListModelCatalogResponse =
+  ListModelCatalogResponses[keyof ListModelCatalogResponses];
 
 export type ListProjectsData = {
   body?: never;
