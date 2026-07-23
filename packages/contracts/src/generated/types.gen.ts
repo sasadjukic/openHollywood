@@ -44,6 +44,74 @@ export type ArtifactReferenceEnvelope = {
 };
 
 /**
+ * ArtifactVersionDetail
+ *
+ * Full immutable artifact content and review context.
+ */
+export type ArtifactVersionDetail = {
+  artifact: WorkspaceArtifact;
+  /**
+   * Content
+   */
+  content: {
+    [key: string]: unknown;
+  };
+  /**
+   * Content Sha256
+   */
+  content_sha256: string;
+  /**
+   * Evaluations
+   */
+  evaluations: Array<WorkspaceEvaluation>;
+  selected_version: ArtifactVersionSummary;
+};
+
+/**
+ * ArtifactVersionSummary
+ *
+ * Version lineage and provider-safe provenance.
+ */
+export type ArtifactVersionSummary = {
+  /**
+   * Change Summary
+   */
+  change_summary: string | null;
+  /**
+   * Created At
+   */
+  created_at: string;
+  /**
+   * Id
+   */
+  id: string;
+  /**
+   * Model Identifier
+   */
+  model_identifier: string | null;
+  /**
+   * Parent Version Id
+   */
+  parent_version_id: string | null;
+  /**
+   * Provider
+   */
+  provider: string | null;
+  /**
+   * Schema Version
+   */
+  schema_version: string;
+  /**
+   * Specialist Role
+   */
+  specialist_role: string | null;
+  /**
+   * Version Number
+   */
+  version_number: number;
+};
+
+/**
  * BlueprintDecisionAction
  *
  * Human choices accepted at the mandatory Story Blueprint interrupt.
@@ -107,6 +175,87 @@ export type HttpValidationError = {
    * Detail
    */
   detail?: Array<ValidationError>;
+};
+
+/**
+ * ProjectList
+ *
+ * All locally persisted projects.
+ */
+export type ProjectList = {
+  /**
+   * Projects
+   */
+  projects: Array<ProjectSummary>;
+};
+
+/**
+ * ProjectSummary
+ *
+ * One project in the workspace navigation.
+ */
+export type ProjectSummary = {
+  /**
+   * Artifact Count
+   */
+  artifact_count: number;
+  /**
+   * Conversation Count
+   */
+  conversation_count: number;
+  /**
+   * Description
+   */
+  description: string | null;
+  /**
+   * Id
+   */
+  id: string;
+  /**
+   * Latest Workflow Run Id
+   */
+  latest_workflow_run_id: string | null;
+  /**
+   * Latest Workflow Status
+   */
+  latest_workflow_status: string | null;
+  /**
+   * Name
+   */
+  name: string;
+  /**
+   * Status
+   */
+  status: string;
+  /**
+   * Story Format
+   */
+  story_format: string;
+  /**
+   * Updated At
+   */
+  updated_at: string;
+};
+
+/**
+ * ProjectWorkspace
+ *
+ * Persisted project shell consumed by the three-panel client.
+ */
+export type ProjectWorkspace = {
+  /**
+   * Artifacts
+   */
+  artifacts: Array<WorkspaceArtifact>;
+  /**
+   * Conversations
+   */
+  conversations: Array<WorkspaceConversation>;
+  project: ProjectSummary;
+  /**
+   * Workflow Runs
+   */
+  workflow_runs: Array<WorkspaceRun>;
 };
 
 /**
@@ -219,6 +368,228 @@ export type WorkflowEventPage = {
   next_after: number;
 };
 
+/**
+ * WorkspaceArtifact
+ *
+ * Logical artifact with newest-first immutable versions.
+ */
+export type WorkspaceArtifact = {
+  /**
+   * Active Version Id
+   */
+  active_version_id: string | null;
+  /**
+   * Artifact Key
+   */
+  artifact_key: string;
+  /**
+   * Artifact Type
+   */
+  artifact_type: string;
+  /**
+   * Id
+   */
+  id: string;
+  /**
+   * Status
+   */
+  status: string;
+  /**
+   * Title
+   */
+  title: string;
+  /**
+   * Versions
+   */
+  versions: Array<ArtifactVersionSummary>;
+};
+
+/**
+ * WorkspaceConversation
+ *
+ * One conversation and its durable messages.
+ */
+export type WorkspaceConversation = {
+  /**
+   * Id
+   */
+  id: string;
+  /**
+   * Messages
+   */
+  messages: Array<WorkspaceMessage>;
+  /**
+   * Status
+   */
+  status: string;
+  /**
+   * Title
+   */
+  title: string;
+};
+
+/**
+ * WorkspaceEvaluation
+ *
+ * Evaluation summary for an artifact version.
+ */
+export type WorkspaceEvaluation = {
+  /**
+   * Created At
+   */
+  created_at: string;
+  /**
+   * Id
+   */
+  id: string;
+  /**
+   * Rubric Name
+   */
+  rubric_name: string;
+  /**
+   * Rubric Version
+   */
+  rubric_version: string;
+  /**
+   * Scores
+   */
+  scores: {
+    [key: string]: unknown;
+  };
+  /**
+   * Summary
+   */
+  summary: string | null;
+  /**
+   * Weighted Score
+   */
+  weighted_score: string | null;
+};
+
+/**
+ * WorkspaceMessage
+ *
+ * One persisted message in sequence order.
+ */
+export type WorkspaceMessage = {
+  /**
+   * Content
+   */
+  content: string;
+  /**
+   * Created At
+   */
+  created_at: string;
+  /**
+   * Id
+   */
+  id: string;
+  /**
+   * Role
+   */
+  role: string;
+  /**
+   * Sequence Number
+   */
+  sequence_number: number;
+  /**
+   * Workflow Run Id
+   */
+  workflow_run_id: string | null;
+};
+
+/**
+ * WorkspaceRun
+ *
+ * Workflow status and active human checkpoint.
+ */
+export type WorkspaceRun = {
+  /**
+   * Active Interrupt Id
+   */
+  active_interrupt_id: string | null;
+  /**
+   * Completed At
+   */
+  completed_at: string | null;
+  /**
+   * Current Node
+   */
+  current_node: string | null;
+  /**
+   * Error Code
+   */
+  error_code: string | null;
+  /**
+   * Error Message
+   */
+  error_message: string | null;
+  /**
+   * Graph Version
+   */
+  graph_version: string;
+  /**
+   * Id
+   */
+  id: string;
+  /**
+   * Parent Workflow Run Id
+   */
+  parent_workflow_run_id: string | null;
+  /**
+   * Started At
+   */
+  started_at: string | null;
+  /**
+   * Status
+   */
+  status: string;
+  /**
+   * Updated At
+   */
+  updated_at: string;
+  /**
+   * Workflow Name
+   */
+  workflow_name: string;
+};
+
+export type GetArtifactVersionData = {
+  body?: never;
+  path: {
+    /**
+     * Artifact Version Id
+     */
+    artifact_version_id: string;
+  };
+  query?: never;
+  url: "/api/v1/artifact-versions/{artifact_version_id}";
+};
+
+export type GetArtifactVersionErrors = {
+  /**
+   * Artifact version not found
+   */
+  404: unknown;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type GetArtifactVersionError =
+  GetArtifactVersionErrors[keyof GetArtifactVersionErrors];
+
+export type GetArtifactVersionResponses = {
+  /**
+   * Successful Response
+   */
+  200: ArtifactVersionDetail;
+};
+
+export type GetArtifactVersionResponse =
+  GetArtifactVersionResponses[keyof GetArtifactVersionResponses];
+
 export type GetHealthData = {
   body?: never;
   path?: never;
@@ -234,6 +605,59 @@ export type GetHealthResponses = {
 };
 
 export type GetHealthResponse = GetHealthResponses[keyof GetHealthResponses];
+
+export type ListProjectsData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: "/api/v1/projects";
+};
+
+export type ListProjectsResponses = {
+  /**
+   * Successful Response
+   */
+  200: ProjectList;
+};
+
+export type ListProjectsResponse =
+  ListProjectsResponses[keyof ListProjectsResponses];
+
+export type GetProjectWorkspaceData = {
+  body?: never;
+  path: {
+    /**
+     * Project Id
+     */
+    project_id: string;
+  };
+  query?: never;
+  url: "/api/v1/projects/{project_id}/workspace";
+};
+
+export type GetProjectWorkspaceErrors = {
+  /**
+   * Project not found
+   */
+  404: unknown;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type GetProjectWorkspaceError =
+  GetProjectWorkspaceErrors[keyof GetProjectWorkspaceErrors];
+
+export type GetProjectWorkspaceResponses = {
+  /**
+   * Successful Response
+   */
+  200: ProjectWorkspace;
+};
+
+export type GetProjectWorkspaceResponse =
+  GetProjectWorkspaceResponses[keyof GetProjectWorkspaceResponses];
 
 export type SubmitBlueprintDecisionData = {
   body: BlueprintDecisionRequest;

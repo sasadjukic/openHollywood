@@ -91,7 +91,10 @@ workflow/API/persistence integration tests. Migration upgrade/downgrade and
 metadata parity, Ruff, mypy, 86 pytest tests, Prettier, ESLint, TypeScript,
 Vitest, and the production build pass.
 
-12. [ ] **Build the workspace UI around persisted data:** projects, chat, event timeline, artifact viewer, versions, and run status.
+12. [x] **COMPLETED 2026-07-23 — Build the workspace UI around persisted
+data.** The responsive three-panel React workspace now lists durable projects and story artifacts, merges persisted chat with workflow activity, presents current run and checkpoint status, and renders immutable artifact bodies, version history, provenance, and evaluations without introducing a manuscript editor. The Story Blueprint checkpoint supports approve, revise, reject, and fork through the generated SDK. New read-only FastAPI boundaries assemble UI-safe project workspaces and artifact details directly from SQLite while excluding checkpoints, prompts, and secrets. Loading, empty, disconnected, and mobile panel states are covered. Evidence:
+`apps/api/open_hollywood_api/services/workspace.py`,
+`apps/api/open_hollywood_api/routes/workspace.py`, `apps/web/src/`, generated contracts, and API/React tests. Ruff, mypy, 89 pytest tests, Prettier, ESLint, TypeScript, Vitest, and the production build pass.
 
 13. [ ] **Add model presets:** Local, Cloud, and Hybrid.
 

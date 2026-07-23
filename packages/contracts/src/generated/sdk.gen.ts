@@ -10,8 +10,16 @@ import type {
 } from "./client";
 import { client } from "./client.gen";
 import type {
+  GetArtifactVersionData,
+  GetArtifactVersionErrors,
+  GetArtifactVersionResponses,
   GetHealthData,
   GetHealthResponses,
+  GetProjectWorkspaceData,
+  GetProjectWorkspaceErrors,
+  GetProjectWorkspaceResponses,
+  ListProjectsData,
+  ListProjectsResponses,
   ListWorkflowRunEventsData,
   ListWorkflowRunEventsErrors,
   ListWorkflowRunEventsResponses,
@@ -43,6 +51,24 @@ export type Options<
 };
 
 /**
+ * Load immutable artifact content and provenance
+ *
+ * Return one version body, lineage, provider-safe provenance, and scores.
+ */
+export const getArtifactVersion = <ThrowOnError extends boolean = false>(
+  options: Options<GetArtifactVersionData, ThrowOnError>,
+): RequestResult<
+  GetArtifactVersionResponses,
+  GetArtifactVersionErrors,
+  ThrowOnError
+> =>
+  (options.client ?? client).get<
+    GetArtifactVersionResponses,
+    GetArtifactVersionErrors,
+    ThrowOnError
+  >({ url: "/api/v1/artifact-versions/{artifact_version_id}", ...options });
+
+/**
  * Report API availability
  *
  * Return stable service metadata without touching external dependencies.
@@ -54,6 +80,36 @@ export const getHealth = <ThrowOnError extends boolean = false>(
     url: "/api/v1/health",
     ...options,
   });
+
+/**
+ * List locally persisted story projects
+ *
+ * Return project navigation data ordered by recent activity.
+ */
+export const listProjects = <ThrowOnError extends boolean = false>(
+  options?: Options<ListProjectsData, ThrowOnError>,
+): RequestResult<ListProjectsResponses, unknown, ThrowOnError> =>
+  (options?.client ?? client).get<ListProjectsResponses, unknown, ThrowOnError>(
+    { url: "/api/v1/projects", ...options },
+  );
+
+/**
+ * Load one persisted creative workspace
+ *
+ * Load chat, workflow status, artifacts, and version metadata.
+ */
+export const getProjectWorkspace = <ThrowOnError extends boolean = false>(
+  options: Options<GetProjectWorkspaceData, ThrowOnError>,
+): RequestResult<
+  GetProjectWorkspaceResponses,
+  GetProjectWorkspaceErrors,
+  ThrowOnError
+> =>
+  (options.client ?? client).get<
+    GetProjectWorkspaceResponses,
+    GetProjectWorkspaceErrors,
+    ThrowOnError
+  >({ url: "/api/v1/projects/{project_id}/workspace", ...options });
 
 /**
  * Resolve the active Story Blueprint human interrupt

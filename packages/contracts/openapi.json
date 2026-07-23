@@ -48,6 +48,134 @@
         "title": "ArtifactReferenceEnvelope",
         "type": "object"
       },
+      "ArtifactVersionDetail": {
+        "description": "Full immutable artifact content and review context.",
+        "properties": {
+          "artifact": {
+            "$ref": "#/components/schemas/WorkspaceArtifact"
+          },
+          "content": {
+            "additionalProperties": true,
+            "title": "Content",
+            "type": "object"
+          },
+          "content_sha256": {
+            "title": "Content Sha256",
+            "type": "string"
+          },
+          "evaluations": {
+            "items": {
+              "$ref": "#/components/schemas/WorkspaceEvaluation"
+            },
+            "title": "Evaluations",
+            "type": "array"
+          },
+          "selected_version": {
+            "$ref": "#/components/schemas/ArtifactVersionSummary"
+          }
+        },
+        "required": [
+          "artifact",
+          "selected_version",
+          "content",
+          "content_sha256",
+          "evaluations"
+        ],
+        "title": "ArtifactVersionDetail",
+        "type": "object"
+      },
+      "ArtifactVersionSummary": {
+        "description": "Version lineage and provider-safe provenance.",
+        "properties": {
+          "change_summary": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Change Summary"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "model_identifier": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model Identifier"
+          },
+          "parent_version_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Parent Version Id"
+          },
+          "provider": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Provider"
+          },
+          "schema_version": {
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "specialist_role": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Specialist Role"
+          },
+          "version_number": {
+            "title": "Version Number",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "version_number",
+          "parent_version_id",
+          "schema_version",
+          "change_summary",
+          "created_at",
+          "specialist_role",
+          "provider",
+          "model_identifier"
+        ],
+        "title": "ArtifactVersionSummary",
+        "type": "object"
+      },
       "BlueprintDecisionAction": {
         "description": "Human choices accepted at the mandatory Story Blueprint interrupt.",
         "enum": ["approve", "revise", "reject", "fork"],
@@ -145,6 +273,136 @@
           }
         },
         "title": "HTTPValidationError",
+        "type": "object"
+      },
+      "ProjectList": {
+        "description": "All locally persisted projects.",
+        "properties": {
+          "projects": {
+            "items": {
+              "$ref": "#/components/schemas/ProjectSummary"
+            },
+            "title": "Projects",
+            "type": "array"
+          }
+        },
+        "required": ["projects"],
+        "title": "ProjectList",
+        "type": "object"
+      },
+      "ProjectSummary": {
+        "description": "One project in the workspace navigation.",
+        "properties": {
+          "artifact_count": {
+            "title": "Artifact Count",
+            "type": "integer"
+          },
+          "conversation_count": {
+            "title": "Conversation Count",
+            "type": "integer"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "latest_workflow_run_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latest Workflow Run Id"
+          },
+          "latest_workflow_status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latest Workflow Status"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "story_format": {
+            "title": "Story Format",
+            "type": "string"
+          },
+          "updated_at": {
+            "format": "date-time",
+            "title": "Updated At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "description",
+          "story_format",
+          "status",
+          "updated_at",
+          "conversation_count",
+          "artifact_count",
+          "latest_workflow_run_id",
+          "latest_workflow_status"
+        ],
+        "title": "ProjectSummary",
+        "type": "object"
+      },
+      "ProjectWorkspace": {
+        "description": "Persisted project shell consumed by the three-panel client.",
+        "properties": {
+          "artifacts": {
+            "items": {
+              "$ref": "#/components/schemas/WorkspaceArtifact"
+            },
+            "title": "Artifacts",
+            "type": "array"
+          },
+          "conversations": {
+            "items": {
+              "$ref": "#/components/schemas/WorkspaceConversation"
+            },
+            "title": "Conversations",
+            "type": "array"
+          },
+          "project": {
+            "$ref": "#/components/schemas/ProjectSummary"
+          },
+          "workflow_runs": {
+            "items": {
+              "$ref": "#/components/schemas/WorkspaceRun"
+            },
+            "title": "Workflow Runs",
+            "type": "array"
+          }
+        },
+        "required": ["project", "conversations", "workflow_runs", "artifacts"],
+        "title": "ProjectWorkspace",
         "type": "object"
       },
       "ServiceState": {
@@ -284,6 +542,324 @@
         "required": ["events", "next_after", "has_more"],
         "title": "WorkflowEventPage",
         "type": "object"
+      },
+      "WorkspaceArtifact": {
+        "description": "Logical artifact with newest-first immutable versions.",
+        "properties": {
+          "active_version_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Active Version Id"
+          },
+          "artifact_key": {
+            "title": "Artifact Key",
+            "type": "string"
+          },
+          "artifact_type": {
+            "title": "Artifact Type",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "versions": {
+            "items": {
+              "$ref": "#/components/schemas/ArtifactVersionSummary"
+            },
+            "title": "Versions",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "artifact_key",
+          "artifact_type",
+          "title",
+          "status",
+          "active_version_id",
+          "versions"
+        ],
+        "title": "WorkspaceArtifact",
+        "type": "object"
+      },
+      "WorkspaceConversation": {
+        "description": "One conversation and its durable messages.",
+        "properties": {
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "messages": {
+            "items": {
+              "$ref": "#/components/schemas/WorkspaceMessage"
+            },
+            "title": "Messages",
+            "type": "array"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": ["id", "title", "status", "messages"],
+        "title": "WorkspaceConversation",
+        "type": "object"
+      },
+      "WorkspaceEvaluation": {
+        "description": "Evaluation summary for an artifact version.",
+        "properties": {
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "rubric_name": {
+            "title": "Rubric Name",
+            "type": "string"
+          },
+          "rubric_version": {
+            "title": "Rubric Version",
+            "type": "string"
+          },
+          "scores": {
+            "additionalProperties": true,
+            "title": "Scores",
+            "type": "object"
+          },
+          "summary": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Summary"
+          },
+          "weighted_score": {
+            "anyOf": [
+              {
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Weighted Score"
+          }
+        },
+        "required": [
+          "id",
+          "rubric_name",
+          "rubric_version",
+          "scores",
+          "weighted_score",
+          "summary",
+          "created_at"
+        ],
+        "title": "WorkspaceEvaluation",
+        "type": "object"
+      },
+      "WorkspaceMessage": {
+        "description": "One persisted message in sequence order.",
+        "properties": {
+          "content": {
+            "title": "Content",
+            "type": "string"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "role": {
+            "title": "Role",
+            "type": "string"
+          },
+          "sequence_number": {
+            "title": "Sequence Number",
+            "type": "integer"
+          },
+          "workflow_run_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Workflow Run Id"
+          }
+        },
+        "required": [
+          "id",
+          "workflow_run_id",
+          "sequence_number",
+          "role",
+          "content",
+          "created_at"
+        ],
+        "title": "WorkspaceMessage",
+        "type": "object"
+      },
+      "WorkspaceRun": {
+        "description": "Workflow status and active human checkpoint.",
+        "properties": {
+          "active_interrupt_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Active Interrupt Id"
+          },
+          "completed_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Completed At"
+          },
+          "current_node": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Current Node"
+          },
+          "error_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error Code"
+          },
+          "error_message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error Message"
+          },
+          "graph_version": {
+            "title": "Graph Version",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "parent_workflow_run_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Parent Workflow Run Id"
+          },
+          "started_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Started At"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "updated_at": {
+            "format": "date-time",
+            "title": "Updated At",
+            "type": "string"
+          },
+          "workflow_name": {
+            "title": "Workflow Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "parent_workflow_run_id",
+          "workflow_name",
+          "graph_version",
+          "status",
+          "current_node",
+          "active_interrupt_id",
+          "started_at",
+          "completed_at",
+          "updated_at",
+          "error_code",
+          "error_message"
+        ],
+        "title": "WorkspaceRun",
+        "type": "object"
       }
     }
   },
@@ -294,6 +870,51 @@
   },
   "openapi": "3.1.0",
   "paths": {
+    "/api/v1/artifact-versions/{artifact_version_id}": {
+      "get": {
+        "description": "Return one version body, lineage, provider-safe provenance, and scores.",
+        "operationId": "getArtifactVersion",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "artifact_version_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Artifact Version Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArtifactVersionDetail"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "description": "Artifact version not found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Load immutable artifact content and provenance",
+        "tags": ["workspace"]
+      }
+    },
     "/api/v1/health": {
       "get": {
         "description": "Return stable service metadata without touching external dependencies.",
@@ -312,6 +933,71 @@
         },
         "summary": "Report API availability",
         "tags": ["system"]
+      }
+    },
+    "/api/v1/projects": {
+      "get": {
+        "description": "Return project navigation data ordered by recent activity.",
+        "operationId": "listProjects",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProjectList"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "List locally persisted story projects",
+        "tags": ["workspace"]
+      }
+    },
+    "/api/v1/projects/{project_id}/workspace": {
+      "get": {
+        "description": "Load chat, workflow status, artifacts, and version metadata.",
+        "operationId": "getProjectWorkspace",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "project_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Project Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProjectWorkspace"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "description": "Project not found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Load one persisted creative workspace",
+        "tags": ["workspace"]
       }
     },
     "/api/v1/workflow-runs/{workflow_run_id}/decisions": {

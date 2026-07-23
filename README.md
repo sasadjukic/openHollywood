@@ -34,7 +34,12 @@ Approval marks the exact blueprint version accepted; revision and rejection
 create immutable descendant versions through bounded graph routes; forks create
 linked child workflow threads without discarding the source lineage. The
 FastAPI command boundary and generated TypeScript SDK expose the same durable
-transition contract for the upcoming workspace UI.
+transition contract to the persisted workspace UI. The responsive three-panel
+client now reads projects, conversations, workflow activity, run state,
+artifact versions, provenance, and evaluations from SQLite-backed API views.
+It keeps the Story Blueprint decision beside its source artifact and activity
+timeline while preserving the product boundary against a general-purpose
+manuscript editor.
 
 The v0.1 target is deliberately narrow: short prose fiction, local-first
 storage, optional local/cloud/hybrid inference, and one mandatory story

@@ -4,6 +4,7 @@ from fastapi import HTTPException, Request, status
 
 from open_hollywood_api.services.blueprint_workflow import BlueprintWorkflowService
 from open_hollywood_api.services.workflow_events import WorkflowEventStore
+from open_hollywood_api.services.workspace import WorkspaceStore
 
 
 def get_workflow_event_store(request: Request) -> WorkflowEventStore:
@@ -26,3 +27,14 @@ def get_blueprint_workflow_service(request: Request) -> BlueprintWorkflowService
             detail="Blueprint workflow execution is unavailable",
         )
     return service
+
+
+def get_workspace_store(request: Request) -> WorkspaceStore:
+    """Return the app-owned read boundary for persisted workspace data."""
+    store = getattr(request.app.state, "workspace_store", None)
+    if not isinstance(store, WorkspaceStore):
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Workspace storage is unavailable",
+        )
+    return store

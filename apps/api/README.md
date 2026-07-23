@@ -1,7 +1,7 @@
 # API application
 
 FastAPI boundary for projects, conversations, artifacts, workflow commands, and
-the resumable event stream. Implementation begins in step 3.
+the resumable event stream.
 
 The API may call application services but must not contain creative workflow or
 provider logic.
@@ -22,6 +22,23 @@ uv run --extra api uvicorn --app-dir apps/api open_hollywood_api.app:app --reloa
 The initial `/api/v1/health` boundary provides a typed vertical slice for the
 generated web SDK. Interactive API documentation is available at `/docs` and
 the canonical OpenAPI 3.1 document at `/openapi.json`.
+
+## Persisted workspace reads
+
+The browser workspace uses read-only, UI-safe views assembled directly from
+SQLite:
+
+```text
+GET /api/v1/projects
+GET /api/v1/projects/{project_id}/workspace
+GET /api/v1/artifact-versions/{artifact_version_id}
+```
+
+The project workspace contains persisted conversations, messages, workflow run
+status, the active human interrupt identifier, logical artifacts, and immutable
+version metadata. Full artifact bodies and evaluation summaries are fetched for
+one selected version at a time. These responses deliberately exclude workflow
+checkpoint state, model prompts, credentials, and private reasoning.
 
 ## Workflow events
 
