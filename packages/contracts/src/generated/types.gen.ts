@@ -5,6 +5,101 @@ export type ClientOptions = {
 };
 
 /**
+ * ArtifactKind
+ *
+ * Stable persisted type names for the initial artifact catalog.
+ */
+export type ArtifactKind =
+  | "creative_brief"
+  | "premise"
+  | "character"
+  | "relationship"
+  | "location"
+  | "world_rule"
+  | "beat"
+  | "scene_plan"
+  | "critique"
+  | "continuity_finding"
+  | "story_blueprint";
+
+/**
+ * ArtifactReferenceEnvelope
+ *
+ * Immutable artifact-version pointer safe for UI consumption.
+ */
+export type ArtifactReferenceEnvelope = {
+  /**
+   * Artifact Key
+   */
+  artifact_key: string;
+  artifact_kind: ArtifactKind;
+  /**
+   * Artifact Version Id
+   */
+  artifact_version_id: string;
+  /**
+   * Schema Version
+   */
+  schema_version: string;
+};
+
+/**
+ * BlueprintDecisionAction
+ *
+ * Human choices accepted at the mandatory Story Blueprint interrupt.
+ */
+export type BlueprintDecisionAction = "approve" | "revise" | "reject" | "fork";
+
+/**
+ * BlueprintDecisionRequest
+ *
+ * One idempotent command resolving the active blueprint interrupt.
+ */
+export type BlueprintDecisionRequest = {
+  action: BlueprintDecisionAction;
+  /**
+   * Decision Id
+   */
+  decision_id: string;
+  /**
+   * Instruction
+   */
+  instruction?: string | null;
+  /**
+   * Interrupt Id
+   */
+  interrupt_id: string;
+};
+
+/**
+ * BlueprintDecisionResponse
+ *
+ * Workflow state after the decision reaches a durable checkpoint.
+ */
+export type BlueprintDecisionResponse = {
+  /**
+   * Artifacts
+   */
+  artifacts: Array<ArtifactReferenceEnvelope>;
+  /**
+   * Awaiting Approval
+   */
+  awaiting_approval: boolean;
+  /**
+   * Checkpoint Id
+   */
+  checkpoint_id: string;
+  /**
+   * Interrupt Id
+   */
+  interrupt_id: string | null;
+  /**
+   * Workflow Run Id
+   */
+  workflow_run_id: string;
+};
+
+/**
  * HTTPValidationError
  */
 export type HttpValidationError = {
@@ -139,6 +234,50 @@ export type GetHealthResponses = {
 };
 
 export type GetHealthResponse = GetHealthResponses[keyof GetHealthResponses];
+
+export type SubmitBlueprintDecisionData = {
+  body: BlueprintDecisionRequest;
+  path: {
+    /**
+     * Workflow Run Id
+     */
+    workflow_run_id: string;
+  };
+  query?: never;
+  url: "/api/v1/workflow-runs/{workflow_run_id}/decisions";
+};
+
+export type SubmitBlueprintDecisionErrors = {
+  /**
+   * Workflow run not found
+   */
+  404: unknown;
+  /**
+   * Decision conflicts with durable workflow state
+   */
+  409: unknown;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+  /**
+   * Workflow execution service is unavailable
+   */
+  503: unknown;
+};
+
+export type SubmitBlueprintDecisionError =
+  SubmitBlueprintDecisionErrors[keyof SubmitBlueprintDecisionErrors];
+
+export type SubmitBlueprintDecisionResponses = {
+  /**
+   * Successful Response
+   */
+  200: BlueprintDecisionResponse;
+};
+
+export type SubmitBlueprintDecisionResponse =
+  SubmitBlueprintDecisionResponses[keyof SubmitBlueprintDecisionResponses];
 
 export type ListWorkflowRunEventsData = {
   body?: never;

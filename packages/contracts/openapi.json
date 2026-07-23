@@ -1,6 +1,139 @@
 {
   "components": {
     "schemas": {
+      "ArtifactKind": {
+        "description": "Stable persisted type names for the initial artifact catalog.",
+        "enum": [
+          "creative_brief",
+          "premise",
+          "character",
+          "relationship",
+          "location",
+          "world_rule",
+          "beat",
+          "scene_plan",
+          "critique",
+          "continuity_finding",
+          "story_blueprint"
+        ],
+        "title": "ArtifactKind",
+        "type": "string"
+      },
+      "ArtifactReferenceEnvelope": {
+        "description": "Immutable artifact-version pointer safe for UI consumption.",
+        "properties": {
+          "artifact_key": {
+            "title": "Artifact Key",
+            "type": "string"
+          },
+          "artifact_kind": {
+            "$ref": "#/components/schemas/ArtifactKind"
+          },
+          "artifact_version_id": {
+            "format": "uuid",
+            "title": "Artifact Version Id",
+            "type": "string"
+          },
+          "schema_version": {
+            "title": "Schema Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "artifact_kind",
+          "artifact_key",
+          "artifact_version_id",
+          "schema_version"
+        ],
+        "title": "ArtifactReferenceEnvelope",
+        "type": "object"
+      },
+      "BlueprintDecisionAction": {
+        "description": "Human choices accepted at the mandatory Story Blueprint interrupt.",
+        "enum": ["approve", "revise", "reject", "fork"],
+        "title": "BlueprintDecisionAction",
+        "type": "string"
+      },
+      "BlueprintDecisionRequest": {
+        "additionalProperties": false,
+        "description": "One idempotent command resolving the active blueprint interrupt.",
+        "properties": {
+          "action": {
+            "$ref": "#/components/schemas/BlueprintDecisionAction"
+          },
+          "decision_id": {
+            "format": "uuid",
+            "title": "Decision Id",
+            "type": "string"
+          },
+          "instruction": {
+            "anyOf": [
+              {
+                "maxLength": 10000,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Instruction"
+          },
+          "interrupt_id": {
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Interrupt Id",
+            "type": "string"
+          }
+        },
+        "required": ["decision_id", "interrupt_id", "action"],
+        "title": "BlueprintDecisionRequest",
+        "type": "object"
+      },
+      "BlueprintDecisionResponse": {
+        "description": "Workflow state after the decision reaches a durable checkpoint.",
+        "properties": {
+          "artifacts": {
+            "items": {
+              "$ref": "#/components/schemas/ArtifactReferenceEnvelope"
+            },
+            "title": "Artifacts",
+            "type": "array"
+          },
+          "awaiting_approval": {
+            "title": "Awaiting Approval",
+            "type": "boolean"
+          },
+          "checkpoint_id": {
+            "title": "Checkpoint Id",
+            "type": "string"
+          },
+          "interrupt_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Interrupt Id"
+          },
+          "workflow_run_id": {
+            "format": "uuid",
+            "title": "Workflow Run Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "workflow_run_id",
+          "checkpoint_id",
+          "artifacts",
+          "awaiting_approval",
+          "interrupt_id"
+        ],
+        "title": "BlueprintDecisionResponse",
+        "type": "object"
+      },
       "HTTPValidationError": {
         "properties": {
           "detail": {
@@ -179,6 +312,67 @@
         },
         "summary": "Report API availability",
         "tags": ["system"]
+      }
+    },
+    "/api/v1/workflow-runs/{workflow_run_id}/decisions": {
+      "post": {
+        "description": "Apply an idempotent approve, revise, reject, or fork command.",
+        "operationId": "submitBlueprintDecision",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workflow_run_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Workflow Run Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BlueprintDecisionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BlueprintDecisionResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "description": "Workflow run not found"
+          },
+          "409": {
+            "description": "Decision conflicts with durable workflow state"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "503": {
+            "description": "Workflow execution service is unavailable"
+          }
+        },
+        "summary": "Resolve the active Story Blueprint human interrupt",
+        "tags": ["blueprint-decisions"]
       }
     },
     "/api/v1/workflow-runs/{workflow_run_id}/events": {

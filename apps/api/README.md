@@ -48,3 +48,22 @@ GET /api/v1/workflow-runs/{workflow_run_id}/events/stream?after={last_event_id}
 SSE frames use the durable database ID in the `id` field and a
 `WorkflowEventEnvelope` JSON object in `data`. The generated TypeScript SDK
 contains both the paginated replay and SSE operations.
+
+## Story Blueprint decisions
+
+The mandatory blueprint review accepts one idempotent command:
+
+```text
+POST /api/v1/workflow-runs/{workflow_run_id}/decisions
+```
+
+The body supplies a client-generated decision UUID, the active interrupt ID,
+an `approve`, `revise`, `reject`, or `fork` action, and a required instruction
+for every action except approval. The response is emitted only after execution
+reaches a durable next interrupt or completes approval. The same decision UUID
+can be retried safely with identical command data.
+
+The route delegates to the worker-owned `BlueprintWorkflowService`; it returns
+`503` when that execution service has not been attached to the API process.
+This keeps creative workflow execution out of the FastAPI route while exposing
+the typed command boundary needed by the workspace UI.
