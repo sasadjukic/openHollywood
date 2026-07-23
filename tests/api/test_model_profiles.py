@@ -135,6 +135,8 @@ async def test_presets_seed_in_product_order_without_model_guesses(
     assert profiles[2]["role_assignments"]["blueprint_integrator"] == "cloud"
     assert profiles[2]["role_assignments"]["character_actor"] == "cloud"
     assert profiles[2]["role_assignments"]["dialogue_director"] == "cloud"
+    assert profiles[2]["role_assignments"]["scene_writer"] == "cloud"
+    assert profiles[2]["role_assignments"]["scene_critic"] == "local"
 
 
 async def test_configure_and_activate_local_preset_routes_every_role(
@@ -169,6 +171,7 @@ async def test_configure_and_activate_local_preset_routes_every_role(
         ).model_identifier
         == "qwen3:8b"
     )
+    assert store.resolve_role(profile_id, "scene_writer").model_identifier == "qwen3:8b"
 
 
 async def test_incomplete_hybrid_preset_cannot_be_activated(

@@ -10,7 +10,7 @@ from typing import Any
 
 from open_hollywood_engine.models.contracts import ModelDeployment
 
-MODEL_PROFILE_SCHEMA_VERSION = "2"
+MODEL_PROFILE_SCHEMA_VERSION = "3"
 BLUEPRINT_SPECIALIST_ROLES = (
     "brief_architect",
     "premise_architect",
@@ -23,9 +23,14 @@ DIALOGUE_SPECIALIST_ROLES = (
     "character_actor",
     "dialogue_director",
 )
+PRODUCTION_SPECIALIST_ROLES = (
+    "scene_writer",
+    "scene_critic",
+)
 REGISTERED_SPECIALIST_ROLES = (
     *BLUEPRINT_SPECIALIST_ROLES,
     *DIALOGUE_SPECIALIST_ROLES,
+    *PRODUCTION_SPECIALIST_ROLES,
 )
 
 
@@ -226,17 +231,22 @@ class ModelProfileConfiguration:
             models[deployment] = (
                 None if selection_data is None else ModelSelection.from_data(selection_data)
             )
-        if schema_version == "1":
+        if schema_version in {"1", "2"}:
+            legacy_roles = (
+                BLUEPRINT_SPECIALIST_ROLES
+                if schema_version == "1"
+                else (*BLUEPRINT_SPECIALIST_ROLES, *DIALOGUE_SPECIALIST_ROLES)
+            )
             expected_legacy = {
-                role: MODEL_PRESETS[mode].role_assignments[role]
-                for role in BLUEPRINT_SPECIALIST_ROLES
+                role: MODEL_PRESETS[mode].role_assignments[role] for role in legacy_roles
             }
             if role_assignments != expected_legacy:
                 raise ValueError("legacy role assignments do not match the selected preset")
             role_assignments.update(
                 {
                     role: MODEL_PRESETS[mode].role_assignments[role]
-                    for role in DIALOGUE_SPECIALIST_ROLES
+                    for role in REGISTERED_SPECIALIST_ROLES
+                    if role not in legacy_roles
                 }
             )
             schema_version = MODEL_PROFILE_SCHEMA_VERSION
@@ -278,6 +288,8 @@ MODEL_PRESETS: Mapping[ModelProfileMode, ModelPreset] = MappingProxyType(
                 "blueprint_critic": ModelDeployment.LOCAL,
                 "character_actor": ModelDeployment.CLOUD,
                 "dialogue_director": ModelDeployment.CLOUD,
+                "scene_writer": ModelDeployment.CLOUD,
+                "scene_critic": ModelDeployment.LOCAL,
             },
         ),
     }
