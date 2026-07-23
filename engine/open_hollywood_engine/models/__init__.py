@@ -22,8 +22,10 @@ from open_hollywood_engine.models.gateway import (
 from open_hollywood_engine.models.ollama import OllamaGateway, OllamaHost
 from open_hollywood_engine.models.profiles import (
     BLUEPRINT_SPECIALIST_ROLES,
+    DIALOGUE_SPECIALIST_ROLES,
     MODEL_PRESETS,
     MODEL_PROFILE_SCHEMA_VERSION,
+    REGISTERED_SPECIALIST_ROLES,
     ModelPreset,
     ModelProfileConfiguration,
     ModelProfileMode,
@@ -59,4 +61,6 @@ __all__ = [
     "OllamaHost",
     "SecretValue",
     "BLUEPRINT_SPECIALIST_ROLES",
+    "DIALOGUE_SPECIALIST_ROLES",
+    "REGISTERED_SPECIALIST_ROLES",
 ]

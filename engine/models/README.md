@@ -24,6 +24,12 @@ deployment slots, unsupported schema versions, or missing required models.
 They remain independent from SQLAlchemy, FastAPI, Ollama response types, and
 provider credentials.
 
+Profile schema version 2 adds the concrete `character_actor` and
+`dialogue_director` roles introduced by the dialogue subgraph. Version 1
+profiles from Step 13 are upgraded in memory using their preset's fixed routing
+policy, so existing Local, Cloud, and Hybrid selections remain usable without a
+destructive database rewrite.
+
 Cloud model names are never hard-coded because availability and free-plan access
 can change. Ollama models reached through a local host with a `-cloud` suffix are
 still classified as cloud inference. Schema-enforced structured output is

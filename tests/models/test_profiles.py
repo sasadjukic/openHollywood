@@ -3,7 +3,10 @@
 import pytest
 from open_hollywood_engine.models import (
     BLUEPRINT_SPECIALIST_ROLES,
+    DIALOGUE_SPECIALIST_ROLES,
     MODEL_PRESETS,
+    MODEL_PROFILE_SCHEMA_VERSION,
+    REGISTERED_SPECIALIST_ROLES,
     ModelDeployment,
     ModelProfileConfiguration,
     ModelProfileMode,
@@ -22,9 +25,9 @@ def _selection(
     )
 
 
-def test_presets_assign_every_registered_blueprint_role() -> None:
+def test_presets_assign_every_registered_specialist_role() -> None:
     for preset in MODEL_PRESETS.values():
-        assert set(preset.role_assignments) == set(BLUEPRINT_SPECIALIST_ROLES)
+        assert set(preset.role_assignments) == set(REGISTERED_SPECIALIST_ROLES)
 
 
 def test_local_and_cloud_presets_route_every_role_to_one_model() -> None:
@@ -35,6 +38,8 @@ def test_local_and_cloud_presets_route_every_role_to_one_model() -> None:
 
     assert all(local.selection_for(role) == local_model for role in BLUEPRINT_SPECIALIST_ROLES)
     assert all(cloud.selection_for(role) == cloud_model for role in BLUEPRINT_SPECIALIST_ROLES)
+    assert all(local.selection_for(role) == local_model for role in DIALOGUE_SPECIALIST_ROLES)
+    assert all(cloud.selection_for(role) == cloud_model for role in DIALOGUE_SPECIALIST_ROLES)
 
 
 def test_hybrid_routes_structured_preparation_and_evaluation_locally() -> None:
@@ -49,6 +54,8 @@ def test_hybrid_routes_structured_preparation_and_evaluation_locally() -> None:
     assert hybrid.selection_for("blueprint_critic") == local_model
     assert hybrid.selection_for("character_architect") == cloud_model
     assert hybrid.selection_for("blueprint_integrator") == cloud_model
+    assert hybrid.selection_for("character_actor") == cloud_model
+    assert hybrid.selection_for("dialogue_director") == cloud_model
 
 
 def test_configuration_round_trips_through_secret_free_json() -> None:
@@ -74,3 +81,23 @@ def test_incomplete_and_mismatched_model_slots_fail_closed() -> None:
         MODEL_PRESETS[ModelProfileMode.LOCAL].configuration(
             local_model=_selection(ModelDeployment.CLOUD, "creative-cloud")
         )
+
+
+def test_step_thirteen_profile_data_upgrades_for_dialogue_roles() -> None:
+    legacy = (
+        MODEL_PRESETS[ModelProfileMode.HYBRID]
+        .configuration(
+            local_model=_selection(ModelDeployment.LOCAL, "qwen3:8b"),
+            cloud_model=_selection(ModelDeployment.CLOUD, "creative-cloud"),
+        )
+        .to_data()
+    )
+    legacy["schema_version"] = "1"
+    legacy["role_assignments"] = {
+        role: legacy["role_assignments"][role] for role in BLUEPRINT_SPECIALIST_ROLES
+    }
+
+    restored = ModelProfileConfiguration.from_data(legacy)
+
+    assert restored.schema_version == MODEL_PROFILE_SCHEMA_VERSION
+    assert restored.selection_for("character_actor").model_identifier == "creative-cloud"
