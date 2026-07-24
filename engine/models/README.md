@@ -24,12 +24,12 @@ deployment slots, unsupported schema versions, or missing required models.
 They remain independent from SQLAlchemy, FastAPI, Ollama response types, and
 provider credentials.
 
-Profile schema version 3 adds the concrete `scene_writer` and `scene_critic`
-roles introduced by the production loop. Version 1 profiles from Step 13 and
-version 2 profiles from Step 14 are upgraded in memory using their preset's
-fixed routing policy, so existing Local, Cloud, and Hybrid selections remain
-usable without a destructive database rewrite. Hybrid sends scene writing to
-the selected cloud model and keeps routine independent critique local.
+Profile schema version 4 adds the `continuity_supervisor` and
+`story_bible_maintainer` roles to the production loop. Versions 1 through 3 are
+upgraded in memory using their preset's fixed routing policy, so existing Local,
+Cloud, and Hybrid selections remain usable without a destructive database
+rewrite. Hybrid sends scene writing to the selected cloud model and keeps
+critique, continuity checking, and deterministic story-bible maintenance local.
 
 Cloud model names are never hard-coded because availability and free-plan access
 can change. Ollama models reached through a local host with a `-cloud` suffix are

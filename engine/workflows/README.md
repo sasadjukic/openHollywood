@@ -116,6 +116,12 @@ START -> writer -----------------------------> critic
                                                  |
                         attempts remain <--- revise?
                                                  |
+                                           continuity
+                                                 |
+                        attempts remain <--- blocked?
+                                                 |
+                                      story-bible update
+                                                 |
                                               accept
                                                  |
                                       next scene or END
@@ -134,17 +140,23 @@ the Step 14 subgraph runs under the production graph's checkpoint namespace;
 the writer then persists a new prose version integrating its briefing, turns,
 and evaluation. Scenes without that declaration go directly to critique.
 
-A passing critique accepts the current immutable draft. A non-passing critique
-returns to the writer only while revision attempts remain. At the hard limit,
-the best available complete draft is accepted with
-`revision_limit_reached`, preserving a deterministic and observable
-disposition rather than looping. Incomplete/truncated drafts, critiques aimed
-at another version, undeclared artifact kinds, reused input versions, and
-malformed checkpoint state fail closed.
+A passing critique advances the current immutable draft to the continuity
+gate. A non-passing critique returns to the writer only while revision attempts
+remain. At the hard limit, the best available complete draft may advance with
+`revision_limit_reached`, but it still cannot bypass continuity. Error or
+blocking findings consume the same bounded revision allowance and fail closed
+if they survive its hard limit.
+
+A continuity-cleared scene produces a typed delta against the exact current
+Story Bible. A pure reducer creates the only valid successor snapshot,
+monotonically appending accepted scenes, timeline events, and established
+facts; applying stable entity-state updates; and preventing resolved threads
+from reopening. The graph compares the persisted successor with that exact
+deterministic result before canonical acceptance. Each accepted scene records
+its critique, final continuity report, delta, and resulting Story Bible version.
 
 Parent checkpoints retain only budgets, graph configuration, counters,
 deterministic dispositions, and artifact references. Scene prose, critique
 bodies, dialogue, prompts, credentials, and provider objects remain in their
-own application-owned records. Accepted scenes are supplied to later scenes by
-exact version reference. Story-bible mutation and continuity acceptance remain
-Step 16 responsibilities.
+own application-owned records. Accepted scenes and the latest canonical Story
+Bible are supplied to later specialists by exact version reference.
