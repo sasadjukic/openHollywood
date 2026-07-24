@@ -12,6 +12,7 @@ dependencies = [
   "langchain-core>=1.5.0,<2.0",
   "langgraph>=1.2.9,<2.0",
   "langgraph-checkpoint-sqlite>=3.1.0,<4.0",
+  "open-hollywood-api",
   "pydantic>=2.13.4,<3.0",
   "sqlalchemy>=2.0.41,<3.0",
 ]
@@ -32,6 +33,12 @@ api = [
 [tool.uv]
 package = false
 
+[tool.uv.sources]
+open-hollywood-api = { workspace = true }
+
+[tool.uv.workspace]
+members = ["apps/api", "engine"]
+
 [tool.ruff]
 target-version = "py313"
 line-length = 100
@@ -41,7 +48,6 @@ select = ["E", "F", "I", "UP", "B", "SIM"]
 
 [tool.pytest.ini_options]
 addopts = "-ra --strict-config --strict-markers"
-pythonpath = ["apps/api", "engine"]
 testpaths = ["tests"]
 
 [tool.mypy]

@@ -128,38 +128,68 @@ images/        Open Hollywood brand assets
 
 ## Development
 
-Install the pinned Python and JavaScript dependencies from the repository root:
+Run every command in this section from the repository root. Install the pinned
+Python and JavaScript dependencies:
 
 ```powershell
 uv sync --extra api
 pnpm install
 ```
 
-Start the API and web client in separate terminals:
+The uv workspace installs `open_hollywood_engine` and `open_hollywood_api` as
+editable local packages. No `PYTHONPATH` configuration or Uvicorn `--app-dir`
+option is required.
+
+Create or upgrade the local SQLite database before starting the API. The
+default database is `./data/open_hollywood.db`:
 
 ```powershell
-uv run --extra api uvicorn --app-dir apps/api open_hollywood_api.app:app --reload
+uv run alembic upgrade head
 ```
+
+Then start the API and web client in separate terminals.
+
+Terminal 1 — API:
+
+```powershell
+uv run --extra api uvicorn open_hollywood_api.app:app --reload
+```
+
+Terminal 2 — web client:
 
 ```powershell
 pnpm --filter @open-hollywood/web dev
 ```
 
-The client runs at `http://127.0.0.1:5173` and the API documentation is at
-`http://127.0.0.1:8000/docs`. Set `VITE_API_URL` when the API uses another
-origin.
+Open `http://127.0.0.1:5173`. The API health endpoint is
+`http://127.0.0.1:8000/api/v1/health`, and its interactive documentation is at
+`http://127.0.0.1:8000/docs`.
+
+The defaults require no environment variables. To use another database, set
+its path in the API terminal before running Alembic and Uvicorn:
+
+```powershell
+$env:OPEN_HOLLYWOOD_DB_PATH = "C:\path\to\open_hollywood.db"
+uv run alembic upgrade head
+uv run --extra api uvicorn open_hollywood_api.app:app --reload
+```
+
+To use an API origin other than `http://127.0.0.1:8000`, set the client
+variable before starting Vite:
+
+```powershell
+$env:VITE_API_URL = "http://127.0.0.1:8000"
+pnpm --filter @open-hollywood/web dev
+```
+
+Local Ollama must be running only when using local models. Direct Ollama Cloud
+catalog discovery additionally reads `OLLAMA_API_KEY` from the API process
+environment; credentials must never be written to project files.
 
 When a FastAPI route or response model changes, regenerate the shared SDK:
 
 ```powershell
 pnpm contracts:generate
-```
-
-Create or upgrade the local SQLite database using the path in
-`OPEN_HOLLYWOOD_DB_PATH` (default: `./data/open_hollywood.db`):
-
-```powershell
-uv run alembic upgrade head
 ```
 
 Inspect the active revision or roll back one migration during development:

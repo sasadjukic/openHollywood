@@ -1,7 +1,7 @@
 # Creative engine
 
-Provider-neutral Python domain and workflow engine. Its future source package
-will be named `open_hollywood_engine` and will contain:
+Provider-neutral Python domain and workflow engine. The
+`open_hollywood_engine` package contains:
 
 - `agents/`: registered specialist capabilities
 - `artifacts/`: typed creative artifacts and version lineage

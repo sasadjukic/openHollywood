@@ -1,0 +1,22 @@
+[project]
+name = "open-hollywood-engine"
+version = "0.0.0"
+description = "Provider-neutral domain and workflow engine for Open Hollywood"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.13,<3.14"
+classifiers = ["Private :: Do Not Upload"]
+dependencies = [
+  "httpx>=0.28.1,<1.0",
+  "langchain-core>=1.5.0,<2.0",
+  "langgraph>=1.2.9,<2.0",
+  "pydantic>=2.13.4,<3.0",
+]
+
+[build-system]
+requires = ["uv_build>=0.11.28,<0.12"]
+build-backend = "uv_build"
+
+[tool.uv.build-backend]
+module-name = "open_hollywood_engine"
+module-root = ""
