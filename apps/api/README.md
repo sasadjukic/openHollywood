@@ -16,8 +16,14 @@ not call `Base.metadata.create_all()`.
 From the repository root:
 
 ```powershell
-uv run --extra api uvicorn --app-dir apps/api open_hollywood_api.app:app --reload
+uv sync --extra api
+uv run alembic upgrade head
+uv run --extra api uvicorn open_hollywood_api.app:app --reload
 ```
+
+The root uv workspace installs `open_hollywood_api` and
+`open_hollywood_engine` as editable local packages. Do not add either source
+directory to `PYTHONPATH`.
 
 The initial `/api/v1/health` boundary provides a typed vertical slice for the
 generated web SDK. Interactive API documentation is available at `/docs` and

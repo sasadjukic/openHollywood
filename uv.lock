@@ -2,6 +2,13 @@ version = 1
 revision = 3
 requires-python = "==3.13.*"
 
+[manifest]
+members = [
+    "open-hollywood-api",
+    "open-hollywood-engine",
+    "open-hollywood-workspace",
+]
+
 [[package]]
 name = "aiosqlite"
 version = "0.22.1"
@@ -465,6 +472,56 @@ wheels = [
 ]
 
 [[package]]
+name = "open-hollywood-api"
+version = "0.0.0"
+source = { editable = "apps/api" }
+dependencies = [
+    { name = "aiosqlite" },
+    { name = "anyio" },
+    { name = "fastapi" },
+    { name = "langchain-core" },
+    { name = "langgraph" },
+    { name = "langgraph-checkpoint-sqlite" },
+    { name = "open-hollywood-engine" },
+    { name = "pydantic" },
+    { name = "sqlalchemy" },
+    { name = "uvicorn", extra = ["standard"] },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "aiosqlite", specifier = ">=0.22.1,<1.0" },
+    { name = "anyio", specifier = ">=4.9.0,<5.0" },
+    { name = "fastapi", specifier = ">=0.116.1,<1.0" },
+    { name = "langchain-core", specifier = ">=1.5.0,<2.0" },
+    { name = "langgraph", specifier = ">=1.2.9,<2.0" },
+    { name = "langgraph-checkpoint-sqlite", specifier = ">=3.1.0,<4.0" },
+    { name = "open-hollywood-engine", editable = "engine" },
+    { name = "pydantic", specifier = ">=2.13.4,<3.0" },
+    { name = "sqlalchemy", specifier = ">=2.0.41,<3.0" },
+    { name = "uvicorn", extras = ["standard"], specifier = ">=0.35.0,<1.0" },
+]
+
+[[package]]
+name = "open-hollywood-engine"
+version = "0.0.0"
+source = { editable = "engine" }
+dependencies = [
+    { name = "httpx" },
+    { name = "langchain-core" },
+    { name = "langgraph" },
+    { name = "pydantic" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "httpx", specifier = ">=0.28.1,<1.0" },
+    { name = "langchain-core", specifier = ">=1.5.0,<2.0" },
+    { name = "langgraph", specifier = ">=1.2.9,<2.0" },
+    { name = "pydantic", specifier = ">=2.13.4,<3.0" },
+]
+
+[[package]]
 name = "open-hollywood-workspace"
 version = "0.0.0"
 source = { virtual = "." }
@@ -475,6 +532,7 @@ dependencies = [
     { name = "langchain-core" },
     { name = "langgraph" },
     { name = "langgraph-checkpoint-sqlite" },
+    { name = "open-hollywood-api" },
     { name = "pydantic" },
     { name = "sqlalchemy" },
 ]
@@ -501,6 +559,7 @@ requires-dist = [
     { name = "langchain-core", specifier = ">=1.5.0,<2.0" },
     { name = "langgraph", specifier = ">=1.2.9,<2.0" },
     { name = "langgraph-checkpoint-sqlite", specifier = ">=3.1.0,<4.0" },
+    { name = "open-hollywood-api", editable = "apps/api" },
     { name = "pydantic", specifier = ">=2.13.4,<3.0" },
     { name = "sqlalchemy", specifier = ">=2.0.41,<3.0" },
     { name = "uvicorn", extras = ["standard"], marker = "extra == 'api'", specifier = ">=0.35.0,<1.0" },
