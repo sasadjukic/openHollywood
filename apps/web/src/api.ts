@@ -7,6 +7,7 @@ import {
   getProjectWorkspace,
   listModelCatalog,
   listModelProfiles,
+  listProjectExports,
   listProjects,
   listWorkflowRunEvents,
   submitBlueprintDecision,
@@ -18,6 +19,8 @@ import {
   type ModelProfileList,
   type ModelProfileSummary,
   type ProjectList,
+  type ProjectExportFormat,
+  type ProjectExportManifest,
   type ProjectWorkspace,
   type RunBudgetPatch,
   type RunControlAction,
@@ -51,6 +54,23 @@ export async function fetchProjectWorkspace(
     path: { project_id: projectId },
   });
   return requireData(result, "This story workspace could not be loaded.");
+}
+
+export async function fetchProjectExports(
+  projectId: string,
+): Promise<ProjectExportManifest> {
+  const result = await listProjectExports({
+    path: { project_id: projectId },
+  });
+  return requireData(result, "Export availability could not be loaded.");
+}
+
+export function projectExportUrl(
+  projectId: string,
+  format: ProjectExportFormat,
+): string {
+  const base = client.getConfig().baseUrl?.replace(/\/$/, "") ?? apiBaseUrl;
+  return `${base}/api/v1/projects/${encodeURIComponent(projectId)}/exports/${format}`;
 }
 
 export async function fetchArtifactVersion(

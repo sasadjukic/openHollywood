@@ -24,6 +24,11 @@ inspector renders the selected immutable artifact version, provenance, and
 evaluation summary. On narrow screens, navigation and inspection become
 dismissible drawers.
 
+The story header queries the generated export-manifest contract and exposes
+Markdown, PDF, and DOCX download links only when the API confirms that the
+approved scene set is complete. Binary downloads use the configured local API
+origin and do not introduce a manuscript editor.
+
 `Model setup` opens the Local, Cloud, and Hybrid preset surface. It displays
 dynamic Ollama catalog availability, the role allocation for each preset, and
 only the model selectors required by that allocation. Saving a preset records

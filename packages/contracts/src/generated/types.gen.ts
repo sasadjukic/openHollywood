@@ -246,6 +246,26 @@ export type ConfigureModelProfileRequest = {
 };
 
 /**
+ * ExportSourceVersion
+ *
+ * One immutable scene version included in an export.
+ */
+export type ExportSourceVersion = {
+  /**
+   * Artifact Key
+   */
+  artifact_key: string;
+  /**
+   * Artifact Version Id
+   */
+  artifact_version_id: string;
+  /**
+   * Scene Number
+   */
+  scene_number: number;
+};
+
+/**
  * HTTPValidationError
  */
 export type HttpValidationError = {
@@ -361,6 +381,37 @@ export type ModelSelectionInput = {
    * Provider
    */
   provider: string;
+};
+
+/**
+ * ProjectExportFormat
+ *
+ * Download formats supported for v0.1 short prose.
+ */
+export type ProjectExportFormat = "markdown" | "pdf" | "docx";
+
+/**
+ * ProjectExportManifest
+ *
+ * Export readiness and exact immutable source lineage.
+ */
+export type ProjectExportManifest = {
+  /**
+   * Available Formats
+   */
+  available_formats: Array<ProjectExportFormat>;
+  /**
+   * Project Id
+   */
+  project_id: string;
+  /**
+   * Source Versions
+   */
+  source_versions: Array<ExportSourceVersion>;
+  /**
+   * Unavailable Reason
+   */
+  unavailable_reason: string | null;
 };
 
 /**
@@ -1144,6 +1195,83 @@ export type ListProjectsResponses = {
 
 export type ListProjectsResponse =
   ListProjectsResponses[keyof ListProjectsResponses];
+
+export type ListProjectExportsData = {
+  body?: never;
+  path: {
+    /**
+     * Project Id
+     */
+    project_id: string;
+  };
+  query?: never;
+  url: "/api/v1/projects/{project_id}/exports";
+};
+
+export type ListProjectExportsErrors = {
+  /**
+   * Project not found
+   */
+  404: unknown;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type ListProjectExportsError =
+  ListProjectExportsErrors[keyof ListProjectExportsErrors];
+
+export type ListProjectExportsResponses = {
+  /**
+   * Successful Response
+   */
+  200: ProjectExportManifest;
+};
+
+export type ListProjectExportsResponse =
+  ListProjectExportsResponses[keyof ListProjectExportsResponses];
+
+export type DownloadProjectExportData = {
+  body?: never;
+  path: {
+    /**
+     * Project Id
+     */
+    project_id: string;
+    export_format: ProjectExportFormat;
+  };
+  query?: never;
+  url: "/api/v1/projects/{project_id}/exports/{export_format}";
+};
+
+export type DownloadProjectExportErrors = {
+  /**
+   * Project not found
+   */
+  404: unknown;
+  /**
+   * Project is not ready to export
+   */
+  409: unknown;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type DownloadProjectExportError =
+  DownloadProjectExportErrors[keyof DownloadProjectExportErrors];
+
+export type DownloadProjectExportResponses = {
+  /**
+   * Rendered manuscript download
+   */
+  200: Blob | File;
+};
+
+export type DownloadProjectExportResponse =
+  DownloadProjectExportResponses[keyof DownloadProjectExportResponses];
 
 export type GetProjectWorkspaceData = {
   body?: never;

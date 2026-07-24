@@ -402,6 +402,27 @@
         "title": "ConfigureModelProfileRequest",
         "type": "object"
       },
+      "ExportSourceVersion": {
+        "description": "One immutable scene version included in an export.",
+        "properties": {
+          "artifact_key": {
+            "title": "Artifact Key",
+            "type": "string"
+          },
+          "artifact_version_id": {
+            "format": "uuid",
+            "title": "Artifact Version Id",
+            "type": "string"
+          },
+          "scene_number": {
+            "title": "Scene Number",
+            "type": "integer"
+          }
+        },
+        "required": ["artifact_key", "artifact_version_id", "scene_number"],
+        "title": "ExportSourceVersion",
+        "type": "object"
+      },
       "HTTPValidationError": {
         "properties": {
           "detail": {
@@ -570,6 +591,55 @@
         },
         "required": ["provider", "model_identifier", "deployment"],
         "title": "ModelSelectionInput",
+        "type": "object"
+      },
+      "ProjectExportFormat": {
+        "description": "Download formats supported for v0.1 short prose.",
+        "enum": ["markdown", "pdf", "docx"],
+        "title": "ProjectExportFormat",
+        "type": "string"
+      },
+      "ProjectExportManifest": {
+        "description": "Export readiness and exact immutable source lineage.",
+        "properties": {
+          "available_formats": {
+            "items": {
+              "$ref": "#/components/schemas/ProjectExportFormat"
+            },
+            "title": "Available Formats",
+            "type": "array"
+          },
+          "project_id": {
+            "format": "uuid",
+            "title": "Project Id",
+            "type": "string"
+          },
+          "source_versions": {
+            "items": {
+              "$ref": "#/components/schemas/ExportSourceVersion"
+            },
+            "title": "Source Versions",
+            "type": "array"
+          },
+          "unavailable_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unavailable Reason"
+          }
+        },
+        "required": [
+          "project_id",
+          "available_formats",
+          "source_versions",
+          "unavailable_reason"
+        ],
+        "title": "ProjectExportManifest",
         "type": "object"
       },
       "ProjectList": {
@@ -1836,6 +1906,103 @@
         },
         "summary": "List locally persisted story projects",
         "tags": ["workspace"]
+      }
+    },
+    "/api/v1/projects/{project_id}/exports": {
+      "get": {
+        "description": "Return export readiness and the exact source artifact versions.",
+        "operationId": "listProjectExports",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "project_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Project Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProjectExportManifest"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "description": "Project not found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List deterministic exports available for one project",
+        "tags": ["exports"]
+      }
+    },
+    "/api/v1/projects/{project_id}/exports/{export_format}": {
+      "get": {
+        "description": "Render the current approved scene versions into the requested format.",
+        "operationId": "downloadProjectExport",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "project_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Project Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "export_format",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/ProjectExportFormat"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/octet-stream": {}
+            },
+            "description": "Rendered manuscript download"
+          },
+          "404": {
+            "description": "Project not found"
+          },
+          "409": {
+            "description": "Project is not ready to export"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Download one deterministic manuscript export",
+        "tags": ["exports"]
       }
     },
     "/api/v1/projects/{project_id}/workspace": {
