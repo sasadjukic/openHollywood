@@ -90,6 +90,16 @@ model-backed node so an unaffordable next call pauses with partial artifacts
 preserved. Human approval remains a distinct pause reason and still requires
 the Story Blueprint decision flow.
 
+Completed short-prose projects now have a deterministic publication boundary.
+The provider-neutral engine assembles only complete, latest approved Scene
+Draft versions in contiguous story order, renders canonical Markdown, and
+exports searchable PDF and editable DOCX files with stable metadata and bytes.
+A separate typed Fountain renderer supports future screenplay-family formats
+without guessing screenplay structure from prose. The API exposes export
+readiness, exact source-version lineage, content hashes, and downloads; the
+workspace shows Markdown, PDF, and DOCX controls only when the manuscript
+invariants pass.
+
 The v0.1 target is deliberately narrow: short prose fiction, local-first
 storage, optional local/cloud/hybrid inference, and one mandatory story
 blueprint approval before autonomous drafting.
@@ -185,6 +195,19 @@ pnpm --filter @open-hollywood/web dev
 Local Ollama must be running only when using local models. Direct Ollama Cloud
 catalog discovery additionally reads `OLLAMA_API_KEY` from the API process
 environment; credentials must never be written to project files.
+
+When a project has three to eight complete, approved Scene Draft artifacts, its
+workspace header enables Markdown, PDF, and DOCX downloads. The same downloads
+are available from:
+
+```text
+GET /api/v1/projects/{project_id}/exports
+GET /api/v1/projects/{project_id}/exports/{markdown|pdf|docx}
+```
+
+The manifest reports the exact immutable scene-version IDs used. A project
+that does not yet form a complete, contiguous manuscript reports no available
+formats, and a direct download attempt returns `409 Conflict`.
 
 When a FastAPI route or response model changes, regenerate the shared SDK:
 

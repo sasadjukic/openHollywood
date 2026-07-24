@@ -19,6 +19,9 @@ import type {
   ControlWorkflowRunData,
   ControlWorkflowRunErrors,
   ControlWorkflowRunResponses,
+  DownloadProjectExportData,
+  DownloadProjectExportErrors,
+  DownloadProjectExportResponses,
   GetArtifactVersionData,
   GetArtifactVersionErrors,
   GetArtifactVersionResponses,
@@ -31,6 +34,9 @@ import type {
   ListModelCatalogResponses,
   ListModelProfilesData,
   ListModelProfilesResponses,
+  ListProjectExportsData,
+  ListProjectExportsErrors,
+  ListProjectExportsResponses,
   ListProjectsData,
   ListProjectsResponses,
   ListWorkflowRunEventsData,
@@ -176,6 +182,45 @@ export const listProjects = <ThrowOnError extends boolean = false>(
   (options?.client ?? client).get<ListProjectsResponses, unknown, ThrowOnError>(
     { url: "/api/v1/projects", ...options },
   );
+
+/**
+ * List deterministic exports available for one project
+ *
+ * Return export readiness and the exact source artifact versions.
+ */
+export const listProjectExports = <ThrowOnError extends boolean = false>(
+  options: Options<ListProjectExportsData, ThrowOnError>,
+): RequestResult<
+  ListProjectExportsResponses,
+  ListProjectExportsErrors,
+  ThrowOnError
+> =>
+  (options.client ?? client).get<
+    ListProjectExportsResponses,
+    ListProjectExportsErrors,
+    ThrowOnError
+  >({ url: "/api/v1/projects/{project_id}/exports", ...options });
+
+/**
+ * Download one deterministic manuscript export
+ *
+ * Render the current approved scene versions into the requested format.
+ */
+export const downloadProjectExport = <ThrowOnError extends boolean = false>(
+  options: Options<DownloadProjectExportData, ThrowOnError>,
+): RequestResult<
+  DownloadProjectExportResponses,
+  DownloadProjectExportErrors,
+  ThrowOnError
+> =>
+  (options.client ?? client).get<
+    DownloadProjectExportResponses,
+    DownloadProjectExportErrors,
+    ThrowOnError
+  >({
+    url: "/api/v1/projects/{project_id}/exports/{export_format}",
+    ...options,
+  });
 
 /**
  * Load one persisted creative workspace

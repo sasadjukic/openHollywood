@@ -3,6 +3,7 @@ import type {
   BlueprintDecisionAction,
   ModelProfileSummary,
   ModelSelectionInput,
+  ProjectExportFormat,
   RunBudgetPatch,
   RunControlAction,
   WorkspaceArtifact,
@@ -15,9 +16,11 @@ import {
   fetchModelCatalog,
   fetchModelProfiles,
   fetchProjects,
+  fetchProjectExports,
   fetchProjectWorkspace,
   fetchServiceStatus,
   fetchWorkflowEvents,
+  projectExportUrl,
   controlRun,
   saveModelProfile,
   selectModelProfile,
@@ -87,6 +90,16 @@ export function App() {
   const workspace = workspaceQuery.data;
   const activeRun = workspace?.workflow_runs[0];
   const activeRunId = activeRun?.id ?? null;
+  const exportsQuery = useQuery({
+    enabled: selectedProjectId !== null && workspace !== undefined,
+    queryFn: () => {
+      if (!selectedProjectId) {
+        throw new Error("Select a project before loading its exports.");
+      }
+      return fetchProjectExports(selectedProjectId);
+    },
+    queryKey: ["project-exports", selectedProjectId],
+  });
 
   const eventsQuery = useQuery({
     enabled: activeRunId !== null,
@@ -366,17 +379,29 @@ export function App() {
                   <h1>{workspace.project.name}</h1>
                   <p>{workspace.project.description}</p>
                 </div>
-                <div className="run-summary">
-                  <span
-                    className={`run-status run-status--${activeRun?.status ?? "idle"}`}
-                  >
-                    {humanize(activeRun?.status ?? "idle")}
-                  </span>
-                  <small>
-                    {activeRun?.current_node
-                      ? `At ${humanize(activeRun.current_node)}`
-                      : "Workspace ready"}
-                  </small>
+                <div className="story-actions">
+                  <ExportControls
+                    availableFormats={
+                      exportsQuery.data?.available_formats ?? []
+                    }
+                    isLoading={exportsQuery.isPending}
+                    projectId={workspace.project.id}
+                    unavailableReason={
+                      exportsQuery.data?.unavailable_reason ?? null
+                    }
+                  />
+                  <div className="run-summary">
+                    <span
+                      className={`run-status run-status--${activeRun?.status ?? "idle"}`}
+                    >
+                      {humanize(activeRun?.status ?? "idle")}
+                    </span>
+                    <small>
+                      {activeRun?.current_node
+                        ? `At ${humanize(activeRun.current_node)}`
+                        : "Workspace ready"}
+                    </small>
+                  </div>
                 </div>
               </header>
 
@@ -483,6 +508,56 @@ export function App() {
         profiles={modelProfilesQuery.data?.profiles ?? []}
       />
     </div>
+  );
+}
+
+function ExportControls({
+  availableFormats,
+  isLoading,
+  projectId,
+  unavailableReason,
+}: {
+  availableFormats: ProjectExportFormat[];
+  isLoading: boolean;
+  projectId: string;
+  unavailableReason: string | null;
+}) {
+  const labels: Record<ProjectExportFormat, string> = {
+    markdown: "Markdown",
+    pdf: "PDF",
+    docx: "DOCX",
+  };
+  return (
+    <section className="export-controls" aria-label="Story exports">
+      <span className="export-label">Export</span>
+      <div>
+        {(["markdown", "pdf", "docx"] as const).map((format) =>
+          availableFormats.includes(format) ? (
+            <a
+              className="export-link"
+              download
+              href={projectExportUrl(projectId, format)}
+              key={format}
+            >
+              {labels[format]}
+            </a>
+          ) : (
+            <span
+              aria-disabled="true"
+              className="export-link export-link--disabled"
+              key={format}
+              title={
+                isLoading
+                  ? "Checking export readiness"
+                  : (unavailableReason ?? "This format is unavailable")
+              }
+            >
+              {labels[format]}
+            </span>
+          ),
+        )}
+      </div>
+    </section>
   );
 }
 

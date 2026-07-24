@@ -402,6 +402,55 @@ textarea:focus-visible {
   line-height: 1.55;
 }
 
+.story-actions {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 22px;
+  align-items: flex-start;
+}
+
+.export-controls {
+  display: grid;
+  gap: 7px;
+  justify-items: end;
+}
+
+.export-label {
+  color: var(--muted-dim);
+  font-size: 0.65rem;
+  font-weight: 750;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.export-controls > div {
+  display: flex;
+  gap: 5px;
+}
+
+.export-link {
+  padding: 5px 8px;
+  border: 1px solid rgb(129 193 217 / 24%);
+  border-radius: 7px;
+  color: var(--blue);
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-decoration: none;
+  background: rgb(129 193 217 / 6%);
+}
+
+.export-link:hover {
+  border-color: rgb(129 193 217 / 42%);
+  color: var(--text);
+}
+
+.export-link--disabled {
+  border-color: var(--border);
+  color: var(--muted-dim);
+  background: transparent;
+  cursor: not-allowed;
+}
+
 .run-summary {
   display: grid;
   flex: 0 0 auto;

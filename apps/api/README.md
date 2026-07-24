@@ -46,6 +46,23 @@ version metadata. Full artifact bodies and evaluation summaries are fetched for
 one selected version at a time. These responses deliberately exclude workflow
 checkpoint state, model prompts, credentials, and private reasoning.
 
+## Deterministic exports
+
+Export availability and downloads are assembled from the latest versions of
+approved `scene_draft` artifacts:
+
+```text
+GET /api/v1/projects/{project_id}/exports
+GET /api/v1/projects/{project_id}/exports/{export_format}
+```
+
+The manifest lists Markdown, PDF, and DOCX only when three to eight complete
+scenes have unique IDs and contiguous numbering. It includes the exact
+immutable source-version IDs. Downloads return a sanitized filename, a SHA-256
+ETag, and the same source lineage in
+`X-Open-Hollywood-Source-Versions`; incomplete projects return `409` rather
+than a partial manuscript.
+
 ## Model presets and discovery
 
 Local, Cloud, and Hybrid are fixed, versioned role-routing policies persisted

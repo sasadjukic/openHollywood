@@ -3,6 +3,7 @@
 from fastapi import HTTPException, Request, status
 
 from open_hollywood_api.services.blueprint_workflow import BlueprintWorkflowService
+from open_hollywood_api.services.exports import ProjectExportStore
 from open_hollywood_api.services.model_profiles import (
     ModelCatalogService,
     ModelProfileStore,
@@ -40,6 +41,17 @@ def get_workspace_store(request: Request) -> WorkspaceStore:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail="Workspace storage is unavailable",
+        )
+    return store
+
+
+def get_project_export_store(request: Request) -> ProjectExportStore:
+    """Return the app-owned deterministic export boundary."""
+    store = getattr(request.app.state, "project_export_store", None)
+    if not isinstance(store, ProjectExportStore):
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Project export storage is unavailable",
         )
     return store
 

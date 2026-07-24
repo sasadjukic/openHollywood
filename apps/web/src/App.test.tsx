@@ -95,6 +95,22 @@ function configureWorkspaceApi() {
     if (url.includes(`/api/v1/projects/${projectId}/workspace`)) {
       return Promise.resolve(jsonResponse(workspaceResponse()));
     }
+    if (url.endsWith(`/api/v1/projects/${projectId}/exports`)) {
+      return Promise.resolve(
+        jsonResponse({
+          available_formats: ["markdown", "pdf", "docx"],
+          project_id: projectId,
+          source_versions: [
+            {
+              artifact_key: "scene_1",
+              artifact_version_id: versionId,
+              scene_number: 1,
+            },
+          ],
+          unavailable_reason: null,
+        }),
+      );
+    }
     if (url.includes(`/api/v1/workflow-runs/${runId}/events`)) {
       return Promise.resolve(
         jsonResponse({
@@ -194,6 +210,16 @@ describe("App", () => {
       screen.getByRole("region", { name: "Workflow run controls" }),
     ).toHaveTextContent("Calls 0 / 32");
     expect(screen.getByRole("button", { name: "Stop" })).toBeInTheDocument();
+    expect(
+      await screen.findByRole("link", { name: "Markdown" }),
+    ).toHaveAttribute(
+      "href",
+      `http://api.test/api/v1/projects/${projectId}/exports/markdown`,
+    );
+    expect(screen.getByRole("link", { name: "PDF" })).toHaveAttribute(
+      "download",
+    );
+    expect(screen.getByRole("link", { name: "DOCX" })).toBeInTheDocument();
     expect(
       screen.queryByRole("button", { name: "Resume" }),
     ).not.toBeInTheDocument();
