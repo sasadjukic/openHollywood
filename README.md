@@ -70,6 +70,15 @@ references—not prose, critiques, prompts, or conversation history. The same
 unit contract can support chapters when a later product version adds a
 long-form format; v0.1 deliberately produces scenes only.
 
+Before any scene becomes canonical, a continuity supervisor checks its exact
+draft and plan versions against the exact current Story Bible. Severe findings
+enter the shared bounded revision loop and fail closed at the hard limit.
+Continuity-cleared scenes produce typed deltas that a deterministic reducer
+applies to immutable full-snapshot Story Bible versions. Accepted-scene and
+timeline history only append, established identifiers cannot be reused,
+resolved mysteries and setup/payoff promises cannot reopen, and the next scene
+receives the exact resulting canonical version.
+
 The v0.1 target is deliberately narrow: short prose fiction, local-first
 storage, optional local/cloud/hybrid inference, and one mandatory story
 blueprint approval before autonomous drafting.

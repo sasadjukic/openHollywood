@@ -16,6 +16,8 @@ from langgraph.types import RetryPolicy
 from open_hollywood_engine.artifacts import (
     ArtifactKind,
     CritiqueVerdict,
+    StoryBibleInvariantError,
+    validate_story_bible_transition,
 )
 from open_hollywood_engine.models.contracts import ModelCallBudget
 from open_hollywood_engine.workflows.contracts import ArtifactReference
@@ -33,6 +35,8 @@ from open_hollywood_engine.workflows.dialogue_graph import (
 from open_hollywood_engine.workflows.production_contracts import (
     PRODUCTION_NODE_DEFINITIONS,
     AcceptedProductionUnit,
+    ContinuityCheckResult,
+    ContinuityCheckTask,
     DialogueIntegrationTask,
     DialoguePassConfiguration,
     ProductionCharacterReference,
@@ -47,6 +51,8 @@ from open_hollywood_engine.workflows.production_contracts import (
     SceneProductionResult,
     SceneProductionStateError,
     SceneWritingTask,
+    StoryBibleUpdateResult,
+    StoryBibleUpdateTask,
     UnitAcceptanceReason,
 )
 
@@ -85,6 +91,9 @@ class AcceptedProductionUnitState(TypedDict):
     unit_number: int
     artifact: DialogueArtifactReferenceState
     critique_artifact: DialogueArtifactReferenceState
+    continuity_artifact: DialogueArtifactReferenceState
+    story_bible_update_artifact: DialogueArtifactReferenceState
+    story_bible_artifact: DialogueArtifactReferenceState
     revision_cycles_used: int
     dialogue_runs: int
     acceptance_reason: str
@@ -94,6 +103,8 @@ class ProductionGraphState(DialogueGraphState, total=False):
     """Reference-only coordination state for the production parent graph."""
 
     approved_blueprint: DialogueArtifactReferenceState
+    initial_story_bible: DialogueArtifactReferenceState
+    current_story_bible_artifact: DialogueArtifactReferenceState
     production_units: list[ProductionUnitState]
     global_context_artifacts: list[DialogueArtifactReferenceState]
     production_max_input_tokens: int
@@ -105,11 +116,16 @@ class ProductionGraphState(DialogueGraphState, total=False):
     current_revision_number: int
     current_draft_artifact: DialogueArtifactReferenceState | None
     current_critique_artifact: DialogueArtifactReferenceState | None
+    current_continuity_artifact: DialogueArtifactReferenceState | None
+    current_story_bible_update_artifact: DialogueArtifactReferenceState | None
     current_dialogue_runs: int
     current_acceptance_reason: str | None
     revision_scheduled: bool
     draft_artifacts: list[DialogueArtifactReferenceState]
     critique_artifacts: list[DialogueArtifactReferenceState]
+    continuity_artifacts: list[DialogueArtifactReferenceState]
+    story_bible_update_artifacts: list[DialogueArtifactReferenceState]
+    story_bible_artifacts: list[DialogueArtifactReferenceState]
     accepted_units: list[AcceptedProductionUnitState]
     production_complete: bool
 
@@ -132,6 +148,8 @@ def initial_production_state(production: SceneProductionInput) -> ProductionGrap
         "workflow_run_id": str(production.workflow_run_id),
         "model_profile_id": str(production.model_profile_id),
         "approved_blueprint": _artifact_to_state(production.approved_blueprint),
+        "initial_story_bible": _artifact_to_state(production.initial_story_bible),
+        "current_story_bible_artifact": _artifact_to_state(production.initial_story_bible),
         "production_units": [_unit_to_state(unit) for unit in production.units],
         "global_context_artifacts": [
             _artifact_to_state(reference) for reference in production.global_context_artifacts
@@ -148,6 +166,9 @@ def initial_production_state(production: SceneProductionInput) -> ProductionGrap
         "revision_scheduled": False,
         "draft_artifacts": [],
         "critique_artifacts": [],
+        "continuity_artifacts": [],
+        "story_bible_update_artifacts": [],
+        "story_bible_artifacts": [_artifact_to_state(production.initial_story_bible)],
         "accepted_units": [],
         "production_complete": False,
     }
@@ -165,10 +186,19 @@ def production_result_from_state(
         raise SceneProductionStateError(
             "completed production checkpoint has missing accepted units"
         )
-    return SceneProductionResult(
-        workflow_run_id=production.workflow_run_id,
-        accepted_units=accepted,
-    )
+    try:
+        return SceneProductionResult(
+            workflow_run_id=production.workflow_run_id,
+            accepted_units=accepted,
+            final_story_bible=_required_current_artifact(
+                state,
+                "current_story_bible_artifact",
+            ),
+        )
+    except ValueError as error:
+        raise SceneProductionStateError(
+            "completed production checkpoint has an invalid canonical result"
+        ) from error
 
 
 def build_scene_production_graph(
@@ -199,6 +229,16 @@ def build_scene_production_graph(
         **_node_policy(ProductionNode.CRITIQUE),
     )
     builder.add_node(
+        ProductionNode.CONTINUITY.value,
+        _runnable(_continuity_node(executor)),
+        **_node_policy(ProductionNode.CONTINUITY),
+    )
+    builder.add_node(
+        ProductionNode.STORY_BIBLE_UPDATE.value,
+        _runnable(_story_bible_update_node(executor)),
+        **_node_policy(ProductionNode.STORY_BIBLE_UPDATE),
+    )
+    builder.add_node(
         ProductionNode.ACCEPT.value,
         _runnable(_accept_node()),
         **_node_policy(ProductionNode.ACCEPT),
@@ -225,8 +265,20 @@ def build_scene_production_graph(
         _route_after_critique,
         {
             "revise": ProductionNode.DRAFT.value,
-            "accept": ProductionNode.ACCEPT.value,
+            "continuity": ProductionNode.CONTINUITY.value,
         },
+    )
+    builder.add_conditional_edges(
+        ProductionNode.CONTINUITY.value,
+        _route_after_continuity,
+        {
+            "revise": ProductionNode.DRAFT.value,
+            "update": ProductionNode.STORY_BIBLE_UPDATE.value,
+        },
+    )
+    builder.add_edge(
+        ProductionNode.STORY_BIBLE_UPDATE.value,
+        ProductionNode.ACCEPT.value,
     )
     builder.add_conditional_edges(
         ProductionNode.ACCEPT.value,
@@ -258,6 +310,10 @@ def _draft_node(executor: SceneProductionExecutor) -> ProductionNodeCallable:
             production=production,
             unit=unit,
             accepted_units=accepted,
+            story_bible=_required_current_artifact(
+                state,
+                "current_story_bible_artifact",
+            ),
             revision_number=revision_number,
             previous_draft=previous_draft,
             previous_critique=previous_critique,
@@ -275,6 +331,7 @@ def _draft_node(executor: SceneProductionExecutor) -> ProductionNodeCallable:
                 unit,
                 result.artifact,
                 accepted,
+                task.story_bible,
             )
             update.update(initial_dialogue_state(dialogue_scene))
         return update
@@ -345,6 +402,10 @@ def _critique_node(executor: SceneProductionExecutor) -> ProductionNodeCallable:
             unit=unit,
             draft=draft,
             accepted_units=_accepted_artifacts(state),
+            story_bible=_required_current_artifact(
+                state,
+                "current_story_bible_artifact",
+            ),
             revision_number=revision_number,
         )
         result = await executor.critique(task)
@@ -375,6 +436,91 @@ def _critique_node(executor: SceneProductionExecutor) -> ProductionNodeCallable:
     return critique
 
 
+def _continuity_node(executor: SceneProductionExecutor) -> ProductionNodeCallable:
+    async def continuity(state: ProductionGraphState) -> dict[str, Any]:
+        production = _production_from_state(state)
+        unit = _current_unit(state, production)
+        revision_number = _require_integer(state, "current_revision_number")
+        story_bible = _required_current_artifact(
+            state,
+            "current_story_bible_artifact",
+        )
+        draft = _required_current_artifact(state, "current_draft_artifact")
+        task = ContinuityCheckTask(
+            production=production,
+            unit=unit,
+            story_bible=story_bible,
+            draft=draft,
+            accepted_units=_accepted_artifacts(state),
+            revision_number=revision_number,
+        )
+        result = await executor.check_continuity(task)
+        _validate_continuity(task, result)
+        report_state = _artifact_to_state(result.artifact)
+        update: dict[str, Any] = {
+            "current_continuity_artifact": report_state,
+            "revision_scheduled": False,
+            "continuity_artifacts": [
+                *state.get("continuity_artifacts", []),
+                report_state,
+            ],
+        }
+        if result.report.has_blocking_findings:
+            if revision_number >= production.maximum_revision_cycles:
+                raise SceneProductionStateError(
+                    "blocking continuity findings remain at the revision limit"
+                )
+            update["current_revision_number"] = revision_number + 1
+            update["current_acceptance_reason"] = None
+            update["revision_scheduled"] = True
+        return update
+
+    return continuity
+
+
+def _story_bible_update_node(
+    executor: SceneProductionExecutor,
+) -> ProductionNodeCallable:
+    async def update_story_bible(state: ProductionGraphState) -> dict[str, Any]:
+        production = _production_from_state(state)
+        unit = _current_unit(state, production)
+        source_story_bible = _required_current_artifact(
+            state,
+            "current_story_bible_artifact",
+        )
+        draft = _required_current_artifact(state, "current_draft_artifact")
+        continuity = _required_current_artifact(
+            state,
+            "current_continuity_artifact",
+        )
+        task = StoryBibleUpdateTask(
+            production=production,
+            unit=unit,
+            source_story_bible=source_story_bible,
+            accepted_draft=draft,
+            continuity_report=continuity,
+            accepted_units=_accepted_artifacts(state),
+        )
+        result = await executor.update_story_bible(task)
+        _validate_story_bible_update(task, result)
+        update_state = _artifact_to_state(result.update_artifact)
+        story_bible_state = _artifact_to_state(result.story_bible_artifact)
+        return {
+            "current_story_bible_artifact": story_bible_state,
+            "current_story_bible_update_artifact": update_state,
+            "story_bible_update_artifacts": [
+                *state.get("story_bible_update_artifacts", []),
+                update_state,
+            ],
+            "story_bible_artifacts": [
+                *state.get("story_bible_artifacts", []),
+                story_bible_state,
+            ],
+        }
+
+    return update_story_bible
+
+
 def _accept_node() -> ProductionNodeCallable:
     async def accept(state: ProductionGraphState) -> dict[str, Any]:
         production = _production_from_state(state)
@@ -382,6 +528,18 @@ def _accept_node() -> ProductionNodeCallable:
         unit = _current_unit(state, production)
         draft = _required_current_artifact(state, "current_draft_artifact")
         critique = _required_current_artifact(state, "current_critique_artifact")
+        continuity = _required_current_artifact(
+            state,
+            "current_continuity_artifact",
+        )
+        story_bible_update = _required_current_artifact(
+            state,
+            "current_story_bible_update_artifact",
+        )
+        story_bible = _required_current_artifact(
+            state,
+            "current_story_bible_artifact",
+        )
         revision_number = _require_integer(state, "current_revision_number")
         reason = _current_acceptance_reason(state)
         accepted: AcceptedProductionUnitState = {
@@ -389,6 +547,9 @@ def _accept_node() -> ProductionNodeCallable:
             "unit_number": unit.unit_number,
             "artifact": _artifact_to_state(draft),
             "critique_artifact": _artifact_to_state(critique),
+            "continuity_artifact": _artifact_to_state(continuity),
+            "story_bible_update_artifact": _artifact_to_state(story_bible_update),
+            "story_bible_artifact": _artifact_to_state(story_bible),
             "revision_cycles_used": revision_number,
             "dialogue_runs": _require_integer(state, "current_dialogue_runs"),
             "acceptance_reason": reason.value,
@@ -400,6 +561,8 @@ def _accept_node() -> ProductionNodeCallable:
             "current_revision_number": 0,
             "current_draft_artifact": None,
             "current_critique_artifact": None,
+            "current_continuity_artifact": None,
+            "current_story_bible_update_artifact": None,
             "current_dialogue_runs": 0,
             "current_acceptance_reason": None,
             "revision_scheduled": False,
@@ -416,7 +579,11 @@ def _route_after_draft(state: ProductionGraphState) -> str:
 
 
 def _route_after_critique(state: ProductionGraphState) -> str:
-    return "revise" if state.get("revision_scheduled") is True else "accept"
+    return "revise" if state.get("revision_scheduled") is True else "continuity"
+
+
+def _route_after_continuity(state: ProductionGraphState) -> str:
+    return "revise" if state.get("revision_scheduled") is True else "update"
 
 
 def _route_after_acceptance(state: ProductionGraphState) -> str:
@@ -441,6 +608,7 @@ def _dialogue_scene_input(
     unit: ProductionUnitInput,
     draft: ArtifactReference,
     accepted: tuple[ArtifactReference, ...],
+    story_bible: ArtifactReference,
 ) -> DialogueSceneInput:
     configuration = unit.dialogue_pass
     if configuration is None:
@@ -454,6 +622,7 @@ def _dialogue_scene_input(
         context_artifacts=_unique_references(
             (
                 production.approved_blueprint,
+                story_bible,
                 *production.global_context_artifacts,
                 *unit.context_artifacts,
                 *accepted,
@@ -474,6 +643,9 @@ def _production_from_state(state: ProductionGraphState) -> SceneProductionInput:
             model_profile_id=UUID(_require_text(state, "model_profile_id")),
             approved_blueprint=_artifact_from_state(
                 _require_artifact_state(state, "approved_blueprint")
+            ),
+            initial_story_bible=_artifact_from_state(
+                _require_artifact_state(state, "initial_story_bible")
             ),
             units=tuple(_unit_from_state(unit) for unit in state.get("production_units", [])),
             global_context_artifacts=tuple(
@@ -556,6 +728,91 @@ def _validate_critique(
         raise SceneProductionStateError("scene critique does not target its assigned draft version")
 
 
+def _validate_continuity(
+    task: ContinuityCheckTask,
+    result: ContinuityCheckResult,
+) -> None:
+    _require_artifact_kind(result.artifact, ArtifactKind.CONTINUITY_REPORT)
+    _require_new_version(
+        result.artifact,
+        (task.story_bible, task.draft, task.unit.plan),
+    )
+    report = result.report
+    if (
+        report.story_bible_version_id != task.story_bible.version_id
+        or report.scene_version_id != task.draft.version_id
+        or report.scene_plan_version_id != task.unit.plan.version_id
+        or report.scene_id != task.unit.unit_id
+        or report.scene_number != task.unit.unit_number
+    ):
+        raise SceneProductionStateError(
+            "continuity report does not target its assigned bible, plan, and draft"
+        )
+
+
+def _validate_story_bible_update(
+    task: StoryBibleUpdateTask,
+    result: StoryBibleUpdateResult,
+) -> None:
+    _require_artifact_kind(
+        result.update_artifact,
+        ArtifactKind.STORY_BIBLE_UPDATE,
+    )
+    _require_artifact_kind(result.story_bible_artifact, ArtifactKind.STORY_BIBLE)
+    inputs = (
+        task.source_story_bible,
+        task.accepted_draft,
+        task.continuity_report,
+    )
+    _require_new_version(result.update_artifact, inputs)
+    _require_new_version(
+        result.story_bible_artifact,
+        (*inputs, result.update_artifact),
+    )
+    update = result.update
+    accepted_scene = update.accepted_scene
+    if (
+        result.source_story_bible.source_blueprint_version_id
+        != task.production.approved_blueprint.version_id
+        or update.source_story_bible_version_id != task.source_story_bible.version_id
+        or update.continuity_report_version_id != task.continuity_report.version_id
+        or accepted_scene.scene_id != task.unit.unit_id
+        or accepted_scene.scene_number != task.unit.unit_number
+        or accepted_scene.artifact_version_id != task.accepted_draft.version_id
+    ):
+        raise SceneProductionStateError(
+            "story-bible update does not target its assigned source and accepted scene"
+        )
+    if tuple(
+        scene.artifact_version_id for scene in result.source_story_bible.accepted_scenes
+    ) != tuple(reference.version_id for reference in task.accepted_units):
+        raise SceneProductionStateError(
+            "source story bible does not match previously accepted scene versions"
+        )
+    expected_scene_identity = tuple(
+        (unit.unit_id, unit.unit_number)
+        for unit in task.production.units[: len(task.accepted_units)]
+    )
+    if (
+        tuple(
+            (scene.scene_id, scene.scene_number)
+            for scene in result.source_story_bible.accepted_scenes
+        )
+        != expected_scene_identity
+    ):
+        raise SceneProductionStateError(
+            "source story bible does not match previously accepted scene identities"
+        )
+    try:
+        validate_story_bible_transition(
+            result.source_story_bible,
+            update,
+            result.story_bible,
+        )
+    except StoryBibleInvariantError as error:
+        raise SceneProductionStateError(str(error)) from error
+
+
 def _all_inputs(task: SceneWritingTask) -> tuple[ArtifactReference, ...]:
     return (
         task.production.approved_blueprint,
@@ -564,6 +821,7 @@ def _all_inputs(task: SceneWritingTask) -> tuple[ArtifactReference, ...]:
         *task.production.global_context_artifacts,
         *task.unit.context_artifacts,
         *task.accepted_units,
+        task.story_bible,
         *((task.previous_draft,) if task.previous_draft is not None else ()),
         *((task.previous_critique,) if task.previous_critique is not None else ()),
     )
@@ -643,6 +901,9 @@ def _accepted_from_state(
             unit_number=value["unit_number"],
             artifact=_artifact_from_state(value["artifact"]),
             critique_artifact=_artifact_from_state(value["critique_artifact"]),
+            continuity_artifact=_artifact_from_state(value["continuity_artifact"]),
+            story_bible_update_artifact=_artifact_from_state(value["story_bible_update_artifact"]),
+            story_bible_artifact=_artifact_from_state(value["story_bible_artifact"]),
             revision_cycles_used=value["revision_cycles_used"],
             dialogue_runs=value["dialogue_runs"],
             acceptance_reason=UnitAcceptanceReason(value["acceptance_reason"]),

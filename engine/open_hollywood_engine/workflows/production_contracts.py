@@ -11,8 +11,11 @@ from uuid import UUID
 
 from open_hollywood_engine.artifacts import (
     ArtifactKind,
+    ContinuityReport,
     Critique,
     SceneDraft,
+    StoryBible,
+    StoryBibleUpdate,
 )
 from open_hollywood_engine.models.contracts import ModelCallBudget
 from open_hollywood_engine.workflows.contracts import ArtifactReference
@@ -31,6 +34,8 @@ MIN_PRODUCTION_UNITS = 3
 MAX_PRODUCTION_UNITS = 8
 SCENE_WRITER_ROLE = "scene_writer"
 SCENE_CRITIC_ROLE = "scene_critic"
+CONTINUITY_SUPERVISOR_ROLE = "continuity_supervisor"
+STORY_BIBLE_MAINTAINER_ROLE = "story_bible_maintainer"
 
 
 def _is_integer(value: object) -> bool:
@@ -44,6 +49,8 @@ class ProductionNode(StrEnum):
     DIALOGUE_PASS = "dialogue_pass"
     DIALOGUE_INTEGRATION = "dialogue_integration"
     CRITIQUE = "critique"
+    CONTINUITY = "continuity"
+    STORY_BIBLE_UPDATE = "story_bible_update"
     ACCEPT = "accept"
 
 
@@ -90,6 +97,14 @@ PRODUCTION_NODE_DEFINITIONS: Mapping[ProductionNode, ProductionNodeDefinition] =
         ProductionNode.CRITIQUE: ProductionNodeDefinition(
             node=ProductionNode.CRITIQUE,
             specialist_role=SCENE_CRITIC_ROLE,
+        ),
+        ProductionNode.CONTINUITY: ProductionNodeDefinition(
+            node=ProductionNode.CONTINUITY,
+            specialist_role=CONTINUITY_SUPERVISOR_ROLE,
+        ),
+        ProductionNode.STORY_BIBLE_UPDATE: ProductionNodeDefinition(
+            node=ProductionNode.STORY_BIBLE_UPDATE,
+            specialist_role=STORY_BIBLE_MAINTAINER_ROLE,
         ),
         ProductionNode.ACCEPT: ProductionNodeDefinition(
             node=ProductionNode.ACCEPT,
@@ -209,6 +224,7 @@ class SceneProductionInput:
     workflow_run_id: UUID
     model_profile_id: UUID
     approved_blueprint: ArtifactReference
+    initial_story_bible: ArtifactReference
     units: tuple[ProductionUnitInput, ...]
     global_context_artifacts: tuple[ArtifactReference, ...]
     call_budget: ModelCallBudget
@@ -218,6 +234,8 @@ class SceneProductionInput:
     def __post_init__(self) -> None:
         if self.approved_blueprint.kind is not ArtifactKind.STORY_BLUEPRINT:
             raise ValueError("scene production requires an approved story_blueprint artifact")
+        if self.initial_story_bible.kind is not ArtifactKind.STORY_BIBLE:
+            raise ValueError("scene production requires an initial story_bible artifact")
         if not self.prompt_template_version.strip():
             raise ValueError("prompt_template_version must not be empty")
         if not MIN_PRODUCTION_UNITS <= len(self.units) <= MAX_PRODUCTION_UNITS:
@@ -240,6 +258,7 @@ class SceneProductionInput:
         _require_unique_versions(
             (
                 self.approved_blueprint,
+                self.initial_story_bible,
                 *self.global_context_artifacts,
                 *(unit.plan for unit in self.units),
             ),
@@ -252,10 +271,10 @@ class SceneProductionInput:
         attempts = 1 + self.maximum_revision_cycles
         total = 0
         for unit in self.units:
-            per_attempt = 2  # writer and critic
+            per_attempt = 3  # writer, critic, and worst-case continuity
             if unit.dialogue_pass is not None:
                 per_attempt += unit.dialogue_pass.max_graph_steps + 1
-            total += attempts * per_attempt + 1  # deterministic acceptance
+            total += attempts * per_attempt + 2  # bible update and deterministic acceptance
         return total
 
 
@@ -267,6 +286,7 @@ class SceneWritingTask:
     production: SceneProductionInput
     unit: ProductionUnitInput
     accepted_units: tuple[ArtifactReference, ...]
+    story_bible: ArtifactReference
     revision_number: int
     previous_draft: ArtifactReference | None = None
     previous_critique: ArtifactReference | None = None
@@ -301,6 +321,7 @@ class SceneCritiqueTask:
     unit: ProductionUnitInput
     draft: ArtifactReference
     accepted_units: tuple[ArtifactReference, ...]
+    story_bible: ArtifactReference
     revision_number: int
 
 
@@ -313,6 +334,51 @@ class SceneCritiqueResult:
 
 
 @dataclass(frozen=True, slots=True)
+class ContinuityCheckTask:
+    """Check one exact candidate scene against current canonical story truth."""
+
+    specialist_role: ClassVar[str] = CONTINUITY_SUPERVISOR_ROLE
+    production: SceneProductionInput
+    unit: ProductionUnitInput
+    story_bible: ArtifactReference
+    draft: ArtifactReference
+    accepted_units: tuple[ArtifactReference, ...]
+    revision_number: int
+
+
+@dataclass(frozen=True, slots=True)
+class ContinuityCheckResult:
+    """Typed continuity gate and its immutable persisted artifact."""
+
+    report: ContinuityReport
+    artifact: ArtifactReference
+
+
+@dataclass(frozen=True, slots=True)
+class StoryBibleUpdateTask:
+    """Produce one typed delta from a continuity-cleared accepted scene."""
+
+    specialist_role: ClassVar[str] = STORY_BIBLE_MAINTAINER_ROLE
+    production: SceneProductionInput
+    unit: ProductionUnitInput
+    source_story_bible: ArtifactReference
+    accepted_draft: ArtifactReference
+    continuity_report: ArtifactReference
+    accepted_units: tuple[ArtifactReference, ...]
+
+
+@dataclass(frozen=True, slots=True)
+class StoryBibleUpdateResult:
+    """Source content, deterministic delta, and exact persisted successor."""
+
+    source_story_bible: StoryBible
+    update: StoryBibleUpdate
+    story_bible: StoryBible
+    update_artifact: ArtifactReference
+    story_bible_artifact: ArtifactReference
+
+
+@dataclass(frozen=True, slots=True)
 class AcceptedProductionUnit:
     """Reference-only record for one canonical produced scene."""
 
@@ -320,9 +386,34 @@ class AcceptedProductionUnit:
     unit_number: int
     artifact: ArtifactReference
     critique_artifact: ArtifactReference
+    continuity_artifact: ArtifactReference
+    story_bible_update_artifact: ArtifactReference
+    story_bible_artifact: ArtifactReference
     revision_cycles_used: int
     dialogue_runs: int
     acceptance_reason: UnitAcceptanceReason
+
+    def __post_init__(self) -> None:
+        if not self.unit_id.strip():
+            raise ValueError("accepted production unit ID must not be empty")
+        if not _is_integer(self.unit_number) or self.unit_number < 1:
+            raise ValueError("accepted production unit number must be positive")
+        expected_kinds = (
+            (self.artifact, ArtifactKind.SCENE_DRAFT),
+            (self.critique_artifact, ArtifactKind.CRITIQUE),
+            (self.continuity_artifact, ArtifactKind.CONTINUITY_REPORT),
+            (
+                self.story_bible_update_artifact,
+                ArtifactKind.STORY_BIBLE_UPDATE,
+            ),
+            (self.story_bible_artifact, ArtifactKind.STORY_BIBLE),
+        )
+        if any(reference.kind is not expected for reference, expected in expected_kinds):
+            raise ValueError("accepted production unit has an invalid artifact kind")
+        if not _is_integer(self.revision_cycles_used) or self.revision_cycles_used < 0:
+            raise ValueError("accepted revision count must be a non-negative integer")
+        if not _is_integer(self.dialogue_runs) or self.dialogue_runs < 0:
+            raise ValueError("accepted dialogue count must be a non-negative integer")
 
 
 @dataclass(frozen=True, slots=True)
@@ -331,6 +422,22 @@ class SceneProductionResult:
 
     workflow_run_id: UUID
     accepted_units: tuple[AcceptedProductionUnit, ...]
+    final_story_bible: ArtifactReference
+
+    def __post_init__(self) -> None:
+        if not self.accepted_units:
+            raise ValueError("scene production result requires accepted units")
+        if tuple(unit.unit_number for unit in self.accepted_units) != tuple(
+            range(1, len(self.accepted_units) + 1)
+        ):
+            raise ValueError("accepted production units must be ordered and contiguous")
+        if (
+            self.final_story_bible.kind is not ArtifactKind.STORY_BIBLE
+            or self.final_story_bible != self.accepted_units[-1].story_bible_artifact
+        ):
+            raise ValueError(
+                "final story bible must equal the last accepted unit's canonical version"
+            )
 
 
 class SceneProductionExecutor(Protocol):
@@ -349,6 +456,20 @@ class SceneProductionExecutor(Protocol):
 
     async def critique(self, task: SceneCritiqueTask) -> SceneCritiqueResult:
         """Score and persist an independent critique of one exact draft."""
+        ...
+
+    async def check_continuity(
+        self,
+        task: ContinuityCheckTask,
+    ) -> ContinuityCheckResult:
+        """Persist a complete continuity gate for one exact candidate scene."""
+        ...
+
+    async def update_story_bible(
+        self,
+        task: StoryBibleUpdateTask,
+    ) -> StoryBibleUpdateResult:
+        """Persist a deterministic canonical successor after continuity passes."""
         ...
 
 

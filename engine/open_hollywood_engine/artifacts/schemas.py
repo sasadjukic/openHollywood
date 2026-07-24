@@ -55,7 +55,10 @@ class ArtifactKind(StrEnum):
     SCENE_PLAN = "scene_plan"
     CRITIQUE = "critique"
     CONTINUITY_FINDING = "continuity_finding"
+    CONTINUITY_REPORT = "continuity_report"
     STORY_BLUEPRINT = "story_blueprint"
+    STORY_BIBLE = "story_bible"
+    STORY_BIBLE_UPDATE = "story_bible_update"
     DIALOGUE_BRIEFING = "dialogue_briefing"
     DIALOGUE_TURN = "dialogue_turn"
     DIALOGUE_EVALUATION = "dialogue_evaluation"
@@ -113,6 +116,20 @@ class ContinuityCategory(StrEnum):
     LOCATION = "location"
     WORLD_RULE = "world_rule"
     SETUP_PAYOFF = "setup_payoff"
+
+
+class StoryThreadKind(StrEnum):
+    """Canonical unresolved-thread types maintained during production."""
+
+    MYSTERY = "mystery"
+    PROMISE = "promise"
+
+
+class StoryThreadStatus(StrEnum):
+    """Allowed lifecycle states for mysteries and setup/payoff promises."""
+
+    OPEN = "open"
+    RESOLVED = "resolved"
 
 
 class EmotionalArcStage(StrEnum):
@@ -363,6 +380,301 @@ class ContinuityFinding(ArtifactSchema):
         return self
 
 
+class ContinuityReport(ArtifactSchema):
+    """Continuity gate for one exact candidate scene against one exact bible."""
+
+    story_bible_version_id: UUID
+    scene_version_id: UUID
+    scene_plan_version_id: UUID
+    scene_id: ReferenceId
+    scene_number: Annotated[StrictInt, Field(ge=1)]
+    checked_categories: Annotated[tuple[ContinuityCategory, ...], Field(min_length=1)]
+    findings: tuple[ContinuityFinding, ...] = ()
+
+    @model_validator(mode="after")
+    def validate_coverage_and_findings(self) -> Self:
+        """Require complete category coverage and findings tied to this scene."""
+        if self.checked_categories != tuple(ContinuityCategory):
+            raise ValueError("continuity report must check every category in canonical order")
+        finding_ids = [finding.id for finding in self.findings]
+        if len(set(finding_ids)) != len(finding_ids):
+            raise ValueError("continuity finding IDs must be unique")
+        if any(self.scene_id not in finding.related_scene_ids for finding in self.findings):
+            raise ValueError("every continuity finding must reference the candidate scene")
+        return self
+
+    @property
+    def has_blocking_findings(self) -> bool:
+        """Return the deterministic acceptance disposition for this report."""
+        return any(
+            finding.blocks_approval
+            or finding.severity in {ContinuitySeverity.ERROR, ContinuitySeverity.BLOCKING}
+            for finding in self.findings
+        )
+
+
+class StoryBibleScene(ArtifactSchema):
+    """One canonical accepted scene and its immutable artifact version."""
+
+    scene_id: ReferenceId
+    scene_number: Annotated[StrictInt, Field(ge=1)]
+    artifact_version_id: UUID
+
+
+class StoryBibleTimelineEvent(ArtifactSchema):
+    """One ordered event established by an accepted scene."""
+
+    id: ReferenceId
+    sequence: Annotated[StrictInt, Field(ge=1)]
+    scene_id: ReferenceId
+    time_context: NonEmptyText
+    summary: NonEmptyText
+    character_ids: tuple[ReferenceId, ...] = ()
+    location_id: ReferenceId | None = None
+
+
+class StoryBibleFact(ArtifactSchema):
+    """One immutable fact established by an accepted scene."""
+
+    id: ReferenceId
+    statement: NonEmptyText
+    established_scene_id: ReferenceId
+    character_ids: tuple[ReferenceId, ...] = ()
+    location_ids: tuple[ReferenceId, ...] = ()
+
+
+class StoryBibleCharacterState(ArtifactSchema):
+    """Latest canonical state and knowledge for one blueprint character."""
+
+    character_id: ReferenceId
+    current_location_id: ReferenceId | None = None
+    physical_state: NonEmptyText
+    emotional_state: NonEmptyText
+    current_goal: NonEmptyText
+    knowledge_fact_ids: tuple[ReferenceId, ...] = ()
+    last_updated_scene_id: ReferenceId
+
+
+class StoryBibleRelationshipState(ArtifactSchema):
+    """Latest canonical dynamic for one blueprint relationship."""
+
+    relationship_id: ReferenceId
+    state: NonEmptyText
+    last_updated_scene_id: ReferenceId
+
+
+class StoryBibleLocationState(ArtifactSchema):
+    """Latest canonical condition of one blueprint location."""
+
+    location_id: ReferenceId
+    state: NonEmptyText
+    last_updated_scene_id: ReferenceId
+
+
+class StoryBibleThread(ArtifactSchema):
+    """One open mystery or setup/payoff promise with monotonic resolution."""
+
+    id: ReferenceId
+    kind: StoryThreadKind
+    statement: NonEmptyText
+    introduced_scene_id: ReferenceId
+    status: StoryThreadStatus
+    resolved_scene_id: ReferenceId | None = None
+    resolution: NonEmptyText | None = None
+
+    @model_validator(mode="after")
+    def resolution_must_match_status(self) -> Self:
+        """Keep open and resolved thread states unambiguous."""
+        if self.status is StoryThreadStatus.OPEN and (
+            self.resolved_scene_id is not None or self.resolution is not None
+        ):
+            raise ValueError("an open story thread cannot have resolution fields")
+        if self.status is StoryThreadStatus.RESOLVED and (
+            self.resolved_scene_id is None or self.resolution is None
+        ):
+            raise ValueError("a resolved story thread requires scene and resolution")
+        return self
+
+
+class StoryBible(ArtifactSchema):
+    """Full canonical story state after zero or more accepted scenes."""
+
+    source_blueprint_version_id: UUID
+    character_ids: Annotated[tuple[ReferenceId, ...], Field(min_length=1)]
+    relationship_ids: tuple[ReferenceId, ...] = ()
+    location_ids: tuple[ReferenceId, ...] = ()
+    world_rule_ids: tuple[ReferenceId, ...] = ()
+    accepted_scenes: tuple[StoryBibleScene, ...] = ()
+    timeline: tuple[StoryBibleTimelineEvent, ...] = ()
+    established_facts: tuple[StoryBibleFact, ...] = ()
+    character_states: tuple[StoryBibleCharacterState, ...] = ()
+    relationship_states: tuple[StoryBibleRelationshipState, ...] = ()
+    location_states: tuple[StoryBibleLocationState, ...] = ()
+    threads: tuple[StoryBibleThread, ...] = ()
+    prohibited_contradictions: tuple[NonEmptyText, ...] = ()
+
+    @model_validator(mode="after")
+    def validate_canonical_state(self) -> Self:
+        """Reject duplicate, dangling, or out-of-order canonical story state."""
+        character_ids = _unique_text(self.character_ids, "story-bible character IDs")
+        relationship_ids = _unique_text(
+            self.relationship_ids,
+            "story-bible relationship IDs",
+        )
+        location_ids = _unique_text(self.location_ids, "story-bible location IDs")
+        _unique_text(self.world_rule_ids, "story-bible world-rule IDs")
+        _unique_key(
+            (scene.scene_id for scene in self.accepted_scenes),
+            "accepted scene IDs",
+        )
+        scene_ids = {scene.scene_id for scene in self.accepted_scenes}
+        scene_versions = [scene.artifact_version_id for scene in self.accepted_scenes]
+        if len(set(scene_versions)) != len(scene_versions):
+            raise ValueError("accepted scene artifact versions must be unique")
+        _require_contiguous(
+            (scene.scene_number for scene in self.accepted_scenes),
+            "accepted scene number",
+        )
+
+        _unique_ids(self.timeline, "timeline event")
+        _require_contiguous((event.sequence for event in self.timeline), "timeline event sequence")
+        _unique_ids(self.established_facts, "established fact")
+        fact_ids = {fact.id for fact in self.established_facts}
+        _unique_key(
+            (state.character_id for state in self.character_states),
+            "character state IDs",
+        )
+        _unique_key(
+            (state.relationship_id for state in self.relationship_states),
+            "relationship state IDs",
+        )
+        _unique_key(
+            (state.location_id for state in self.location_states),
+            "location state IDs",
+        )
+        _unique_ids(self.threads, "story thread")
+        _unique_text(
+            self.prohibited_contradictions,
+            "prohibited contradictions",
+        )
+
+        for event in self.timeline:
+            _require_known((event.scene_id,), scene_ids, f"timeline event {event.id} scene")
+            _require_known(
+                event.character_ids,
+                character_ids,
+                f"timeline event {event.id} character",
+            )
+            if event.location_id is not None:
+                _require_known(
+                    (event.location_id,),
+                    location_ids,
+                    f"timeline event {event.id} location",
+                )
+        for fact in self.established_facts:
+            _require_known(
+                (fact.established_scene_id,),
+                scene_ids,
+                f"fact {fact.id} scene",
+            )
+            _require_known(fact.character_ids, character_ids, f"fact {fact.id} character")
+            _require_known(fact.location_ids, location_ids, f"fact {fact.id} location")
+        for character_state in self.character_states:
+            _require_known(
+                (character_state.character_id,),
+                character_ids,
+                "character state character",
+            )
+            _require_known(
+                (character_state.last_updated_scene_id,),
+                scene_ids,
+                f"character state {character_state.character_id} scene",
+            )
+            _require_known(
+                character_state.knowledge_fact_ids,
+                fact_ids,
+                f"character state {character_state.character_id} fact",
+            )
+            if character_state.current_location_id is not None:
+                _require_known(
+                    (character_state.current_location_id,),
+                    location_ids,
+                    f"character state {character_state.character_id} location",
+                )
+        for relationship_state in self.relationship_states:
+            _require_known(
+                (relationship_state.relationship_id,),
+                relationship_ids,
+                "relationship state relationship",
+            )
+            _require_known(
+                (relationship_state.last_updated_scene_id,),
+                scene_ids,
+                f"relationship state {relationship_state.relationship_id} scene",
+            )
+        for location_state in self.location_states:
+            _require_known(
+                (location_state.location_id,),
+                location_ids,
+                "location state location",
+            )
+            _require_known(
+                (location_state.last_updated_scene_id,),
+                scene_ids,
+                f"location state {location_state.location_id} scene",
+            )
+        for thread in self.threads:
+            _require_known(
+                (thread.introduced_scene_id,),
+                scene_ids,
+                f"story thread {thread.id} introduction",
+            )
+            if thread.resolved_scene_id is not None:
+                _require_known(
+                    (thread.resolved_scene_id,),
+                    scene_ids,
+                    f"story thread {thread.id} resolution",
+                )
+        return self
+
+
+class StoryBibleUpdate(ArtifactSchema):
+    """Typed delta deterministically reduced into a new StoryBible snapshot."""
+
+    source_story_bible_version_id: UUID
+    continuity_report_version_id: UUID
+    accepted_scene: StoryBibleScene
+    timeline_events: Annotated[tuple[StoryBibleTimelineEvent, ...], Field(min_length=1)]
+    established_facts: tuple[StoryBibleFact, ...] = ()
+    character_states: tuple[StoryBibleCharacterState, ...] = ()
+    relationship_states: tuple[StoryBibleRelationshipState, ...] = ()
+    location_states: tuple[StoryBibleLocationState, ...] = ()
+    thread_changes: tuple[StoryBibleThread, ...] = ()
+    prohibited_contradictions: tuple[NonEmptyText, ...] = ()
+
+    @model_validator(mode="after")
+    def updates_must_be_tied_to_accepted_scene(self) -> Self:
+        """Ensure all newly established state is sourced to this scene."""
+        scene_id = self.accepted_scene.scene_id
+        if any(event.scene_id != scene_id for event in self.timeline_events):
+            raise ValueError("new timeline events must originate in the accepted scene")
+        if any(fact.established_scene_id != scene_id for fact in self.established_facts):
+            raise ValueError("new facts must originate in the accepted scene")
+        entity_scene_ids = (
+            *(state.last_updated_scene_id for state in self.character_states),
+            *(state.last_updated_scene_id for state in self.relationship_states),
+            *(state.last_updated_scene_id for state in self.location_states),
+        )
+        if any(last_updated_scene_id != scene_id for last_updated_scene_id in entity_scene_ids):
+            raise ValueError("entity-state updates must originate in the accepted scene")
+        if any(
+            thread.resolved_scene_id is not None and thread.resolved_scene_id != scene_id
+            for thread in self.thread_changes
+        ):
+            raise ValueError("thread resolutions must originate in the accepted scene")
+        return self
+
+
 class DialogueBriefing(ArtifactSchema):
     """Director's one-time dramatic destination and pacing plan."""
 
@@ -529,7 +841,10 @@ ARTIFACT_SCHEMAS: Mapping[ArtifactKind, ArtifactSchemaType] = MappingProxyType(
         ArtifactKind.SCENE_PLAN: ScenePlan,
         ArtifactKind.CRITIQUE: Critique,
         ArtifactKind.CONTINUITY_FINDING: ContinuityFinding,
+        ArtifactKind.CONTINUITY_REPORT: ContinuityReport,
         ArtifactKind.STORY_BLUEPRINT: StoryBlueprint,
+        ArtifactKind.STORY_BIBLE: StoryBible,
+        ArtifactKind.STORY_BIBLE_UPDATE: StoryBibleUpdate,
         ArtifactKind.DIALOGUE_BRIEFING: DialogueBriefing,
         ArtifactKind.DIALOGUE_TURN: DialogueTurn,
         ArtifactKind.DIALOGUE_EVALUATION: DialogueEvaluation,
@@ -559,6 +874,18 @@ def _unique_ids(items: tuple[_HasId, ...], label: str) -> set[str]:
     if duplicates:
         raise ValueError(f"duplicate {label} IDs: {sorted(duplicates)}")
     return set(ids)
+
+
+def _unique_text(items: Iterable[str], label: str) -> set[str]:
+    values = tuple(items)
+    _unique_key(values, label)
+    return set(values)
+
+
+def _unique_key(items: Iterable[str], label: str) -> None:
+    values = tuple(items)
+    if len(set(values)) != len(values):
+        raise ValueError(f"{label} must be unique")
 
 
 def _require_known(references: tuple[str, ...], known: set[str], label: str) -> None:

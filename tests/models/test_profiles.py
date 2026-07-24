@@ -61,6 +61,8 @@ def test_hybrid_routes_structured_preparation_and_evaluation_locally() -> None:
     assert hybrid.selection_for("dialogue_director") == cloud_model
     assert hybrid.selection_for("scene_writer") == cloud_model
     assert hybrid.selection_for("scene_critic") == local_model
+    assert hybrid.selection_for("continuity_supervisor") == local_model
+    assert hybrid.selection_for("story_bible_maintainer") == local_model
 
 
 def test_configuration_round_trips_through_secret_free_json() -> None:
@@ -129,3 +131,31 @@ def test_step_fourteen_profile_data_upgrades_for_production_roles() -> None:
     assert restored.schema_version == MODEL_PROFILE_SCHEMA_VERSION
     assert restored.selection_for("scene_writer").model_identifier == "creative-cloud"
     assert restored.selection_for("scene_critic").model_identifier == "qwen3:8b"
+    assert restored.selection_for("continuity_supervisor").model_identifier == "qwen3:8b"
+
+
+def test_step_fifteen_profile_data_upgrades_for_continuity_roles() -> None:
+    legacy = (
+        MODEL_PRESETS[ModelProfileMode.HYBRID]
+        .configuration(
+            local_model=_selection(ModelDeployment.LOCAL, "qwen3:8b"),
+            cloud_model=_selection(ModelDeployment.CLOUD, "creative-cloud"),
+        )
+        .to_data()
+    )
+    legacy["schema_version"] = "3"
+    legacy["role_assignments"] = {
+        role: legacy["role_assignments"][role]
+        for role in (
+            *BLUEPRINT_SPECIALIST_ROLES,
+            *DIALOGUE_SPECIALIST_ROLES,
+            "scene_writer",
+            "scene_critic",
+        )
+    }
+
+    restored = ModelProfileConfiguration.from_data(legacy)
+
+    assert restored.schema_version == MODEL_PROFILE_SCHEMA_VERSION
+    assert restored.selection_for("continuity_supervisor").model_identifier == "qwen3:8b"
+    assert restored.selection_for("story_bible_maintainer").model_identifier == "qwen3:8b"
