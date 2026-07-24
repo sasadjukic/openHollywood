@@ -134,6 +134,27 @@ function configureWorkspaceApi() {
         }),
       );
     }
+    if (
+      url.includes(`/api/v1/workflow-runs/${runId}/controls`) &&
+      method === "POST"
+    ) {
+      return Promise.resolve(
+        jsonResponse({
+          action: "stop",
+          budget: runBudget(),
+          checkpoint_id: "checkpoint-approved",
+          command_id: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+          command_status: "applied",
+          error_message: null,
+          pause_reason: null,
+          resulting_workflow_run_id: null,
+          target_node: null,
+          usage: runUsage(),
+          workflow_run_id: runId,
+          workflow_status: "cancelled",
+        }),
+      );
+    }
     return Promise.resolve(new Response("Not found", { status: 404 }));
   });
 
@@ -169,6 +190,13 @@ describe("App", () => {
         name: "The Story Blueprint needs your decision.",
       }),
     ).toBeInTheDocument();
+    expect(
+      screen.getByRole("region", { name: "Workflow run controls" }),
+    ).toHaveTextContent("Calls 0 / 32");
+    expect(screen.getByRole("button", { name: "Stop" })).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Resume" }),
+    ).not.toBeInTheDocument();
   });
 
   it("requires guidance for revision and submits approval without it", async () => {
@@ -203,6 +231,30 @@ describe("App", () => {
     await expect((request as Request).clone().json()).resolves.toMatchObject({
       action: "approve",
       interrupt_id: "interrupt-1",
+    });
+  });
+
+  it("submits a durable stop command from the active run controls", async () => {
+    const user = userEvent.setup();
+    const fetchMock = configureWorkspaceApi();
+
+    renderApp();
+    await user.click(await screen.findByRole("button", { name: "Stop" }));
+
+    await waitFor(() => {
+      expect(
+        fetchMock.mock.calls.find(([input]) =>
+          requestUrl(input).includes(`/workflow-runs/${runId}/controls`),
+        ),
+      ).toBeDefined();
+    });
+    const controlRequest = fetchMock.mock.calls.find(([input]) =>
+      requestUrl(input).includes(`/workflow-runs/${runId}/controls`),
+    );
+    const request = controlRequest?.[0];
+    expect(request).toBeInstanceOf(Request);
+    await expect((request as Request).clone().json()).resolves.toMatchObject({
+      action: "stop",
     });
   });
 
@@ -359,19 +411,55 @@ function workspaceResponse() {
     workflow_runs: [
       {
         active_interrupt_id: "interrupt-1",
+        budget: runBudget(),
         completed_at: null,
         current_node: "approval",
         error_code: null,
         error_message: null,
-        graph_version: "2",
+        graph_version: "3",
         id: runId,
         parent_workflow_run_id: null,
+        pause_reason: "human_approval",
+        retryable_nodes: [
+          "brief",
+          "premise",
+          "world_specialist",
+          "character_specialist",
+          "integration",
+          "evaluation",
+        ],
         started_at: "2026-07-23T09:54:00Z",
         status: "paused",
         updated_at: now,
+        usage: runUsage(),
         workflow_name: "story_blueprint",
       },
     ],
+  };
+}
+
+function runBudget() {
+  return {
+    max_cost_usd: "2.00",
+    max_graph_steps: 12,
+    max_input_tokens: 250_000,
+    max_model_calls: 32,
+    max_output_tokens: 50_000,
+    max_wall_clock_seconds: 3_600,
+    per_call_cost_usd: "0.25",
+    per_call_input_tokens: 8_000,
+    per_call_output_tokens: 2_000,
+  };
+}
+
+function runUsage() {
+  return {
+    cost_usd: "0.00",
+    graph_steps: 8,
+    input_tokens: 0,
+    model_calls: 0,
+    output_tokens: 0,
+    wall_clock_seconds: 240,
   };
 }
 

@@ -702,6 +702,399 @@
         "title": "ProjectWorkspace",
         "type": "object"
       },
+      "RunBudgetPatch": {
+        "additionalProperties": false,
+        "description": "Strict partial update for aggregate run ceilings and call reservations.",
+        "properties": {
+          "max_cost_usd": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Cost Usd"
+          },
+          "max_graph_steps": {
+            "anyOf": [
+              {
+                "maximum": 64.0,
+                "minimum": 1.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Graph Steps"
+          },
+          "max_input_tokens": {
+            "anyOf": [
+              {
+                "minimum": 1.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Input Tokens"
+          },
+          "max_model_calls": {
+            "anyOf": [
+              {
+                "minimum": 1.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Model Calls"
+          },
+          "max_output_tokens": {
+            "anyOf": [
+              {
+                "minimum": 1.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Output Tokens"
+          },
+          "max_wall_clock_seconds": {
+            "anyOf": [
+              {
+                "minimum": 1.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Wall Clock Seconds"
+          },
+          "per_call_cost_usd": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Per Call Cost Usd"
+          },
+          "per_call_input_tokens": {
+            "anyOf": [
+              {
+                "minimum": 1.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Per Call Input Tokens"
+          },
+          "per_call_output_tokens": {
+            "anyOf": [
+              {
+                "minimum": 1.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Per Call Output Tokens"
+          }
+        },
+        "title": "RunBudgetPatch",
+        "type": "object"
+      },
+      "RunBudgetView": {
+        "description": "Canonical hard limits active for one workflow run.",
+        "properties": {
+          "max_cost_usd": {
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Max Cost Usd",
+            "type": "string"
+          },
+          "max_graph_steps": {
+            "title": "Max Graph Steps",
+            "type": "integer"
+          },
+          "max_input_tokens": {
+            "title": "Max Input Tokens",
+            "type": "integer"
+          },
+          "max_model_calls": {
+            "title": "Max Model Calls",
+            "type": "integer"
+          },
+          "max_output_tokens": {
+            "title": "Max Output Tokens",
+            "type": "integer"
+          },
+          "max_wall_clock_seconds": {
+            "title": "Max Wall Clock Seconds",
+            "type": "integer"
+          },
+          "per_call_cost_usd": {
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Per Call Cost Usd",
+            "type": "string"
+          },
+          "per_call_input_tokens": {
+            "title": "Per Call Input Tokens",
+            "type": "integer"
+          },
+          "per_call_output_tokens": {
+            "title": "Per Call Output Tokens",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "max_graph_steps",
+          "max_model_calls",
+          "max_input_tokens",
+          "max_output_tokens",
+          "max_cost_usd",
+          "max_wall_clock_seconds",
+          "per_call_input_tokens",
+          "per_call_output_tokens",
+          "per_call_cost_usd"
+        ],
+        "title": "RunBudgetView",
+        "type": "object"
+      },
+      "RunControlAction": {
+        "description": "Idempotent commands accepted by a durable workflow run.",
+        "enum": ["pause", "resume", "stop", "retry_from_node", "update_budget"],
+        "title": "RunControlAction",
+        "type": "string"
+      },
+      "RunControlRequest": {
+        "additionalProperties": false,
+        "description": "One idempotent pause, resume, stop, retry, or budget command.",
+        "properties": {
+          "action": {
+            "$ref": "#/components/schemas/RunControlAction"
+          },
+          "budget": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RunBudgetPatch"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "command_id": {
+            "format": "uuid",
+            "title": "Command Id",
+            "type": "string"
+          },
+          "target_node": {
+            "anyOf": [
+              {
+                "maxLength": 100,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Node"
+          }
+        },
+        "required": ["command_id", "action"],
+        "title": "RunControlRequest",
+        "type": "object"
+      },
+      "RunControlResponse": {
+        "description": "Durable command and workflow state returned to the workspace.",
+        "properties": {
+          "action": {
+            "$ref": "#/components/schemas/RunControlAction"
+          },
+          "budget": {
+            "$ref": "#/components/schemas/RunBudgetView"
+          },
+          "checkpoint_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Checkpoint Id"
+          },
+          "command_id": {
+            "format": "uuid",
+            "title": "Command Id",
+            "type": "string"
+          },
+          "command_status": {
+            "$ref": "#/components/schemas/RunControlStatus"
+          },
+          "error_message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error Message"
+          },
+          "pause_reason": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RunPauseReason"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "resulting_workflow_run_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Resulting Workflow Run Id"
+          },
+          "target_node": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Node"
+          },
+          "usage": {
+            "$ref": "#/components/schemas/RunUsageView"
+          },
+          "workflow_run_id": {
+            "format": "uuid",
+            "title": "Workflow Run Id",
+            "type": "string"
+          },
+          "workflow_status": {
+            "$ref": "#/components/schemas/RunStatus"
+          }
+        },
+        "required": [
+          "command_id",
+          "workflow_run_id",
+          "action",
+          "command_status",
+          "workflow_status",
+          "pause_reason",
+          "target_node",
+          "resulting_workflow_run_id",
+          "checkpoint_id",
+          "budget",
+          "usage",
+          "error_message"
+        ],
+        "title": "RunControlResponse",
+        "type": "object"
+      },
+      "RunControlStatus": {
+        "description": "Persistence state of one idempotent control command.",
+        "enum": ["pending", "applied", "failed"],
+        "title": "RunControlStatus",
+        "type": "string"
+      },
+      "RunPauseReason": {
+        "description": "Why a nonterminal workflow is durably paused.",
+        "enum": ["user", "budget", "human_approval"],
+        "title": "RunPauseReason",
+        "type": "string"
+      },
+      "RunStatus": {
+        "description": "Durable workflow execution state.",
+        "enum": [
+          "pending",
+          "running",
+          "paused",
+          "succeeded",
+          "failed",
+          "cancelled"
+        ],
+        "title": "RunStatus",
+        "type": "string"
+      },
+      "RunUsageView": {
+        "description": "Aggregate resources already consumed by one workflow run.",
+        "properties": {
+          "cost_usd": {
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Cost Usd",
+            "type": "string"
+          },
+          "graph_steps": {
+            "title": "Graph Steps",
+            "type": "integer"
+          },
+          "input_tokens": {
+            "title": "Input Tokens",
+            "type": "integer"
+          },
+          "model_calls": {
+            "title": "Model Calls",
+            "type": "integer"
+          },
+          "output_tokens": {
+            "title": "Output Tokens",
+            "type": "integer"
+          },
+          "wall_clock_seconds": {
+            "title": "Wall Clock Seconds",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "graph_steps",
+          "model_calls",
+          "input_tokens",
+          "output_tokens",
+          "cost_usd",
+          "wall_clock_seconds"
+        ],
+        "title": "RunUsageView",
+        "type": "object"
+      },
       "ServiceState": {
         "description": "Availability state exposed by the API boundary.",
         "enum": ["ok"],
@@ -1049,6 +1442,20 @@
             ],
             "title": "Active Interrupt Id"
           },
+          "budget": {
+            "additionalProperties": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            "title": "Budget",
+            "type": "object"
+          },
           "completed_at": {
             "anyOf": [
               {
@@ -1115,6 +1522,24 @@
             ],
             "title": "Parent Workflow Run Id"
           },
+          "pause_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pause Reason"
+          },
+          "retryable_nodes": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Retryable Nodes",
+            "type": "array"
+          },
           "started_at": {
             "anyOf": [
               {
@@ -1136,6 +1561,20 @@
             "title": "Updated At",
             "type": "string"
           },
+          "usage": {
+            "additionalProperties": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            "title": "Usage",
+            "type": "object"
+          },
           "workflow_name": {
             "title": "Workflow Name",
             "type": "string"
@@ -1147,13 +1586,17 @@
           "workflow_name",
           "graph_version",
           "status",
+          "pause_reason",
           "current_node",
           "active_interrupt_id",
           "started_at",
           "completed_at",
           "updated_at",
           "error_code",
-          "error_message"
+          "error_message",
+          "budget",
+          "usage",
+          "retryable_nodes"
         ],
         "title": "WorkspaceRun",
         "type": "object"
@@ -1438,6 +1881,67 @@
         },
         "summary": "Load one persisted creative workspace",
         "tags": ["workspace"]
+      }
+    },
+    "/api/v1/workflow-runs/{workflow_run_id}/controls": {
+      "post": {
+        "description": "Apply one idempotent command to the registered workflow runtime.",
+        "operationId": "controlWorkflowRun",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workflow_run_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Workflow Run Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RunControlRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RunControlResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "description": "Workflow run not found"
+          },
+          "409": {
+            "description": "Command conflicts with durable workflow state"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "503": {
+            "description": "Workflow execution service is unavailable"
+          }
+        },
+        "summary": "Pause, resume, stop, retry, or update a run budget",
+        "tags": ["run-controls"]
       }
     },
     "/api/v1/workflow-runs/{workflow_run_id}/decisions": {

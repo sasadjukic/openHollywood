@@ -95,6 +95,7 @@ class WorkspaceRun(WorkspaceModel):
     workflow_name: str
     graph_version: str
     status: str
+    pause_reason: str | None
     current_node: str | None
     active_interrupt_id: str | None
     started_at: datetime | None
@@ -102,6 +103,9 @@ class WorkspaceRun(WorkspaceModel):
     updated_at: datetime
     error_code: str | None
     error_message: str | None
+    budget: dict[str, int | str]
+    usage: dict[str, int | str]
+    retryable_nodes: list[str]
 
     @classmethod
     def from_record(cls, record: WorkflowRunRecord) -> WorkspaceRun:

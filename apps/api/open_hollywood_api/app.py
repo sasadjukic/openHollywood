@@ -18,6 +18,7 @@ from open_hollywood_api.persistence.database import (
 from open_hollywood_api.routes.blueprint_decisions import router as blueprint_decisions_router
 from open_hollywood_api.routes.health import router as health_router
 from open_hollywood_api.routes.model_profiles import router as model_profiles_router
+from open_hollywood_api.routes.run_controls import router as run_controls_router
 from open_hollywood_api.routes.workflow_events import router as workflow_events_router
 from open_hollywood_api.routes.workspace import router as workspace_router
 from open_hollywood_api.services.blueprint_workflow import BlueprintWorkflowService
@@ -128,6 +129,7 @@ def create_app(
     application.include_router(blueprint_decisions_router, prefix="/api/v1")
     application.include_router(workspace_router, prefix="/api/v1")
     application.include_router(model_profiles_router, prefix="/api/v1")
+    application.include_router(run_controls_router, prefix="/api/v1")
     return application
 
 

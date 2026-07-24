@@ -23,6 +23,7 @@ from open_hollywood_api.persistence.models import (
 )
 from open_hollywood_api.services.workflow_events import WorkflowEventStore
 from open_hollywood_api.services.workspace import WorkspaceStore
+from open_hollywood_engine.workflows import RunPauseReason
 from sqlalchemy import Engine
 
 pytestmark = pytest.mark.anyio
@@ -48,6 +49,7 @@ def _persist_workspace(database_engine: Engine) -> tuple[UUID, UUID, UUID]:
             workflow_name="story_blueprint",
             graph_version="2",
             status=RunStatus.PAUSED,
+            pause_reason=RunPauseReason.HUMAN_APPROVAL,
             current_node="approval",
         )
         conversation.messages.extend(
@@ -190,6 +192,28 @@ async def test_artifact_detail_exposes_content_lineage_and_evaluation(
     assert detail["content"]["proposed_ending"] == "She leaves the stroller at sunrise."
     assert detail["content_sha256"] == "2" * 64
     assert detail["evaluations"][0]["weighted_score"] == "88.50"
+
+
+async def test_budget_pause_does_not_expose_a_stale_human_interrupt(
+    database_engine: Engine,
+) -> None:
+    project_id, workflow_run_id, _ = _persist_workspace(database_engine)
+    session_factory = create_session_factory(database_engine)
+    with session_factory.begin() as session:
+        workflow_run = session.get(WorkflowRun, workflow_run_id)
+        assert workflow_run is not None
+        workflow_run.pause_reason = RunPauseReason.BUDGET
+
+    application = create_app(
+        workflow_event_store=WorkflowEventStore(session_factory),
+        workspace_store=WorkspaceStore(session_factory),
+    )
+    transport = ASGITransport(app=application)
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
+        response = await client.get(f"/api/v1/projects/{project_id}/workspace")
+
+    assert response.status_code == 200
+    assert response.json()["workflow_runs"][0]["active_interrupt_id"] is None
 
 
 async def test_unknown_workspace_records_return_not_found(

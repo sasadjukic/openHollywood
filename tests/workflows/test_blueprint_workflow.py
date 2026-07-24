@@ -137,8 +137,9 @@ class PersistingExecutor(BlueprintNodeExecutor):
                     .order_by(ArtifactVersion.version_number.desc())
                 ).all()
                 latest = versions[0]
-                if task.human_decision_id is None or latest.content.get("human_decision_id") == str(
-                    task.human_decision_id
+                lineage_command_id = task.human_decision_id or task.run_control_id
+                if lineage_command_id is None or latest.content.get("lineage_command_id") == str(
+                    lineage_command_id
                 ):
                     return ArtifactReference(
                         kind=kind,
@@ -162,6 +163,14 @@ class PersistingExecutor(BlueprintNodeExecutor):
             content = {
                 "human_decision_id": (
                     str(task.human_decision_id) if task.human_decision_id is not None else None
+                ),
+                "run_control_id": (
+                    str(task.run_control_id) if task.run_control_id is not None else None
+                ),
+                "lineage_command_id": (
+                    str(task.human_decision_id or task.run_control_id)
+                    if task.human_decision_id is not None or task.run_control_id is not None
+                    else None
                 ),
                 "input_artifact_version_ids": [
                     str(reference.version_id) for reference in task.input_artifacts

@@ -445,6 +445,212 @@ export type ProjectWorkspace = {
 };
 
 /**
+ * RunBudgetPatch
+ *
+ * Strict partial update for aggregate run ceilings and call reservations.
+ */
+export type RunBudgetPatch = {
+  /**
+   * Max Cost Usd
+   */
+  max_cost_usd?: number | string | null;
+  /**
+   * Max Graph Steps
+   */
+  max_graph_steps?: number | null;
+  /**
+   * Max Input Tokens
+   */
+  max_input_tokens?: number | null;
+  /**
+   * Max Model Calls
+   */
+  max_model_calls?: number | null;
+  /**
+   * Max Output Tokens
+   */
+  max_output_tokens?: number | null;
+  /**
+   * Max Wall Clock Seconds
+   */
+  max_wall_clock_seconds?: number | null;
+  /**
+   * Per Call Cost Usd
+   */
+  per_call_cost_usd?: number | string | null;
+  /**
+   * Per Call Input Tokens
+   */
+  per_call_input_tokens?: number | null;
+  /**
+   * Per Call Output Tokens
+   */
+  per_call_output_tokens?: number | null;
+};
+
+/**
+ * RunBudgetView
+ *
+ * Canonical hard limits active for one workflow run.
+ */
+export type RunBudgetView = {
+  /**
+   * Max Cost Usd
+   */
+  max_cost_usd: string;
+  /**
+   * Max Graph Steps
+   */
+  max_graph_steps: number;
+  /**
+   * Max Input Tokens
+   */
+  max_input_tokens: number;
+  /**
+   * Max Model Calls
+   */
+  max_model_calls: number;
+  /**
+   * Max Output Tokens
+   */
+  max_output_tokens: number;
+  /**
+   * Max Wall Clock Seconds
+   */
+  max_wall_clock_seconds: number;
+  /**
+   * Per Call Cost Usd
+   */
+  per_call_cost_usd: string;
+  /**
+   * Per Call Input Tokens
+   */
+  per_call_input_tokens: number;
+  /**
+   * Per Call Output Tokens
+   */
+  per_call_output_tokens: number;
+};
+
+/**
+ * RunControlAction
+ *
+ * Idempotent commands accepted by a durable workflow run.
+ */
+export type RunControlAction =
+  "pause" | "resume" | "stop" | "retry_from_node" | "update_budget";
+
+/**
+ * RunControlRequest
+ *
+ * One idempotent pause, resume, stop, retry, or budget command.
+ */
+export type RunControlRequest = {
+  action: RunControlAction;
+  budget?: RunBudgetPatch | null;
+  /**
+   * Command Id
+   */
+  command_id: string;
+  /**
+   * Target Node
+   */
+  target_node?: string | null;
+};
+
+/**
+ * RunControlResponse
+ *
+ * Durable command and workflow state returned to the workspace.
+ */
+export type RunControlResponse = {
+  action: RunControlAction;
+  budget: RunBudgetView;
+  /**
+   * Checkpoint Id
+   */
+  checkpoint_id: string | null;
+  /**
+   * Command Id
+   */
+  command_id: string;
+  command_status: RunControlStatus;
+  /**
+   * Error Message
+   */
+  error_message: string | null;
+  pause_reason: RunPauseReason | null;
+  /**
+   * Resulting Workflow Run Id
+   */
+  resulting_workflow_run_id: string | null;
+  /**
+   * Target Node
+   */
+  target_node: string | null;
+  usage: RunUsageView;
+  /**
+   * Workflow Run Id
+   */
+  workflow_run_id: string;
+  workflow_status: RunStatus;
+};
+
+/**
+ * RunControlStatus
+ *
+ * Persistence state of one idempotent control command.
+ */
+export type RunControlStatus = "pending" | "applied" | "failed";
+
+/**
+ * RunPauseReason
+ *
+ * Why a nonterminal workflow is durably paused.
+ */
+export type RunPauseReason = "user" | "budget" | "human_approval";
+
+/**
+ * RunStatus
+ *
+ * Durable workflow execution state.
+ */
+export type RunStatus =
+  "pending" | "running" | "paused" | "succeeded" | "failed" | "cancelled";
+
+/**
+ * RunUsageView
+ *
+ * Aggregate resources already consumed by one workflow run.
+ */
+export type RunUsageView = {
+  /**
+   * Cost Usd
+   */
+  cost_usd: string;
+  /**
+   * Graph Steps
+   */
+  graph_steps: number;
+  /**
+   * Input Tokens
+   */
+  input_tokens: number;
+  /**
+   * Model Calls
+   */
+  model_calls: number;
+  /**
+   * Output Tokens
+   */
+  output_tokens: number;
+  /**
+   * Wall Clock Seconds
+   */
+  wall_clock_seconds: number;
+};
+
+/**
  * ServiceState
  *
  * Availability state exposed by the API boundary.
@@ -695,6 +901,12 @@ export type WorkspaceRun = {
    */
   active_interrupt_id: string | null;
   /**
+   * Budget
+   */
+  budget: {
+    [key: string]: number | string;
+  };
+  /**
    * Completed At
    */
   completed_at: string | null;
@@ -723,6 +935,14 @@ export type WorkspaceRun = {
    */
   parent_workflow_run_id: string | null;
   /**
+   * Pause Reason
+   */
+  pause_reason: string | null;
+  /**
+   * Retryable Nodes
+   */
+  retryable_nodes: Array<string>;
+  /**
    * Started At
    */
   started_at: string | null;
@@ -734,6 +954,12 @@ export type WorkspaceRun = {
    * Updated At
    */
   updated_at: string;
+  /**
+   * Usage
+   */
+  usage: {
+    [key: string]: number | string;
+  };
   /**
    * Workflow Name
    */
@@ -954,6 +1180,50 @@ export type GetProjectWorkspaceResponses = {
 
 export type GetProjectWorkspaceResponse =
   GetProjectWorkspaceResponses[keyof GetProjectWorkspaceResponses];
+
+export type ControlWorkflowRunData = {
+  body: RunControlRequest;
+  path: {
+    /**
+     * Workflow Run Id
+     */
+    workflow_run_id: string;
+  };
+  query?: never;
+  url: "/api/v1/workflow-runs/{workflow_run_id}/controls";
+};
+
+export type ControlWorkflowRunErrors = {
+  /**
+   * Workflow run not found
+   */
+  404: unknown;
+  /**
+   * Command conflicts with durable workflow state
+   */
+  409: unknown;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+  /**
+   * Workflow execution service is unavailable
+   */
+  503: unknown;
+};
+
+export type ControlWorkflowRunError =
+  ControlWorkflowRunErrors[keyof ControlWorkflowRunErrors];
+
+export type ControlWorkflowRunResponses = {
+  /**
+   * Successful Response
+   */
+  200: RunControlResponse;
+};
+
+export type ControlWorkflowRunResponse =
+  ControlWorkflowRunResponses[keyof ControlWorkflowRunResponses];
 
 export type SubmitBlueprintDecisionData = {
   body: BlueprintDecisionRequest;

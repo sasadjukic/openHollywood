@@ -1,6 +1,7 @@
 import {
   activateModelProfile,
   configureModelProfile,
+  controlWorkflowRun,
   getArtifactVersion,
   getHealth,
   getProjectWorkspace,
@@ -18,6 +19,9 @@ import {
   type ModelProfileSummary,
   type ProjectList,
   type ProjectWorkspace,
+  type RunBudgetPatch,
+  type RunControlAction,
+  type RunControlResponse,
   type ServiceStatus,
   type WorkflowEventPage,
 } from "@open-hollywood/contracts";
@@ -119,6 +123,29 @@ export async function submitDecision(
     path: { workflow_run_id: input.workflowRunId },
   });
   return requireData(result, "The workflow did not accept this decision.");
+}
+
+export interface ControlRunInput {
+  action: RunControlAction;
+  budget?: RunBudgetPatch;
+  commandId: string;
+  targetNode?: string;
+  workflowRunId: string;
+}
+
+export async function controlRun(
+  input: ControlRunInput,
+): Promise<RunControlResponse> {
+  const result = await controlWorkflowRun({
+    body: {
+      action: input.action,
+      budget: input.budget,
+      command_id: input.commandId,
+      target_node: input.targetNode,
+    },
+    path: { workflow_run_id: input.workflowRunId },
+  });
+  return requireData(result, "The workflow did not accept this run command.");
 }
 
 function requireData<T>(

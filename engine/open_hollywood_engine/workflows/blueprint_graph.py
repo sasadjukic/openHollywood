@@ -17,6 +17,7 @@ from open_hollywood_engine.artifacts import ArtifactKind
 from open_hollywood_engine.workflows.contracts import (
     BLUEPRINT_NODE_DEFINITIONS,
     BLUEPRINT_NODE_ORDER,
+    BLUEPRINT_RETRYABLE_NODES,
     ArtifactReference,
     BlueprintDecisionAction,
     BlueprintDecisionResume,
@@ -52,6 +53,8 @@ class BlueprintGraphState(TypedDict, total=False):
     entry_mode: str
     human_decision_id: str
     human_action: str
+    retry_node: str
+    run_control_id: str
 
 
 type BlueprintCompiledGraph = CompiledStateGraph[
@@ -89,6 +92,87 @@ def initial_blueprint_fork_state(
         "human_decision_id": str(human_decision_id),
         "human_action": BlueprintDecisionAction.FORK.value,
     }
+
+
+def initial_blueprint_retry_state(
+    workflow_run_id: UUID,
+    artifacts: tuple[ArtifactReference, ...],
+    retry_node: BlueprintNode,
+    run_control_id: UUID,
+) -> BlueprintGraphState:
+    """Seed a child thread at one registered node from compatible exact inputs."""
+    if retry_node not in BLUEPRINT_RETRYABLE_NODES:
+        raise ValueError(f"node {retry_node.value} cannot be retried")
+    retained = retry_artifacts_for_node(artifacts, retry_node)
+    _select_inputs(
+        {
+            "workflow_run_id": str(workflow_run_id),
+            "artifacts": [_artifact_to_state(artifact) for artifact in retained],
+        },
+        BLUEPRINT_NODE_DEFINITIONS[retry_node],
+    )
+    return {
+        "workflow_run_id": str(workflow_run_id),
+        "artifacts": [_artifact_to_state(artifact) for artifact in retained],
+        "completed_nodes": [],
+        "awaiting_approval": False,
+        "entry_mode": "retry",
+        "retry_node": retry_node.value,
+        "run_control_id": str(run_control_id),
+    }
+
+
+def retry_artifacts_for_node(
+    artifacts: tuple[ArtifactReference, ...],
+    retry_node: BlueprintNode,
+) -> tuple[ArtifactReference, ...]:
+    """Keep only immutable inputs and independent sibling work for a retry."""
+    retained_kinds: dict[BlueprintNode, frozenset[ArtifactKind]] = {
+        BlueprintNode.BRIEF: frozenset(),
+        BlueprintNode.PREMISE: frozenset({ArtifactKind.CREATIVE_BRIEF}),
+        BlueprintNode.WORLD_SPECIALIST: frozenset(
+            {
+                ArtifactKind.CREATIVE_BRIEF,
+                ArtifactKind.PREMISE,
+                ArtifactKind.CHARACTER,
+                ArtifactKind.RELATIONSHIP,
+            }
+        ),
+        BlueprintNode.CHARACTER_SPECIALIST: frozenset(
+            {
+                ArtifactKind.CREATIVE_BRIEF,
+                ArtifactKind.PREMISE,
+                ArtifactKind.LOCATION,
+                ArtifactKind.WORLD_RULE,
+            }
+        ),
+        BlueprintNode.INTEGRATION: frozenset(
+            {
+                ArtifactKind.CREATIVE_BRIEF,
+                ArtifactKind.PREMISE,
+                ArtifactKind.LOCATION,
+                ArtifactKind.WORLD_RULE,
+                ArtifactKind.CHARACTER,
+                ArtifactKind.RELATIONSHIP,
+            }
+        ),
+        BlueprintNode.EVALUATION: frozenset(
+            {
+                ArtifactKind.CREATIVE_BRIEF,
+                ArtifactKind.PREMISE,
+                ArtifactKind.LOCATION,
+                ArtifactKind.WORLD_RULE,
+                ArtifactKind.CHARACTER,
+                ArtifactKind.RELATIONSHIP,
+                ArtifactKind.STORY_BLUEPRINT,
+            }
+        ),
+    }
+    try:
+        allowed = retained_kinds[retry_node]
+    except KeyError as error:
+        raise ValueError(f"node {retry_node.value} cannot be retried") from error
+    return tuple(artifact for artifact in artifacts if artifact.kind in allowed)
 
 
 def artifact_references_from_state(
@@ -131,6 +215,7 @@ def build_blueprint_graph(
         {
             "new": BlueprintNode.INTAKE.value,
             "fork": BlueprintNode.PREMISE.value,
+            **{f"retry:{node.value}": node.value for node in BLUEPRINT_RETRYABLE_NODES},
         },
     )
     builder.add_edge(BlueprintNode.INTAKE.value, BlueprintNode.BRIEF.value)
@@ -185,6 +270,7 @@ def _specialist_node(
                 specialist_role=role,
                 input_artifacts=inputs,
                 human_decision_id=_human_decision_id(state),
+                run_control_id=_run_control_id(state),
                 reviewed_artifacts=_reviewed_artifacts(state),
             )
         )
@@ -300,6 +386,16 @@ def _human_decision_id(state: BlueprintGraphState) -> UUID | None:
         raise BlueprintStateError("human_decision_id is not a valid UUID") from exc
 
 
+def _run_control_id(state: BlueprintGraphState) -> UUID | None:
+    value = state.get("run_control_id")
+    if value is None:
+        return None
+    try:
+        return UUID(value)
+    except ValueError as exc:
+        raise BlueprintStateError("run_control_id is not a valid UUID") from exc
+
+
 def _reviewed_artifacts(
     state: BlueprintGraphState,
 ) -> tuple[ArtifactReference, ...]:
@@ -320,6 +416,17 @@ def _reviewed_artifacts(
 
 def _route_entry(state: BlueprintGraphState) -> str:
     mode = state.get("entry_mode", "new")
+    if mode == "retry":
+        raw_node = state.get("retry_node")
+        if raw_node is None:
+            raise BlueprintStateError("checkpoint contains no retry_node")
+        try:
+            node = BlueprintNode(raw_node)
+        except (TypeError, ValueError) as error:
+            raise BlueprintStateError("checkpoint contains an invalid retry_node") from error
+        if node not in BLUEPRINT_RETRYABLE_NODES:
+            raise BlueprintStateError("checkpoint retry_node is not retryable")
+        return f"retry:{node.value}"
     if mode not in {"new", "fork"}:
         raise BlueprintStateError("checkpoint contains an invalid entry_mode")
     return mode

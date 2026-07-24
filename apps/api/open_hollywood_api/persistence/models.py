@@ -8,6 +8,11 @@ from enum import StrEnum
 from typing import Any
 from uuid import UUID, uuid4
 
+from open_hollywood_engine.workflows import (
+    RunControlAction,
+    RunControlStatus,
+    RunPauseReason,
+)
 from sqlalchemy import (
     JSON,
     Boolean,
@@ -295,6 +300,15 @@ class WorkflowRun(TimestampedRecord, Base):
     checkpoint_id: Mapped[str | None] = mapped_column(String(200))
     input_state: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict, nullable=False)
     budget: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict, nullable=False)
+    pause_reason: Mapped[RunPauseReason | None] = mapped_column(
+        Enum(
+            RunPauseReason,
+            name="run_pause_reason",
+            native_enum=False,
+            create_constraint=True,
+            validate_strings=True,
+        )
+    )
     started_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     error_code: Mapped[str | None] = mapped_column(String(100))
@@ -324,6 +338,64 @@ class WorkflowRun(TimestampedRecord, Base):
         back_populates="workflow_run",
         cascade="all, delete-orphan",
         foreign_keys="HumanDecision.workflow_run_id",
+    )
+    control_commands: Mapped[list[WorkflowRunControl]] = relationship(
+        back_populates="workflow_run",
+        cascade="all, delete-orphan",
+        foreign_keys="WorkflowRunControl.workflow_run_id",
+    )
+
+
+class WorkflowRunControl(TimestampedRecord, Base):
+    """Durable idempotent pause, resume, stop, retry, or budget command."""
+
+    __tablename__ = "workflow_run_controls"
+
+    id: Mapped[UUID] = mapped_column(Uuid, primary_key=True)
+    workflow_run_id: Mapped[UUID] = mapped_column(
+        Uuid,
+        ForeignKey("workflow_runs.id", ondelete="CASCADE"),
+        index=True,
+        nullable=False,
+    )
+    action: Mapped[RunControlAction] = mapped_column(
+        Enum(
+            RunControlAction,
+            name="run_control_action",
+            native_enum=False,
+            create_constraint=True,
+            validate_strings=True,
+        ),
+        nullable=False,
+    )
+    target_node: Mapped[str | None] = mapped_column(String(100))
+    budget_updates: Mapped[dict[str, Any] | None] = mapped_column(JSON)
+    status: Mapped[RunControlStatus] = mapped_column(
+        Enum(
+            RunControlStatus,
+            name="run_control_status",
+            native_enum=False,
+            create_constraint=True,
+            validate_strings=True,
+        ),
+        default=RunControlStatus.PENDING,
+        nullable=False,
+    )
+    checkpoint_id: Mapped[str | None] = mapped_column(String(200))
+    resulting_workflow_run_id: Mapped[UUID | None] = mapped_column(
+        Uuid,
+        ForeignKey("workflow_runs.id", ondelete="SET NULL"),
+        index=True,
+    )
+    applied_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    error_message: Mapped[str | None] = mapped_column(Text)
+
+    workflow_run: Mapped[WorkflowRun] = relationship(
+        back_populates="control_commands",
+        foreign_keys=[workflow_run_id],
+    )
+    resulting_workflow_run: Mapped[WorkflowRun | None] = relationship(
+        foreign_keys=[resulting_workflow_run_id]
     )
 
 

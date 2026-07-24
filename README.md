@@ -79,6 +79,17 @@ timeline history only append, established identifiers cannot be reused,
 resolved mysteries and setup/payoff promises cannot reopen, and the next scene
 receives the exact resulting canonical version.
 
+Workflow runs now expose durable, idempotent pause, resume, stop,
+retry-from-node, and budget-update commands. Active pause requests take effect
+at the next safe node boundary; stop cancels the run and any open invocation;
+resume continues from the SQLite checkpoint without repeating completed work.
+Retry-from-node creates a linked child run from compatible immutable artifact
+versions instead of rewriting source history. Aggregate model-call, token,
+cost, and wall-clock usage is visible in the workspace and checked before each
+model-backed node so an unaffordable next call pauses with partial artifacts
+preserved. Human approval remains a distinct pause reason and still requires
+the Story Blueprint decision flow.
+
 The v0.1 target is deliberately narrow: short prose fiction, local-first
 storage, optional local/cloud/hybrid inference, and one mandatory story
 blueprint approval before autonomous drafting.

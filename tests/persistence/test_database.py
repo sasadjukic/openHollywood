@@ -29,6 +29,7 @@ EXPECTED_TABLES = {
     "model_profiles",
     "projects",
     "workflow_runs",
+    "workflow_run_controls",
     "workflow_events",
     "writes",
 }

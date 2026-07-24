@@ -12,7 +12,7 @@ from uuid import UUID
 from open_hollywood_engine.artifacts import ArtifactKind
 
 STORY_BLUEPRINT_WORKFLOW_NAME = "story_blueprint"
-STORY_BLUEPRINT_GRAPH_VERSION = "2"
+STORY_BLUEPRINT_GRAPH_VERSION = "3"
 DEFAULT_MAX_GRAPH_STEPS = 12
 
 
@@ -47,6 +47,14 @@ BLUEPRINT_NODE_ORDER = (
     BlueprintNode.INTEGRATION,
     BlueprintNode.EVALUATION,
     BlueprintNode.APPROVAL,
+)
+BLUEPRINT_RETRYABLE_NODES = (
+    BlueprintNode.BRIEF,
+    BlueprintNode.PREMISE,
+    BlueprintNode.WORLD_SPECIALIST,
+    BlueprintNode.CHARACTER_SPECIALIST,
+    BlueprintNode.INTEGRATION,
+    BlueprintNode.EVALUATION,
 )
 _NODE_INDEX = {node: index for index, node in enumerate(BLUEPRINT_NODE_ORDER)}
 
@@ -193,6 +201,7 @@ class BlueprintNodeTask:
     specialist_role: str
     input_artifacts: tuple[ArtifactReference, ...]
     human_decision_id: UUID | None = None
+    run_control_id: UUID | None = None
     reviewed_artifacts: tuple[ArtifactReference, ...] = ()
 
 

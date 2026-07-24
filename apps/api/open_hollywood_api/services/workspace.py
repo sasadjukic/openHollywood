@@ -8,6 +8,13 @@ from decimal import Decimal
 from typing import Any
 from uuid import UUID
 
+from open_hollywood_engine.workflows import (
+    BLUEPRINT_RETRYABLE_NODES,
+    DEFAULT_MAX_GRAPH_STEPS,
+    STORY_BLUEPRINT_WORKFLOW_NAME,
+    RunBudget,
+    RunPauseReason,
+)
 from sqlalchemy import select
 from sqlalchemy.orm import Session, joinedload, selectinload, sessionmaker
 
@@ -20,6 +27,7 @@ from open_hollywood_api.persistence.models import (
     WorkflowEvent,
     WorkflowRun,
 )
+from open_hollywood_api.services.run_controls import run_usage
 
 
 @dataclass(frozen=True, slots=True)
@@ -69,6 +77,7 @@ class WorkflowRunRecord:
     workflow_name: str
     graph_version: str
     status: str
+    pause_reason: str | None
     current_node: str | None
     active_interrupt_id: str | None
     started_at: datetime | None
@@ -76,6 +85,9 @@ class WorkflowRunRecord:
     updated_at: datetime
     error_code: str | None
     error_message: str | None
+    budget: dict[str, int | str]
+    usage: dict[str, int | str]
+    retryable_nodes: tuple[str, ...]
 
 
 @dataclass(frozen=True, slots=True)
@@ -177,6 +189,7 @@ class WorkspaceStore:
                 .options(
                     selectinload(Project.conversations).selectinload(Conversation.messages),
                     selectinload(Project.workflow_runs).selectinload(WorkflowRun.events),
+                    selectinload(Project.workflow_runs).selectinload(WorkflowRun.invocations),
                     selectinload(Project.artifacts)
                     .selectinload(Artifact.versions)
                     .joinedload(ArtifactVersion.created_by_invocation),
@@ -298,10 +311,13 @@ def _workflow_run_record(workflow_run: WorkflowRun) -> WorkflowRunRecord:
         workflow_name=workflow_run.workflow_name,
         graph_version=workflow_run.graph_version,
         status=workflow_run.status.value,
+        pause_reason=(
+            workflow_run.pause_reason.value if workflow_run.pause_reason is not None else None
+        ),
         current_node=workflow_run.current_node,
         active_interrupt_id=(
             _active_interrupt_id(workflow_run.events)
-            if workflow_run.status.value == "paused"
+            if workflow_run.pause_reason is RunPauseReason.HUMAN_APPROVAL
             else None
         ),
         started_at=workflow_run.started_at,
@@ -309,6 +325,16 @@ def _workflow_run_record(workflow_run: WorkflowRun) -> WorkflowRunRecord:
         updated_at=workflow_run.updated_at,
         error_code=workflow_run.error_code,
         error_message=workflow_run.error_message,
+        budget=RunBudget.from_data(
+            workflow_run.budget,
+            default_max_graph_steps=DEFAULT_MAX_GRAPH_STEPS,
+        ).to_data(),
+        usage=run_usage(workflow_run).to_data(),
+        retryable_nodes=(
+            tuple(node.value for node in BLUEPRINT_RETRYABLE_NODES)
+            if workflow_run.workflow_name == STORY_BLUEPRINT_WORKFLOW_NAME
+            else ()
+        ),
     )
 
 
