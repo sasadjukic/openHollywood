@@ -3,7 +3,10 @@ import type {
   BlueprintDecisionAction,
   ModelProfileSummary,
   ModelSelectionInput,
+  RunBudgetPatch,
+  RunControlAction,
   WorkspaceArtifact,
+  WorkspaceRun,
 } from "@open-hollywood/contracts";
 import { useState } from "react";
 
@@ -15,6 +18,7 @@ import {
   fetchProjectWorkspace,
   fetchServiceStatus,
   fetchWorkflowEvents,
+  controlRun,
   saveModelProfile,
   selectModelProfile,
   submitDecision,
@@ -38,6 +42,7 @@ export function App() {
     null,
   );
   const [instruction, setInstruction] = useState("");
+  const [retryNode, setRetryNode] = useState("");
   const [isNavigationOpen, setNavigationOpen] = useState(false);
   const [isInspectorOpen, setInspectorOpen] = useState(false);
   const [isSettingsOpen, setSettingsOpen] = useState(false);
@@ -143,6 +148,39 @@ export function App() {
     },
     onSuccess: async () => {
       setInstruction("");
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: projectsQueryKey }),
+        queryClient.invalidateQueries({
+          queryKey: ["workspace", selectedProjectId],
+        }),
+        queryClient.invalidateQueries({
+          queryKey: ["workflow-events", activeRunId],
+        }),
+      ]);
+    },
+  });
+  const runControlMutation = useMutation({
+    mutationFn: ({
+      action,
+      budget,
+      targetNode,
+    }: {
+      action: RunControlAction;
+      budget?: RunBudgetPatch;
+      targetNode?: string;
+    }) => {
+      if (!activeRun) {
+        throw new Error("Select a workflow run before using run controls.");
+      }
+      return controlRun({
+        action,
+        budget,
+        commandId: crypto.randomUUID(),
+        targetNode,
+        workflowRunId: activeRun.id,
+      });
+    },
+    onSuccess: async () => {
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: projectsQueryKey }),
         queryClient.invalidateQueries({
@@ -342,6 +380,31 @@ export function App() {
                 </div>
               </header>
 
+              {activeRun && (
+                <RunControls
+                  error={
+                    runControlMutation.error instanceof Error
+                      ? runControlMutation.error.message
+                      : null
+                  }
+                  isPending={runControlMutation.isPending}
+                  onCommand={(action, targetNode, budget) => {
+                    runControlMutation.mutate({
+                      action,
+                      budget,
+                      targetNode,
+                    });
+                  }}
+                  onRetryNodeChange={setRetryNode}
+                  retryNode={
+                    retryNode.length > 0
+                      ? retryNode
+                      : (activeRun.retryable_nodes[0] ?? "")
+                  }
+                  run={activeRun}
+                />
+              )}
+
               <section className="conversation-panel">
                 <Timeline
                   conversations={workspace.conversations}
@@ -499,6 +562,173 @@ function ArtifactButton({
       </span>
     </button>
   );
+}
+
+function RunControls({
+  error,
+  isPending,
+  onCommand,
+  onRetryNodeChange,
+  retryNode,
+  run,
+}: {
+  error: string | null;
+  isPending: boolean;
+  onCommand: (
+    action: RunControlAction,
+    targetNode?: string,
+    budget?: RunBudgetPatch,
+  ) => void;
+  onRetryNodeChange: (node: string) => void;
+  retryNode: string;
+  run: WorkspaceRun;
+}) {
+  const callsUsed = numericValue(run.usage, "model_calls");
+  const callsLimit = numericValue(run.budget, "max_model_calls");
+  const costUsed = numericValue(run.usage, "cost_usd");
+  const costLimit = numericValue(run.budget, "max_cost_usd");
+  const tokensUsed =
+    numericValue(run.usage, "input_tokens") +
+    numericValue(run.usage, "output_tokens");
+  const tokensLimit =
+    numericValue(run.budget, "max_input_tokens") +
+    numericValue(run.budget, "max_output_tokens");
+  const canPause = run.status === "pending" || run.status === "running";
+  const canResume =
+    run.status === "paused" && run.pause_reason !== "human_approval";
+  const canStop = !["cancelled", "succeeded"].includes(run.status);
+  const canRetry =
+    run.retryable_nodes.length > 0 &&
+    ["paused", "failed", "cancelled", "succeeded"].includes(run.status);
+
+  return (
+    <section className="run-controls" aria-label="Workflow run controls">
+      <div className="run-budget-summary">
+        <span>
+          Calls <strong>{callsUsed}</strong> / {callsLimit}
+        </span>
+        <span>
+          Tokens <strong>{tokensUsed.toLocaleString()}</strong> /{" "}
+          {tokensLimit.toLocaleString()}
+        </span>
+        <span>
+          Cost <strong>${costUsed.toFixed(2)}</strong> / ${costLimit.toFixed(2)}
+        </span>
+      </div>
+      <div className="run-control-actions">
+        {canPause && (
+          <button
+            className="secondary-action"
+            disabled={isPending}
+            type="button"
+            onClick={() => {
+              onCommand("pause");
+            }}
+          >
+            Pause
+          </button>
+        )}
+        {canResume && (
+          <button
+            className="primary-action"
+            disabled={isPending}
+            type="button"
+            onClick={() => {
+              onCommand("resume");
+            }}
+          >
+            Resume
+          </button>
+        )}
+        {run.pause_reason === "budget" && (
+          <button
+            className="secondary-action"
+            disabled={isPending}
+            type="button"
+            onClick={() => {
+              const perCallInput = numericValue(
+                run.budget,
+                "per_call_input_tokens",
+              );
+              const perCallOutput = numericValue(
+                run.budget,
+                "per_call_output_tokens",
+              );
+              const perCallCost = numericValue(run.budget, "per_call_cost_usd");
+              onCommand("update_budget", undefined, {
+                max_cost_usd: costLimit + Math.max(1, perCallCost * 4),
+                max_input_tokens:
+                  numericValue(run.budget, "max_input_tokens") +
+                  perCallInput * 4,
+                max_model_calls: callsLimit + 4,
+                max_output_tokens:
+                  numericValue(run.budget, "max_output_tokens") +
+                  perCallOutput * 4,
+                max_wall_clock_seconds:
+                  numericValue(run.budget, "max_wall_clock_seconds") + 1_800,
+              });
+            }}
+          >
+            Expand budget
+          </button>
+        )}
+        {canRetry && (
+          <label className="retry-control">
+            <span>Retry from</span>
+            <select
+              disabled={isPending}
+              value={retryNode}
+              onChange={(event) => {
+                onRetryNodeChange(event.target.value);
+              }}
+            >
+              {run.retryable_nodes.map((node) => (
+                <option key={node} value={node}>
+                  {humanize(node)}
+                </option>
+              ))}
+            </select>
+            <button
+              className="secondary-action"
+              disabled={isPending || !retryNode}
+              type="button"
+              onClick={() => {
+                onCommand("retry_from_node", retryNode);
+              }}
+            >
+              Retry
+            </button>
+          </label>
+        )}
+        {canStop && (
+          <button
+            className="danger-action"
+            disabled={isPending}
+            type="button"
+            onClick={() => {
+              onCommand("stop");
+            }}
+          >
+            Stop
+          </button>
+        )}
+      </div>
+      {run.pause_reason === "budget" && (
+        <p className="run-control-note">
+          This run paused before the next call could exceed its hard budget.
+          Expand the limits, then resume when ready.
+        </p>
+      )}
+      {error && <p className="decision-error">{error}</p>}
+    </section>
+  );
+}
+
+function numericValue(
+  values: Record<string, number | string>,
+  key: string,
+): number {
+  return Number(values[key] ?? 0);
 }
 
 function DecisionComposer({

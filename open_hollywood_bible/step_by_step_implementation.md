@@ -111,28 +111,12 @@ Scene Plan assignments, writes immutable prose versions, optionally embeds the S
 mypy, 112 pytest tests, Prettier, ESLint, TypeScript, 4 Vitest tests, and the production build pass.
 
 16. [x] **COMPLETED 2026-07-24 — Add deterministic story-bible updates and
-continuity invariants after every accepted unit.** The fixed production graph
-now gates every candidate scene against the exact current Story Bible, Scene
-Plan, and Scene Draft versions before canonical acceptance. Error or blocking
-findings consume the shared bounded revision allowance and fail closed if they
-survive its hard limit; rubric-limit acceptance cannot bypass continuity. Each
-cleared scene produces a typed delta and a full immutable Story Bible successor
-that must equal the pure deterministic reducer exactly. Accepted-scene and
-timeline histories append monotonically, fact and event identifiers cannot be
-reused, entity references remain within the approved blueprint catalog, and
-resolved mysteries or setup/payoff promises cannot reopen. Later writers,
-dialogue passes, critics, and continuity checks receive the exact resulting
-bible version, while checkpoints retain only artifact references and
-deterministic routing state. Model-profile schema v4 registers local-friendly
-`continuity_supervisor` and `story_bible_maintainer` roles and upgrades versions
-1–3 in memory. Evidence:
-`engine/open_hollywood_engine/artifacts/story_bible.py`,
-`engine/open_hollywood_engine/workflows/production_graph.py`,
-`tests/artifacts/test_story_bible.py`, and
-`tests/workflows/test_scene_production.py`. Ruff, mypy, 120 pytest tests,
-Prettier, ESLint, TypeScript, 4 Vitest tests, and the production build pass.
+continuity invariants after every accepted unit.** The fixed production graph now gates every candidate scene against the exact current Story Bible, Scene Plan, and Scene Draft versions before canonical acceptance. Error or blocking findings consume the shared bounded revision allowance and fail closed if they survive its hard limit; rubric-limit acceptance cannot bypass continuity. Each cleared scene produces a typed delta and a full immutable Story Bible successor that must equal the pure deterministic reducer exactly. Accepted-scene and timeline histories append monotonically, fact and event identifiers cannot be reused, entity references remain within the approved blueprint catalog, and resolved mysteries or setup/payoff promises cannot reopen. Later writers, dialogue passes, critics, and continuity checks receive the exact resulting bible version, while checkpoints retain only artifact references and deterministic routing state. Model-profile schema v4 registers local-friendly `continuity_supervisor` and `story_bible_maintainer` roles and upgrades versions 1–3 in memory. Evidence: `engine/open_hollywood_engine/artifacts/story_bible.py`, `engine open_hollywood_engine/workflows/production_graph.py`, `tests/artifacts/test_story_bible.py`, and `tests/workflows/test_scene_production.py`. Ruff, mypy, 120 pytest tests, Prettier, ESLint, TypeScript, 4 Vitest tests, and the production build pass.
 
-17. [ ] **Add run controls:** stop, pause, resume, retry-from-node, and budgets.
+17. [x] **COMPLETED 2026-07-24 — Add run controls: stop, pause, resume,
+retry-from-node, and budgets.** Provider-neutral contracts define strict
+aggregate run budgets and typed idempotent commands. SQLite now persists each command, pause reason, source checkpoint, and resulting child run. Pause requests made during execution take effect before the next registered node; stop cancels the run and open invocations; resume continues from the durable checkpoint while keeping the Story Blueprint approval interrupt distinct. Retry-from-node is restricted to registered Story Blueprint specialist nodes, prunes obsolete outputs, preserves compatible exact artifact versions, and creates an immutable linked child lineage. Crash replay reuses that child and its checkpoint rather than duplicating work. Before every model-backed node, the runtime reserves model-call, input-token, output-token, and cost capacity and checks elapsed wall-clock time; exhaustion pauses with useful usage and limit events while preserving partial artifacts. FastAPI, the generated TypeScript SDK, and the workspace expose the same controls, current limits, and aggregate usage. Evidence:
+`engine/open_hollywood_engine/workflows/run_controls.py`, `apps/api/open_hollywood_api/services/run_controls.py`, `apps/api/open_hollywood_api/routes/run_controls.py`, `migrations/versions/0005_workflow_run_controls.py`, generated contracts, workspace UI controls, and workflow/API/migration/React tests. Migration upgrade/downgrade and metadata parity, Ruff, mypy, 129 pytest tests, Prettier, ESLint, TypeScript, 5 Vitest tests, and the production build pass.
 
 18. [ ] **Implement Fountain/Markdown renderers and PDF/DOCX export.**
 

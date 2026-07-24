@@ -16,6 +16,8 @@ from langgraph.checkpoint.sqlite.aio import AsyncSqliteSaver
 from langgraph.types import Command, Interrupt, StateSnapshot
 from open_hollywood_engine.artifacts import ArtifactKind
 from open_hollywood_engine.workflows import (
+    BLUEPRINT_NODE_DEFINITIONS,
+    BLUEPRINT_RETRYABLE_NODES,
     DEFAULT_MAX_GRAPH_STEPS,
     STORY_BLUEPRINT_GRAPH_VERSION,
     STORY_BLUEPRINT_WORKFLOW_NAME,
@@ -27,9 +29,14 @@ from open_hollywood_engine.workflows import (
     BlueprintNode,
     BlueprintNodeExecutor,
     BlueprintWorkflowObserver,
+    RunControlAction,
+    RunControlCommand,
+    RunControlStatus,
+    RunPauseReason,
     artifact_references_from_state,
     build_blueprint_graph,
     initial_blueprint_fork_state,
+    initial_blueprint_retry_state,
     initial_blueprint_state,
 )
 from sqlalchemy import select
@@ -45,8 +52,16 @@ from open_hollywood_api.persistence.models import (
     RunStatus,
     WorkflowEvent,
     WorkflowRun,
+    WorkflowRunControl,
 )
 from open_hollywood_api.persistence.secret_policy import active_secret_guard
+from open_hollywood_api.services.run_controls import (
+    RunControlError,
+    RunControlResult,
+    RunControlStore,
+    WorkflowPausedSignal,
+    WorkflowStoppedSignal,
+)
 
 _MIN_GRAPH_STEPS = 8
 _MAX_GRAPH_STEPS = 64
@@ -70,16 +85,28 @@ class BlueprintWorkflowRunError(RuntimeError):
 class SqlAlchemyBlueprintWorkflowObserver(BlueprintWorkflowObserver):
     """Mirror graph lifecycle into WorkflowRun and its append-only event log."""
 
-    def __init__(self, session_factory: sessionmaker[Session]) -> None:
+    def __init__(
+        self,
+        session_factory: sessionmaker[Session],
+        run_controls: RunControlStore,
+    ) -> None:
         self._session_factory = session_factory
+        self._run_controls = run_controls
 
     async def node_started(self, workflow_run_id: UUID, node: BlueprintNode) -> None:
         await asyncio.to_thread(self._node_started, workflow_run_id, node)
 
     def _node_started(self, workflow_run_id: UUID, node: BlueprintNode) -> None:
+        self._run_controls.before_node(
+            workflow_run_id,
+            node.value,
+            includes_model_call=(BLUEPRINT_NODE_DEFINITIONS[node].specialist_role is not None),
+            default_max_graph_steps=DEFAULT_MAX_GRAPH_STEPS,
+        )
         with self._session_factory.begin() as session:
             workflow_run = _require_run(session, workflow_run_id)
             workflow_run.status = RunStatus.RUNNING
+            workflow_run.pause_reason = None
             workflow_run.current_node = node.value
             workflow_run.started_at = workflow_run.started_at or datetime.now(UTC)
             workflow_run.error_code = None
@@ -141,6 +168,7 @@ class SqlAlchemyBlueprintWorkflowObserver(BlueprintWorkflowObserver):
         with self._session_factory.begin() as session:
             workflow_run = _require_run(session, workflow_run_id)
             workflow_run.status = RunStatus.PAUSED
+            workflow_run.pause_reason = RunPauseReason.HUMAN_APPROVAL
             workflow_run.current_node = BlueprintNode.APPROVAL.value
             workflow_run.error_code = None
             workflow_run.error_message = None
@@ -202,6 +230,7 @@ class SqlAlchemyBlueprintWorkflowObserver(BlueprintWorkflowObserver):
         with self._session_factory.begin() as session:
             workflow_run = _require_run(session, workflow_run_id)
             workflow_run.status = RunStatus.FAILED
+            workflow_run.pause_reason = None
             workflow_run.error_code = "workflow_execution_failed"
             workflow_run.error_message = safe_message
             _add_event(
@@ -231,7 +260,11 @@ class BlueprintWorkflowService:
         self._connection: aiosqlite.Connection | None = None
         self._checkpointer: AsyncSqliteSaver | None = None
         self._graph: BlueprintCompiledGraph | None = None
-        self._observer = SqlAlchemyBlueprintWorkflowObserver(session_factory)
+        self._run_controls = RunControlStore(session_factory)
+        self._observer = SqlAlchemyBlueprintWorkflowObserver(
+            session_factory,
+            self._run_controls,
+        )
 
     async def __aenter__(self) -> BlueprintWorkflowService:
         self._connection = await aiosqlite.connect(str(self._database_path))
@@ -326,6 +359,38 @@ class BlueprintWorkflowService:
         self._mark_decision_applied(decision.id, workflow_run_id)
         return result
 
+    async def apply_control(
+        self,
+        workflow_run_id: UUID,
+        command: RunControlCommand,
+    ) -> RunControlResult:
+        """Apply one idempotent run command at the durable runtime boundary."""
+        if command.action is RunControlAction.PAUSE:
+            return self._run_controls.request_pause(workflow_run_id, command)
+        if command.action is RunControlAction.STOP:
+            return self._run_controls.stop(workflow_run_id, command)
+        if command.action is RunControlAction.UPDATE_BUDGET:
+            return self._run_controls.update_budget(
+                workflow_run_id,
+                command,
+                default_max_graph_steps=DEFAULT_MAX_GRAPH_STEPS,
+            )
+        if command.action is RunControlAction.RESUME:
+            result = self._run_controls.begin_resume(workflow_run_id, command)
+            if (
+                result.command_status is RunControlStatus.APPLIED
+                and result.workflow_status is RunStatus.PENDING
+            ):
+                try:
+                    await self.execute(workflow_run_id)
+                except Exception as error:
+                    self._run_controls.fail_command(command.id, error)
+                    raise
+            return self._run_controls.result(command.id)
+        if command.action is RunControlAction.RETRY_FROM_NODE:
+            return await self._retry_from_node(workflow_run_id, command)
+        raise RunControlError(f"unsupported run-control action {command.action.value}")
+
     async def _invoke(
         self,
         workflow_run_id: UUID,
@@ -336,6 +401,10 @@ class BlueprintWorkflowService:
         graph, _ = self._require_open()
         try:
             await graph.ainvoke(graph_input, config=config)
+            self._run_controls.execution_boundary(workflow_run_id)
+        except (WorkflowPausedSignal, WorkflowStoppedSignal):
+            await self._sync_checkpoint_id(workflow_run_id, graph, config)
+            return await self._execution_from_current_state(workflow_run_id)
         except Exception as exc:
             await self._observer.workflow_failed(workflow_run_id, exc)
             await self._sync_checkpoint_id(workflow_run_id, graph, config)
@@ -379,6 +448,100 @@ class BlueprintWorkflowService:
             checkpoint_id=checkpoint_id,
             artifacts=artifacts,
             awaiting_approval=False,
+        )
+
+    async def _retry_from_node(
+        self,
+        workflow_run_id: UUID,
+        command: RunControlCommand,
+    ) -> RunControlResult:
+        result = self._run_controls.begin_retry(workflow_run_id, command)
+        if (
+            result.command_status is RunControlStatus.APPLIED
+            and result.resulting_workflow_run_id is not None
+        ):
+            return result
+        try:
+            target = BlueprintNode(command.target_node or "")
+        except ValueError as error:
+            self._run_controls.fail_command(command.id, error)
+            raise RunControlError("retry target is not a registered blueprint node") from error
+        if target not in BLUEPRINT_RETRYABLE_NODES:
+            retry_error = RunControlError(f"node {target.value} cannot be retried")
+            self._run_controls.fail_command(command.id, retry_error)
+            raise retry_error
+
+        graph, checkpointer = self._require_open()
+        max_steps, _ = self._run_configuration(workflow_run_id)
+        source_snapshot = await graph.aget_state(_graph_config(workflow_run_id, max_steps))
+        source_state = _snapshot_state(source_snapshot)
+        source_checkpoint_id = _checkpoint_id(source_snapshot)
+
+        with self._session_factory.begin() as session:
+            record = session.get(WorkflowRunControl, command.id)
+            if record is None:
+                raise RunControlError("retry command disappeared before child creation")
+            if record.resulting_workflow_run_id is not None:
+                child_run_id = record.resulting_workflow_run_id
+                child = _require_run(session, child_run_id)
+            else:
+                source = _require_run(session, workflow_run_id)
+                child = WorkflowRun(
+                    project_id=source.project_id,
+                    conversation_id=source.conversation_id,
+                    parent_workflow_run_id=source.id,
+                    forked_from_checkpoint_id=source_checkpoint_id,
+                    workflow_name=source.workflow_name,
+                    graph_version=source.graph_version,
+                    status=RunStatus.PENDING,
+                    input_state=dict(source.input_state),
+                    budget=dict(source.budget),
+                )
+                session.add(child)
+                session.flush()
+                child_run_id = child.id
+                record.resulting_workflow_run_id = child_run_id
+                record.checkpoint_id = source_checkpoint_id
+                if source.status is RunStatus.PAUSED:
+                    source.status = RunStatus.CANCELLED
+                    source.pause_reason = None
+                    source.completed_at = datetime.now(UTC)
+
+        child_config = _graph_config(child_run_id, max_steps)
+        existing_child_checkpoint = await checkpointer.aget_tuple(child_config)
+        try:
+            if existing_child_checkpoint is not None and child.status in {
+                RunStatus.PAUSED,
+                RunStatus.SUCCEEDED,
+                RunStatus.CANCELLED,
+            }:
+                child_snapshot = await graph.aget_state(child_config)
+                return self._run_controls.complete_retry(
+                    command.id,
+                    child_run_id,
+                    _checkpoint_id(child_snapshot),
+                )
+            if existing_child_checkpoint is not None:
+                child_execution = await self.execute(child_run_id)
+            else:
+                retry_state = initial_blueprint_retry_state(
+                    child_run_id,
+                    artifact_references_from_state(source_state),
+                    target,
+                    command.id,
+                )
+                child_execution = await self._invoke(
+                    child_run_id,
+                    retry_state,
+                    config=child_config,
+                )
+        except Exception as error:
+            self._run_controls.fail_command(command.id, error)
+            raise
+        return self._run_controls.complete_retry(
+            command.id,
+            child_run_id,
+            child_execution.checkpoint_id,
         )
 
     async def _fork(
@@ -440,6 +603,7 @@ class BlueprintWorkflowService:
             session.flush()
             persisted_decision.resulting_workflow_run_id = child.id
             source.status = RunStatus.CANCELLED
+            source.pause_reason = None
             source.completed_at = datetime.now(UTC)
             _add_event(
                 session,
@@ -585,6 +749,7 @@ class BlueprintWorkflowService:
                 )
             artifact.status = ArtifactStatus.APPROVED
             workflow_run.status = RunStatus.SUCCEEDED
+            workflow_run.pause_reason = None
             workflow_run.completed_at = datetime.now(UTC)
             workflow_run.error_code = None
             workflow_run.error_message = None

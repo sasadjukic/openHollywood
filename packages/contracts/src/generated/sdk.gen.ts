@@ -16,6 +16,9 @@ import type {
   ConfigureModelProfileData,
   ConfigureModelProfileErrors,
   ConfigureModelProfileResponses,
+  ControlWorkflowRunData,
+  ControlWorkflowRunErrors,
+  ControlWorkflowRunResponses,
   GetArtifactVersionData,
   GetArtifactVersionErrors,
   GetArtifactVersionResponses,
@@ -191,6 +194,31 @@ export const getProjectWorkspace = <ThrowOnError extends boolean = false>(
     GetProjectWorkspaceErrors,
     ThrowOnError
   >({ url: "/api/v1/projects/{project_id}/workspace", ...options });
+
+/**
+ * Pause, resume, stop, retry, or update a run budget
+ *
+ * Apply one idempotent command to the registered workflow runtime.
+ */
+export const controlWorkflowRun = <ThrowOnError extends boolean = false>(
+  options: Options<ControlWorkflowRunData, ThrowOnError>,
+): RequestResult<
+  ControlWorkflowRunResponses,
+  ControlWorkflowRunErrors,
+  ThrowOnError
+> =>
+  (options.client ?? client).post<
+    ControlWorkflowRunResponses,
+    ControlWorkflowRunErrors,
+    ThrowOnError
+  >({
+    url: "/api/v1/workflow-runs/{workflow_run_id}/controls",
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      ...options.headers,
+    },
+  });
 
 /**
  * Resolve the active Story Blueprint human interrupt

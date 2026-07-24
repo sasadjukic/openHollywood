@@ -440,6 +440,75 @@ textarea:focus-visible {
   background: rgb(129 193 217 / 8%);
 }
 
+.run-controls {
+  display: grid;
+  gap: 9px;
+  padding: 10px clamp(24px, 4vw, 48px);
+  border-bottom: 1px solid var(--border);
+  background: rgb(34 34 34 / 65%);
+}
+
+.run-budget-summary,
+.run-control-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.run-budget-summary span {
+  color: var(--muted-dim);
+  font-size: 0.67rem;
+}
+
+.run-budget-summary strong {
+  color: var(--muted);
+  font-weight: 720;
+}
+
+.run-control-actions button,
+.retry-control select {
+  min-height: 32px;
+  padding: 6px 10px;
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  font-size: 0.68rem;
+  font-weight: 700;
+}
+
+.run-control-actions button {
+  cursor: pointer;
+}
+
+.run-control-actions button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.danger-action {
+  color: #f0b8b8;
+  background: rgb(233 165 165 / 7%);
+}
+
+.retry-control {
+  display: inline-flex;
+  gap: 7px;
+  align-items: center;
+  color: var(--muted-dim);
+  font-size: 0.67rem;
+}
+
+.retry-control select {
+  color: var(--muted);
+  background: var(--surface-deep);
+}
+
+.run-control-note {
+  margin: 0;
+  color: var(--lavender);
+  font-size: 0.7rem;
+}
+
 .run-status--succeeded,
 .artifact-status--approved {
   border-color: rgb(101 192 224 / 25%);
