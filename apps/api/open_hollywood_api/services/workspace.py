@@ -3,14 +3,15 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import UTC, datetime
 from decimal import Decimal
-from typing import Any
+from typing import Any, overload
 from uuid import UUID
 
 from open_hollywood_engine.workflows import (
     BLUEPRINT_RETRYABLE_NODES,
     DEFAULT_MAX_GRAPH_STEPS,
+    STORY_BLUEPRINT_GRAPH_VERSION,
     STORY_BLUEPRINT_WORKFLOW_NAME,
     RunBudget,
     RunPauseReason,
@@ -23,7 +24,10 @@ from open_hollywood_api.persistence.models import (
     ArtifactVersion,
     Conversation,
     Evaluation,
+    Message,
+    MessageRole,
     Project,
+    RunStatus,
     WorkflowEvent,
     WorkflowRun,
 )
@@ -152,6 +156,15 @@ class ArtifactVersionDetailRecord:
     evaluations: tuple[EvaluationRecord, ...]
 
 
+@dataclass(frozen=True, slots=True)
+class CreatedStoryProjectRecord:
+    """Identifiers for one idempotently persisted first-premise command."""
+
+    project_id: UUID
+    workflow_run_id: UUID
+    status: str
+
+
 class WorkspaceProjectNotFoundError(LookupError):
     """Raised when a requested project does not exist."""
 
@@ -160,8 +173,12 @@ class WorkspaceArtifactVersionNotFoundError(LookupError):
     """Raised when a requested artifact version does not exist."""
 
 
+class WorkspaceRequestConflictError(RuntimeError):
+    """Raised when an intake request ID is reused with different content."""
+
+
 class WorkspaceStore:
-    """Read persisted workspace records through a small application boundary."""
+    """Read and create persisted workspace records through one boundary."""
 
     def __init__(self, session_factory: sessionmaker[Session]) -> None:
         self._session_factory = session_factory
@@ -179,6 +196,73 @@ class WorkspaceStore:
                 .order_by(Project.updated_at.desc(), Project.name, Project.id)
             ).all()
             return tuple(_project_summary(project) for project in projects)
+
+    def create_story_project(
+        self,
+        *,
+        request_id: UUID,
+        premise: str,
+        title: str | None,
+    ) -> CreatedStoryProjectRecord:
+        """Persist one project, conversation, premise, and queued blueprint run."""
+        with self._session_factory.begin() as session:
+            existing_run = session.scalar(
+                select(WorkflowRun)
+                .where(WorkflowRun.id == request_id)
+                .options(
+                    joinedload(WorkflowRun.project),
+                    joinedload(WorkflowRun.conversation).selectinload(Conversation.messages),
+                )
+            )
+            if existing_run is not None:
+                _require_matching_intake(existing_run, premise=premise, title=title)
+                return CreatedStoryProjectRecord(
+                    project_id=existing_run.project_id,
+                    workflow_run_id=existing_run.id,
+                    status=existing_run.status.value,
+                )
+
+            project = Project(
+                name=title or _working_title(premise),
+                description=_project_description(premise),
+                story_format="short_prose",
+            )
+            conversation = Conversation(
+                project=project,
+                title="Story development",
+            )
+            workflow_run = WorkflowRun(
+                id=request_id,
+                project=project,
+                conversation=conversation,
+                workflow_name=STORY_BLUEPRINT_WORKFLOW_NAME,
+                graph_version=STORY_BLUEPRINT_GRAPH_VERSION,
+                status=RunStatus.PENDING,
+                input_state={"premise_message_sequence": 1},
+                budget={},
+            )
+            conversation.messages.append(
+                Message(
+                    sequence_number=1,
+                    role=MessageRole.USER,
+                    content=premise,
+                    workflow_run=workflow_run,
+                )
+            )
+            workflow_run.events.append(
+                WorkflowEvent(
+                    event_type="workflow.queued",
+                    source="intake",
+                    payload={"workflow": STORY_BLUEPRINT_WORKFLOW_NAME},
+                )
+            )
+            session.add(project)
+            session.flush()
+            return CreatedStoryProjectRecord(
+                project_id=project.id,
+                workflow_run_id=workflow_run.id,
+                status=workflow_run.status.value,
+            )
 
     def get_project_workspace(self, project_id: UUID) -> ProjectWorkspaceRecord:
         """Load one complete workspace shell from SQLite."""
@@ -274,7 +358,7 @@ def _project_summary(project: Project) -> ProjectSummaryRecord:
         description=project.description,
         story_format=project.story_format,
         status=project.status.value,
-        updated_at=project.updated_at,
+        updated_at=_as_utc(project.updated_at),
         conversation_count=len(project.conversations),
         artifact_count=len(project.artifacts),
         latest_workflow_run_id=latest_run.id if latest_run is not None else None,
@@ -294,7 +378,7 @@ def _conversation_record(conversation: Conversation) -> ConversationRecord:
                 sequence_number=message.sequence_number,
                 role=message.role.value,
                 content=message.content,
-                created_at=message.created_at,
+                created_at=_as_utc(message.created_at),
             )
             for message in sorted(
                 conversation.messages,
@@ -320,9 +404,9 @@ def _workflow_run_record(workflow_run: WorkflowRun) -> WorkflowRunRecord:
             if workflow_run.pause_reason is RunPauseReason.HUMAN_APPROVAL
             else None
         ),
-        started_at=workflow_run.started_at,
-        completed_at=workflow_run.completed_at,
-        updated_at=workflow_run.updated_at,
+        started_at=_as_utc(workflow_run.started_at),
+        completed_at=_as_utc(workflow_run.completed_at),
+        updated_at=_as_utc(workflow_run.updated_at),
         error_code=workflow_run.error_code,
         error_message=workflow_run.error_message,
         budget=RunBudget.from_data(
@@ -375,7 +459,7 @@ def _version_summary(version: ArtifactVersion) -> ArtifactVersionSummaryRecord:
         parent_version_id=version.parent_version_id,
         schema_version=version.schema_version,
         change_summary=version.change_summary,
-        created_at=version.created_at,
+        created_at=_as_utc(version.created_at),
         specialist_role=invocation.specialist_role if invocation is not None else None,
         provider=invocation.provider if invocation is not None else None,
         model_identifier=invocation.model_identifier if invocation is not None else None,
@@ -390,5 +474,59 @@ def _evaluation_record(evaluation: Evaluation) -> EvaluationRecord:
         scores=dict(evaluation.scores),
         weighted_score=evaluation.weighted_score,
         summary=evaluation.summary,
-        created_at=evaluation.created_at,
+        created_at=_as_utc(evaluation.created_at),
     )
+
+
+def _require_matching_intake(
+    workflow_run: WorkflowRun,
+    *,
+    premise: str,
+    title: str | None,
+) -> None:
+    conversation = workflow_run.conversation
+    messages = conversation.messages if conversation is not None else []
+    initial_message = next(
+        (message for message in messages if message.sequence_number == 1),
+        None,
+    )
+    expected_title = title or _working_title(premise)
+    if (
+        workflow_run.workflow_name != STORY_BLUEPRINT_WORKFLOW_NAME
+        or initial_message is None
+        or initial_message.role is not MessageRole.USER
+        or initial_message.content != premise
+        or workflow_run.project.name != expected_title
+    ):
+        raise WorkspaceRequestConflictError(
+            "request_id is already associated with a different story"
+        )
+
+
+def _working_title(premise: str) -> str:
+    first_line = premise.splitlines()[0].strip()
+    words = first_line.split()
+    title = " ".join(words[:8]).rstrip(".,;:!?-—")
+    return title[:200] or "Untitled story"
+
+
+def _project_description(premise: str) -> str:
+    if len(premise) <= 280:
+        return premise
+    return f"{premise[:277].rstrip()}..."
+
+
+@overload
+def _as_utc(value: datetime) -> datetime: ...
+
+
+@overload
+def _as_utc(value: None) -> None: ...
+
+
+def _as_utc(value: datetime | None) -> datetime | None:
+    if value is None:
+        return None
+    if value.tzinfo is None:
+        return value.replace(tzinfo=UTC)
+    return value.astimezone(UTC)

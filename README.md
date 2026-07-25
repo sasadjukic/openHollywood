@@ -39,7 +39,10 @@ client now reads projects, conversations, workflow activity, run state,
 artifact versions, provenance, and evaluations from SQLite-backed API views.
 It keeps the Story Blueprint decision beside its source artifact and activity
 timeline while preserving the product boundary against a general-purpose
-manuscript editor.
+manuscript editor. A new installation opens directly in that workspace shell:
+the first-premise composer atomically creates the local project, conversation,
+user message, and queued Story Blueprint run, so the empty library is no longer
+a separate welcome-screen dead end.
 
 Model configuration is now a first-class persisted workflow surface. The
 workspace offers Local, Cloud, and Hybrid presets backed by fixed,

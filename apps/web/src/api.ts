@@ -2,6 +2,7 @@ import {
   activateModelProfile,
   configureModelProfile,
   controlWorkflowRun,
+  createStoryProject,
   getArtifactVersion,
   getHealth,
   getProjectWorkspace,
@@ -15,6 +16,7 @@ import {
   type BlueprintDecisionAction,
   type BlueprintDecisionResponse,
   type ConfigureModelProfileRequest,
+  type CreateStoryProjectResponse,
   type ModelCatalog,
   type ModelProfileList,
   type ModelProfileSummary,
@@ -45,6 +47,21 @@ export async function fetchServiceStatus(): Promise<ServiceStatus> {
 export async function fetchProjects(): Promise<ProjectList> {
   const result = await listProjects();
   return requireData(result, "The project library could not be loaded.");
+}
+
+export async function startStoryProject(input: {
+  premise: string;
+  requestId: string;
+  title?: string;
+}): Promise<CreateStoryProjectResponse> {
+  const result = await createStoryProject({
+    body: {
+      premise: input.premise,
+      request_id: input.requestId,
+      title: input.title,
+    },
+  });
+  return requireData(result, "The new story could not be created.");
 }
 
 export async function fetchProjectWorkspace(

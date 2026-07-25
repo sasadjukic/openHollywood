@@ -1,4 +1,4 @@
-"""Read-only routes for projects, chat, runs, artifacts, and versions."""
+"""Workspace routes for projects, chat, runs, artifacts, and versions."""
 
 from typing import Annotated
 from uuid import UUID
@@ -10,10 +10,13 @@ from open_hollywood_api.dependencies import get_workspace_store
 from open_hollywood_api.services.workspace import (
     WorkspaceArtifactVersionNotFoundError,
     WorkspaceProjectNotFoundError,
+    WorkspaceRequestConflictError,
     WorkspaceStore,
 )
 from open_hollywood_api.workspace_models import (
     ArtifactVersionDetail,
+    CreateStoryProjectRequest,
+    CreateStoryProjectResponse,
     ProjectList,
     ProjectSummary,
     ProjectWorkspace,
@@ -21,6 +24,39 @@ from open_hollywood_api.workspace_models import (
 
 router = APIRouter(tags=["workspace"])
 WorkspaceStoreDependency = Annotated[WorkspaceStore, Depends(get_workspace_store)]
+
+
+@router.post(
+    "/projects",
+    operation_id="createStoryProject",
+    response_model=CreateStoryProjectResponse,
+    responses={409: {"description": "Request ID already used for another story"}},
+    status_code=status.HTTP_201_CREATED,
+    summary="Create a project and queue its Story Blueprint run",
+)
+async def create_story_project(
+    request: CreateStoryProjectRequest,
+    store: WorkspaceStoreDependency,
+) -> CreateStoryProjectResponse:
+    """Persist the user's first premise and its durable pending workflow run."""
+    try:
+        record = await anyio.to_thread.run_sync(
+            lambda: store.create_story_project(
+                request_id=request.request_id,
+                premise=request.premise,
+                title=request.title,
+            )
+        )
+    except WorkspaceRequestConflictError as error:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Request ID is already associated with a different story",
+        ) from error
+    return CreateStoryProjectResponse(
+        project_id=record.project_id,
+        workflow_run_id=record.workflow_run_id,
+        status=record.status,
+    )
 
 
 @router.get(

@@ -402,6 +402,59 @@
         "title": "ConfigureModelProfileRequest",
         "type": "object"
       },
+      "CreateStoryProjectRequest": {
+        "description": "Idempotent first-premise command for a new short-prose project.",
+        "properties": {
+          "premise": {
+            "maxLength": 10000,
+            "minLength": 1,
+            "title": "Premise",
+            "type": "string"
+          },
+          "request_id": {
+            "format": "uuid",
+            "title": "Request Id",
+            "type": "string"
+          },
+          "title": {
+            "anyOf": [
+              {
+                "maxLength": 200,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title"
+          }
+        },
+        "required": ["request_id", "premise"],
+        "title": "CreateStoryProjectRequest",
+        "type": "object"
+      },
+      "CreateStoryProjectResponse": {
+        "description": "Durable identifiers returned after a first premise is queued.",
+        "properties": {
+          "project_id": {
+            "format": "uuid",
+            "title": "Project Id",
+            "type": "string"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "workflow_run_id": {
+            "format": "uuid",
+            "title": "Workflow Run Id",
+            "type": "string"
+          }
+        },
+        "required": ["project_id", "workflow_run_id", "status"],
+        "title": "CreateStoryProjectResponse",
+        "type": "object"
+      },
       "ExportSourceVersion": {
         "description": "One immutable scene version included in an export.",
         "properties": {
@@ -1905,6 +1958,47 @@
           }
         },
         "summary": "List locally persisted story projects",
+        "tags": ["workspace"]
+      },
+      "post": {
+        "description": "Persist the user's first premise and its durable pending workflow run.",
+        "operationId": "createStoryProject",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateStoryProjectRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateStoryProjectResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "409": {
+            "description": "Request ID already used for another story"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Create a project and queue its Story Blueprint run",
         "tags": ["workspace"]
       }
     },

@@ -246,6 +246,46 @@ export type ConfigureModelProfileRequest = {
 };
 
 /**
+ * CreateStoryProjectRequest
+ *
+ * Idempotent first-premise command for a new short-prose project.
+ */
+export type CreateStoryProjectRequest = {
+  /**
+   * Premise
+   */
+  premise: string;
+  /**
+   * Request Id
+   */
+  request_id: string;
+  /**
+   * Title
+   */
+  title?: string | null;
+};
+
+/**
+ * CreateStoryProjectResponse
+ *
+ * Durable identifiers returned after a first premise is queued.
+ */
+export type CreateStoryProjectResponse = {
+  /**
+   * Project Id
+   */
+  project_id: string;
+  /**
+   * Status
+   */
+  status: string;
+  /**
+   * Workflow Run Id
+   */
+  workflow_run_id: string;
+};
+
+/**
  * ExportSourceVersion
  *
  * One immutable scene version included in an export.
@@ -1195,6 +1235,37 @@ export type ListProjectsResponses = {
 
 export type ListProjectsResponse =
   ListProjectsResponses[keyof ListProjectsResponses];
+
+export type CreateStoryProjectData = {
+  body: CreateStoryProjectRequest;
+  path?: never;
+  query?: never;
+  url: "/api/v1/projects";
+};
+
+export type CreateStoryProjectErrors = {
+  /**
+   * Request ID already used for another story
+   */
+  409: unknown;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type CreateStoryProjectError =
+  CreateStoryProjectErrors[keyof CreateStoryProjectErrors];
+
+export type CreateStoryProjectResponses = {
+  /**
+   * Successful Response
+   */
+  201: CreateStoryProjectResponse;
+};
+
+export type CreateStoryProjectResponse2 =
+  CreateStoryProjectResponses[keyof CreateStoryProjectResponses];
 
 export type ListProjectExportsData = {
   body?: never;

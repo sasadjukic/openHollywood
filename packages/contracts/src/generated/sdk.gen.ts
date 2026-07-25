@@ -19,6 +19,9 @@ import type {
   ControlWorkflowRunData,
   ControlWorkflowRunErrors,
   ControlWorkflowRunResponses,
+  CreateStoryProjectData,
+  CreateStoryProjectErrors,
+  CreateStoryProjectResponses,
   DownloadProjectExportData,
   DownloadProjectExportErrors,
   DownloadProjectExportResponses,
@@ -182,6 +185,31 @@ export const listProjects = <ThrowOnError extends boolean = false>(
   (options?.client ?? client).get<ListProjectsResponses, unknown, ThrowOnError>(
     { url: "/api/v1/projects", ...options },
   );
+
+/**
+ * Create a project and queue its Story Blueprint run
+ *
+ * Persist the user's first premise and its durable pending workflow run.
+ */
+export const createStoryProject = <ThrowOnError extends boolean = false>(
+  options: Options<CreateStoryProjectData, ThrowOnError>,
+): RequestResult<
+  CreateStoryProjectResponses,
+  CreateStoryProjectErrors,
+  ThrowOnError
+> =>
+  (options.client ?? client).post<
+    CreateStoryProjectResponses,
+    CreateStoryProjectErrors,
+    ThrowOnError
+  >({
+    url: "/api/v1/projects",
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      ...options.headers,
+    },
+  });
 
 /**
  * List deterministic exports available for one project

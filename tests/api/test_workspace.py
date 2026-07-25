@@ -24,7 +24,7 @@ from open_hollywood_api.persistence.models import (
 from open_hollywood_api.services.workflow_events import WorkflowEventStore
 from open_hollywood_api.services.workspace import WorkspaceStore
 from open_hollywood_engine.workflows import RunPauseReason
-from sqlalchemy import Engine
+from sqlalchemy import Engine, func, select
 
 pytestmark = pytest.mark.anyio
 
@@ -227,3 +227,67 @@ async def test_unknown_workspace_records_return_not_found(
 
     assert project_response.status_code == 404
     assert version_response.status_code == 404
+
+
+async def test_first_premise_creates_an_idempotent_usable_workspace(
+    database_engine: Engine,
+) -> None:
+    session_factory = create_session_factory(database_engine)
+    application = create_app(
+        workflow_event_store=WorkflowEventStore(session_factory),
+        workspace_store=WorkspaceStore(session_factory),
+    )
+    transport = ASGITransport(app=application)
+    request_id = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"
+    request_body = {
+        "request_id": request_id,
+        "title": "The Last Light",
+        "premise": "A lighthouse keeper receives a letter from tomorrow.",
+    }
+
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
+        created = await client.post("/api/v1/projects", json=request_body)
+        duplicate = await client.post("/api/v1/projects", json=request_body)
+
+        assert created.status_code == 201
+        assert duplicate.status_code == 201
+        assert duplicate.json() == created.json()
+        payload = created.json()
+        assert payload["workflow_run_id"] == request_id
+        assert payload["status"] == "pending"
+
+        workspace_response = await client.get(f"/api/v1/projects/{payload['project_id']}/workspace")
+
+    assert workspace_response.status_code == 200
+    workspace = workspace_response.json()
+    assert workspace["project"]["name"] == "The Last Light"
+    assert workspace["conversations"][0]["messages"][0]["content"] == request_body["premise"]
+    assert workspace["workflow_runs"][0]["status"] == "pending"
+
+    with session_factory() as session:
+        assert session.scalar(select(func.count(Project.id))) == 1
+        assert session.scalar(select(func.count(WorkflowRun.id))) == 1
+        assert session.scalar(select(func.count(Message.id))) == 1
+        assert session.scalar(select(func.count(WorkflowEvent.id))) == 1
+
+
+async def test_reused_intake_request_id_rejects_different_story(
+    database_engine: Engine,
+) -> None:
+    session_factory = create_session_factory(database_engine)
+    application = create_app(workspace_store=WorkspaceStore(session_factory))
+    transport = ASGITransport(app=application)
+    request_id = "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb"
+
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
+        first = await client.post(
+            "/api/v1/projects",
+            json={"request_id": request_id, "premise": "The first premise."},
+        )
+        conflicting = await client.post(
+            "/api/v1/projects",
+            json={"request_id": request_id, "premise": "A different premise."},
+        )
+
+    assert first.status_code == 201
+    assert conflicting.status_code == 409

@@ -118,6 +118,14 @@ function eventPresentation(event: WorkflowEventEnvelope) {
   const source = titleCase(node ?? event.source ?? "workflow");
 
   switch (event.event_type) {
+    case "workflow.queued":
+      return {
+        detail:
+          "The premise is stored locally and ready for workflow execution.",
+        mark: "→",
+        title: "Story Blueprint run queued",
+        tone: "active",
+      };
     case "workflow.node.started":
       return {
         detail: "Specialist is working from the persisted checkpoint.",

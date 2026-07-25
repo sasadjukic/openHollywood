@@ -8,7 +8,7 @@ from decimal import Decimal
 from typing import Any
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from open_hollywood_api.services.workspace import (
     ArtifactRecord,
@@ -52,6 +52,40 @@ class ProjectList(WorkspaceModel):
     """All locally persisted projects."""
 
     projects: list[ProjectSummary]
+
+
+class CreateStoryProjectRequest(WorkspaceModel):
+    """Idempotent first-premise command for a new short-prose project."""
+
+    request_id: UUID
+    premise: str = Field(min_length=1, max_length=10_000)
+    title: str | None = Field(default=None, max_length=200)
+
+    @field_validator("premise")
+    @classmethod
+    def normalize_premise(cls, value: str) -> str:
+        """Reject whitespace-only premises and persist a normalized value."""
+        normalized = value.strip()
+        if not normalized:
+            raise ValueError("premise must not be empty")
+        return normalized
+
+    @field_validator("title")
+    @classmethod
+    def normalize_title(cls, value: str | None) -> str | None:
+        """Treat an empty optional working title as absent."""
+        if value is None:
+            return None
+        normalized = value.strip()
+        return normalized or None
+
+
+class CreateStoryProjectResponse(WorkspaceModel):
+    """Durable identifiers returned after a first premise is queued."""
+
+    project_id: UUID
+    workflow_run_id: UUID
+    status: str
 
 
 class WorkspaceMessage(WorkspaceModel):

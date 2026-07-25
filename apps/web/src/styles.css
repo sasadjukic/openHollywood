@@ -47,12 +47,14 @@ body {
 }
 
 button,
+input,
 select,
 textarea {
   font: inherit;
 }
 
 button,
+input,
 select {
   color: inherit;
 }
@@ -62,6 +64,7 @@ button {
 }
 
 button:focus-visible,
+input:focus-visible,
 select:focus-visible,
 textarea:focus-visible {
   outline: 2px solid var(--cyan);
@@ -230,6 +233,46 @@ textarea:focus-visible {
   gap: 4px;
 }
 
+.new-story-button {
+  display: flex;
+  width: 100%;
+  gap: 9px;
+  align-items: center;
+  margin-bottom: 8px;
+  padding: 10px;
+  border: 1px dashed var(--border-strong);
+  border-radius: 10px;
+  color: var(--blue);
+  background: rgb(129 193 217 / 3%);
+  font-size: 0.76rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.new-story-button:hover,
+.new-story-button--active {
+  border-color: rgb(129 193 217 / 32%);
+  background: rgb(129 193 217 / 8%);
+}
+
+.new-story-button > span {
+  display: grid;
+  width: 21px;
+  height: 21px;
+  border-radius: 6px;
+  place-items: center;
+  background: rgb(129 193 217 / 10%);
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.nav-empty {
+  margin: 9px 10px;
+  color: var(--muted-dim);
+  font-size: 0.7rem;
+  line-height: 1.55;
+}
+
 .project-button,
 .artifact-button {
   display: grid;
@@ -362,6 +405,130 @@ textarea:focus-visible {
   background:
     linear-gradient(rgb(38 38 38 / 95%), rgb(38 38 38 / 95%)),
     radial-gradient(circle at 50% 10%, rgb(101 192 224 / 8%), transparent 26rem);
+}
+
+.story-intake {
+  display: grid;
+  min-height: 0;
+  padding: clamp(30px, 6vh, 72px) clamp(24px, 6vw, 76px);
+  overflow-y: auto;
+  align-content: start;
+}
+
+.story-intake-copy,
+.premise-composer {
+  width: min(800px, 100%);
+  margin-inline: auto;
+}
+
+.story-intake-copy .eyebrow {
+  margin: 0 0 10px;
+  color: var(--blue);
+}
+
+.story-intake-copy h1 {
+  max-width: 680px;
+  margin: 0;
+  font-family: var(--serif);
+  font-size: clamp(2.3rem, 5vw, 4.4rem);
+  font-weight: 500;
+  letter-spacing: -0.045em;
+  line-height: 1;
+}
+
+.story-intake-copy > p:not(.eyebrow) {
+  max-width: 680px;
+  margin: 18px 0 14px;
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.7;
+}
+
+.story-intake .workflow-preview {
+  justify-content: flex-start;
+}
+
+.premise-composer {
+  display: grid;
+  gap: 16px;
+  margin-top: 30px;
+  padding: clamp(18px, 3vw, 28px);
+  border: 1px solid var(--border-strong);
+  border-radius: 18px;
+  background:
+    linear-gradient(rgb(42 42 42 / 96%), rgb(42 42 42 / 96%)),
+    radial-gradient(circle at 10% 0%, rgb(233 165 165 / 12%), transparent 24rem);
+  box-shadow: 0 24px 70px rgb(0 0 0 / 18%);
+}
+
+.story-title-field,
+.premise-field {
+  display: grid;
+  gap: 7px;
+}
+
+.story-title-field > span,
+.premise-field > span {
+  color: var(--muted);
+  font-size: 0.7rem;
+  font-weight: 750;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.story-title-field input,
+.premise-field textarea {
+  width: 100%;
+  border: 1px solid var(--border-strong);
+  border-radius: 11px;
+  color: var(--text);
+  background: rgb(29 29 29 / 72%);
+}
+
+.story-title-field input {
+  height: 42px;
+  padding: 0 13px;
+}
+
+.premise-field textarea {
+  min-height: 160px;
+  padding: 14px;
+  resize: vertical;
+  font-family: var(--serif);
+  font-size: 1.04rem;
+  line-height: 1.65;
+}
+
+.story-title-field input::placeholder,
+.premise-field textarea::placeholder {
+  color: #747b7a;
+}
+
+.premise-composer-footer {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.premise-composer-footer > span {
+  color: var(--muted-dim);
+  font-size: 0.68rem;
+}
+
+.premise-composer-footer button {
+  min-height: 40px;
+  padding: 9px 16px;
+  border: 1px solid rgb(129 193 217 / 30%);
+  border-radius: 10px;
+  font-size: 0.73rem;
+  font-weight: 750;
+  cursor: pointer;
+}
+
+.premise-composer-footer button:disabled {
+  opacity: 0.42;
+  cursor: not-allowed;
 }
 
 .story-header {
@@ -1450,6 +1617,30 @@ textarea:focus-visible {
   .story-header {
     gap: 14px;
     padding: 22px 19px 18px;
+  }
+
+  .story-intake {
+    padding: 28px 18px;
+    align-content: start;
+  }
+
+  .story-intake-copy h1 {
+    font-size: clamp(2.2rem, 12vw, 3.2rem);
+  }
+
+  .premise-composer {
+    margin-top: 24px;
+    padding: 17px;
+  }
+
+  .premise-composer-footer {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .premise-composer-footer button {
+    width: 100%;
+    margin-left: 0;
   }
 
   .story-header h1 {

@@ -9,7 +9,7 @@ import type {
   WorkspaceArtifact,
   WorkspaceRun,
 } from "@open-hollywood/contracts";
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 import {
   fetchArtifactVersion,
@@ -24,6 +24,7 @@ import {
   controlRun,
   saveModelProfile,
   selectModelProfile,
+  startStoryProject,
   submitDecision,
 } from "./api";
 import { ArtifactInspector } from "./components/ArtifactInspector";
@@ -45,10 +46,14 @@ export function App() {
     null,
   );
   const [instruction, setInstruction] = useState("");
+  const [premise, setPremise] = useState("");
+  const [storyTitle, setStoryTitle] = useState("");
   const [retryNode, setRetryNode] = useState("");
+  const [isCreatingStory, setCreatingStory] = useState(false);
   const [isNavigationOpen, setNavigationOpen] = useState(false);
   const [isInspectorOpen, setInspectorOpen] = useState(false);
   const [isSettingsOpen, setSettingsOpen] = useState(false);
+  const intakeRequestId = useRef<string | null>(null);
 
   const serviceStatus = useQuery({
     queryFn: fetchServiceStatus,
@@ -72,10 +77,11 @@ export function App() {
   });
 
   const projects = projectsQuery.data?.projects ?? [];
-  const selectedProjectId =
-    projects.find((project) => project.id === requestedProjectId)?.id ??
-    projects[0]?.id ??
-    null;
+  const selectedProjectId = isCreatingStory
+    ? null
+    : (projects.find((project) => project.id === requestedProjectId)?.id ??
+      projects[0]?.id ??
+      null);
 
   const workspaceQuery = useQuery({
     enabled: selectedProjectId !== null,
@@ -225,6 +231,24 @@ export function App() {
       await queryClient.invalidateQueries({ queryKey: ["model-profiles"] });
     },
   });
+  const createProjectMutation = useMutation({
+    mutationFn: () => {
+      intakeRequestId.current ??= crypto.randomUUID();
+      return startStoryProject({
+        premise: premise.trim(),
+        requestId: intakeRequestId.current,
+        title: storyTitle.trim() || undefined,
+      });
+    },
+    onSuccess: async (created) => {
+      setRequestedProjectId(created.project_id);
+      await queryClient.invalidateQueries({ queryKey: projectsQueryKey });
+      setPremise("");
+      setStoryTitle("");
+      intakeRequestId.current = null;
+      setCreatingStory(false);
+    },
+  });
 
   const connectionState = serviceStatus.isPending
     ? "connecting"
@@ -243,10 +267,6 @@ export function App() {
         onRetry={() => void projectsQuery.refetch()}
       />
     );
-  }
-
-  if (projectsQuery.data.projects.length === 0) {
-    return <EmptyLibrary connectionState={connectionState} />;
   }
 
   return (
@@ -285,6 +305,22 @@ export function App() {
               <span>Stories</span>
               <span>{projectsQuery.data.projects.length}</span>
             </div>
+            <button
+              className={`new-story-button ${
+                selectedProjectId === null ? "new-story-button--active" : ""
+              }`}
+              type="button"
+              onClick={() => {
+                intakeRequestId.current = null;
+                setCreatingStory(true);
+                setRequestedArtifactId(null);
+                setRequestedVersionId(null);
+                setNavigationOpen(false);
+              }}
+            >
+              <span aria-hidden="true">+</span>
+              New story
+            </button>
             <div className="project-list">
               {projectsQuery.data.projects.map((project) => (
                 <button
@@ -296,6 +332,7 @@ export function App() {
                   key={project.id}
                   type="button"
                   onClick={() => {
+                    setCreatingStory(false);
                     setRequestedProjectId(project.id);
                     setRequestedArtifactId(null);
                     setRequestedVersionId(null);
@@ -319,6 +356,11 @@ export function App() {
                   </span>
                 </button>
               ))}
+              {projectsQuery.data.projects.length === 0 && (
+                <p className="nav-empty">
+                  Your local story library is ready for its first premise.
+                </p>
+              )}
             </div>
           </section>
 
@@ -341,6 +383,12 @@ export function App() {
                   }}
                 />
               ))}
+              {!workspace && (
+                <p className="nav-empty">
+                  Blueprint artifacts will appear here as specialists complete
+                  their work.
+                </p>
+              )}
             </div>
           </section>
 
@@ -356,8 +404,33 @@ export function App() {
         </nav>
 
         <main className="story-workspace">
-          {workspaceQuery.isPending && <StoryLoading />}
-          {workspaceQuery.isError && (
+          {selectedProjectId === null && (
+            <StoryIntake
+              error={
+                createProjectMutation.error instanceof Error
+                  ? createProjectMutation.error.message
+                  : null
+              }
+              isPending={createProjectMutation.isPending}
+              onPremiseChange={(value) => {
+                intakeRequestId.current = null;
+                setPremise(value);
+              }}
+              onSubmit={() => {
+                createProjectMutation.mutate();
+              }}
+              onTitleChange={(value) => {
+                intakeRequestId.current = null;
+                setStoryTitle(value);
+              }}
+              premise={premise}
+              title={storyTitle}
+            />
+          )}
+          {selectedProjectId !== null && workspaceQuery.isPending && (
+            <StoryLoading />
+          )}
+          {selectedProjectId !== null && workspaceQuery.isError && (
             <section className="story-error">
               <p className="eyebrow">Workspace unavailable</p>
               <h1>The story could not be opened.</h1>
@@ -945,20 +1018,33 @@ function WorkspaceUnavailable({
   );
 }
 
-function EmptyLibrary({
-  connectionState,
+function StoryIntake({
+  error,
+  isPending,
+  onPremiseChange,
+  onSubmit,
+  onTitleChange,
+  premise,
+  title,
 }: {
-  connectionState: "connected" | "connecting" | "unavailable";
+  error: string | null;
+  isPending: boolean;
+  onPremiseChange: (value: string) => void;
+  onSubmit: () => void;
+  onTitleChange: (value: string) => void;
+  premise: string;
+  title: string;
 }) {
+  const canSubmit = premise.trim().length > 0 && !isPending;
   return (
-    <div className="workspace-app">
-      <Topbar connectionState={connectionState} />
-      <main className="global-state">
-        <p className="eyebrow">Local story library</p>
-        <h1>Every story starts with a spark.</h1>
+    <section className="story-intake" aria-labelledby="story-intake-heading">
+      <div className="story-intake-copy">
+        <p className="eyebrow">New short story</p>
+        <h1 id="story-intake-heading">What should the studio create?</h1>
         <p>
-          Your first project will appear here as soon as a Story Blueprint run
-          is created.
+          Give the specialists a premise, image, character, question, or rough
+          idea. They will develop the Story Blueprint and return here for your
+          approval before drafting.
         </p>
         <div className="workflow-preview" aria-label="Open Hollywood workflow">
           <span>Premise</span>
@@ -967,8 +1053,54 @@ function EmptyLibrary({
           <span aria-hidden="true">→</span>
           <span>Autonomous draft</span>
         </div>
-      </main>
-    </div>
+      </div>
+      <form
+        className="premise-composer"
+        onSubmit={(event) => {
+          event.preventDefault();
+          if (canSubmit) {
+            onSubmit();
+          }
+        }}
+      >
+        <label className="story-title-field">
+          <span>Working title</span>
+          <input
+            maxLength={200}
+            onChange={(event) => {
+              onTitleChange(event.target.value);
+            }}
+            placeholder="Optional — we can derive one from your premise"
+            type="text"
+            value={title}
+          />
+        </label>
+        <label className="premise-field">
+          <span>Story premise</span>
+          <textarea
+            autoFocus
+            maxLength={10_000}
+            onChange={(event) => {
+              onPremiseChange(event.target.value);
+            }}
+            placeholder="A brand-new stroller waits outside an abandoned, windowless building..."
+            rows={8}
+            value={premise}
+          />
+        </label>
+        <div className="premise-composer-footer">
+          <span>{premise.length.toLocaleString()} / 10,000</span>
+          <button
+            className="primary-action"
+            disabled={!canSubmit}
+            type="submit"
+          >
+            {isPending ? "Creating story…" : "Create Story Blueprint"}
+          </button>
+        </div>
+        {error && <p className="decision-error">{error}</p>}
+      </form>
+    </section>
   );
 }
 

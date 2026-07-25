@@ -179,6 +179,115 @@ function configureWorkspaceApi() {
 }
 
 describe("App", () => {
+  it("opens an empty library as a usable workspace and creates the first story", async () => {
+    const user = userEvent.setup();
+    let storyCreated = false;
+    const fetchMock = vi.fn((input: RequestInfo | URL, init?: RequestInit) => {
+      const request = input instanceof Request ? input : null;
+      const url = request?.url ?? requestUrl(input);
+      const method = request?.method ?? init?.method ?? "GET";
+
+      if (url.endsWith("/api/v1/health")) {
+        return Promise.resolve(
+          jsonResponse({
+            api_version: "0.1.0",
+            service: "open-hollywood-api",
+            state: "ok",
+          }),
+        );
+      }
+      if (url.endsWith("/api/v1/projects") && method === "POST") {
+        storyCreated = true;
+        return Promise.resolve(
+          jsonResponse(
+            {
+              project_id: projectId,
+              status: "pending",
+              workflow_run_id: runId,
+            },
+            201,
+          ),
+        );
+      }
+      if (url.endsWith("/api/v1/projects")) {
+        return Promise.resolve(
+          jsonResponse({
+            projects: storyCreated ? [workspaceResponse().project] : [],
+          }),
+        );
+      }
+      if (url.includes(`/api/v1/projects/${projectId}/workspace`)) {
+        return Promise.resolve(jsonResponse(workspaceResponse()));
+      }
+      if (url.endsWith(`/api/v1/projects/${projectId}/exports`)) {
+        return Promise.resolve(
+          jsonResponse({
+            available_formats: [],
+            project_id: projectId,
+            source_versions: [],
+            unavailable_reason: "The story is not complete yet.",
+          }),
+        );
+      }
+      if (url.includes(`/api/v1/workflow-runs/${runId}/events`)) {
+        return Promise.resolve(
+          jsonResponse({ events: [], has_more: false, next_after: 0 }),
+        );
+      }
+      if (url.includes(`/api/v1/artifact-versions/${versionId}`)) {
+        return Promise.resolve(jsonResponse(artifactDetailResponse()));
+      }
+      return Promise.resolve(new Response("Not found", { status: 404 }));
+    });
+    client.setConfig({ baseUrl: "http://api.test", fetch: fetchMock });
+
+    renderApp();
+
+    expect(
+      await screen.findByRole("heading", {
+        name: "What should the studio create?",
+      }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("navigation", {
+        name: "Story projects and artifacts",
+      }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Model setup" }),
+    ).toBeInTheDocument();
+
+    await user.type(
+      screen.getByRole("textbox", { name: "Working title" }),
+      "The Untouched Stroller",
+    );
+    await user.type(
+      screen.getByRole("textbox", { name: "Story premise" }),
+      "A pristine stroller waits outside an abandoned building.",
+    );
+    await user.click(
+      screen.getByRole("button", { name: "Create Story Blueprint" }),
+    );
+
+    expect(
+      await screen.findByRole("heading", { name: "The Untouched Stroller" }),
+    ).toBeInTheDocument();
+    const createRequest = fetchMock.mock.calls.find(([input, init]) => {
+      const request = input instanceof Request ? input : null;
+      return (
+        requestUrl(input).endsWith("/api/v1/projects") &&
+        (request?.method ?? init?.method) === "POST"
+      );
+    })?.[0];
+    expect(createRequest).toBeInstanceOf(Request);
+    await expect(
+      (createRequest as Request).clone().json(),
+    ).resolves.toMatchObject({
+      premise: "A pristine stroller waits outside an abandoned building.",
+      title: "The Untouched Stroller",
+    });
+  });
+
   it("renders the persisted three-panel story workspace", async () => {
     configureWorkspaceApi();
 
@@ -632,10 +741,10 @@ function localModel() {
   };
 }
 
-function jsonResponse(body: unknown) {
+function jsonResponse(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {
     headers: { "Content-Type": "application/json" },
-    status: 200,
+    status,
   });
 }
 
