@@ -35,6 +35,7 @@ from open_hollywood_engine.evaluations.contracts import (
     FictionMaturity,
     HardGate,
     HumanComparisonReview,
+    HumanReviewBundle,
     TargetWordCount,
     canonical_sha256,
 )
@@ -47,6 +48,7 @@ from open_hollywood_engine.evaluations.corpus import (
 from open_hollywood_engine.evaluations.harness import (
     BenchmarkCaseExecutionError,
     BenchmarkCaseExecutor,
+    BenchmarkReportCheckpoint,
     run_benchmark_plan,
 )
 from open_hollywood_engine.evaluations.planning import build_benchmark_plan
@@ -73,6 +75,7 @@ __all__ = [
     "BenchmarkPlan",
     "BenchmarkProfileSnapshot",
     "BenchmarkPrompt",
+    "BenchmarkReportCheckpoint",
     "BenchmarkRunReport",
     "BenchmarkSuccessCriteria",
     "BenchmarkSummary",
@@ -89,6 +92,7 @@ __all__ = [
     "FictionMaturity",
     "HardGate",
     "HumanComparisonReview",
+    "HumanReviewBundle",
     "TargetWordCount",
     "build_benchmark_plan",
     "build_blind_bundle",

@@ -289,7 +289,7 @@ class BenchmarkOutput(EvaluationModel):
     output_tokens: int = Field(ge=0)
     latency_ms: int = Field(ge=0)
     estimated_cost_usd: Annotated[str, StringConstraints(pattern=r"^\d+(\.\d+)?$")]
-    hard_gates: dict[HardGate, bool]
+    hard_gates: dict[HardGate, bool | None]
 
     @model_validator(mode="after")
     def validate_output(self) -> Self:
@@ -444,6 +444,21 @@ class HumanComparisonReview(EvaluationModel):
     candidate_a_score: CanonicalStoryScore
     candidate_b_score: CanonicalStoryScore
     notes: NonEmptyText | None = None
+
+
+class HumanReviewBundle(EvaluationModel):
+    """Validated reviewer submissions for one exact benchmark campaign."""
+
+    schema_version: Literal["1"]
+    campaign_id: UUID
+    reviews: tuple[HumanComparisonReview, ...]
+
+    @model_validator(mode="after")
+    def validate_reviews(self) -> Self:
+        review_keys = {(review.comparison_id, review.reviewer_id) for review in self.reviews}
+        if len(review_keys) != len(self.reviews):
+            raise ValueError("a reviewer may score each comparison only once")
+        return self
 
 
 class BenchmarkTargetMetrics(EvaluationModel):

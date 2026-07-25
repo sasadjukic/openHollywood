@@ -27,5 +27,54 @@ workflow versions, exact secret-free profile configurations, model identifiers,
 and per-prompt seeds. Existing plan files are not overwritten unless
 `--overwrite` is explicit.
 
+Run or resume the 12 direct single-model baseline cases:
+
+```powershell
+uv run --extra api python scripts/evaluation_harness.py run-baseline `
+  --database data/open_hollywood.db `
+  --plan data/evaluations/campaign-plan.json `
+  --report data/evaluations/campaign-report.json
+```
+
+This command uses the local Ollama service endpoint. A model identifier ending
+in `cloud` can still consume Ollama Cloud capacity through that service. The
+report is replaced atomically after every newly executed case and again at
+clean completion. Existing successful report results and succeeded SQLite
+workflow lineage are reused; pass `--retry-failed` only when failed cases
+should be attempted again.
+
+The baseline runtime persists each frozen prompt input, bounded model
+invocation, and complete story version in SQLite. It assigns only syntactic
+hard gates automatically. Gates requiring literary judgment remain `null`
+until a blind reviewer submits the canonical rubric.
+
+Create a private blinding key, then build separate public and private review
+artifacts:
+
+```powershell
+uv run --extra api python scripts/evaluation_harness.py create-review-key `
+  --output data/evaluations/private-review.key
+
+uv run --extra api python scripts/evaluation_harness.py package-review `
+  --plan data/evaluations/campaign-plan.json `
+  --report data/evaluations/campaign-report.json `
+  --blinding-key data/evaluations/private-review.key `
+  --public-output data/evaluations/review-packet.json `
+  --answer-key-output data/evaluations/private-answer-key.json
+```
+
+Aggregate technical evidence without human reviews:
+
+```powershell
+uv run --extra api python scripts/evaluation_harness.py summarize `
+  --plan data/evaluations/campaign-plan.json `
+  --report data/evaluations/campaign-report.json `
+  --output data/evaluations/summary.json
+```
+
+Supplying `--reviews` also requires the separate `--answer-key`. Review files
+use the strict `HumanReviewBundle` contract, including campaign identity and
+unique reviewer/comparison pairs.
+
 The private blinding key and generated answer key must not be distributed with
 the public A/B review packet. None of these files may contain API keys.

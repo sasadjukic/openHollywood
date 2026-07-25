@@ -42,14 +42,25 @@ class BenchmarkCaseExecutor(Protocol):
         ...
 
 
+class BenchmarkReportCheckpoint(Protocol):
+    """Durably preserve a validated partial report after each executed case."""
+
+    async def save(self, report: BenchmarkRunReport) -> None:
+        """Persist the complete current report atomically."""
+        ...
+
+
 async def run_benchmark_plan(
     *,
     plan: BenchmarkPlan,
     corpus: BenchmarkCorpus,
     executor: BenchmarkCaseExecutor,
     prior_results: tuple[BenchmarkCaseResult, ...] = (),
+    checkpoint: BenchmarkReportCheckpoint | None = None,
+    retry_failed: bool = False,
+    target_keys: frozenset[str] | None = None,
 ) -> BenchmarkRunReport:
-    """Execute missing cases in stable order and retain prior terminal results."""
+    """Execute missing cases in stable order and checkpoint every new result."""
     _require_matching_corpus(plan, corpus)
     planned_ids = {case.case_id for case in plan.cases}
     prior_by_id = {result.case_id: result for result in prior_results}
@@ -57,13 +68,18 @@ async def run_benchmark_plan(
         raise ValueError("prior benchmark results must have unique case IDs")
     if not set(prior_by_id).issubset(planned_ids):
         raise ValueError("prior benchmark results contain cases outside the plan")
+    known_targets = {case.target_key for case in plan.cases}
+    if target_keys is not None and not target_keys.issubset(known_targets):
+        raise ValueError("target_keys contains an unknown benchmark target")
 
     prompts = {(prompt.prompt_id, prompt.version): prompt for prompt in corpus.prompts}
     results: list[BenchmarkCaseResult] = []
     for case in plan.cases:
         prior = prior_by_id.get(case.case_id)
-        if prior is not None:
+        if prior is not None and not (retry_failed and prior.status is BenchmarkCaseStatus.FAILED):
             results.append(prior)
+            continue
+        if target_keys is not None and case.target_key not in target_keys:
             continue
         prompt = prompts[(case.prompt_id, case.prompt_version)]
         try:
@@ -86,6 +102,18 @@ async def run_benchmark_plan(
                     output=output,
                 )
             )
+        if checkpoint is not None:
+            await checkpoint.save(_report(plan, results))
+    report = _report(plan, results)
+    if checkpoint is not None:
+        await checkpoint.save(report)
+    return report
+
+
+def _report(
+    plan: BenchmarkPlan,
+    results: list[BenchmarkCaseResult],
+) -> BenchmarkRunReport:
     return BenchmarkRunReport(
         schema_version=BENCHMARK_SCHEMA_VERSION,
         campaign_id=plan.campaign_id,
@@ -100,7 +128,7 @@ def _validate_output_for_prompt(
 ) -> None:
     target = prompt.target_word_count
     within_target = target.minimum <= output.word_count <= target.maximum
-    if within_target != output.hard_gates[HardGate.TARGET_FORMAT_VALID]:
+    if output.hard_gates[HardGate.TARGET_FORMAT_VALID] is not within_target:
         raise ValueError(
             "target-format hard gate disagrees with the frozen prompt word-count range"
         )

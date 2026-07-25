@@ -19,9 +19,22 @@ Open Hollywood v0.1 benchmark:
 generation. The harness deliberately does not import provider SDKs, workflow
 checkpoint types, or SQLAlchemy models.
 
+The application layer now provides a persisted direct-baseline executor. It
+uses the provider-neutral gateway, makes a single seeded and bounded story
+call, and records the frozen prompt version, invocation, workflow run, and
+complete story version in SQLite. Successful persisted cases replay without a
+second model call. The harness can select only the baseline target while
+retaining a partial campaign report for later agentic execution.
+
+Long campaigns accept a report-checkpoint boundary. The operator implementation
+atomically replaces a validated JSON report after every new terminal case, so
+process failure does not discard hours of completed inference. Failed results
+remain resume evidence unless retry is explicitly requested.
+
 The initial 12-prompt corpus is stored at
 `benchmarks/v0.1/corpus.json`. The corpus must never be edited silently; change
 a prompt version or create a new corpus version.
 
 The current Step 19 implementation is still in progress: the full-story
-application executor and formal paid benchmark campaign have not run yet.
+graph-backed agentic executor, blind human reviews, and formal paid benchmark
+campaign have not run yet.

@@ -4,11 +4,23 @@ from __future__ import annotations
 
 import hashlib
 import json
+from datetime import UTC, datetime
+from decimal import Decimal
 from pathlib import Path
 from uuid import UUID, uuid5
 
 import pytest
 from open_hollywood_api.persistence.database import create_session_factory
+from open_hollywood_api.persistence.models import (
+    AgentInvocation,
+    ArtifactVersion,
+    InvocationStatus,
+    RunStatus,
+    WorkflowRun,
+)
+from open_hollywood_api.services.evaluation_execution import (
+    DirectBaselineBenchmarkExecutor,
+)
 from open_hollywood_api.services.model_profiles import (
     BUILTIN_PROFILE_IDS,
     ModelProfileStore,
@@ -22,6 +34,7 @@ from open_hollywood_engine.evaluations import (
     BenchmarkPlan,
     BenchmarkProfileSnapshot,
     BenchmarkPrompt,
+    BenchmarkRunReport,
     BlindPreference,
     CanonicalStoryScore,
     EvaluationDimension,
@@ -35,17 +48,29 @@ from open_hollywood_engine.evaluations import (
 )
 from open_hollywood_engine.models import (
     MODEL_PRESETS,
+    ModelCapabilities,
     ModelDeployment,
+    ModelDescriptor,
     ModelProfileMode,
+    ModelRequest,
+    ModelResponse,
     ModelSelection,
+    ModelTiming,
+    ModelUsage,
 )
 from open_hollywood_engine.workflows import (
     SCENE_PRODUCTION_GRAPH_VERSION,
     STORY_BLUEPRINT_GRAPH_VERSION,
 )
-from sqlalchemy import Engine
+from sqlalchemy import Engine, func, select
 
-from scripts.evaluation_harness import create_plan_from_database
+from scripts.evaluation_harness import (
+    AtomicJsonReportCheckpoint,
+    create_plan_from_database,
+)
+from scripts.evaluation_harness import (
+    main as evaluation_main,
+)
 
 WORKSPACE_ROOT = Path(__file__).resolve().parents[2]
 CORPUS_PATH = WORKSPACE_ROOT / "benchmarks" / "v0.1" / "corpus.json"
@@ -85,6 +110,29 @@ class FixtureExecutor:
             estimated_cost_usd="1.00",
             hard_gates={gate: True for gate in HardGate},
         )
+
+
+class FixtureGateway:
+    """Provider boundary for persisted direct-baseline tests."""
+
+    provider = "ollama"
+
+    def __init__(self, response: ModelResponse) -> None:
+        self.response = response
+        self.requests: list[ModelRequest] = []
+
+    async def generate(self, request: ModelRequest) -> ModelResponse:
+        self.requests.append(request)
+        return self.response
+
+    async def list_models(self) -> tuple[ModelDescriptor, ...]:
+        return ()
+
+    async def capabilities(self, _model_identifier: str) -> ModelCapabilities:
+        raise NotImplementedError
+
+    async def close(self) -> None:
+        return None
 
 
 @pytest.fixture
@@ -207,6 +255,110 @@ async def test_harness_is_failure_isolated_and_resumable(
 
 
 @pytest.mark.anyio
+async def test_harness_atomically_checkpoints_each_new_case_and_can_retry_failures(
+    benchmark_plan: tuple[BenchmarkCorpus, BenchmarkPlan],
+    tmp_path: Path,
+) -> None:
+    corpus, plan = benchmark_plan
+    failed_case = plan.cases[2]
+    first_report = await run_benchmark_plan(
+        plan=plan,
+        corpus=corpus,
+        executor=FixtureExecutor(fail_case_id=failed_case.case_id),
+    )
+    checkpoint_path = tmp_path / "campaign" / "report.json"
+    resumed_executor = FixtureExecutor()
+
+    resumed = await run_benchmark_plan(
+        plan=plan,
+        corpus=corpus,
+        executor=resumed_executor,
+        prior_results=first_report.results,
+        checkpoint=AtomicJsonReportCheckpoint(checkpoint_path, plan),
+        retry_failed=True,
+    )
+
+    assert resumed_executor.calls == [failed_case.case_id]
+    assert all(result.status is BenchmarkCaseStatus.SUCCEEDED for result in resumed.results)
+    assert (
+        BenchmarkRunReport.model_validate(json.loads(checkpoint_path.read_text(encoding="utf-8")))
+        == resumed
+    )
+
+
+@pytest.mark.anyio
+async def test_harness_can_stage_only_one_campaign_target(
+    benchmark_plan: tuple[BenchmarkCorpus, BenchmarkPlan],
+) -> None:
+    corpus, plan = benchmark_plan
+    executor = FixtureExecutor()
+
+    report = await run_benchmark_plan(
+        plan=plan,
+        corpus=corpus,
+        executor=executor,
+        target_keys=frozenset({"baseline"}),
+    )
+
+    assert len(report.results) == 12
+    assert executor.calls == [case.case_id for case in plan.cases if case.target_key == "baseline"]
+
+
+@pytest.mark.anyio
+async def test_direct_baseline_persists_idempotent_model_and_artifact_lineage(
+    benchmark_plan: tuple[BenchmarkCorpus, BenchmarkPlan],
+    database_engine: Engine,
+) -> None:
+    corpus, plan = benchmark_plan
+    case = plan.cases[0]
+    prompt = corpus.prompts[0]
+    story = " ".join(("story",) * 2_499 + ("ending.",))
+    gateway = FixtureGateway(
+        ModelResponse(
+            provider="ollama",
+            model_identifier="cloud-fixture",
+            deployment=ModelDeployment.CLOUD,
+            content=f"Title: The Test Story\n{story}",
+            thinking=None,
+            finish_reason="stop",
+            created_at=datetime.now(UTC),
+            usage=ModelUsage(input_tokens=200, output_tokens=3_000),
+            timing=ModelTiming(total_ms=12_345),
+            estimated_cost_usd=Decimal("1.25"),
+        )
+    )
+    executor = DirectBaselineBenchmarkExecutor(
+        campaign_id=plan.campaign_id,
+        session_factory=create_session_factory(database_engine),
+        gateway=gateway,
+    )
+
+    first = await executor.execute(case, prompt)
+    replayed = await executor.execute(case, prompt)
+
+    assert replayed == first
+    assert len(gateway.requests) == 1
+    assert first.title == "The Test Story"
+    assert first.word_count == 2_500
+    assert first.estimated_cost_usd == "1.250000"
+    assert first.hard_gates[HardGate.CENTRAL_FACTS_CONSISTENT] is None
+    assert first.hard_gates[HardGate.MANDATORY_REQUIREMENTS_PRESENT] is None
+    with create_session_factory(database_engine)() as session:
+        run = session.get(WorkflowRun, first.workflow_run_id)
+        assert run is not None
+        assert run.status is RunStatus.SUCCEEDED
+        assert session.scalar(select(func.count()).select_from(AgentInvocation)) == 1
+        assert session.scalar(select(func.count()).select_from(ArtifactVersion)) == 2
+        invocation = session.get(AgentInvocation, first.invocation_ids[0])
+        assert invocation is not None
+        assert invocation.status is InvocationStatus.SUCCEEDED
+        assert [version.id for version in invocation.input_versions] != []
+        assert [version.id for version in invocation.output_versions] == list(
+            first.artifact_version_ids
+        )
+
+
+@pytest.mark.anyio
 async def test_blind_bundle_hides_provenance_and_randomizes_stably(
     benchmark_plan: tuple[BenchmarkCorpus, BenchmarkPlan],
 ) -> None:
@@ -238,6 +390,69 @@ async def test_blind_bundle_hides_provenance_and_randomizes_stably(
     assert "ollama" not in serialized_public
     assert "local-fixture" not in serialized_public
     assert "cloud-fixture" not in serialized_public
+
+
+@pytest.mark.anyio
+async def test_operator_packages_separate_review_evidence_and_summarizes(
+    benchmark_plan: tuple[BenchmarkCorpus, BenchmarkPlan],
+    tmp_path: Path,
+) -> None:
+    corpus, plan = benchmark_plan
+    report = await run_benchmark_plan(
+        plan=plan,
+        corpus=corpus,
+        executor=FixtureExecutor(),
+    )
+    plan_path = tmp_path / "plan.json"
+    report_path = tmp_path / "report.json"
+    key_path = tmp_path / "private.key"
+    public_path = tmp_path / "review.json"
+    answer_path = tmp_path / "answers.json"
+    summary_path = tmp_path / "summary.json"
+    plan_path.write_text(plan.model_dump_json(), encoding="utf-8")
+    report_path.write_text(report.model_dump_json(), encoding="utf-8")
+    key_path.write_bytes(b"0123456789abcdef0123456789abcdef")
+
+    assert (
+        evaluation_main(
+            [
+                "package-review",
+                "--plan",
+                str(plan_path),
+                "--report",
+                str(report_path),
+                "--blinding-key",
+                str(key_path),
+                "--public-output",
+                str(public_path),
+                "--answer-key-output",
+                str(answer_path),
+            ]
+        )
+        == 0
+    )
+    assert (
+        evaluation_main(
+            [
+                "summarize",
+                "--plan",
+                str(plan_path),
+                "--report",
+                str(report_path),
+                "--output",
+                str(summary_path),
+            ]
+        )
+        == 0
+    )
+
+    public_text = public_path.read_text(encoding="utf-8")
+    assert len(json.loads(public_text)["comparisons"]) == 60
+    assert "ollama" not in public_text
+    assert len(json.loads(answer_path.read_text(encoding="utf-8"))["answers"]) == 60
+    summary = json.loads(summary_path.read_text(encoding="utf-8"))
+    assert summary["human_review_count"] == 0
+    assert summary["criteria"]["weighted_human_score_at_least_3_5"] is None
 
 
 @pytest.mark.anyio
