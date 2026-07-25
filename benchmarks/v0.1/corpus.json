@@ -1,0 +1,391 @@
+{
+  "schema_version": "1",
+  "corpus_id": "open-hollywood-short-prose-v0.1",
+  "corpus_version": "1.0.0",
+  "prompts": [
+    {
+      "prompt_id": "OH-V01-001",
+      "version": "1.0.0",
+      "category": "sparse_premise",
+      "prompt": "Write a short supernatural-horror story inspired by a brand-new stroller left in front of a six-story abandoned concrete building that was never completed and has no windows. The lot is overgrown and littered with trash and abandoned shoes. Discover what went wrong there and why the immaculate stroller has been left outside.",
+      "why_it_exists": "Tests whether the system can turn one uncanny visual image into a specific, causally complete story.",
+      "genres": ["supernatural horror"],
+      "intended_maturity": "standard_fiction",
+      "target_word_count": {"minimum": 2500, "maximum": 5000},
+      "required_elements": [
+        "The new stroller remains central to the plot.",
+        "The unfinished windowless building has a causally meaningful history.",
+        "The story answers what happened and why the stroller is there."
+      ],
+      "forbidden_shortcuts": [
+        "Do not reveal that the events were only a dream.",
+        "Do not leave the stroller's presence unexplained.",
+        "Do not use a generic haunted-building backstory without story-specific causality."
+      ],
+      "likely_failure_modes": [
+        "Atmosphere substitutes for a complete plot.",
+        "The stroller becomes a decorative opening image.",
+        "The explanation relies on familiar horror clichés."
+      ],
+      "stressed_dimensions": [
+        "originality_and_specificity",
+        "causal_coherence_and_structure",
+        "emotional_and_thematic_impact"
+      ],
+      "factual_research_allowed": false,
+      "random_seed": 19001
+    },
+    {
+      "prompt_id": "OH-V01-002",
+      "version": "1.0.0",
+      "category": "sparse_premise",
+      "prompt": "Write a short speculative story about a woman who receives a birthday card written unmistakably in her own handwriting and dated ten years in the future. Build a complete dramatic explanation for who sent it, what the message asks of her, and what choice she makes because of it.",
+      "why_it_exists": "Tests assumption-making, escalation, and whether a familiar future-message device becomes personally specific.",
+      "genres": ["speculative fiction", "psychological drama"],
+      "intended_maturity": "standard_fiction",
+      "target_word_count": {"minimum": 2500, "maximum": 5000},
+      "required_elements": [
+        "The handwriting is verified through story action rather than accepted immediately.",
+        "The ten-year date difference matters to the causal resolution.",
+        "The protagonist makes an irreversible choice."
+      ],
+      "forbidden_shortcuts": [
+        "Do not explain the card as a prank.",
+        "Do not end before the card's origin is resolved.",
+        "Do not use time travel only as exposition."
+      ],
+      "likely_failure_modes": [
+        "The future device overwhelms character stakes.",
+        "The ending introduces rules that were never prepared.",
+        "The protagonist remains passive."
+      ],
+      "stressed_dimensions": [
+        "causal_coherence_and_structure",
+        "character_depth_and_consistency",
+        "originality_and_specificity"
+      ],
+      "factual_research_allowed": false,
+      "random_seed": 19002
+    },
+    {
+      "prompt_id": "OH-V01-003",
+      "version": "1.0.0",
+      "category": "sparse_premise",
+      "prompt": "Write a short uncanny story set in a large apartment building where, every night, one occupied apartment appears on a different floor. Develop clear rules, consequences for the residents, and a complete ending that reveals why the apartment moves.",
+      "why_it_exists": "Tests world-rule discipline and whether an abstract spatial premise can sustain human stakes.",
+      "genres": ["uncanny fiction", "mystery"],
+      "intended_maturity": "standard_fiction",
+      "target_word_count": {"minimum": 2500, "maximum": 5000},
+      "required_elements": [
+        "The moving apartment follows discoverable rules.",
+        "At least two residents are changed by the phenomenon.",
+        "The cause and final consequence are resolved."
+      ],
+      "forbidden_shortcuts": [
+        "Do not treat floor-number changes as continuity mistakes.",
+        "Do not make every resident forget the apartment whenever convenient.",
+        "Do not end with the building simply remaining mysterious."
+      ],
+      "likely_failure_modes": [
+        "Spatial continuity becomes unreadable.",
+        "Rules change to force the ending.",
+        "Residents lack distinct motives."
+      ],
+      "stressed_dimensions": [
+        "continuity_and_constraint_adherence",
+        "causal_coherence_and_structure",
+        "originality_and_specificity"
+      ],
+      "factual_research_allowed": false,
+      "random_seed": 19003
+    },
+    {
+      "prompt_id": "OH-V01-004",
+      "version": "1.0.0",
+      "category": "character_dialogue",
+      "prompt": "Write a short character-driven thriller about a priest and a lifelong criminal who discover that they are secretly protecting the same person. Give them sharply distinct voices, conflicting moral reasons, shifting leverage, and a resolution in which neither can keep the relationship unchanged.",
+      "why_it_exists": "Tests dialogue distinction, subtext, moral conflict, and changing conversational power.",
+      "genres": ["crime thriller", "character drama"],
+      "intended_maturity": "standard_fiction",
+      "target_word_count": {"minimum": 2500, "maximum": 5000},
+      "required_elements": [
+        "The priest and criminal protect the person for different reasons.",
+        "Conversation changes who holds power at least twice.",
+        "The protected person has agency in the resolution."
+      ],
+      "forbidden_shortcuts": [
+        "Do not make the priest purely virtuous or the criminal purely cruel.",
+        "Do not resolve the conflict through an unrelated attacker.",
+        "Do not give both central characters interchangeable speech."
+      ],
+      "likely_failure_modes": [
+        "Dialogue becomes mutual exposition.",
+        "Moral positions are simplistic.",
+        "The protected person functions only as an object."
+      ],
+      "stressed_dimensions": [
+        "dialogue",
+        "character_depth_and_consistency",
+        "emotional_and_thematic_impact"
+      ],
+      "factual_research_allowed": false,
+      "random_seed": 19004
+    },
+    {
+      "prompt_id": "OH-V01-005",
+      "version": "1.0.0",
+      "category": "character_dialogue",
+      "prompt": "Write a short family drama in which two estranged siblings must identify their father's body, but each insists that the dead man is not him. Their disagreement must arise from different knowledge rather than simple denial, and their conversation must uncover a complete, emotionally credible truth.",
+      "why_it_exists": "Tests subtext, conflicting memory, and whether revelation grows from character rather than plot machinery.",
+      "genres": ["family drama", "mystery"],
+      "intended_maturity": "standard_fiction",
+      "target_word_count": {"minimum": 2500, "maximum": 5000},
+      "required_elements": [
+        "Each sibling has concrete evidence for rejecting the identification.",
+        "Their estrangement affects how they interpret the evidence.",
+        "The dead man's identity and the father's fate are resolved."
+      ],
+      "forbidden_shortcuts": [
+        "Do not make one sibling obviously irrational.",
+        "Do not solve the story with an administrative typo alone.",
+        "Do not withhold information a viewpoint character would naturally think about."
+      ],
+      "likely_failure_modes": [
+        "Both siblings sound alike.",
+        "The mystery solution is emotionally disconnected.",
+        "Backstory arrives in implausible speeches."
+      ],
+      "stressed_dimensions": [
+        "dialogue",
+        "character_depth_and_consistency",
+        "causal_coherence_and_structure"
+      ],
+      "factual_research_allowed": false,
+      "random_seed": 19005
+    },
+    {
+      "prompt_id": "OH-V01-006",
+      "version": "1.0.0",
+      "category": "character_dialogue",
+      "prompt": "Write a romantic dramedy about two adults who want the same relationship for incompatible reasons. Let both desires be understandable, use humor that reveals character, and end with a choice that is emotionally honest rather than conventionally romantic.",
+      "why_it_exists": "Tests romantic chemistry without flattening incompatible goals or forcing a genre-default ending.",
+      "genres": ["romantic dramedy"],
+      "intended_maturity": "standard_fiction",
+      "target_word_count": {"minimum": 2500, "maximum": 5000},
+      "required_elements": [
+        "Both characters clearly want the relationship.",
+        "Their reasons cannot both be satisfied without meaningful change.",
+        "Humor alters or exposes the emotional conflict."
+      ],
+      "forbidden_shortcuts": [
+        "Do not invent a villainous former partner.",
+        "Do not resolve incompatibility through a sudden misunderstanding.",
+        "Do not treat one person's needs as obviously illegitimate."
+      ],
+      "likely_failure_modes": [
+        "Banter lacks subtext.",
+        "Compatibility is asserted rather than dramatized.",
+        "The ending avoids the central choice."
+      ],
+      "stressed_dimensions": [
+        "dialogue",
+        "emotional_and_thematic_impact",
+        "character_depth_and_consistency"
+      ],
+      "factual_research_allowed": false,
+      "random_seed": 19006
+    },
+    {
+      "prompt_id": "OH-V01-007",
+      "version": "1.0.0",
+      "category": "structural",
+      "prompt": "Write a short unreliable-narrator mystery whose final revelation reinterprets concrete details from earlier scenes without making those scenes false or meaningless. The mystery must be solvable in retrospect and the narrator's unreliability must have a specific psychological cause.",
+      "why_it_exists": "Tests fair setup and payoff, viewpoint control, and retrospective coherence.",
+      "genres": ["mystery", "psychological fiction"],
+      "intended_maturity": "standard_fiction",
+      "target_word_count": {"minimum": 2500, "maximum": 5000},
+      "required_elements": [
+        "At least three early details acquire a new meaning in the revelation.",
+        "The narrator's account remains literally defensible.",
+        "The central mystery is completely resolved."
+      ],
+      "forbidden_shortcuts": [
+        "Do not reveal that the narrator dreamed or hallucinated the entire story.",
+        "Do not introduce the decisive evidence only in the final scene.",
+        "Do not equate unreliability with arbitrary lying to the reader."
+      ],
+      "likely_failure_modes": [
+        "The reveal invalidates prior scenes.",
+        "Clues are too vague to recognize.",
+        "The narrator's psychology is added after the fact."
+      ],
+      "stressed_dimensions": [
+        "causal_coherence_and_structure",
+        "continuity_and_constraint_adherence",
+        "originality_and_specificity"
+      ],
+      "factual_research_allowed": false,
+      "random_seed": 19007
+    },
+    {
+      "prompt_id": "OH-V01-008",
+      "version": "1.0.0",
+      "category": "structural",
+      "prompt": "Write a non-linear science-fiction story about memories being used as currency. Every time jump must be legible, the economic rule must create personal consequences, and the final sequence must connect the chronology into one complete causal arc.",
+      "why_it_exists": "Tests non-linear sequencing, speculative rules, and continuity under reordered disclosure.",
+      "genres": ["science fiction"],
+      "intended_maturity": "standard_fiction",
+      "target_word_count": {"minimum": 2500, "maximum": 5000},
+      "required_elements": [
+        "Memory transactions have a consistent cost and benefit.",
+        "The chronology can be reconstructed from textual evidence.",
+        "A personal relationship changes because of a specific traded memory."
+      ],
+      "forbidden_shortcuts": [
+        "Do not label sections only to compensate for incoherent sequencing.",
+        "Do not make memories function like ordinary money without psychological loss.",
+        "Do not reset erased memories at the ending."
+      ],
+      "likely_failure_modes": [
+        "The timeline contradicts itself.",
+        "Worldbuilding replaces dramatic action.",
+        "The final connection is merely explained."
+      ],
+      "stressed_dimensions": [
+        "causal_coherence_and_structure",
+        "continuity_and_constraint_adherence",
+        "emotional_and_thematic_impact"
+      ],
+      "factual_research_allowed": false,
+      "random_seed": 19008
+    },
+    {
+      "prompt_id": "OH-V01-009",
+      "version": "1.0.0",
+      "category": "structural",
+      "prompt": "Write a tragedy in which the protagonist succeeds at the goal they openly pursue and, through that success, destroys what actually mattered to them. The outcome must follow from understandable choices, and the story must prepare both the victory and its cost.",
+      "why_it_exists": "Tests causal tragedy, thematic irony, and endings earned through character action.",
+      "genres": ["tragedy"],
+      "intended_maturity": "standard_fiction",
+      "target_word_count": {"minimum": 2500, "maximum": 5000},
+      "required_elements": [
+        "The protagonist's stated goal is achieved.",
+        "The true value at risk is established before the climax.",
+        "The destruction follows causally from the protagonist's choices."
+      ],
+      "forbidden_shortcuts": [
+        "Do not use a random accident as the decisive cost.",
+        "Do not make the protagonist ignorant of every warning.",
+        "Do not reverse the tragic consequence after the climax."
+      ],
+      "likely_failure_modes": [
+        "The tragedy feels punitive rather than inevitable.",
+        "The true value is disclosed too late.",
+        "Success and loss are only thematically related."
+      ],
+      "stressed_dimensions": [
+        "causal_coherence_and_structure",
+        "emotional_and_thematic_impact",
+        "character_depth_and_consistency"
+      ],
+      "factual_research_allowed": false,
+      "random_seed": 19009
+    },
+    {
+      "prompt_id": "OH-V01-010",
+      "version": "1.0.0",
+      "category": "constraint",
+      "prompt": "Write a suspense story that takes place in one location over one night. It must contain no weapons and no supernatural explanation. Build escalating danger from ordinary objects, human decisions, and limited information, then resolve the threat without breaking those constraints.",
+      "why_it_exists": "Tests strict spatial, temporal, genre, and prop constraints under escalating tension.",
+      "genres": ["suspense"],
+      "intended_maturity": "standard_fiction",
+      "target_word_count": {"minimum": 2500, "maximum": 5000},
+      "required_elements": [
+        "Every scene remains in the same location.",
+        "All events occur during one continuous night.",
+        "The explanation is entirely non-supernatural."
+      ],
+      "forbidden_shortcuts": [
+        "Do not introduce any object used or intended as a weapon.",
+        "Do not leave the location in flashbacks or epilogues.",
+        "Do not imply a supernatural cause after offering a rational one."
+      ],
+      "likely_failure_modes": [
+        "A prohibited weapon appears casually.",
+        "Tension relies on impossible information.",
+        "The resolution requires leaving the location."
+      ],
+      "stressed_dimensions": [
+        "continuity_and_constraint_adherence",
+        "pacing_and_tension",
+        "causal_coherence_and_structure"
+      ],
+      "factual_research_allowed": false,
+      "random_seed": 19010
+    },
+    {
+      "prompt_id": "OH-V01-011",
+      "version": "1.0.0",
+      "category": "constraint",
+      "prompt": "Write a quiet literary story with no villain, no death, and no twist ending. Create meaningful change through observation, relationship, and choice rather than danger, and conclude with an earned shift that does not depend on a hidden revelation.",
+      "why_it_exists": "Tests whether the system can sustain specificity and movement without antagonistic or twist-based shortcuts.",
+      "genres": ["literary fiction"],
+      "intended_maturity": "standard_fiction",
+      "target_word_count": {"minimum": 2500, "maximum": 5000},
+      "required_elements": [
+        "Conflict arises without a villain.",
+        "No character or animal dies.",
+        "The ending completes a visible internal or relational change."
+      ],
+      "forbidden_shortcuts": [
+        "Do not introduce a secret that redefines the preceding story.",
+        "Do not substitute terminal illness for death.",
+        "Do not create false urgency through crime or physical danger."
+      ],
+      "likely_failure_modes": [
+        "Nothing consequential changes.",
+        "A character becomes an implicit villain.",
+        "The ending behaves like a muted twist."
+      ],
+      "stressed_dimensions": [
+        "voice_and_prose_quality",
+        "character_depth_and_consistency",
+        "emotional_and_thematic_impact"
+      ],
+      "factual_research_allowed": false,
+      "random_seed": 19011
+    },
+    {
+      "prompt_id": "OH-V01-012",
+      "version": "1.0.0",
+      "category": "constraint",
+      "prompt": "Write a dark comedy with exactly five significant characters. Each character must be concealing a different version of the same past event, and every version must contain one true detail that the others omit. Bring all five accounts into one coherent resolution without introducing a sixth significant character.",
+      "why_it_exists": "Tests ensemble voice, multi-version continuity, constraint tracking, and comic convergence.",
+      "genres": ["dark comedy", "ensemble mystery"],
+      "intended_maturity": "standard_fiction",
+      "target_word_count": {"minimum": 2500, "maximum": 5000},
+      "required_elements": [
+        "There are exactly five significant characters.",
+        "Each character's account differs and contributes one unique true detail.",
+        "The final account reconciles all five versions."
+      ],
+      "forbidden_shortcuts": [
+        "Do not add a sixth significant witness or investigator.",
+        "Do not make any account entirely fabricated.",
+        "Do not resolve contradictions by declaring the event unknowable."
+      ],
+      "likely_failure_modes": [
+        "Character voices converge.",
+        "Versions contradict rather than complement one another.",
+        "One or more characters become narratively insignificant."
+      ],
+      "stressed_dimensions": [
+        "dialogue",
+        "continuity_and_constraint_adherence",
+        "originality_and_specificity"
+      ],
+      "factual_research_allowed": false,
+      "random_seed": 19012
+    }
+  ]
+}
