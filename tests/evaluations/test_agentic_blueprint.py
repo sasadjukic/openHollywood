@@ -1,0 +1,226 @@
+"""Real graph-backed benchmark Blueprint preparation and persistence tests."""
+
+from __future__ import annotations
+
+import json
+from datetime import UTC, datetime
+from decimal import Decimal
+from pathlib import Path
+from typing import Any
+from uuid import UUID
+
+import pytest
+from open_hollywood_api.persistence.database import create_session_factory
+from open_hollywood_api.persistence.models import (
+    AgentInvocation,
+    Artifact,
+    InvocationStatus,
+    RunStatus,
+    WorkflowRun,
+)
+from open_hollywood_api.services.agentic_benchmark import (
+    AgenticBenchmarkBlueprintService,
+)
+from open_hollywood_api.services.model_profiles import (
+    BUILTIN_PROFILE_IDS,
+    ModelProfileStore,
+)
+from open_hollywood_engine.artifacts import (
+    ArtifactKind,
+    Critique,
+    CritiqueVerdict,
+    MaturityMode,
+    Premise,
+    RubricScore,
+)
+from open_hollywood_engine.evaluations import (
+    BenchmarkCase,
+    BenchmarkProfileSnapshot,
+    BenchmarkSystem,
+    load_benchmark_corpus,
+)
+from open_hollywood_engine.models import (
+    ModelCapabilities,
+    ModelDeployment,
+    ModelDescriptor,
+    ModelProfileMode,
+    ModelRequest,
+    ModelResponse,
+    ModelSelection,
+    ModelTiming,
+    ModelUsage,
+)
+from open_hollywood_engine.workflows import RunPauseReason
+from sqlalchemy import Engine, func, select
+
+from tests.artifacts.test_schemas import _blueprint
+
+WORKSPACE_ROOT = Path(__file__).resolve().parents[2]
+CORPUS_PATH = WORKSPACE_ROOT / "benchmarks" / "v0.1" / "corpus.json"
+CAMPAIGN_ID = UUID("bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb")
+
+
+class BlueprintFixtureGateway:
+    """Return coherent structured outputs for every registered Blueprint role."""
+
+    provider = "ollama"
+
+    def __init__(self, prompt_text: str, prompt: Any) -> None:
+        source = _blueprint()
+        self.brief = source.creative_brief.model_copy(
+            update={
+                "original_premise": prompt_text,
+                "genres": tuple(prompt.genres),
+                "maturity": MaturityMode(prompt.intended_maturity.value),
+                "target_word_count": 3_000,
+                "required_elements": tuple(prompt.required_elements),
+                "forbidden_elements": tuple(prompt.forbidden_shortcuts),
+            }
+        )
+        self.premise = Premise(
+            logline=source.logline,
+            thematic_thesis=source.thematic_thesis,
+            central_conflict=source.central_conflict,
+            story_arc=source.story_arc,
+            proposed_ending=source.proposed_ending,
+            voice_and_style_guide=source.voice_and_style_guide,
+            potential_risks=source.potential_risks,
+            unresolved_decisions=source.unresolved_decisions,
+        )
+        self.blueprint = source.model_copy(update={"creative_brief": self.brief})
+        self.requests: list[ModelRequest] = []
+
+    async def generate(self, request: ModelRequest) -> ModelResponse:
+        self.requests.append(request)
+        role = request.invocation.specialist_role
+        value: Any
+        if role == "brief_architect":
+            value = self.brief
+        elif role == "premise_architect":
+            value = self.premise
+        elif role == "world_builder":
+            value = {
+                "locations": [item.model_dump(mode="json") for item in self.blueprint.locations],
+                "world_rules": [
+                    item.model_dump(mode="json") for item in self.blueprint.world_rules
+                ],
+            }
+        elif role == "character_architect":
+            value = {
+                "characters": [item.model_dump(mode="json") for item in self.blueprint.characters],
+                "relationships": [
+                    item.model_dump(mode="json") for item in self.blueprint.relationships
+                ],
+            }
+        elif role == "blueprint_integrator":
+            value = self.blueprint
+        elif role == "blueprint_critic":
+            payload = json.loads(request.messages[-1].content)
+            blueprint_input = next(
+                item
+                for item in payload["input_artifacts"]
+                if item["artifact_kind"] == ArtifactKind.STORY_BLUEPRINT.value
+            )
+            value = Critique(
+                target_artifact_kind=ArtifactKind.STORY_BLUEPRINT,
+                target_artifact_key=blueprint_input["artifact_key"],
+                target_artifact_version_id=blueprint_input["artifact_version_id"],
+                rubric_name="story-blueprint",
+                rubric_version="1",
+                summary="The blueprint is complete and causally specific.",
+                strengths=("The ending pays off the opening image.",),
+                scores=(
+                    RubricScore(
+                        dimension="causal_coherence",
+                        score=4,
+                        rationale="Every scene advances the declared arc.",
+                    ),
+                ),
+                overall_score=4.0,
+                verdict=CritiqueVerdict.PASS,
+            )
+        else:
+            raise AssertionError(f"unexpected specialist role {role}")
+        content = (
+            value.model_dump_json() if hasattr(value, "model_dump_json") else json.dumps(value)
+        )
+        return ModelResponse(
+            provider=self.provider,
+            model_identifier=request.model_identifier,
+            deployment=ModelDeployment.LOCAL,
+            content=content,
+            thinking=None,
+            finish_reason="stop",
+            created_at=datetime.now(UTC),
+            usage=ModelUsage(input_tokens=300, output_tokens=500),
+            timing=ModelTiming(total_ms=100),
+            estimated_cost_usd=Decimal("0"),
+        )
+
+    async def list_models(self) -> tuple[ModelDescriptor, ...]:
+        return ()
+
+    async def capabilities(self, _model_identifier: str) -> ModelCapabilities:
+        raise NotImplementedError
+
+    async def close(self) -> None:
+        return None
+
+
+@pytest.mark.anyio
+async def test_agentic_case_runs_real_blueprint_graph_to_durable_approval(
+    migrated_database_path: Path,
+    database_engine: Engine,
+) -> None:
+    corpus = load_benchmark_corpus(CORPUS_PATH)
+    prompt = corpus.prompts[0]
+    selection = ModelSelection(
+        provider="ollama",
+        model_identifier="local-fixture",
+        deployment=ModelDeployment.LOCAL,
+    )
+    profile_id = BUILTIN_PROFILE_IDS[ModelProfileMode.LOCAL]
+    profile = ModelProfileStore(create_session_factory(database_engine)).configure_profile(
+        profile_id,
+        local_model=selection,
+        cloud_model=None,
+    )
+    case = BenchmarkCase(
+        case_id=UUID("cccccccc-cccc-4ccc-8ccc-cccccccccccc"),
+        prompt_id=prompt.prompt_id,
+        prompt_version=prompt.version,
+        system=BenchmarkSystem.AGENTIC,
+        run_seed=prompt.random_seed,
+        profile=BenchmarkProfileSnapshot.from_configuration(
+            profile_id=profile.id,
+            configuration=profile.configuration,
+        ),
+    )
+    gateway = BlueprintFixtureGateway(prompt.prompt, prompt)
+    service = AgenticBenchmarkBlueprintService(
+        campaign_id=CAMPAIGN_ID,
+        database_path=migrated_database_path,
+        session_factory=create_session_factory(database_engine),
+        gateway=gateway,
+    )
+
+    prepared = await service.prepare(case, prompt)
+    replayed = await service.prepare(case, prompt)
+
+    assert prepared == replayed
+    assert prepared.awaiting_approval is True
+    assert prepared.interrupt_id is not None
+    assert len(gateway.requests) == 6
+    assert all(request.response_schema is not None for request in gateway.requests)
+    with create_session_factory(database_engine)() as session:
+        run = session.get(WorkflowRun, prepared.workflow_run_id)
+        assert run is not None
+        assert run.status is RunStatus.PAUSED
+        assert run.pause_reason is RunPauseReason.HUMAN_APPROVAL
+        assert session.scalar(select(func.count()).select_from(AgentInvocation)) == 6
+        assert session.scalar(select(func.count()).select_from(Artifact)) == 10
+        invocations = session.scalars(
+            select(AgentInvocation).order_by(AgentInvocation.started_at)
+        ).all()
+        assert all(invocation.status is InvocationStatus.SUCCEEDED for invocation in invocations)
+        assert all(invocation.input_versions for invocation in invocations)

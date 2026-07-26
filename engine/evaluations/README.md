@@ -26,6 +26,15 @@ complete story version in SQLite. Successful persisted cases replay without a
 second model call. The harness can select only the baseline target while
 retaining a partial campaign report for later agentic execution.
 
+Agentic preparation now uses the actual SQLite-checkpointed Story Blueprint
+graph. The benchmark snapshot—not the mutable current preset—selects every
+specialist model. Calls persist the profile digest, prompt-template version,
+seed, settings, exact input artifact versions, usage, latency, cost, and schema
+status. Structured outputs are enforced for compatible local deployments and
+validated at the application boundary for every deployment. The graph stops at
+the required human Blueprint approval and replays that paused state without
+duplicating calls.
+
 Long campaigns accept a report-checkpoint boundary. The operator implementation
 atomically replaces a validated JSON report after every new terminal case, so
 process failure does not discard hours of completed inference. Failed results
@@ -35,6 +44,6 @@ The initial 12-prompt corpus is stored at
 `benchmarks/v0.1/corpus.json`. The corpus must never be edited silently; change
 a prompt version or create a new corpus version.
 
-The current Step 19 implementation is still in progress: the full-story
-graph-backed agentic executor, blind human reviews, and formal paid benchmark
-campaign have not run yet.
+The current Step 19 implementation is still in progress: the persisted
+scene-production runtime and complete-story agentic executor, blind human
+reviews, and formal paid benchmark campaign have not run yet.

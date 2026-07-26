@@ -111,8 +111,11 @@ snapshots into 48-case campaign plans, resumes failure-isolated case execution,
   and cost criteria. The direct baseline now runs through a bounded
   provider-neutral call with idempotent SQLite prompt, invocation, workflow, and
   story lineage; long campaigns atomically checkpoint after every case. The
-  graph-backed agentic executor and formal Local/Cloud/Hybrid campaign remain
-  pending and Step 19 is not yet marked complete.
+  agentic path now runs profile-routed, schema-validated specialists through
+  the real durable Story Blueprint graph and stops at its mandatory human
+  approval interrupt without duplicate calls on replay. Persisted scene
+  production, complete agentic stories, and the formal Local/Cloud/Hybrid
+  campaign remain pending, so Step 19 is not yet marked complete.
 
 The v0.1 target is deliberately narrow: short prose fiction, local-first
 storage, optional local/cloud/hybrid inference, and one mandatory story

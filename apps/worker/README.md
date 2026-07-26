@@ -20,3 +20,10 @@ shared `WorkflowEventStore`. Event payloads contain concise status and artifact
 references, never secrets, raw prompts, or private chain-of-thought. The API
 replays the same durable rows rather than maintaining a separate in-memory
 notification history.
+
+Step 19 now supplies the first real model-backed Blueprint executor for frozen
+benchmark cases. It routes registered roles through the exact campaign profile,
+persists every invocation and immutable typed output, and uses the existing
+Blueprint service to stop at human approval. It is intentionally not a
+standalone claiming loop and does not yet provide the persisted scene-production
+runtime required for a complete agentic story.
