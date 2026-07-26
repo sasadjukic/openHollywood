@@ -473,6 +473,46 @@ class SceneProductionExecutor(Protocol):
         ...
 
 
+class SceneProductionWorkflowObserver(Protocol):
+    """Persistence-neutral lifecycle boundary for the production graph."""
+
+    async def node_started(
+        self,
+        workflow_run_id: UUID,
+        node: ProductionNode,
+    ) -> None:
+        """Record that one production node attempt began."""
+        ...
+
+    async def node_completed(
+        self,
+        workflow_run_id: UUID,
+        node: ProductionNode,
+        artifacts: tuple[ArtifactReference, ...],
+    ) -> None:
+        """Record a completed node and its exact immutable outputs."""
+        ...
+
+
+class NullSceneProductionWorkflowObserver:
+    """No-op observer for engine-only use and tests."""
+
+    async def node_started(
+        self,
+        workflow_run_id: UUID,
+        node: ProductionNode,
+    ) -> None:
+        del workflow_run_id, node
+
+    async def node_completed(
+        self,
+        workflow_run_id: UUID,
+        node: ProductionNode,
+        artifacts: tuple[ArtifactReference, ...],
+    ) -> None:
+        del workflow_run_id, node, artifacts
+
+
 class SceneProductionError(RuntimeError):
     """Base class for safe production-loop failures."""
 
