@@ -308,6 +308,12 @@ class BlueprintWorkflowService:
         graph_input = None if existing is not None else initial_blueprint_state(workflow_run_id)
         return await self._invoke(workflow_run_id, graph_input, config=config)
 
+    async def inspect(self, workflow_run_id: UUID) -> BlueprintWorkflowExecution:
+        """Return the latest durable graph state without advancing execution."""
+        self._require_open()
+        self._run_configuration(workflow_run_id)
+        return await self._execution_from_current_state(workflow_run_id)
+
     async def resume(
         self,
         workflow_run_id: UUID,

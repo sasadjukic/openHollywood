@@ -135,19 +135,28 @@ PDF/DOCX export.** A provider-neutral, invariant-checked manuscript contract
 assembles only complete latest versions of approved Scene Draft artifacts in
 unique, contiguous three-to-eight-scene order. The canonical Markdown renderer normalizes line endings and escapes structural markup. A separate typed Fountain screenplay contract renders title pages, forced headings and action, dialogue structures, transitions, sections, synopses, centered text, and page breaks without guessing script structure from prose. Searchable US-Letter PDF and editable US-Letter DOCX exporters use fixed metadata and canonicalized containers so identical inputs produce identical bytes. FastAPI exposes an export manifest, exact immutable source-version lineage, SHA-256 ETags, sanitized downloads, and fail-closed `409` behavior; the generated TypeScript SDK and workspace enable Markdown, PDF, and DOCX controls only for exportable projects. Evidence: `engine/open_hollywood_engine/rendering/`, `apps/api/open_hollywood_api/services/exports.py`, `apps/api/open_hollywood_api/routes/exports.py`, generated contracts, workspace export controls, and rendering/API/React tests. All four representative PDF pages and all four representative DOCX pages passed visual inspection. Ruff, mypy, 140 pytest tests, Prettier, ESLint, TypeScript, 5 Vitest tests, and the production build pass.
 
-19. [~] **IN PROGRESS 2026-07-25 — Build the evaluation harness** and run the benchmark corpus across local, cloud, and hybrid profiles. The provider-neutral harness core now strictly validates the frozen 12-prompt v0.1 corpus and pins its canonical digest, exact graph versions, direct-model baseline, complete secret-free Local/Cloud/Hybrid profile snapshots, and prompt seeds into a deterministic 48-case campaign plan. Sequential case execution is failure-isolated and resumable from terminal results; successful outputs must carry exact workflow-run, model-invocation, and immutable artifact-version lineage. The accepted weighted rubric and hard gates are executable contracts. Deterministic A/B packaging separates provenance-free reviewer documents from the private answer key, and reporting maps blind human preferences back to systems while calculating the accepted completion, continuity, quality, preference, and cost thresholds. The operator command validates corpus integrity
+19. [~] **IN PROGRESS 2026-07-26 — Build the evaluation harness** and run the benchmark corpus across local, cloud, and hybrid profiles. The provider-neutral harness core now strictly validates the frozen 12-prompt v0.1 corpus and pins its canonical digest, exact graph versions, direct-model baseline, complete secret-free Local/Cloud/Hybrid profile snapshots, and prompt seeds into a deterministic 48-case campaign plan. Sequential case execution is failure-isolated and resumable from terminal results; successful outputs must carry exact workflow-run, model-invocation, and immutable artifact-version lineage. The accepted weighted rubric and hard gates are executable contracts. Deterministic A/B packaging separates provenance-free reviewer documents from the private answer key, and reporting maps blind human preferences back to systems while calculating the accepted completion, continuity, quality, preference, and cost thresholds. The operator command validates corpus integrity
 and creates plans from fully configured persisted presets. The application
 layer now executes the direct single-model baseline through a bounded
 provider-neutral call and persists its frozen prompt, invocation, workflow, and
 immutable story lineage idempotently. Campaign reports checkpoint atomically
 after each case, failed cases retry only when explicitly requested, and
 operator commands create separated public/private review packets and summaries
-from schema-validated evidence. Remaining before completion: implement the real
-graph-backed agentic case path, run the formal corpus across all three profiles
-and the single-model baseline within an authorized budget, collect blind human
-reviews, and preserve the resulting campaign evidence. Evidence so far:
+from schema-validated evidence. Agentic cases now enter the real durable Story
+Blueprint graph: every registered specialist resolves its exact frozen profile
+selection, receives deterministic immutable inputs and benchmark constraints,
+uses schema enforcement when the deployment supports it, records a budgeted
+invocation plus output lineage, validates cross-artifact invariants, and pauses
+at the mandatory human approval interrupt. Replaying a paused case performs no
+duplicate model calls. Remaining before completion: implement the persisted
+scene-production runtime and complete-story agentic executor after Blueprint
+approval, run the formal corpus across all three profiles and the single-model
+baseline within an authorized budget, collect blind human reviews, and preserve
+the resulting campaign evidence. Evidence so far:
 `benchmarks/v0.1/corpus.json`,
 `engine/open_hollywood_engine/evaluations/`,
+`apps/api/open_hollywood_api/services/agentic_benchmark.py`,
+`apps/api/open_hollywood_api/services/blueprint_model_executor.py`,
 `apps/api/open_hollywood_api/services/evaluation_execution.py`,
 `scripts/evaluation_harness.py`, and `tests/evaluations/`.
 
