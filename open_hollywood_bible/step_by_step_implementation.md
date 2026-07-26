@@ -148,16 +148,29 @@ selection, receives deterministic immutable inputs and benchmark constraints,
 uses schema enforcement when the deployment supports it, records a budgeted
 invocation plus output lineage, validates cross-artifact invariants, and pauses
 at the mandatory human approval interrupt. Replaying a paused case performs no
-duplicate model calls. Remaining before completion: implement the persisted
-scene-production runtime and complete-story agentic executor after Blueprint
-approval, run the formal corpus across all three profiles and the single-model
-baseline within an authorized budget, collect blind human reviews, and preserve
-the resulting campaign evidence. Evidence so far:
+duplicate model calls. The approved handoff now materializes exact Scene
+Plan versions and an initial canonical Story Bible, creates a child production
+run, and invokes the real SQLite-checkpointed writer, critic, continuity, and
+bible-maintainer graph. Production nodes reserve durable graph/call/token/cost
+budgets, profile-routed structured calls persist exact input lineage, accepted
+scene deltas advance the Story Bible through the deterministic reducer, and
+successful task fingerprints replay without duplicate calls. A final
+deterministic assembly persists the complete benchmark story and returns its
+Blueprint, accepted-scene, final-bible, manuscript, invocation, usage, latency,
+cost, and hard-gate evidence as `BenchmarkOutput`. The mandatory Blueprint
+approval remains fail-closed, and production pauses before a call that would
+exceed its reserved budget. Remaining before completion: wire and validate
+operator execution for every configured provider deployment, run the formal
+corpus across all three profiles and the single-model baseline within an
+authorized budget, collect blind human reviews, and preserve the resulting
+campaign evidence. Evidence so far:
 `benchmarks/v0.1/corpus.json`,
 `engine/open_hollywood_engine/evaluations/`,
 `apps/api/open_hollywood_api/services/agentic_benchmark.py`,
 `apps/api/open_hollywood_api/services/blueprint_model_executor.py`,
 `apps/api/open_hollywood_api/services/evaluation_execution.py`,
+`apps/api/open_hollywood_api/services/production_model_executor.py`,
+`apps/api/open_hollywood_api/services/production_workflow.py`,
 `scripts/evaluation_harness.py`, and `tests/evaluations/`.
 
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.

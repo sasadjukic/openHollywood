@@ -274,7 +274,7 @@ class DirectBaselineBenchmarkExecutor:
         response: ModelResponse,
     ) -> BenchmarkOutput:
         word_count = len(content.split())
-        hard_gates = _automatic_hard_gates(
+        hard_gates = automatic_hard_gates(
             content=content,
             word_count=word_count,
             prompt=prompt,
@@ -532,7 +532,7 @@ def _parse_story(response_content: str, prompt: BenchmarkPrompt) -> tuple[str, s
     return title[:200], content
 
 
-def _automatic_hard_gates(
+def automatic_hard_gates(
     *,
     content: str,
     word_count: int,

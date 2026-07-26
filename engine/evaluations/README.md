@@ -35,6 +35,17 @@ validated at the application boundary for every deployment. The graph stops at
 the required human Blueprint approval and replays that paused state without
 duplicating calls.
 
+After approval, the application layer deterministically materializes the
+embedded Scene Plans and initial canonical Story Bible as immutable artifacts.
+The real SQLite-checkpointed production graph then routes writer, critic,
+continuity, and Story Bible maintenance through the frozen profile. Every call
+is reserved against aggregate and per-call budgets, records exact inputs and
+configuration, and replays successful task fingerprints without another
+provider request. Story Bible deltas are reduced locally into canonical
+successors. Accepted Scene Drafts are assembled without another model call into
+one persisted `BenchmarkOutput` carrying the Blueprint, scene, final-bible,
+manuscript, invocation, token, latency, cost, and hard-gate evidence.
+
 Long campaigns accept a report-checkpoint boundary. The operator implementation
 atomically replaces a validated JSON report after every new terminal case, so
 process failure does not discard hours of completed inference. Failed results
@@ -44,6 +55,6 @@ The initial 12-prompt corpus is stored at
 `benchmarks/v0.1/corpus.json`. The corpus must never be edited silently; change
 a prompt version or create a new corpus version.
 
-The current Step 19 implementation is still in progress: the persisted
-scene-production runtime and complete-story agentic executor, blind human
-reviews, and formal paid benchmark campaign have not run yet.
+The current Step 19 implementation is still in progress: operator wiring for
+all configured provider deployments, blind human reviews, and the formal
+budget-authorized benchmark campaign have not run yet.

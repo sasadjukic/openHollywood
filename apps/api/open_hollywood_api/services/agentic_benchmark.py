@@ -2,16 +2,20 @@
 
 from __future__ import annotations
 
+import hashlib
 from dataclasses import dataclass
 from decimal import Decimal
 from pathlib import Path
 from uuid import UUID, uuid5
 
+from open_hollywood_engine.artifacts import ArtifactKind
 from open_hollywood_engine.evaluations import (
     BenchmarkCase,
     BenchmarkCaseExecutionError,
+    BenchmarkOutput,
     BenchmarkPrompt,
     BenchmarkSystem,
+    HardGate,
     canonical_sha256,
 )
 from open_hollywood_engine.models import ModelGateway
@@ -21,10 +25,13 @@ from open_hollywood_engine.workflows import (
     STORY_BLUEPRINT_WORKFLOW_NAME,
     ArtifactReference,
     RunBudget,
+    SceneProductionResult,
 )
+from sqlalchemy import select
 from sqlalchemy.orm import Session, sessionmaker
 
 from open_hollywood_api.persistence.models import (
+    AgentInvocation,
     Artifact,
     ArtifactStatus,
     ArtifactVersion,
@@ -36,6 +43,13 @@ from open_hollywood_api.services.blueprint_model_executor import (
     BenchmarkBlueprintNodeExecutor,
 )
 from open_hollywood_api.services.blueprint_workflow import BlueprintWorkflowService
+from open_hollywood_api.services.evaluation_execution import automatic_hard_gates
+from open_hollywood_api.services.production_model_executor import (
+    BenchmarkProductionExecutor,
+)
+from open_hollywood_api.services.production_workflow import (
+    BenchmarkSceneProductionService,
+)
 
 AGENTIC_BENCHMARK_BLUEPRINT_BUDGET = RunBudget(
     max_graph_steps=DEFAULT_MAX_GRAPH_STEPS,
@@ -217,6 +231,236 @@ class AgenticBenchmarkBlueprintService:
             return run.status
 
 
+class AgenticBenchmarkCaseExecutor:
+    """Run one approved agentic case through production and document assembly."""
+
+    def __init__(
+        self,
+        *,
+        campaign_id: UUID,
+        database_path: Path,
+        session_factory: sessionmaker[Session],
+        gateway: ModelGateway,
+    ) -> None:
+        self._session_factory = session_factory
+        self._gateway = gateway
+        self._blueprints = AgenticBenchmarkBlueprintService(
+            campaign_id=campaign_id,
+            database_path=database_path,
+            session_factory=session_factory,
+            gateway=gateway,
+        )
+        self._database_path = database_path
+        self._campaign_id = campaign_id
+
+    async def execute(
+        self,
+        case: BenchmarkCase,
+        prompt: BenchmarkPrompt,
+    ) -> BenchmarkOutput:
+        """Resume an approved case and return its immutable complete story."""
+        prepared = await self._blueprints.prepare(case, prompt)
+        if prepared.awaiting_approval:
+            raise BenchmarkCaseExecutionError(
+                "blueprint_approval_required",
+                "The agentic case is paused at the mandatory Story Blueprint approval.",
+            )
+        blueprint = next(
+            (
+                reference
+                for reference in prepared.artifacts
+                if reference.kind is ArtifactKind.STORY_BLUEPRINT
+            ),
+            None,
+        )
+        if blueprint is None:
+            raise BenchmarkCaseExecutionError(
+                "approved_blueprint_missing",
+                "The approved agentic case has no Story Blueprint artifact.",
+            )
+        production_executor = BenchmarkProductionExecutor(
+            session_factory=self._session_factory,
+            gateway=self._gateway,
+        )
+        try:
+            async with BenchmarkSceneProductionService(
+                database_path=self._database_path,
+                session_factory=self._session_factory,
+                executor=production_executor,
+            ) as production:
+                execution = await production.execute(
+                    prepared.workflow_run_id,
+                    blueprint,
+                )
+        except BenchmarkCaseExecutionError:
+            raise
+        except Exception as error:
+            raise BenchmarkCaseExecutionError(
+                "agentic_production_failed",
+                "The persisted agentic scene-production run failed.",
+            ) from error
+        if execution.result is None or execution.status is not RunStatus.SUCCEEDED:
+            raise BenchmarkCaseExecutionError(
+                "agentic_production_paused",
+                "The agentic scene-production run is paused and has no complete output.",
+            )
+        return self._assemble_output(
+            case,
+            prompt,
+            prepared.workflow_run_id,
+            execution.result,
+        )
+
+    def _assemble_output(
+        self,
+        case: BenchmarkCase,
+        prompt: BenchmarkPrompt,
+        blueprint_run_id: UUID,
+        production_result: SceneProductionResult,
+    ) -> BenchmarkOutput:
+        with self._session_factory.begin() as session:
+            production_run = session.get(
+                WorkflowRun,
+                production_result.workflow_run_id,
+            )
+            if (
+                production_run is None
+                or production_run.parent_workflow_run_id != blueprint_run_id
+                or production_run.status is not RunStatus.SUCCEEDED
+            ):
+                raise BenchmarkCaseExecutionError(
+                    "agentic_lineage_incomplete",
+                    "The completed production run has invalid Blueprint lineage.",
+                )
+            scene_versions = tuple(
+                _load_accepted_scene(
+                    session,
+                    production_run.project_id,
+                    unit.artifact,
+                )
+                for unit in production_result.accepted_units
+            )
+            content = "\n\n".join(
+                str(version.content["prose"]).strip() for version in scene_versions
+            )
+            title = f"Benchmark Story {prompt.prompt_id}"[:200]
+            word_count = len(content.split())
+            gates = automatic_hard_gates(
+                content=content,
+                word_count=word_count,
+                prompt=prompt,
+                finish_reason="stop",
+            )
+            gates[HardGate.CENTRAL_FACTS_CONSISTENT] = True
+            content_sha256 = hashlib.sha256(content.encode("utf-8")).hexdigest()
+            story_artifact = session.scalar(
+                select(Artifact).where(
+                    Artifact.project_id == production_run.project_id,
+                    Artifact.artifact_key == "benchmark-story",
+                )
+            )
+            if story_artifact is None:
+                story_artifact = Artifact(
+                    id=uuid5(case.case_id, "agentic-benchmark-story-artifact"),
+                    project_id=production_run.project_id,
+                    artifact_key="benchmark-story",
+                    artifact_type="benchmark_story",
+                    title=title,
+                    status=ArtifactStatus.DRAFT,
+                )
+                session.add(story_artifact)
+            artifact_content = {
+                "schema_version": "1",
+                "benchmark_campaign_id": str(self._campaign_id),
+                "benchmark_case_id": str(case.case_id),
+                "prompt_id": prompt.prompt_id,
+                "prompt_version": prompt.version,
+                "title": title,
+                "content": content,
+                "content_sha256": content_sha256,
+                "word_count": word_count,
+                "hard_gates": {gate.value: value for gate, value in gates.items()},
+                "accepted_scene_version_ids": [str(version.id) for version in scene_versions],
+                "final_story_bible_version_id": str(production_result.final_story_bible.version_id),
+            }
+            story_version_id = uuid5(
+                case.case_id,
+                f"agentic-benchmark-story:{content_sha256}",
+            )
+            story_version = session.get(ArtifactVersion, story_version_id)
+            if story_version is None:
+                story_version = ArtifactVersion(
+                    id=story_version_id,
+                    artifact=story_artifact,
+                    version_number=len(story_artifact.versions) + 1,
+                    schema_version="benchmark-story-1",
+                    content=artifact_content,
+                    content_sha256=canonical_sha256(artifact_content),
+                    change_summary=("Deterministically assembled from accepted scene versions."),
+                )
+                session.add(story_version)
+                session.flush()
+            elif (
+                story_version.artifact_id != story_artifact.id
+                or story_version.content != artifact_content
+            ):
+                raise BenchmarkCaseExecutionError(
+                    "agentic_lineage_conflict",
+                    "Persisted agentic story assembly conflicts with the accepted scenes.",
+                )
+            blueprint_version_id = _approved_blueprint_version_id(
+                session,
+                blueprint_run_id,
+            )
+            invocation_rows = tuple(
+                session.scalars(
+                    select(AgentInvocation)
+                    .where(
+                        AgentInvocation.workflow_run_id.in_((blueprint_run_id, production_run.id))
+                    )
+                    .order_by(
+                        AgentInvocation.started_at,
+                        AgentInvocation.id,
+                    )
+                )
+            )
+            if not invocation_rows:
+                raise BenchmarkCaseExecutionError(
+                    "agentic_lineage_incomplete",
+                    "The assembled story has no model invocation lineage.",
+                )
+            artifact_version_ids = tuple(
+                dict.fromkeys(
+                    (
+                        blueprint_version_id,
+                        *(version.id for version in scene_versions),
+                        production_result.final_story_bible.version_id,
+                        story_version.id,
+                    )
+                )
+            )
+            return BenchmarkOutput(
+                title=title,
+                content=content,
+                content_sha256=content_sha256,
+                word_count=word_count,
+                workflow_run_id=production_run.id,
+                artifact_version_ids=artifact_version_ids,
+                invocation_ids=tuple(row.id for row in invocation_rows),
+                input_tokens=sum(row.input_tokens for row in invocation_rows),
+                output_tokens=sum(row.output_tokens for row in invocation_rows),
+                latency_ms=sum(row.latency_ms or 0 for row in invocation_rows),
+                estimated_cost_usd=format(
+                    sum(
+                        (row.estimated_cost_usd for row in invocation_rows),
+                        start=Decimal("0"),
+                    ),
+                    "f",
+                ),
+                hard_gates=gates,
+            )
+
+
 def _require_matching_project(
     project: Project,
     campaign_id: UUID,
@@ -232,3 +476,47 @@ def _require_matching_project(
             "benchmark_lineage_conflict",
             "Persisted benchmark project does not match the campaign case.",
         )
+
+
+def _load_accepted_scene(
+    session: Session,
+    project_id: UUID,
+    reference: ArtifactReference,
+) -> ArtifactVersion:
+    version = session.get(ArtifactVersion, reference.version_id)
+    if (
+        version is None
+        or version.artifact.project_id != project_id
+        or version.artifact.artifact_type != ArtifactKind.SCENE_DRAFT.value
+        or version.artifact.artifact_key != reference.artifact_key
+        or version.schema_version != reference.schema_version
+        or version.artifact.status is not ArtifactStatus.APPROVED
+    ):
+        raise BenchmarkCaseExecutionError(
+            "agentic_lineage_incomplete",
+            "An accepted scene has invalid immutable artifact lineage.",
+        )
+    return version
+
+
+def _approved_blueprint_version_id(
+    session: Session,
+    blueprint_run_id: UUID,
+) -> UUID:
+    version = session.scalar(
+        select(ArtifactVersion)
+        .join(ArtifactVersion.created_by_invocation)
+        .join(ArtifactVersion.artifact)
+        .where(
+            AgentInvocation.workflow_run_id == blueprint_run_id,
+            Artifact.artifact_type == ArtifactKind.STORY_BLUEPRINT.value,
+            Artifact.status == ArtifactStatus.APPROVED,
+        )
+        .order_by(ArtifactVersion.version_number.desc())
+    )
+    if version is None:
+        raise BenchmarkCaseExecutionError(
+            "agentic_lineage_incomplete",
+            "The approved Blueprint version is missing from story lineage.",
+        )
+    return version.id

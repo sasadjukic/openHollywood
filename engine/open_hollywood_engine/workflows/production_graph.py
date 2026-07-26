@@ -39,6 +39,7 @@ from open_hollywood_engine.workflows.production_contracts import (
     ContinuityCheckTask,
     DialogueIntegrationTask,
     DialoguePassConfiguration,
+    NullSceneProductionWorkflowObserver,
     ProductionCharacterReference,
     ProductionNode,
     ProductionUnitInput,
@@ -50,6 +51,7 @@ from open_hollywood_engine.workflows.production_contracts import (
     SceneProductionInput,
     SceneProductionResult,
     SceneProductionStateError,
+    SceneProductionWorkflowObserver,
     SceneWritingTask,
     StoryBibleUpdateResult,
     StoryBibleUpdateTask,
@@ -206,12 +208,14 @@ def build_scene_production_graph(
     dialogue_executor: DialogueSubgraphExecutor,
     *,
     checkpointer: BaseCheckpointSaver[Any] | None = None,
+    observer: SceneProductionWorkflowObserver | None = None,
 ) -> ProductionCompiledGraph:
     """Compile the fixed writer → dialogue → critic → bounded-revision loop."""
+    lifecycle = observer or NullSceneProductionWorkflowObserver()
     builder = StateGraph(ProductionGraphState)
     builder.add_node(
         ProductionNode.DRAFT.value,
-        _runnable(_draft_node(executor)),
+        _runnable(_draft_node(executor, lifecycle)),
         **_node_policy(ProductionNode.DRAFT),
     )
     builder.add_node(
@@ -220,27 +224,27 @@ def build_scene_production_graph(
     )
     builder.add_node(
         ProductionNode.DIALOGUE_INTEGRATION.value,
-        _runnable(_dialogue_integration_node(executor)),
+        _runnable(_dialogue_integration_node(executor, lifecycle)),
         **_node_policy(ProductionNode.DIALOGUE_INTEGRATION),
     )
     builder.add_node(
         ProductionNode.CRITIQUE.value,
-        _runnable(_critique_node(executor)),
+        _runnable(_critique_node(executor, lifecycle)),
         **_node_policy(ProductionNode.CRITIQUE),
     )
     builder.add_node(
         ProductionNode.CONTINUITY.value,
-        _runnable(_continuity_node(executor)),
+        _runnable(_continuity_node(executor, lifecycle)),
         **_node_policy(ProductionNode.CONTINUITY),
     )
     builder.add_node(
         ProductionNode.STORY_BIBLE_UPDATE.value,
-        _runnable(_story_bible_update_node(executor)),
+        _runnable(_story_bible_update_node(executor, lifecycle)),
         **_node_policy(ProductionNode.STORY_BIBLE_UPDATE),
     )
     builder.add_node(
         ProductionNode.ACCEPT.value,
-        _runnable(_accept_node()),
+        _runnable(_accept_node(lifecycle)),
         **_node_policy(ProductionNode.ACCEPT),
     )
     builder.add_edge(START, ProductionNode.DRAFT.value)
@@ -291,9 +295,13 @@ def build_scene_production_graph(
     return builder.compile(checkpointer=checkpointer)
 
 
-def _draft_node(executor: SceneProductionExecutor) -> ProductionNodeCallable:
+def _draft_node(
+    executor: SceneProductionExecutor,
+    observer: SceneProductionWorkflowObserver,
+) -> ProductionNodeCallable:
     async def draft(state: ProductionGraphState) -> dict[str, Any]:
         production = _production_from_state(state)
+        await observer.node_started(production.workflow_run_id, ProductionNode.DRAFT)
         unit = _current_unit(state, production)
         revision_number = _require_integer(state, "current_revision_number")
         accepted = _accepted_artifacts(state)
@@ -320,6 +328,11 @@ def _draft_node(executor: SceneProductionExecutor) -> ProductionNodeCallable:
         )
         result = await executor.write(task)
         _validate_draft(task.unit, revision_number, result, _all_inputs(task))
+        await observer.node_completed(
+            production.workflow_run_id,
+            ProductionNode.DRAFT,
+            (result.artifact,),
+        )
         draft_state = _artifact_to_state(result.artifact)
         update: dict[str, Any] = {
             "current_draft_artifact": draft_state,
@@ -341,9 +354,14 @@ def _draft_node(executor: SceneProductionExecutor) -> ProductionNodeCallable:
 
 def _dialogue_integration_node(
     executor: SceneProductionExecutor,
+    observer: SceneProductionWorkflowObserver,
 ) -> ProductionNodeCallable:
     async def integrate(state: ProductionGraphState) -> dict[str, Any]:
         production = _production_from_state(state)
+        await observer.node_started(
+            production.workflow_run_id,
+            ProductionNode.DIALOGUE_INTEGRATION,
+        )
         unit = _current_unit(state, production)
         if unit.dialogue_pass is None:
             raise SceneProductionStateError(
@@ -374,6 +392,11 @@ def _dialogue_integration_node(
             result,
             (source_draft, *dialogue_outputs),
         )
+        await observer.node_completed(
+            production.workflow_run_id,
+            ProductionNode.DIALOGUE_INTEGRATION,
+            (result.artifact,),
+        )
         integrated_state = _artifact_to_state(result.artifact)
         return {
             "current_draft_artifact": integrated_state,
@@ -391,9 +414,13 @@ def _dialogue_integration_node(
     return integrate
 
 
-def _critique_node(executor: SceneProductionExecutor) -> ProductionNodeCallable:
+def _critique_node(
+    executor: SceneProductionExecutor,
+    observer: SceneProductionWorkflowObserver,
+) -> ProductionNodeCallable:
     async def critique(state: ProductionGraphState) -> dict[str, Any]:
         production = _production_from_state(state)
+        await observer.node_started(production.workflow_run_id, ProductionNode.CRITIQUE)
         unit = _current_unit(state, production)
         revision_number = _require_integer(state, "current_revision_number")
         draft = _required_current_artifact(state, "current_draft_artifact")
@@ -410,6 +437,11 @@ def _critique_node(executor: SceneProductionExecutor) -> ProductionNodeCallable:
         )
         result = await executor.critique(task)
         _validate_critique(task, result)
+        await observer.node_completed(
+            production.workflow_run_id,
+            ProductionNode.CRITIQUE,
+            (result.artifact,),
+        )
         critique_state = _artifact_to_state(result.artifact)
         update: dict[str, Any] = {
             "current_critique_artifact": critique_state,
@@ -436,9 +468,13 @@ def _critique_node(executor: SceneProductionExecutor) -> ProductionNodeCallable:
     return critique
 
 
-def _continuity_node(executor: SceneProductionExecutor) -> ProductionNodeCallable:
+def _continuity_node(
+    executor: SceneProductionExecutor,
+    observer: SceneProductionWorkflowObserver,
+) -> ProductionNodeCallable:
     async def continuity(state: ProductionGraphState) -> dict[str, Any]:
         production = _production_from_state(state)
+        await observer.node_started(production.workflow_run_id, ProductionNode.CONTINUITY)
         unit = _current_unit(state, production)
         revision_number = _require_integer(state, "current_revision_number")
         story_bible = _required_current_artifact(
@@ -456,6 +492,11 @@ def _continuity_node(executor: SceneProductionExecutor) -> ProductionNodeCallabl
         )
         result = await executor.check_continuity(task)
         _validate_continuity(task, result)
+        await observer.node_completed(
+            production.workflow_run_id,
+            ProductionNode.CONTINUITY,
+            (result.artifact,),
+        )
         report_state = _artifact_to_state(result.artifact)
         update: dict[str, Any] = {
             "current_continuity_artifact": report_state,
@@ -480,9 +521,14 @@ def _continuity_node(executor: SceneProductionExecutor) -> ProductionNodeCallabl
 
 def _story_bible_update_node(
     executor: SceneProductionExecutor,
+    observer: SceneProductionWorkflowObserver,
 ) -> ProductionNodeCallable:
     async def update_story_bible(state: ProductionGraphState) -> dict[str, Any]:
         production = _production_from_state(state)
+        await observer.node_started(
+            production.workflow_run_id,
+            ProductionNode.STORY_BIBLE_UPDATE,
+        )
         unit = _current_unit(state, production)
         source_story_bible = _required_current_artifact(
             state,
@@ -503,6 +549,11 @@ def _story_bible_update_node(
         )
         result = await executor.update_story_bible(task)
         _validate_story_bible_update(task, result)
+        await observer.node_completed(
+            production.workflow_run_id,
+            ProductionNode.STORY_BIBLE_UPDATE,
+            (result.update_artifact, result.story_bible_artifact),
+        )
         update_state = _artifact_to_state(result.update_artifact)
         story_bible_state = _artifact_to_state(result.story_bible_artifact)
         return {
@@ -521,9 +572,12 @@ def _story_bible_update_node(
     return update_story_bible
 
 
-def _accept_node() -> ProductionNodeCallable:
+def _accept_node(
+    observer: SceneProductionWorkflowObserver,
+) -> ProductionNodeCallable:
     async def accept(state: ProductionGraphState) -> dict[str, Any]:
         production = _production_from_state(state)
+        await observer.node_started(production.workflow_run_id, ProductionNode.ACCEPT)
         unit_index = _require_integer(state, "current_unit_index")
         unit = _current_unit(state, production)
         draft = _required_current_artifact(state, "current_draft_artifact")
@@ -554,6 +608,11 @@ def _accept_node() -> ProductionNodeCallable:
             "dialogue_runs": _require_integer(state, "current_dialogue_runs"),
             "acceptance_reason": reason.value,
         }
+        await observer.node_completed(
+            production.workflow_run_id,
+            ProductionNode.ACCEPT,
+            (draft, critique, continuity, story_bible_update, story_bible),
+        )
         next_index = unit_index + 1
         return {
             "accepted_units": [*state.get("accepted_units", []), accepted],

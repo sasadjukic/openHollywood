@@ -106,16 +106,20 @@ invariants pass.
 The Step 19 evaluation harness is now in progress. Its provider-neutral core
 loads the frozen 12-prompt v0.1 corpus, pins exact graph and model-profile
 snapshots into 48-case campaign plans, resumes failure-isolated case execution,
-  builds provenance-free blind A/B review packets with separate answer keys, and
-  aggregates the accepted rubric, hard gates, preference rate, completion rate,
-  and cost criteria. The direct baseline now runs through a bounded
-  provider-neutral call with idempotent SQLite prompt, invocation, workflow, and
-  story lineage; long campaigns atomically checkpoint after every case. The
-  agentic path now runs profile-routed, schema-validated specialists through
-  the real durable Story Blueprint graph and stops at its mandatory human
-  approval interrupt without duplicate calls on replay. Persisted scene
-  production, complete agentic stories, and the formal Local/Cloud/Hybrid
-  campaign remain pending, so Step 19 is not yet marked complete.
+builds provenance-free blind A/B review packets with separate answer keys, and
+aggregates the accepted rubric, hard gates, preference rate, completion rate,
+and cost criteria. The direct baseline now runs through a bounded
+provider-neutral call with idempotent SQLite prompt, invocation, workflow, and
+story lineage; long campaigns atomically checkpoint after every case. The
+agentic path now runs profile-routed, schema-validated specialists through
+the real durable Story Blueprint graph and stops at its mandatory human
+approval interrupt without duplicate calls on replay. Once approved, the
+benchmark materializes immutable Scene Plans and an initial Story Bible,
+executes the checkpointed writer/critic/continuity/bible-maintainer loop,
+and deterministically assembles accepted scene versions into a complete
+benchmark story with exact usage and lineage. The formal
+Local/Cloud/Hybrid campaign and blind human reviews remain pending, so Step
+19 is not yet marked complete.
 
 The v0.1 target is deliberately narrow: short prose fiction, local-first
 storage, optional local/cloud/hybrid inference, and one mandatory story
