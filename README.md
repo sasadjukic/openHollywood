@@ -124,8 +124,11 @@ through signed-in local Ollama or direct Ollama Cloud, and resume production
 into the same atomically checkpointed report. It also creates reviewer-specific
 CSV forms and provenance-free rubric guides, imports complete human scores, and
 cryptographically binds review evidence to the exact public blind packet and
-private answer key. The formal Local/Cloud/Hybrid campaign and actual blind
-human reviews remain pending, so Step 19 is not yet marked complete.
+private answer key. Complete campaigns can be sealed into deterministic,
+tamper-evident archives whose manifest, member hashes, review coverage, summary,
+and cross-document lineage are independently reverified. The formal
+Local/Cloud/Hybrid campaign and actual blind human reviews remain pending, so
+Step 19 is not yet marked complete.
 
 The v0.1 target is deliberately narrow: short prose fiction, local-first
 storage, optional local/cloud/hybrid inference, and one mandatory story

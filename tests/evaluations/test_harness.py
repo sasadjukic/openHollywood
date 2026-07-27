@@ -42,17 +42,20 @@ from open_hollywood_engine.evaluations import (
     BlindPreference,
     CanonicalStoryScore,
     EvaluationDimension,
+    EvidenceRole,
     HardGate,
     HumanComparisonReview,
     HumanReviewBundle,
     build_benchmark_plan,
     build_blind_bundle,
+    build_campaign_evidence_archive,
     load_benchmark_corpus,
     parse_review_csvs,
     render_review_csv,
     render_review_guide,
     run_benchmark_plan,
     summarize_benchmark,
+    verify_campaign_evidence_archive,
 )
 from open_hollywood_engine.models import (
     MODEL_PRESETS,
@@ -543,6 +546,133 @@ async def test_review_csv_round_trip_is_bound_to_exact_public_packet(
             answer_key=answer_key,
             review_bundle=mismatched,
         )
+
+
+@pytest.mark.anyio
+async def test_formal_campaign_evidence_is_complete_deterministic_and_verifiable(
+    benchmark_plan: tuple[BenchmarkCorpus, BenchmarkPlan],
+    tmp_path: Path,
+) -> None:
+    corpus, full_plan = benchmark_plan
+    plan = full_plan.model_copy(update={"cases": full_plan.cases[:4]})
+    report = await run_benchmark_plan(
+        plan=plan,
+        corpus=corpus,
+        executor=FixtureExecutor(),
+    )
+    public, answer_key = build_blind_bundle(
+        plan=plan,
+        corpus=corpus,
+        results=report.results,
+        blinding_key=b"0123456789abcdef0123456789abcdef",
+    )
+    reviews = parse_review_csvs(
+        public,
+        (_complete_review_form(render_review_csv(public, reviewer_id="reviewer-1")),),
+    )
+    summary = summarize_benchmark(
+        plan=plan,
+        results=report.results,
+        answer_key=answer_key,
+        review_bundle=reviews,
+    )
+
+    manifest, archive = build_campaign_evidence_archive(
+        corpus=corpus,
+        plan=plan,
+        report=report,
+        public_bundle=public,
+        answer_key=answer_key,
+        reviews=reviews,
+        summary=summary,
+        normal_cloud_run_budget_usd=Decimal("2.0"),
+    )
+    repeated_manifest, repeated_archive = build_campaign_evidence_archive(
+        corpus=corpus,
+        plan=plan,
+        report=report,
+        public_bundle=public,
+        answer_key=answer_key,
+        reviews=reviews,
+        summary=summary,
+        normal_cloud_run_budget_usd=Decimal("2.0"),
+    )
+
+    assert manifest == repeated_manifest
+    assert archive == repeated_archive
+    assert verify_campaign_evidence_archive(archive) == manifest
+    assert {file.role for file in manifest.files} == set(EvidenceRole)
+    assert manifest.terminal_result_count == manifest.planned_case_count == 4
+    assert manifest.comparison_count == manifest.review_count == 5
+    with pytest.raises(ValueError, match="at least one human review per comparison"):
+        build_campaign_evidence_archive(
+            corpus=corpus,
+            plan=plan,
+            report=report,
+            public_bundle=public,
+            answer_key=answer_key,
+            reviews=reviews.model_copy(update={"reviews": reviews.reviews[:-1]}),
+            summary=summary,
+            normal_cloud_run_budget_usd=Decimal("2.0"),
+        )
+    with pytest.raises(ValueError, match="archive is invalid"):
+        verify_campaign_evidence_archive(archive[:-10])
+
+    paths = {
+        "corpus": tmp_path / "corpus.json",
+        "plan": tmp_path / "plan.json",
+        "report": tmp_path / "report.json",
+        "public": tmp_path / "public.json",
+        "answer": tmp_path / "answer.json",
+        "reviews": tmp_path / "reviews.json",
+        "summary": tmp_path / "summary.json",
+        "archive": tmp_path / "evidence.zip",
+    }
+    for key, document in {
+        "corpus": corpus,
+        "plan": plan,
+        "report": report,
+        "public": public,
+        "answer": answer_key,
+        "reviews": reviews,
+        "summary": summary,
+    }.items():
+        paths[key].write_text(document.model_dump_json(), encoding="utf-8")
+    assert (
+        evaluation_main(
+            [
+                "seal-evidence",
+                "--corpus",
+                str(paths["corpus"]),
+                "--plan",
+                str(paths["plan"]),
+                "--report",
+                str(paths["report"]),
+                "--public-bundle",
+                str(paths["public"]),
+                "--answer-key",
+                str(paths["answer"]),
+                "--reviews",
+                str(paths["reviews"]),
+                "--summary",
+                str(paths["summary"]),
+                "--output",
+                str(paths["archive"]),
+            ]
+        )
+        == 0
+    )
+    assert paths["archive"].read_bytes() == archive
+    assert (
+        evaluation_main(
+            [
+                "verify-evidence",
+                "--archive",
+                str(paths["archive"]),
+            ]
+        )
+        == 0
+    )
 
 
 @pytest.mark.anyio

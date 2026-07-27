@@ -4,8 +4,10 @@ from __future__ import annotations
 
 import argparse
 import asyncio
+import hashlib
 import json
 import secrets
+from decimal import Decimal
 from pathlib import Path
 from typing import Any
 from uuid import UUID, uuid4
@@ -26,20 +28,24 @@ from open_hollywood_api.services.evaluation_execution import (
 )
 from open_hollywood_api.services.model_profiles import ModelProfileStore
 from open_hollywood_engine.evaluations import (
+    BenchmarkCorpus,
     BenchmarkPlan,
     BenchmarkProfileSnapshot,
     BenchmarkRunReport,
+    BenchmarkSummary,
     BlindAnswerKey,
     BlindPublicBundle,
     HumanReviewBundle,
     build_benchmark_plan,
     build_blind_bundle,
+    build_campaign_evidence_archive,
     load_benchmark_corpus,
     parse_review_csvs,
     render_review_csv,
     render_review_guide,
     run_benchmark_plan,
     summarize_benchmark,
+    verify_campaign_evidence_archive,
 )
 from open_hollywood_engine.models import (
     CampaignModelGateway,
@@ -226,6 +232,27 @@ def _parser() -> argparse.ArgumentParser:
     import_reviews.add_argument("--output", type=Path, required=True)
     import_reviews.add_argument("--overwrite", action="store_true")
 
+    seal = commands.add_parser(
+        "seal-evidence",
+        help="Validate and seal complete campaign evidence in a deterministic archive.",
+    )
+    seal.add_argument("--corpus", type=Path, default=DEFAULT_CORPUS_PATH)
+    seal.add_argument("--plan", type=Path, required=True)
+    seal.add_argument("--report", type=Path, required=True)
+    seal.add_argument("--public-bundle", type=Path, required=True)
+    seal.add_argument("--answer-key", type=Path, required=True)
+    seal.add_argument("--reviews", type=Path, required=True)
+    seal.add_argument("--summary", type=Path, required=True)
+    seal.add_argument("--normal-cloud-run-budget-usd", type=Decimal, default=Decimal("2.0"))
+    seal.add_argument("--output", type=Path, required=True)
+    seal.add_argument("--overwrite", action="store_true")
+
+    verify = commands.add_parser(
+        "verify-evidence",
+        help="Verify a sealed campaign archive and print its manifest digest.",
+    )
+    verify.add_argument("--archive", type=Path, required=True)
+
     summary = commands.add_parser(
         "summarize",
         help="Aggregate technical results and optional validated blind reviews.",
@@ -339,6 +366,54 @@ def main(argv: list[str] | None = None) -> int:
                     "output": str(output.resolve()),
                     "public_bundle_sha256": imported_reviews.public_bundle_sha256,
                     "review_count": len(imported_reviews.reviews),
+                },
+                indent=2,
+                sort_keys=True,
+            )
+        )
+        return 0
+
+    if args.command == "seal-evidence":
+        output = args.output
+        _require_writable_outputs((output,), overwrite=args.overwrite)
+        manifest, archive = build_campaign_evidence_archive(
+            corpus=BenchmarkCorpus.model_validate(_read_json(args.corpus)),
+            plan=BenchmarkPlan.model_validate(_read_json(args.plan)),
+            report=BenchmarkRunReport.model_validate(_read_json(args.report)),
+            public_bundle=BlindPublicBundle.model_validate(_read_json(args.public_bundle)),
+            answer_key=BlindAnswerKey.model_validate(_read_json(args.answer_key)),
+            reviews=HumanReviewBundle.model_validate(_read_json(args.reviews)),
+            summary=BenchmarkSummary.model_validate(_read_json(args.summary)),
+            normal_cloud_run_budget_usd=args.normal_cloud_run_budget_usd,
+        )
+        _write_bytes_atomically(output, archive)
+        print(
+            json.dumps(
+                {
+                    "archive_sha256": hashlib.sha256(archive).hexdigest(),
+                    "campaign_id": str(manifest.campaign_id),
+                    "manifest_sha256": manifest.content_sha256,
+                    "output": str(output.resolve()),
+                    "review_count": manifest.review_count,
+                    "terminal_result_count": manifest.terminal_result_count,
+                },
+                indent=2,
+                sort_keys=True,
+            )
+        )
+        return 0
+
+    if args.command == "verify-evidence":
+        archive = args.archive.read_bytes()
+        manifest = verify_campaign_evidence_archive(archive)
+        print(
+            json.dumps(
+                {
+                    "archive": str(args.archive.resolve()),
+                    "archive_sha256": hashlib.sha256(archive).hexdigest(),
+                    "campaign_id": str(manifest.campaign_id),
+                    "manifest_sha256": manifest.content_sha256,
+                    "verified": True,
                 },
                 indent=2,
                 sort_keys=True,

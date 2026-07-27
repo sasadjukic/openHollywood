@@ -97,6 +97,15 @@ uv run --extra api python -m scripts.evaluation_harness summarize `
   --plan data/benchmark-plan.json --report data/benchmark-report.json `
   --answer-key data/benchmark-answers.json `
   --reviews data/benchmark-reviews.json --output data/benchmark-summary.json
+uv run --extra api python -m scripts.evaluation_harness seal-evidence `
+  --plan data/benchmark-plan.json --report data/benchmark-report.json `
+  --public-bundle data/benchmark-public.json `
+  --answer-key data/benchmark-answers.json `
+  --reviews data/benchmark-reviews.json `
+  --summary data/benchmark-summary.json `
+  --output data/benchmark-evidence.zip
+uv run --extra api python -m scripts.evaluation_harness verify-evidence `
+  --archive data/benchmark-evidence.zip
 ```
 
 The Markdown guide carries the canonical rubric, weights, score anchors, and
@@ -106,6 +115,17 @@ scores, invalid gates, duplicate reviewer/comparison pairs, unknown
 comparisons, and files from another campaign or public packet. Review evidence
 schema v2 pins the exact public-bundle SHA-256, and summary generation requires
 that digest to match the separately stored private answer key.
+
+`seal-evidence` is the formal completion boundary. It refuses partial reports,
+unreviewed comparisons, mismatched corpora/plans/packets, foreign answer keys or
+reviews, and summaries that cannot be reproduced from the supplied evidence and
+declared cloud-run budget. The deterministic archive stores canonical JSON,
+fixed metadata, a self-describing manifest, per-member SHA-256 digests, counts,
+and explicit public/private classifications. `verify-evidence` checks all
+digests and relationships and reproduces the exact archive bytes. Treat the
+whole ZIP as private because it contains model/profile identities, story
+outputs, reviewer identifiers, and the blind answer key; only members under
+`public/` are reviewer-safe.
 
 The initial 12-prompt corpus is stored at
 `benchmarks/v0.1/corpus.json`. The corpus must never be edited silently; change

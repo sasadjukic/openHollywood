@@ -170,12 +170,18 @@ scene deltas advance the Story Bible through the deterministic reducer, and
  incomplete, duplicate, foreign-campaign, or unknown-comparison evidence.
  Review schema v2 binds every submission to the exact public-packet digest,
  which reporting verifies against the separately stored private answer key.
+ Complete evidence can now be sealed into a deterministic archive only when
+ every planned case has a terminal result, every blinded comparison has human
+ review coverage, and the corpus, plan, report, packets, reviews, declared
+ budget, and recomputed summary agree. Its manifest records fixed public/private
+ paths, counts, and per-member SHA-256 digests; independent verification
+ reproduces the canonical archive and rejects tampering or partial evidence.
  Remaining before completion: run the formal corpus across all three profiles
  and the single-model baseline within an authorized budget, collect the actual
- blind human reviews, and preserve the resulting campaign evidence. Evidence so
- far:
+ blind human reviews, and seal the resulting evidence. Evidence so far:
 `benchmarks/v0.1/corpus.json`,
 `engine/open_hollywood_engine/evaluations/`,
+`engine/open_hollywood_engine/evaluations/evidence.py`,
 `engine/open_hollywood_engine/evaluations/reviews.py`,
 `apps/api/open_hollywood_api/services/agentic_benchmark.py`,
 `apps/api/open_hollywood_api/services/blueprint_model_executor.py`,
