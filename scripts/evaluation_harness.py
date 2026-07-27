@@ -167,6 +167,12 @@ def _parser() -> argparse.ArgumentParser:
         ),
     )
     _add_agentic_execution_arguments(prepare_agentic)
+    prepare_agentic.add_argument(
+        "--case-id",
+        type=UUID,
+        action="append",
+        help="Agentic case to prepare; repeat as needed. Defaults to every selected target case.",
+    )
 
     approve_blueprints = commands.add_parser(
         "approve-blueprints",
@@ -519,6 +525,7 @@ def main(argv: list[str] | None = None) -> int:
                 corpus_path=args.corpus,
                 database_path=args.database,
                 target_keys=target_keys,
+                case_ids=(tuple(args.case_id) if args.case_id is not None else None),
                 ollama_base_url=args.ollama_base_url,
                 direct_ollama_cloud=args.direct_ollama_cloud,
                 ollama_cloud_base_url=args.ollama_cloud_base_url,
@@ -748,6 +755,7 @@ async def _prepare_agentic_with_ollama(
     corpus_path: Path,
     database_path: Path,
     target_keys: frozenset[str],
+    case_ids: tuple[UUID, ...] | None,
     ollama_base_url: str | None,
     direct_ollama_cloud: bool,
     ollama_cloud_base_url: str | None,
@@ -770,6 +778,7 @@ async def _prepare_agentic_with_ollama(
             session_factory=create_session_factory(engine),
             gateway=gateway,
             target_keys=target_keys,
+            case_ids=case_ids,
         )
     finally:
         await gateway.close()

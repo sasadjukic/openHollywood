@@ -116,11 +116,18 @@ timeout failures are distinct from provider outages, and a retry reconciles
 invocations left running by an interrupted process without mutating their
 immutable input artifacts. Ollama Cloud response aliases are normalized only
 when they resolve to the requested frozen model, while both requested and
-provider-reported identifiers remain persisted for audit. The agentic path now
-runs profile-routed, schema-validated specialists through the real durable Story
-Blueprint graph and stops at its mandatory human approval interrupt without
-duplicate calls on replay. Once approved, the benchmark materializes immutable
-Scene Plans and an initial Story Bible, executes the checkpointed
+provider-reported identifiers remain persisted for audit. Failed structured
+calls retain provider usage, finish reason, response hash, and response length;
+a lone JSON Markdown fence is normalized without accepting mixed commentary.
+The agentic path now runs profile-routed, schema-validated specialists through
+the real durable Story Blueprint graph and stops at its mandatory human approval
+interrupt without duplicate calls on replay. Prompted non-schema invariants keep
+benchmark constraints exact, parallel World output cannot invent unresolved
+character IDs, and integration generates only new beats and scene plans while
+the application assembles authoritative specialist artifacts deterministically.
+Operators can prepare selected cases independently. Once approved, the
+benchmark materializes immutable Scene Plans and an initial Story Bible, executes
+the checkpointed
 writer/critic/continuity/bible-maintainer loop, and deterministically assembles
 accepted scene versions into a complete benchmark story with exact usage and
 lineage. The formal

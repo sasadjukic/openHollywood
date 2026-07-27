@@ -44,9 +44,13 @@ async def prepare_agentic_cases(
     session_factory: sessionmaker[Session],
     gateway: ModelGateway,
     target_keys: frozenset[str] = AGENTIC_TARGET_KEYS,
+    case_ids: tuple[UUID, ...] | None = None,
 ) -> tuple[AgenticBlueprintPreparation, ...]:
     """Sequentially prepare selected agentic cases at the approval boundary."""
-    cases = _selected_agentic_cases(plan, corpus, target_keys)
+    cases = _select_case_ids(
+        _selected_agentic_cases(plan, corpus, target_keys),
+        case_ids,
+    )
     prompts = _campaign_prompts(plan, corpus)
     service = AgenticBenchmarkBlueprintService(
         campaign_id=plan.campaign_id,
@@ -63,6 +67,24 @@ async def prepare_agentic_cases(
             )
         )
     return tuple(preparations)
+
+
+def _select_case_ids(
+    cases: tuple[BenchmarkCase, ...],
+    case_ids: tuple[UUID, ...] | None,
+) -> tuple[BenchmarkCase, ...]:
+    if case_ids is None:
+        return cases
+    if not case_ids:
+        raise ValueError("at least one agentic case ID is required")
+    if len(set(case_ids)) != len(case_ids):
+        raise ValueError("agentic case IDs must be unique")
+    cases_by_id = {case.case_id: case for case in cases}
+    unknown = set(case_ids).difference(cases_by_id)
+    if unknown:
+        formatted = ", ".join(sorted(str(case_id) for case_id in unknown))
+        raise ValueError(f"case IDs are not selected agentic cases: {formatted}")
+    return tuple(cases_by_id[case_id] for case_id in case_ids)
 
 
 async def approve_agentic_cases(

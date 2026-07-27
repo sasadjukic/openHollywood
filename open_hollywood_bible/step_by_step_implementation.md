@@ -148,18 +148,25 @@ input lineage. Ollama Cloud response aliases are accepted only when they
 normalize to the frozen requested model; requested and provider-reported
 identifiers are both persisted. Operator commands create separated
 public/private review packets and summaries from schema-validated evidence.
-Agentic cases now enter the real durable Story Blueprint graph: every registered
-specialist resolves its exact frozen profile selection, receives deterministic
-immutable inputs and benchmark constraints, uses schema enforcement when the
-deployment supports it, records a budgeted invocation plus output lineage,
-validates cross-artifact invariants, and pauses
+Failed structured calls retain provider usage, finish reason, response hash, and
+length, while a lone JSON fence is normalized without accepting surrounding
+commentary. Agentic cases now enter the real durable Story Blueprint graph:
+every registered specialist resolves its exact frozen profile selection,
+receives deterministic immutable inputs and benchmark constraints, uses schema
+enforcement when the deployment supports it, records a budgeted invocation plus
+output lineage, validates cross-artifact invariants, and pauses
 at the mandatory human approval interrupt. Replaying a paused case performs no
-duplicate model calls. The approved handoff now materializes exact Scene
-Plan versions and an initial canonical Story Bible, creates a child production
-run, and invokes the real SQLite-checkpointed writer, critic, continuity, and
-bible-maintainer graph. Production nodes reserve durable graph/call/token/cost
-budgets, profile-routed structured calls persist exact input lineage, accepted
-scene deltas advance the Story Bible through the deterministic reducer, and
+duplicate model calls. Prompted non-schema invariants preserve exact benchmark
+constraints; parallel World specialists cannot invent unresolved character
+references; the integrator emits only new beats and scene plans, and the
+application deterministically assembles immutable specialist artifacts into the
+Story Blueprint. Operators can prepare selected cases independently. The
+approved handoff now materializes exact Scene Plan versions and an initial
+canonical Story Bible, creates a child production run, and invokes the real
+SQLite-checkpointed writer, critic, continuity, and bible-maintainer graph.
+Production nodes reserve durable graph/call/token/cost budgets, profile-routed
+structured calls persist exact input lineage, accepted scene deltas advance the
+Story Bible through the deterministic reducer, and
  successful task fingerprints replay without duplicate calls. A final
  deterministic assembly persists the complete benchmark story and returns its
  Blueprint, accepted-scene, final-bible, manuscript, invocation, usage, latency,

@@ -37,6 +37,7 @@ from open_hollywood_api.persistence.models import (
     ArtifactVersion,
     Project,
     RunStatus,
+    WorkflowEvent,
     WorkflowRun,
 )
 from open_hollywood_api.services.blueprint_model_executor import (
@@ -59,7 +60,7 @@ AGENTIC_BENCHMARK_BLUEPRINT_BUDGET = RunBudget(
     max_cost_usd=Decimal("0.50"),
     max_wall_clock_seconds=3_600,
     per_call_input_tokens=12_000,
-    per_call_output_tokens=4_000,
+    per_call_output_tokens=8_000,
     per_call_cost_usd=Decimal("0.08"),
 )
 
@@ -210,16 +211,37 @@ class AgenticBenchmarkBlueprintService:
                     budget=AGENTIC_BENCHMARK_BLUEPRINT_BUDGET.to_data(),
                 )
                 session.add(run)
-            elif (
-                run.project_id != project_id
-                or run.workflow_name != STORY_BLUEPRINT_WORKFLOW_NAME
-                or run.graph_version != STORY_BLUEPRINT_GRAPH_VERSION
-                or run.input_state != expected_input
-            ):
-                raise BenchmarkCaseExecutionError(
-                    "benchmark_lineage_conflict",
-                    "Persisted agentic Blueprint lineage does not match the campaign case.",
-                )
+            else:
+                if (
+                    run.project_id != project_id
+                    or run.workflow_name != STORY_BLUEPRINT_WORKFLOW_NAME
+                    or run.graph_version != STORY_BLUEPRINT_GRAPH_VERSION
+                    or run.input_state != expected_input
+                ):
+                    raise BenchmarkCaseExecutionError(
+                        "benchmark_lineage_conflict",
+                        "Persisted agentic Blueprint lineage does not match the campaign case.",
+                    )
+                expected_budget = AGENTIC_BENCHMARK_BLUEPRINT_BUDGET.to_data()
+                if run.budget != expected_budget:
+                    if run.status not in {RunStatus.PENDING, RunStatus.FAILED}:
+                        raise BenchmarkCaseExecutionError(
+                            "benchmark_budget_conflict",
+                            "Prepared agentic Blueprint budget differs from the runtime contract.",
+                        )
+                    previous_budget = dict(run.budget)
+                    run.budget = expected_budget
+                    session.add(
+                        WorkflowEvent(
+                            workflow_run_id=run.id,
+                            event_type="benchmark.budget_updated",
+                            source="evaluation_harness",
+                            payload={
+                                "previous_budget": previous_budget,
+                                "budget": expected_budget,
+                            },
+                        )
+                    )
             session.flush()
             return project.id, run.id
 
