@@ -76,6 +76,37 @@ local Ollama server. Pass `--direct-ollama-cloud` to route cloud deployments
 directly with the runtime-only `OLLAMA_API_KEY`; Hybrid then uses separate local
 and cloud gateways selected from the frozen campaign snapshot.
 
+After every planned case has a successful terminal result, package and collect
+the blind reviews without exposing the private answer key:
+
+```powershell
+uv run --extra api python -m scripts.evaluation_harness create-review-key `
+  --output data/benchmark-review.key
+uv run --extra api python -m scripts.evaluation_harness package-review `
+  --plan data/benchmark-plan.json --report data/benchmark-report.json `
+  --blinding-key data/benchmark-review.key `
+  --public-output data/benchmark-public.json `
+  --answer-key-output data/benchmark-answers.json
+uv run --extra api python -m scripts.evaluation_harness create-review-form `
+  --public-bundle data/benchmark-public.json --reviewer-id reviewer-1 `
+  --output data/reviewer-1.csv --guide-output data/reviewer-1.md
+uv run --extra api python -m scripts.evaluation_harness import-reviews `
+  --public-bundle data/benchmark-public.json --input data/reviewer-1.csv `
+  --output data/benchmark-reviews.json
+uv run --extra api python -m scripts.evaluation_harness summarize `
+  --plan data/benchmark-plan.json --report data/benchmark-report.json `
+  --answer-key data/benchmark-answers.json `
+  --reviews data/benchmark-reviews.json --output data/benchmark-summary.json
+```
+
+The Markdown guide carries the canonical rubric, weights, score anchors, and
+hard-gate definitions without system provenance. CSV forms can be divided
+among reviewers and merged by repeating `--input`. Import rejects incomplete
+scores, invalid gates, duplicate reviewer/comparison pairs, unknown
+comparisons, and files from another campaign or public packet. Review evidence
+schema v2 pins the exact public-bundle SHA-256, and summary generation requires
+that digest to match the separately stored private answer key.
+
 The initial 12-prompt corpus is stored at
 `benchmarks/v0.1/corpus.json`. The corpus must never be edited silently; change
 a prompt version or create a new corpus version.

@@ -21,6 +21,7 @@ NonEmptyText = Annotated[str, StringConstraints(strip_whitespace=True, min_lengt
 Sha256 = Annotated[str, StringConstraints(pattern=r"^[0-9a-f]{64}$")]
 
 BENCHMARK_SCHEMA_VERSION: Literal["1"] = "1"
+HUMAN_REVIEW_SCHEMA_VERSION: Literal["2"] = "2"
 CANONICAL_RUBRIC_NAME = "open-hollywood-story-quality"
 CANONICAL_RUBRIC_VERSION = "1"
 
@@ -449,8 +450,9 @@ class HumanComparisonReview(EvaluationModel):
 class HumanReviewBundle(EvaluationModel):
     """Validated reviewer submissions for one exact benchmark campaign."""
 
-    schema_version: Literal["1"]
+    schema_version: Literal["2"]
     campaign_id: UUID
+    public_bundle_sha256: Sha256
     reviews: tuple[HumanComparisonReview, ...]
 
     @model_validator(mode="after")

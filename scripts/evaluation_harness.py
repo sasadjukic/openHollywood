@@ -26,15 +26,18 @@ from open_hollywood_api.services.evaluation_execution import (
 )
 from open_hollywood_api.services.model_profiles import ModelProfileStore
 from open_hollywood_engine.evaluations import (
-    BENCHMARK_SCHEMA_VERSION,
     BenchmarkPlan,
     BenchmarkProfileSnapshot,
     BenchmarkRunReport,
     BlindAnswerKey,
+    BlindPublicBundle,
     HumanReviewBundle,
     build_benchmark_plan,
     build_blind_bundle,
     load_benchmark_corpus,
+    parse_review_csvs,
+    render_review_csv,
+    render_review_guide,
     run_benchmark_plan,
     summarize_benchmark,
 )
@@ -198,6 +201,31 @@ def _parser() -> argparse.ArgumentParser:
     package.add_argument("--answer-key-output", type=Path, required=True)
     package.add_argument("--overwrite", action="store_true")
 
+    review_form = commands.add_parser(
+        "create-review-form",
+        help="Create a reviewer-specific CSV scoring form for one public blind packet.",
+    )
+    review_form.add_argument("--public-bundle", type=Path, required=True)
+    review_form.add_argument("--reviewer-id", type=str, required=True)
+    review_form.add_argument("--output", type=Path, required=True)
+    review_form.add_argument("--guide-output", type=Path)
+    review_form.add_argument("--overwrite", action="store_true")
+
+    import_reviews = commands.add_parser(
+        "import-reviews",
+        help="Validate and merge completed CSV forms into digest-bound review evidence.",
+    )
+    import_reviews.add_argument("--public-bundle", type=Path, required=True)
+    import_reviews.add_argument(
+        "--input",
+        type=Path,
+        action="append",
+        required=True,
+        help="Completed reviewer CSV; repeat to merge multiple reviewers.",
+    )
+    import_reviews.add_argument("--output", type=Path, required=True)
+    import_reviews.add_argument("--overwrite", action="store_true")
+
     summary = commands.add_parser(
         "summarize",
         help="Aggregate technical results and optional validated blind reviews.",
@@ -258,6 +286,59 @@ def main(argv: list[str] | None = None) -> int:
                 {
                     "output": str(output.resolve()),
                     "bytes": 32,
+                },
+                indent=2,
+                sort_keys=True,
+            )
+        )
+        return 0
+
+    if args.command == "create-review-form":
+        output = args.output
+        guide_output = args.guide_output
+        outputs = (output, guide_output) if guide_output is not None else (output,)
+        if guide_output is not None:
+            _require_distinct_paths(output, guide_output)
+        _require_writable_outputs(outputs, overwrite=args.overwrite)
+        public_bundle = BlindPublicBundle.model_validate(_read_json(args.public_bundle))
+        form = render_review_csv(public_bundle, reviewer_id=args.reviewer_id)
+        _write_bytes_atomically(output, form.encode("utf-8"))
+        if guide_output is not None:
+            guide = render_review_guide(public_bundle, reviewer_id=args.reviewer_id)
+            _write_bytes_atomically(guide_output, guide.encode("utf-8"))
+        print(
+            json.dumps(
+                {
+                    "campaign_id": str(public_bundle.campaign_id),
+                    "comparison_count": len(public_bundle.comparisons),
+                    "guide_output": (
+                        str(guide_output.resolve()) if guide_output is not None else None
+                    ),
+                    "output": str(output.resolve()),
+                    "reviewer_id": args.reviewer_id.strip(),
+                },
+                indent=2,
+                sort_keys=True,
+            )
+        )
+        return 0
+
+    if args.command == "import-reviews":
+        output = args.output
+        _require_writable_outputs((output,), overwrite=args.overwrite)
+        public_bundle = BlindPublicBundle.model_validate(_read_json(args.public_bundle))
+        imported_reviews = parse_review_csvs(
+            public_bundle,
+            tuple(path.read_text(encoding="utf-8-sig") for path in args.input),
+        )
+        _write_json_atomically(output, imported_reviews.model_dump(mode="json"))
+        print(
+            json.dumps(
+                {
+                    "campaign_id": str(imported_reviews.campaign_id),
+                    "output": str(output.resolve()),
+                    "public_bundle_sha256": imported_reviews.public_bundle_sha256,
+                    "review_count": len(imported_reviews.reviews),
                 },
                 indent=2,
                 sort_keys=True,
@@ -491,13 +572,9 @@ def main(argv: list[str] | None = None) -> int:
     review_bundle = (
         HumanReviewBundle.model_validate(_read_json(args.reviews))
         if args.reviews is not None
-        else HumanReviewBundle(
-            schema_version=BENCHMARK_SCHEMA_VERSION,
-            campaign_id=plan.campaign_id,
-            reviews=(),
-        )
+        else None
     )
-    if review_bundle.campaign_id != plan.campaign_id:
+    if review_bundle is not None and review_bundle.campaign_id != plan.campaign_id:
         raise ValueError("human reviews belong to a different campaign")
     output = args.output
     _require_writable_outputs((output,), overwrite=args.overwrite)
@@ -505,7 +582,7 @@ def main(argv: list[str] | None = None) -> int:
         plan=plan,
         results=report.results,
         answer_key=loaded_answer_key,
-        reviews=review_bundle.reviews,
+        review_bundle=review_bundle,
         normal_cloud_run_budget_usd=args.normal_cloud_run_budget_usd,
     )
     _write_json_atomically(output, summary.model_dump(mode="json"))
