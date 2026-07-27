@@ -28,7 +28,7 @@ from open_hollywood_engine.models import (
     ModelResponse,
     ModelSettings,
 )
-from sqlalchemy import func, select
+from sqlalchemy import func, insert, select
 from sqlalchemy.orm import Session, sessionmaker
 
 from open_hollywood_api.persistence.models import (
@@ -41,6 +41,7 @@ from open_hollywood_api.persistence.models import (
     RunStatus,
     WorkflowEvent,
     WorkflowRun,
+    agent_invocation_inputs,
 )
 
 DIRECT_STORY_WORKFLOW_NAME = "benchmark_direct_story"
@@ -200,6 +201,11 @@ class DirectBaselineBenchmarkExecutor:
                     budget=_budget_data(self._call_budget),
                 )
                 session.add(run)
+            _reconcile_interrupted_attempts(
+                session=session,
+                run=run,
+                case_id=case.case_id,
+            )
             run.status = RunStatus.RUNNING
             run.current_node = "generate"
             run.started_at = run.started_at or datetime.now(UTC)
@@ -244,7 +250,6 @@ class DirectBaselineBenchmarkExecutor:
                 },
                 prompt_sha256=_messages_sha256(messages),
                 prompt_text="\n\n".join(message.content for message in messages),
-                input_versions=[prompt_version],
             )
             session.add(invocation)
             session.add(
@@ -260,6 +265,13 @@ class DirectBaselineBenchmarkExecutor:
                 )
             )
             session.flush()
+            session.execute(
+                insert(agent_invocation_inputs),
+                {
+                    "agent_invocation_id": invocation.id,
+                    "artifact_version_id": prompt_version.id,
+                },
+            )
             return run.id, invocation.id, prompt_version.id
 
     def _complete_attempt(
@@ -291,6 +303,12 @@ class DirectBaselineBenchmarkExecutor:
             invocation.output_tokens = response.usage.output_tokens
             invocation.estimated_cost_usd = response.estimated_cost_usd
             invocation.latency_ms = response.timing.total_ms
+            invocation.request_settings = {
+                **invocation.request_settings,
+                "provider_response_model_identifier": (
+                    response.provider_model_identifier or response.model_identifier
+                ),
+            }
             invocation.schema_validation_succeeded = True
             invocation.completed_at = datetime.now(UTC)
 
@@ -595,6 +613,48 @@ def _validate_response(
             "budget_exceeded",
             "The provider response exceeded the frozen direct-story call budget.",
         )
+
+
+def _reconcile_interrupted_attempts(
+    *,
+    session: Session,
+    run: WorkflowRun,
+    case_id: UUID,
+) -> None:
+    interrupted = tuple(
+        session.scalars(
+            select(AgentInvocation).where(
+                AgentInvocation.workflow_run_id == run.id,
+                AgentInvocation.status == InvocationStatus.RUNNING,
+            )
+        )
+    )
+    if not interrupted:
+        return
+    completed_at = datetime.now(UTC)
+    for invocation in interrupted:
+        invocation.status = InvocationStatus.FAILED
+        invocation.completed_at = completed_at
+        invocation.error_code = "interrupted_execution"
+        invocation.error_message = (
+            "A previous benchmark process ended before recording a terminal result."
+        )
+    run.status = RunStatus.FAILED
+    run.current_node = None
+    run.completed_at = completed_at
+    run.error_code = "interrupted_execution"
+    run.error_message = "A previous benchmark attempt was interrupted."
+    session.add(
+        WorkflowEvent(
+            workflow_run_id=run.id,
+            event_type="benchmark.case_interrupted",
+            source="evaluation_harness",
+            payload={
+                "case_id": str(case_id),
+                "invocation_count": len(interrupted),
+            },
+        )
+    )
 
 
 def _budget_data(budget: ModelCallBudget) -> dict[str, int | str]:

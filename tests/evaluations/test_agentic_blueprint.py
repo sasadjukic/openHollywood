@@ -50,7 +50,7 @@ from open_hollywood_engine.models import (
     ModelTiming,
     ModelUsage,
 )
-from open_hollywood_engine.workflows import RunPauseReason
+from open_hollywood_engine.workflows import RetryableSpecialistError, RunPauseReason
 from sqlalchemy import Engine, func, select
 
 from tests.artifacts.test_schemas import _blueprint
@@ -100,9 +100,13 @@ class BlueprintFixtureGateway:
             value = self.premise
         elif role == "world_builder":
             value = {
-                "locations": [item.model_dump(mode="json") for item in self.blueprint.locations],
+                "locations": [
+                    item.model_copy(update={"associated_character_ids": ()}).model_dump(mode="json")
+                    for item in self.blueprint.locations
+                ],
                 "world_rules": [
-                    item.model_dump(mode="json") for item in self.blueprint.world_rules
+                    item.model_copy(update={"relevant_character_ids": ()}).model_dump(mode="json")
+                    for item in self.blueprint.world_rules
                 ],
             }
         elif role == "character_architect":
@@ -113,7 +117,13 @@ class BlueprintFixtureGateway:
                 ],
             }
         elif role == "blueprint_integrator":
-            value = self.blueprint
+            value = {
+                "world_summary": self.blueprint.world_summary,
+                "beats": [item.model_dump(mode="json") for item in self.blueprint.beats],
+                "scene_plans": [
+                    item.model_dump(mode="json") for item in self.blueprint.scene_plans
+                ],
+            }
         elif role == "blueprint_critic":
             payload = json.loads(request.messages[-1].content)
             blueprint_input = next(
@@ -212,11 +222,45 @@ async def test_agentic_case_runs_real_blueprint_graph_to_durable_approval(
     assert prepared.interrupt_id is not None
     assert len(gateway.requests) == 6
     assert all(request.response_schema is not None for request in gateway.requests)
+    assert all(request.invocation.prompt_template_version == "5" for request in gateway.requests)
+    brief_payload = json.loads(gateway.requests[0].messages[-1].content)
+    assert brief_payload["output_invariants"] == {
+        "original_premise": prompt.prompt,
+        "maturity": prompt.intended_maturity.value,
+        "required_elements_must_include_exactly": list(prompt.required_elements),
+        "forbidden_elements_must_include_exactly": list(prompt.forbidden_shortcuts),
+        "target_word_count_range": prompt.target_word_count.model_dump(mode="json"),
+    }
+    integration_request = next(
+        request
+        for request in gateway.requests
+        if request.invocation.specialist_role == "blueprint_integrator"
+    )
+    integration_payload = json.loads(integration_request.messages[-1].content)
+    assert integration_payload["output_invariants"] == {
+        "application_assembles_authoritative_input_artifacts": True,
+        "generate_only": ["world_summary", "beats", "scene_plans"],
+        "allowed_character_ids": sorted(character.id for character in gateway.blueprint.characters),
+        "allowed_location_ids": sorted(location.id for location in gateway.blueprint.locations),
+        "required_scene_count": gateway.brief.target_scene_count,
+        "every_beat_id_must_appear_in_a_scene_plan": True,
+    }
+    world_request = next(
+        request
+        for request in gateway.requests
+        if request.invocation.specialist_role == "world_builder"
+    )
+    world_payload = json.loads(world_request.messages[-1].content)
+    assert world_payload["output_invariants"] == {
+        "location_associated_character_ids_must_be_empty": True,
+        "world_rule_relevant_character_ids_must_be_empty": True,
+    }
     with create_session_factory(database_engine)() as session:
         run = session.get(WorkflowRun, prepared.workflow_run_id)
         assert run is not None
         assert run.status is RunStatus.PAUSED
         assert run.pause_reason is RunPauseReason.HUMAN_APPROVAL
+        assert run.budget["per_call_output_tokens"] == 8_000
         assert session.scalar(select(func.count()).select_from(AgentInvocation)) == 6
         assert session.scalar(select(func.count()).select_from(Artifact)) == 10
         invocations = session.scalars(
@@ -224,3 +268,66 @@ async def test_agentic_case_runs_real_blueprint_graph_to_durable_approval(
         ).all()
         assert all(invocation.status is InvocationStatus.SUCCEEDED for invocation in invocations)
         assert all(invocation.input_versions for invocation in invocations)
+
+
+@pytest.mark.anyio
+async def test_schema_valid_constraint_drift_is_classified_as_artifact_failure(
+    migrated_database_path: Path,
+    database_engine: Engine,
+) -> None:
+    corpus = load_benchmark_corpus(CORPUS_PATH)
+    prompt = corpus.prompts[0]
+    selection = ModelSelection(
+        provider="ollama",
+        model_identifier="local-fixture",
+        deployment=ModelDeployment.LOCAL,
+    )
+    profile_id = BUILTIN_PROFILE_IDS[ModelProfileMode.LOCAL]
+    profile = ModelProfileStore(create_session_factory(database_engine)).configure_profile(
+        profile_id,
+        local_model=selection,
+        cloud_model=None,
+    )
+    case = BenchmarkCase(
+        case_id=UUID("dddddddd-dddd-4ddd-8ddd-dddddddddddd"),
+        prompt_id=prompt.prompt_id,
+        prompt_version=prompt.version,
+        system=BenchmarkSystem.AGENTIC,
+        run_seed=prompt.random_seed,
+        profile=BenchmarkProfileSnapshot.from_configuration(
+            profile_id=profile.id,
+            configuration=profile.configuration,
+        ),
+    )
+    gateway = BlueprintFixtureGateway(prompt.prompt, prompt)
+    gateway.brief = gateway.brief.model_copy(
+        update={"required_elements": ("A paraphrased requirement.",)}
+    )
+    service = AgenticBenchmarkBlueprintService(
+        campaign_id=CAMPAIGN_ID,
+        database_path=migrated_database_path,
+        session_factory=create_session_factory(database_engine),
+        gateway=gateway,
+    )
+
+    with pytest.raises(RetryableSpecialistError):
+        await service.prepare(case, prompt)
+
+    with create_session_factory(database_engine)() as session:
+        invocations = session.scalars(
+            select(AgentInvocation).order_by(AgentInvocation.started_at)
+        ).all()
+        assert len(invocations) == 2
+        assert all(
+            invocation.error_code == "artifact_contract_failed" for invocation in invocations
+        )
+        assert all(invocation.schema_validation_succeeded is True for invocation in invocations)
+        assert all(invocation.output_tokens == 500 for invocation in invocations)
+        assert all(
+            invocation.request_settings["provider_finish_reason"] == "stop"
+            for invocation in invocations
+        )
+        assert all(
+            len(invocation.request_settings["provider_response_content_sha256"]) == 64
+            for invocation in invocations
+        )

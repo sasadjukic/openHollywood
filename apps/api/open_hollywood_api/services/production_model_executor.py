@@ -69,6 +69,7 @@ from open_hollywood_api.persistence.models import (
     agent_invocation_inputs,
 )
 from open_hollywood_api.persistence.secret_policy import active_secret_guard
+from open_hollywood_api.services.structured_output import normalize_json_document
 
 
 class _Operation(StrEnum):
@@ -241,7 +242,7 @@ class BenchmarkProductionExecutor(SceneProductionExecutor):
         try:
             response = await self._gateway.generate(request)
             _require_matching_response(response, execution)
-            output = output_model.model_validate_json(response.content)
+            output = output_model.model_validate_json(normalize_json_document(response.content))
             _validate_output(operation, task, output)
             references = await asyncio.to_thread(
                 self._complete_invocation,
@@ -270,6 +271,7 @@ class BenchmarkProductionExecutor(SceneProductionExecutor):
                 "production_contract_failed",
                 str(error),
                 None,
+                response,
             )
             raise
         except (ValueError, json.JSONDecodeError, StoryBibleInvariantError) as error:
@@ -279,6 +281,7 @@ class BenchmarkProductionExecutor(SceneProductionExecutor):
                 "schema_validation_failed",
                 "The production specialist returned invalid structured output.",
                 False,
+                response,
             )
             raise RetryableSceneProductionError(
                 "production specialist returned invalid structured output"
@@ -514,6 +517,7 @@ class BenchmarkProductionExecutor(SceneProductionExecutor):
             invocation.output_tokens = response.usage.output_tokens
             invocation.estimated_cost_usd = response.estimated_cost_usd
             invocation.latency_ms = response.timing.total_ms
+            _apply_response_metadata(invocation, response)
             invocation.schema_validation_succeeded = True
             invocation.completed_at = datetime.now(UTC)
             return tuple(references)
@@ -524,6 +528,7 @@ class BenchmarkProductionExecutor(SceneProductionExecutor):
         code: str,
         message: str,
         schema_valid: bool | None,
+        response: ModelResponse | None = None,
     ) -> None:
         safe_message = active_secret_guard().redact_text(message)[:2_000]
         with self._session_factory.begin() as session:
@@ -532,6 +537,12 @@ class BenchmarkProductionExecutor(SceneProductionExecutor):
                 return
             invocation.status = InvocationStatus.FAILED
             invocation.schema_validation_succeeded = schema_valid
+            if response is not None:
+                invocation.input_tokens = response.usage.input_tokens
+                invocation.output_tokens = response.usage.output_tokens
+                invocation.estimated_cost_usd = response.estimated_cost_usd
+                invocation.latency_ms = response.timing.total_ms
+                _apply_response_metadata(invocation, response)
             invocation.completed_at = datetime.now(UTC)
             invocation.error_code = code
             invocation.error_message = safe_message
@@ -546,6 +557,23 @@ class BenchmarkProductionExecutor(SceneProductionExecutor):
                 _load_story_bible(session, source_reference),
                 _load_story_bible(session, successor_reference),
             )
+
+
+def _apply_response_metadata(
+    invocation: AgentInvocation,
+    response: ModelResponse,
+) -> None:
+    invocation.request_settings = {
+        **invocation.request_settings,
+        "provider_response_model_identifier": (
+            response.provider_model_identifier or response.model_identifier
+        ),
+        "provider_finish_reason": response.finish_reason,
+        "provider_response_content_sha256": hashlib.sha256(
+            response.content.encode("utf-8")
+        ).hexdigest(),
+        "provider_response_content_length": len(response.content),
+    }
 
 
 @dataclass(frozen=True, slots=True)

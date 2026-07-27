@@ -212,10 +212,13 @@ class ModelResponse:
     usage: ModelUsage
     timing: ModelTiming
     estimated_cost_usd: Decimal
+    provider_model_identifier: str | None = None
 
     def __post_init__(self) -> None:
         if not self.provider or not self.model_identifier:
             raise ValueError("provider and model_identifier must not be empty")
+        if self.provider_model_identifier == "":
+            raise ValueError("provider_model_identifier must not be empty")
         if not self.content:
             raise ValueError("response content must not be empty")
         if self.created_at.utcoffset() is None:

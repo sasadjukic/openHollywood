@@ -82,6 +82,7 @@ from sqlalchemy import Engine, func, select
 
 from scripts.evaluation_harness import (
     AtomicJsonReportCheckpoint,
+    _write_json_atomically,
     create_plan_from_database,
 )
 from scripts.evaluation_harness import (
@@ -149,6 +150,18 @@ class FixtureGateway:
 
     async def close(self) -> None:
         return None
+
+
+class SimulatedProcessExit(BaseException):
+    """Represent a process ending before normal exception cleanup can run."""
+
+
+class InterruptedFixtureGateway(FixtureGateway):
+    """Leave persisted execution state running to simulate a hard interruption."""
+
+    async def generate(self, request: ModelRequest) -> ModelResponse:
+        self.requests.append(request)
+        raise SimulatedProcessExit
 
 
 class RoutedFixtureGateway(FixtureGateway):
@@ -456,10 +469,106 @@ async def test_direct_baseline_persists_idempotent_model_and_artifact_lineage(
         invocation = session.get(AgentInvocation, first.invocation_ids[0])
         assert invocation is not None
         assert invocation.status is InvocationStatus.SUCCEEDED
+        assert invocation.request_settings["provider_response_model_identifier"] == "cloud-fixture"
         assert [version.id for version in invocation.input_versions] != []
         assert [version.id for version in invocation.output_versions] == list(
             first.artifact_version_ids
         )
+
+
+@pytest.mark.anyio
+async def test_direct_baseline_reconciles_interrupted_attempt_before_retry(
+    benchmark_plan: tuple[BenchmarkCorpus, BenchmarkPlan],
+    database_engine: Engine,
+) -> None:
+    corpus, plan = benchmark_plan
+    case = plan.cases[0]
+    prompt = corpus.prompts[0]
+    story = " ".join(("story",) * 2_499 + ("ending.",))
+    response = ModelResponse(
+        provider="ollama",
+        model_identifier="cloud-fixture",
+        deployment=ModelDeployment.CLOUD,
+        content=f"Title: Recovered Story\n{story}",
+        thinking=None,
+        finish_reason="stop",
+        created_at=datetime.now(UTC),
+        usage=ModelUsage(input_tokens=200, output_tokens=3_000),
+        timing=ModelTiming(total_ms=12_345),
+        estimated_cost_usd=Decimal("1.25"),
+    )
+    interrupted = DirectBaselineBenchmarkExecutor(
+        campaign_id=plan.campaign_id,
+        session_factory=create_session_factory(database_engine),
+        gateway=InterruptedFixtureGateway(response),
+    )
+    with pytest.raises(SimulatedProcessExit):
+        await interrupted.execute(case, prompt)
+
+    recovered = DirectBaselineBenchmarkExecutor(
+        campaign_id=plan.campaign_id,
+        session_factory=create_session_factory(database_engine),
+        gateway=FixtureGateway(response),
+    )
+    output = await recovered.execute(case, prompt)
+
+    with create_session_factory(database_engine)() as session:
+        invocations = tuple(
+            session.scalars(
+                select(AgentInvocation).order_by(
+                    AgentInvocation.started_at,
+                    AgentInvocation.id,
+                )
+            )
+        )
+        assert [invocation.status for invocation in invocations] == [
+            InvocationStatus.FAILED,
+            InvocationStatus.SUCCEEDED,
+        ]
+        assert invocations[0].error_code == "interrupted_execution"
+        assert output.invocation_ids == (invocations[1].id,)
+
+
+def test_operator_parses_long_form_ollama_timeout() -> None:
+    from scripts.evaluation_harness import _parser
+
+    args = _parser().parse_args(
+        [
+            "run-baseline",
+            "--plan",
+            "plan.json",
+            "--report",
+            "report.json",
+            "--ollama-timeout-seconds",
+            "900",
+        ]
+    )
+
+    assert args.ollama_timeout_seconds == 900.0
+
+
+def test_atomic_report_write_retries_transient_windows_file_lock(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    output = tmp_path / "report.json"
+    original_replace = Path.replace
+    attempts = 0
+
+    def transient_replace(source: Path, target: Path) -> Path:
+        nonlocal attempts
+        attempts += 1
+        if attempts < 3:
+            raise PermissionError("simulated transient file lock")
+        return original_replace(source, target)
+
+    monkeypatch.setattr(Path, "replace", transient_replace)
+
+    _write_json_atomically(output, {"status": "checkpointed"})
+
+    assert attempts == 3
+    assert json.loads(output.read_text(encoding="utf-8")) == {"status": "checkpointed"}
+    assert not tuple(tmp_path.glob(".*.tmp"))
 
 
 @pytest.mark.anyio

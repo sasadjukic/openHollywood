@@ -20,6 +20,7 @@ class ModelGatewayErrorCode(StrEnum):
     BUDGET_EXCEEDED = "budget_exceeded"
     INVALID_RESPONSE = "invalid_response"
     MODEL_NOT_FOUND = "model_not_found"
+    PROVIDER_TIMEOUT = "provider_timeout"
     PROVIDER_UNAVAILABLE = "provider_unavailable"
     RATE_LIMITED = "rate_limited"
     SECRET_EXPOSURE = "secret_exposure"

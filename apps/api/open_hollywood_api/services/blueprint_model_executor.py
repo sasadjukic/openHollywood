@@ -12,12 +12,14 @@ from uuid import UUID, uuid4
 
 from open_hollywood_engine.artifacts import (
     ArtifactKind,
+    Beat,
     Character,
     CreativeBrief,
     Critique,
     Location,
     Premise,
     Relationship,
+    ScenePlan,
     StoryBlueprint,
     StoryFormat,
     WorldRule,
@@ -49,7 +51,7 @@ from open_hollywood_engine.workflows import (
     RetryableSpecialistError,
     RunBudget,
 )
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, ValidationError
 from sqlalchemy import insert, select
 from sqlalchemy.orm import Session, joinedload, sessionmaker
 
@@ -65,8 +67,13 @@ from open_hollywood_api.persistence.models import (
     agent_invocation_inputs,
 )
 from open_hollywood_api.persistence.secret_policy import active_secret_guard
+from open_hollywood_api.services.structured_output import normalize_json_document
 
-BLUEPRINT_MODEL_PROMPT_VERSION = "1"
+BLUEPRINT_MODEL_PROMPT_VERSION = "5"
+
+
+class _SpecialistContractError(ValueError):
+    """A schema-valid specialist result changed authoritative inputs."""
 
 
 class _StructuredOutput(BaseModel):
@@ -83,6 +90,12 @@ class _CharacterOutput(_StructuredOutput):
     relationships: tuple[Relationship, ...] = Field(min_length=1)
 
 
+class _IntegrationOutput(_StructuredOutput):
+    world_summary: str = Field(min_length=1)
+    beats: tuple[Beat, ...] = Field(min_length=1)
+    scene_plans: tuple[ScenePlan, ...] = Field(min_length=3, max_length=8)
+
+
 type _BlueprintOutput = (
     CreativeBrief | Premise | _WorldOutput | _CharacterOutput | StoryBlueprint | Critique
 )
@@ -92,14 +105,15 @@ _OUTPUT_MODELS: Mapping[BlueprintNode, type[BaseModel]] = {
     BlueprintNode.PREMISE: Premise,
     BlueprintNode.WORLD_SPECIALIST: _WorldOutput,
     BlueprintNode.CHARACTER_SPECIALIST: _CharacterOutput,
-    BlueprintNode.INTEGRATION: StoryBlueprint,
+    BlueprintNode.INTEGRATION: _IntegrationOutput,
     BlueprintNode.EVALUATION: Critique,
 }
 
 _NODE_INSTRUCTIONS: Mapping[BlueprintNode, str] = {
     BlueprintNode.BRIEF: (
         "Convert the frozen user premise and constraints into an authoritative "
-        "short-prose Creative Brief. Infer missing creative choices explicitly."
+        "short-prose Creative Brief. Infer missing creative choices explicitly. "
+        "Copy every value named by output_invariants exactly, including punctuation."
     ),
     BlueprintNode.PREMISE: (
         "Develop the Creative Brief into a causally specific premise, thematic "
@@ -107,7 +121,8 @@ _NODE_INSTRUCTIONS: Mapping[BlueprintNode, str] = {
     ),
     BlueprintNode.WORLD_SPECIALIST: (
         "Design the smallest dramatically sufficient set of locations and world "
-        "rules. Every identifier must be stable snake_case and references must resolve."
+        "rules. Every identifier must be stable snake_case. Because this role runs "
+        "in parallel with Character, leave all character-reference arrays empty."
     ),
     BlueprintNode.CHARACTER_SPECIALIST: (
         "Create exactly the significant-character count required by the brief and "
@@ -115,9 +130,10 @@ _NODE_INSTRUCTIONS: Mapping[BlueprintNode, str] = {
         "contradiction, arc, and dialogue voice."
     ),
     BlueprintNode.INTEGRATION: (
-        "Integrate the exact specialist artifacts into one complete Story Blueprint. "
-        "Preserve their identifiers and content, create a causal beat sequence and "
-        "the exact requested number of contiguous scene plans, and reach the declared ending."
+        "Generate only a world summary, causal beat sequence, and the exact requested "
+        "number of contiguous scene plans. Reference the supplied character, location, "
+        "world-rule, and premise identifiers without repeating or rewriting those artifacts. "
+        "Reach the declared ending."
     ),
     BlueprintNode.EVALUATION: (
         "Evaluate the exact Story Blueprint against causal structure, character depth, "
@@ -196,7 +212,10 @@ class BenchmarkBlueprintNodeExecutor(BlueprintNodeExecutor):
         try:
             response = await self._gateway.generate(request)
             _require_matching_response(response, execution)
-            output = cast(_BlueprintOutput, output_model.model_validate_json(response.content))
+            parsed_output = output_model.model_validate_json(
+                normalize_json_document(response.content)
+            )
+            output = _materialize_output(task.node, parsed_output, execution)
             _validate_output(task, output, execution)
             references = await asyncio.to_thread(
                 self._complete_invocation,
@@ -224,8 +243,21 @@ class BenchmarkBlueprintNodeExecutor(BlueprintNodeExecutor):
                 code="specialist_contract_failed",
                 message=str(error),
                 schema_valid=False,
+                response=response,
             )
             raise
+        except _SpecialistContractError as error:
+            await asyncio.to_thread(
+                self._fail_invocation,
+                invocation_id,
+                code="artifact_contract_failed",
+                message=str(error),
+                schema_valid=True,
+                response=response,
+            )
+            raise RetryableSpecialistError(
+                "specialist output changed authoritative artifact inputs"
+            ) from error
         except (ValueError, json.JSONDecodeError) as error:
             await asyncio.to_thread(
                 self._fail_invocation,
@@ -233,6 +265,7 @@ class BenchmarkBlueprintNodeExecutor(BlueprintNodeExecutor):
                 code="schema_validation_failed",
                 message="The specialist returned invalid structured output.",
                 schema_valid=False,
+                response=response,
             )
             raise RetryableSpecialistError(
                 "specialist returned invalid structured output"
@@ -450,6 +483,7 @@ class BenchmarkBlueprintNodeExecutor(BlueprintNodeExecutor):
             invocation.output_tokens = response.usage.output_tokens
             invocation.estimated_cost_usd = response.estimated_cost_usd
             invocation.latency_ms = response.timing.total_ms
+            _apply_response_metadata(invocation, response)
             invocation.schema_validation_succeeded = True
             invocation.completed_at = datetime.now(UTC)
             return references
@@ -461,6 +495,7 @@ class BenchmarkBlueprintNodeExecutor(BlueprintNodeExecutor):
         code: str,
         message: str,
         schema_valid: bool | None,
+        response: ModelResponse | None = None,
     ) -> None:
         safe_message = active_secret_guard().redact_text(message)[:2_000]
         with self._session_factory.begin() as session:
@@ -469,9 +504,32 @@ class BenchmarkBlueprintNodeExecutor(BlueprintNodeExecutor):
                 return
             invocation.status = InvocationStatus.FAILED
             invocation.schema_validation_succeeded = schema_valid
+            if response is not None:
+                invocation.input_tokens = response.usage.input_tokens
+                invocation.output_tokens = response.usage.output_tokens
+                invocation.estimated_cost_usd = response.estimated_cost_usd
+                invocation.latency_ms = response.timing.total_ms
+                _apply_response_metadata(invocation, response)
             invocation.completed_at = datetime.now(UTC)
             invocation.error_code = code
             invocation.error_message = safe_message
+
+
+def _apply_response_metadata(
+    invocation: AgentInvocation,
+    response: ModelResponse,
+) -> None:
+    invocation.request_settings = {
+        **invocation.request_settings,
+        "provider_response_model_identifier": (
+            response.provider_model_identifier or response.model_identifier
+        ),
+        "provider_finish_reason": response.finish_reason,
+        "provider_response_content_sha256": hashlib.sha256(
+            response.content.encode("utf-8")
+        ).hexdigest(),
+        "provider_response_content_length": len(response.content),
+    }
 
 
 class _Execution:
@@ -534,6 +592,12 @@ def _messages(
             "frozen_user_premise": premise,
             "frozen_benchmark_constraints": constraints,
             "input_artifacts": inputs,
+            "output_invariants": _output_invariants(
+                node=task.node,
+                premise=premise,
+                constraints=constraints,
+                inputs=inputs,
+            ),
             "output_schema": schema,
         },
         ensure_ascii=False,
@@ -543,6 +607,141 @@ def _messages(
     return (
         ModelMessage(role=MessageRole.SYSTEM, content=system),
         ModelMessage(role=MessageRole.USER, content=user),
+    )
+
+
+def _output_invariants(
+    *,
+    node: BlueprintNode,
+    premise: str,
+    constraints: dict[str, object],
+    inputs: tuple[dict[str, Any], ...],
+) -> dict[str, object]:
+    if node is BlueprintNode.BRIEF:
+        return {
+            "original_premise": premise,
+            "maturity": constraints.get("intended_maturity"),
+            "required_elements_must_include_exactly": constraints.get(
+                "required_elements",
+                [],
+            ),
+            "forbidden_elements_must_include_exactly": constraints.get(
+                "forbidden_shortcuts",
+                [],
+            ),
+            "target_word_count_range": constraints.get("target_word_count"),
+        }
+    if node is BlueprintNode.CHARACTER_SPECIALIST:
+        return {
+            "creative_brief_target_significant_character_count": (
+                _single_input(inputs, ArtifactKind.CREATIVE_BRIEF).get(
+                    "target_significant_character_count"
+                )
+            ),
+            "relationship_character_ids_must_resolve": True,
+        }
+    if node is BlueprintNode.WORLD_SPECIALIST:
+        return {
+            "location_associated_character_ids_must_be_empty": True,
+            "world_rule_relevant_character_ids_must_be_empty": True,
+        }
+    if node is BlueprintNode.INTEGRATION:
+        brief = _single_input(inputs, ArtifactKind.CREATIVE_BRIEF)
+        return {
+            "application_assembles_authoritative_input_artifacts": True,
+            "generate_only": ["world_summary", "beats", "scene_plans"],
+            "allowed_character_ids": _input_identifiers(
+                inputs,
+                ArtifactKind.CHARACTER,
+            ),
+            "allowed_location_ids": _input_identifiers(
+                inputs,
+                ArtifactKind.LOCATION,
+            ),
+            "required_scene_count": brief.get("target_scene_count"),
+            "every_beat_id_must_appear_in_a_scene_plan": True,
+        }
+    if node is BlueprintNode.EVALUATION:
+        blueprint = next(
+            (
+                value
+                for value in inputs
+                if value["artifact_kind"] == ArtifactKind.STORY_BLUEPRINT.value
+            ),
+            None,
+        )
+        return {
+            "target_artifact_kind": ArtifactKind.STORY_BLUEPRINT.value,
+            "target_artifact_key": (blueprint["artifact_key"] if blueprint is not None else None),
+            "target_artifact_version_id": (
+                blueprint["artifact_version_id"] if blueprint is not None else None
+            ),
+        }
+    return {}
+
+
+def _materialize_output(
+    node: BlueprintNode,
+    output: BaseModel,
+    execution: _Execution,
+) -> _BlueprintOutput:
+    if node is not BlueprintNode.INTEGRATION:
+        return cast(_BlueprintOutput, output)
+    if not isinstance(output, _IntegrationOutput):
+        raise BlueprintWorkflowError("integration returned an incompatible output")
+    brief = CreativeBrief.model_validate(
+        _single_input(execution.inputs, ArtifactKind.CREATIVE_BRIEF)
+    )
+    premise = Premise.model_validate(_single_input(execution.inputs, ArtifactKind.PREMISE))
+    try:
+        return StoryBlueprint(
+            creative_brief=brief,
+            logline=premise.logline,
+            thematic_thesis=premise.thematic_thesis,
+            world_summary=output.world_summary,
+            characters=tuple(
+                Character.model_validate(value["content"])
+                for value in execution.inputs
+                if value["artifact_kind"] == ArtifactKind.CHARACTER.value
+            ),
+            relationships=tuple(
+                Relationship.model_validate(value["content"])
+                for value in execution.inputs
+                if value["artifact_kind"] == ArtifactKind.RELATIONSHIP.value
+            ),
+            locations=tuple(
+                Location.model_validate(value["content"])
+                for value in execution.inputs
+                if value["artifact_kind"] == ArtifactKind.LOCATION.value
+            ),
+            world_rules=tuple(
+                WorldRule.model_validate(value["content"])
+                for value in execution.inputs
+                if value["artifact_kind"] == ArtifactKind.WORLD_RULE.value
+            ),
+            central_conflict=premise.central_conflict,
+            story_arc=premise.story_arc,
+            beats=output.beats,
+            scene_plans=output.scene_plans,
+            proposed_ending=premise.proposed_ending,
+            voice_and_style_guide=premise.voice_and_style_guide,
+            potential_risks=premise.potential_risks,
+            unresolved_decisions=premise.unresolved_decisions,
+        )
+    except ValidationError as error:
+        first = error.errors(include_url=False)[0]
+        location = ".".join(str(value) for value in first["loc"]) or "story_blueprint"
+        raise _SpecialistContractError(
+            f"Integrated Story Blueprint violates {location}: {first['msg']}"
+        ) from error
+
+
+def _input_identifiers(
+    inputs: tuple[dict[str, Any], ...],
+    kind: ArtifactKind,
+) -> list[str]:
+    return sorted(
+        str(value["content"]["id"]) for value in inputs if value["artifact_kind"] == kind.value
     )
 
 
@@ -581,11 +780,11 @@ def _validate_output(
 ) -> None:
     if isinstance(output, CreativeBrief):
         if output.original_premise != execution.premise:
-            raise ValueError("Creative Brief changed the frozen user premise")
+            raise _SpecialistContractError("Creative Brief changed the frozen user premise")
         constraints = execution.constraints
         target = constraints.get("target_word_count")
         if not isinstance(target, Mapping):
-            raise ValueError("benchmark target word count is missing")
+            raise BlueprintWorkflowError("benchmark target word count is missing")
         minimum = target.get("minimum")
         maximum = target.get("maximum")
         if (
@@ -601,20 +800,30 @@ def _validate_output(
                 output.forbidden_elements
             )
         ):
-            raise ValueError("Creative Brief does not preserve benchmark constraints")
+            raise _SpecialistContractError("Creative Brief does not preserve benchmark constraints")
         return
     if isinstance(output, _CharacterOutput):
         brief_data = _single_input(execution.inputs, ArtifactKind.CREATIVE_BRIEF)
         expected_count = CreativeBrief.model_validate(brief_data).target_significant_character_count
         if len(output.characters) != expected_count:
-            raise ValueError("character count does not match the Creative Brief")
+            raise _SpecialistContractError("character count does not match the Creative Brief")
         character_ids = {character.id for character in output.characters}
         if any(
             relationship.source_character_id not in character_ids
             or relationship.target_character_id not in character_ids
             for relationship in output.relationships
         ):
-            raise ValueError("relationship references an unknown character")
+            raise _SpecialistContractError("relationship references an unknown character")
+        return
+    if isinstance(output, _WorldOutput):
+        if any(location.associated_character_ids for location in output.locations):
+            raise _SpecialistContractError(
+                "parallel World output referenced unknown Blueprint characters"
+            )
+        if any(rule.relevant_character_ids for rule in output.world_rules):
+            raise _SpecialistContractError(
+                "parallel World rules referenced unknown Blueprint characters"
+            )
         return
     if isinstance(output, StoryBlueprint):
         authoritative_brief = CreativeBrief.model_validate(
@@ -622,7 +831,9 @@ def _validate_output(
         )
         premise = Premise.model_validate(_single_input(execution.inputs, ArtifactKind.PREMISE))
         if output.creative_brief != authoritative_brief:
-            raise ValueError("Story Blueprint changed the authoritative Creative Brief")
+            raise _SpecialistContractError(
+                "Story Blueprint changed the authoritative Creative Brief"
+            )
         if (
             output.logline != premise.logline
             or output.thematic_thesis != premise.thematic_thesis
@@ -631,7 +842,7 @@ def _validate_output(
             or output.proposed_ending != premise.proposed_ending
             or output.voice_and_style_guide != premise.voice_and_style_guide
         ):
-            raise ValueError("Story Blueprint changed authoritative premise fields")
+            raise _SpecialistContractError("Story Blueprint changed authoritative premise fields")
         _require_same_identified_inputs(
             output.characters,
             execution.inputs,
@@ -668,7 +879,9 @@ def _validate_output(
             or output.target_artifact_key != blueprint.artifact_key
             or output.target_artifact_version_id != blueprint.version_id
         ):
-            raise ValueError("Blueprint critique target does not match its exact input")
+            raise _SpecialistContractError(
+                "Blueprint critique target does not match its exact input"
+            )
 
 
 def _single_input(
@@ -681,7 +894,7 @@ def _single_input(
         if value["artifact_kind"] == kind.value
     ]
     if len(values) != 1:
-        raise ValueError(f"expected one {kind.value} input")
+        raise BlueprintWorkflowError(f"expected one {kind.value} input")
     return values[0]
 
 
@@ -697,7 +910,7 @@ def _require_same_identified_inputs(
     }
     actual = {str(cast(Any, output).id): output.model_dump(mode="json") for output in outputs}
     if actual != expected:
-        raise ValueError(f"Story Blueprint changed {kind.value} specialist artifacts")
+        raise _SpecialistContractError(f"Story Blueprint changed {kind.value} specialist artifacts")
 
 
 def _persist_output(

@@ -7,6 +7,7 @@ import asyncio
 import hashlib
 import json
 import secrets
+import time
 from decimal import Decimal
 from pathlib import Path
 from typing import Any
@@ -66,6 +67,8 @@ from open_hollywood_engine.workflows import (
 WORKSPACE_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_CORPUS_PATH = WORKSPACE_ROOT / "benchmarks" / "v0.1" / "corpus.json"
 DEFAULT_DATABASE_PATH = WORKSPACE_ROOT / "data" / "open_hollywood.db"
+DEFAULT_CAMPAIGN_OLLAMA_TIMEOUT_SECONDS = 600.0
+ATOMIC_REPLACE_ATTEMPTS = 5
 
 
 class AtomicJsonReportCheckpoint:
@@ -153,9 +156,7 @@ def _parser() -> argparse.ArgumentParser:
     run_baseline.add_argument("--database", type=Path, default=DEFAULT_DATABASE_PATH)
     run_baseline.add_argument("--plan", type=Path, required=True)
     run_baseline.add_argument("--report", type=Path, required=True)
-    run_baseline.add_argument("--ollama-base-url", type=str)
-    run_baseline.add_argument("--direct-ollama-cloud", action="store_true")
-    run_baseline.add_argument("--ollama-cloud-base-url", type=str)
+    _add_ollama_execution_arguments(run_baseline)
     run_baseline.add_argument("--retry-failed", action="store_true")
 
     prepare_agentic = commands.add_parser(
@@ -166,6 +167,12 @@ def _parser() -> argparse.ArgumentParser:
         ),
     )
     _add_agentic_execution_arguments(prepare_agentic)
+    prepare_agentic.add_argument(
+        "--case-id",
+        type=UUID,
+        action="append",
+        help="Agentic case to prepare; repeat as needed. Defaults to every selected target case.",
+    )
 
     approve_blueprints = commands.add_parser(
         "approve-blueprints",
@@ -277,6 +284,10 @@ def _add_agentic_execution_arguments(parser: argparse.ArgumentParser) -> None:
         choices=sorted(AGENTIC_TARGET_KEYS),
         help="Agentic profile target; repeat as needed. Defaults to all three profiles.",
     )
+    _add_ollama_execution_arguments(parser)
+
+
+def _add_ollama_execution_arguments(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--ollama-base-url", type=str)
     parser.add_argument(
         "--direct-ollama-cloud",
@@ -284,6 +295,22 @@ def _add_agentic_execution_arguments(parser: argparse.ArgumentParser) -> None:
         help="Route cloud deployments directly to Ollama Cloud using OLLAMA_API_KEY.",
     )
     parser.add_argument("--ollama-cloud-base-url", type=str)
+    parser.add_argument(
+        "--ollama-timeout-seconds",
+        type=_positive_float,
+        default=DEFAULT_CAMPAIGN_OLLAMA_TIMEOUT_SECONDS,
+        help=(
+            "Per-request Ollama HTTP timeout. Formal long-form campaigns default "
+            f"to {DEFAULT_CAMPAIGN_OLLAMA_TIMEOUT_SECONDS:g} seconds."
+        ),
+    )
+
+
+def _positive_float(value: str) -> float:
+    parsed = float(value)
+    if parsed <= 0:
+        raise argparse.ArgumentTypeError("value must be positive")
+    return parsed
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -464,6 +491,7 @@ def main(argv: list[str] | None = None) -> int:
                 ollama_base_url=args.ollama_base_url,
                 direct_ollama_cloud=args.direct_ollama_cloud,
                 ollama_cloud_base_url=args.ollama_cloud_base_url,
+                ollama_timeout_seconds=args.ollama_timeout_seconds,
                 retry_failed=args.retry_failed,
             )
         )
@@ -497,9 +525,11 @@ def main(argv: list[str] | None = None) -> int:
                 corpus_path=args.corpus,
                 database_path=args.database,
                 target_keys=target_keys,
+                case_ids=(tuple(args.case_id) if args.case_id is not None else None),
                 ollama_base_url=args.ollama_base_url,
                 direct_ollama_cloud=args.direct_ollama_cloud,
                 ollama_cloud_base_url=args.ollama_cloud_base_url,
+                ollama_timeout_seconds=args.ollama_timeout_seconds,
             )
         )
         print(
@@ -538,6 +568,7 @@ def main(argv: list[str] | None = None) -> int:
                 ollama_base_url=args.ollama_base_url,
                 direct_ollama_cloud=args.direct_ollama_cloud,
                 ollama_cloud_base_url=args.ollama_cloud_base_url,
+                ollama_timeout_seconds=args.ollama_timeout_seconds,
             )
         )
         print(
@@ -580,6 +611,7 @@ def main(argv: list[str] | None = None) -> int:
                 ollama_base_url=args.ollama_base_url,
                 direct_ollama_cloud=args.direct_ollama_cloud,
                 ollama_cloud_base_url=args.ollama_cloud_base_url,
+                ollama_timeout_seconds=args.ollama_timeout_seconds,
                 retry_failed=args.retry_failed,
             )
         )
@@ -685,6 +717,7 @@ async def _run_direct_baseline(
     ollama_base_url: str | None,
     direct_ollama_cloud: bool,
     ollama_cloud_base_url: str | None,
+    ollama_timeout_seconds: float,
     retry_failed: bool,
 ) -> BenchmarkRunReport:
     engine = create_sqlite_engine(database_path)
@@ -694,6 +727,7 @@ async def _run_direct_baseline(
         ollama_base_url=ollama_base_url,
         direct_ollama_cloud=direct_ollama_cloud,
         ollama_cloud_base_url=ollama_cloud_base_url,
+        ollama_timeout_seconds=ollama_timeout_seconds,
     )
     try:
         executor = DirectBaselineBenchmarkExecutor(
@@ -721,9 +755,11 @@ async def _prepare_agentic_with_ollama(
     corpus_path: Path,
     database_path: Path,
     target_keys: frozenset[str],
+    case_ids: tuple[UUID, ...] | None,
     ollama_base_url: str | None,
     direct_ollama_cloud: bool,
     ollama_cloud_base_url: str | None,
+    ollama_timeout_seconds: float,
 ) -> tuple[AgenticBlueprintPreparation, ...]:
     engine = create_sqlite_engine(database_path)
     gateway = _ollama_campaign_gateway(
@@ -732,6 +768,7 @@ async def _prepare_agentic_with_ollama(
         ollama_base_url=ollama_base_url,
         direct_ollama_cloud=direct_ollama_cloud,
         ollama_cloud_base_url=ollama_cloud_base_url,
+        ollama_timeout_seconds=ollama_timeout_seconds,
     )
     try:
         return await prepare_agentic_cases(
@@ -741,6 +778,7 @@ async def _prepare_agentic_with_ollama(
             session_factory=create_session_factory(engine),
             gateway=gateway,
             target_keys=target_keys,
+            case_ids=case_ids,
         )
     finally:
         await gateway.close()
@@ -757,6 +795,7 @@ async def _approve_agentic_with_ollama(
     ollama_base_url: str | None,
     direct_ollama_cloud: bool,
     ollama_cloud_base_url: str | None,
+    ollama_timeout_seconds: float,
 ) -> tuple[AgenticBlueprintPreparation, ...]:
     engine = create_sqlite_engine(database_path)
     gateway = _ollama_campaign_gateway(
@@ -765,6 +804,7 @@ async def _approve_agentic_with_ollama(
         ollama_base_url=ollama_base_url,
         direct_ollama_cloud=direct_ollama_cloud,
         ollama_cloud_base_url=ollama_cloud_base_url,
+        ollama_timeout_seconds=ollama_timeout_seconds,
     )
     try:
         return await approve_agentic_cases(
@@ -792,6 +832,7 @@ async def _run_agentic_with_ollama(
     ollama_base_url: str | None,
     direct_ollama_cloud: bool,
     ollama_cloud_base_url: str | None,
+    ollama_timeout_seconds: float,
     retry_failed: bool,
 ) -> BenchmarkRunReport:
     engine = create_sqlite_engine(database_path)
@@ -801,6 +842,7 @@ async def _run_agentic_with_ollama(
         ollama_base_url=ollama_base_url,
         direct_ollama_cloud=direct_ollama_cloud,
         ollama_cloud_base_url=ollama_cloud_base_url,
+        ollama_timeout_seconds=ollama_timeout_seconds,
     )
     try:
         return await run_agentic_cases(
@@ -833,6 +875,7 @@ def _ollama_campaign_gateway(
     ollama_base_url: str | None,
     direct_ollama_cloud: bool,
     ollama_cloud_base_url: str | None,
+    ollama_timeout_seconds: float,
 ) -> ModelGateway:
     if ollama_cloud_base_url is not None and not direct_ollama_cloud:
         raise ValueError("--ollama-cloud-base-url requires --direct-ollama-cloud")
@@ -841,6 +884,7 @@ def _ollama_campaign_gateway(
         return OllamaGateway(
             host=OllamaHost.LOCAL,
             base_url=ollama_base_url,
+            timeout_seconds=ollama_timeout_seconds,
         )
 
     deployments: dict[ModelDeployment, ModelGateway] = {}
@@ -849,12 +893,14 @@ def _ollama_campaign_gateway(
         deployments[ModelDeployment.LOCAL] = OllamaGateway(
             host=OllamaHost.LOCAL,
             base_url=ollama_base_url,
+            timeout_seconds=ollama_timeout_seconds,
         )
     if ModelDeployment.CLOUD in required_deployments:
         deployments[ModelDeployment.CLOUD] = OllamaGateway.from_secret_store(
             EnvironmentSecretStore(),
             host=OllamaHost.CLOUD,
             base_url=ollama_cloud_base_url,
+            timeout_seconds=ollama_timeout_seconds,
         )
     return CampaignModelGateway(
         provider="ollama",
@@ -948,7 +994,14 @@ def _write_bytes_atomically(path: Path, value: bytes) -> None:
     temporary = path.with_name(f".{path.name}.{uuid4().hex}.tmp")
     try:
         temporary.write_bytes(value)
-        temporary.replace(path)
+        for attempt in range(ATOMIC_REPLACE_ATTEMPTS):
+            try:
+                temporary.replace(path)
+                break
+            except PermissionError:
+                if attempt == ATOMIC_REPLACE_ATTEMPTS - 1:
+                    raise
+                time.sleep(0.05 * (attempt + 1))
     finally:
         temporary.unlink(missing_ok=True)
 
