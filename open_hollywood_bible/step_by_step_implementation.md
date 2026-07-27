@@ -164,12 +164,19 @@ scene deltas advance the Story Bible through the deterministic reducer, and
  runs approved production into the same atomically checkpointed report.
  Frozen Ollama deployment routing supports cloud models through a signed-in
  local daemon or a runtime-secret-backed direct cloud endpoint, including
- split local/cloud Hybrid execution. Remaining before completion: run the
- formal corpus across all three profiles and the single-model baseline within
- an authorized budget, collect blind human reviews, and preserve the resulting
- campaign evidence. Evidence so far:
+ split local/cloud Hybrid execution. Reviewer-specific CSV forms and
+ provenance-free Markdown guides now carry the canonical rubric, score anchors,
+ and hard gates; strict import merges completed forms while rejecting
+ incomplete, duplicate, foreign-campaign, or unknown-comparison evidence.
+ Review schema v2 binds every submission to the exact public-packet digest,
+ which reporting verifies against the separately stored private answer key.
+ Remaining before completion: run the formal corpus across all three profiles
+ and the single-model baseline within an authorized budget, collect the actual
+ blind human reviews, and preserve the resulting campaign evidence. Evidence so
+ far:
 `benchmarks/v0.1/corpus.json`,
 `engine/open_hollywood_engine/evaluations/`,
+`engine/open_hollywood_engine/evaluations/reviews.py`,
 `apps/api/open_hollywood_api/services/agentic_benchmark.py`,
 `apps/api/open_hollywood_api/services/blueprint_model_executor.py`,
 `apps/api/open_hollywood_api/services/evaluation_campaign.py`,

@@ -9,6 +9,7 @@ from open_hollywood_engine.evaluations.contracts import (
     CANONICAL_RUBRIC_NAME,
     CANONICAL_RUBRIC_VERSION,
     EVALUATION_WEIGHTS,
+    HUMAN_REVIEW_SCHEMA_VERSION,
     BenchmarkCase,
     BenchmarkCaseResult,
     BenchmarkCaseStatus,
@@ -53,6 +54,12 @@ from open_hollywood_engine.evaluations.harness import (
 )
 from open_hollywood_engine.evaluations.planning import build_benchmark_plan
 from open_hollywood_engine.evaluations.reporting import summarize_benchmark
+from open_hollywood_engine.evaluations.reviews import (
+    REVIEW_CSV_COLUMNS,
+    parse_review_csvs,
+    render_review_csv,
+    render_review_guide,
+)
 
 __all__ = [
     "BENCHMARK_SCHEMA_VERSION",
@@ -60,6 +67,8 @@ __all__ = [
     "CANONICAL_RUBRIC_VERSION",
     "DEFAULT_COMPARISON_PAIRS",
     "EVALUATION_WEIGHTS",
+    "HUMAN_REVIEW_SCHEMA_VERSION",
+    "REVIEW_CSV_COLUMNS",
     "V01_CORPUS_ID",
     "V01_PROMPT_COUNT",
     "BenchmarkCase",
@@ -98,6 +107,9 @@ __all__ = [
     "build_blind_bundle",
     "canonical_sha256",
     "load_benchmark_corpus",
+    "parse_review_csvs",
+    "render_review_csv",
+    "render_review_guide",
     "run_benchmark_plan",
     "summarize_benchmark",
 ]

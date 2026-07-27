@@ -21,7 +21,7 @@ from open_hollywood_engine.evaluations.contracts import (
     CanonicalStoryScore,
     EvaluationDimension,
     HardGate,
-    HumanComparisonReview,
+    HumanReviewBundle,
 )
 
 
@@ -30,7 +30,7 @@ def summarize_benchmark(
     plan: BenchmarkPlan,
     results: Iterable[BenchmarkCaseResult],
     answer_key: BlindAnswerKey | None = None,
-    reviews: Iterable[HumanComparisonReview] = (),
+    review_bundle: HumanReviewBundle | None = None,
     normal_cloud_run_budget_usd: float = 2.0,
 ) -> BenchmarkSummary:
     """Calculate the accepted v0.1 metrics and threshold outcomes."""
@@ -48,11 +48,11 @@ def summarize_benchmark(
         _target_metrics(target, plan.cases, result_by_id)
         for target in ("baseline", "local", "cloud", "hybrid")
     )
-    all_reviews = tuple(reviews)
+    all_reviews = review_bundle.reviews if review_bundle is not None else ()
     human = _human_metrics(
         plan=plan,
         answer_key=answer_key,
-        reviews=all_reviews,
+        review_bundle=review_bundle,
     )
     agentic_metrics = [metric for metric in target_metrics if metric.target != "baseline"]
     planned_agentic = sum(metric.planned_cases for metric in agentic_metrics)
@@ -119,9 +119,9 @@ def _human_metrics(
     *,
     plan: BenchmarkPlan,
     answer_key: BlindAnswerKey | None,
-    reviews: tuple[HumanComparisonReview, ...],
+    review_bundle: HumanReviewBundle | None,
 ) -> _HumanMetrics:
-    if not reviews:
+    if review_bundle is None:
         return _HumanMetrics(
             mean_weighted_score=None,
             lowest_dimension_mean=None,
@@ -132,6 +132,18 @@ def _human_metrics(
         raise ValueError("blind reviews require a private answer key")
     if answer_key.campaign_id != plan.campaign_id:
         raise ValueError("blind answer key belongs to a different campaign")
+    if review_bundle.campaign_id != plan.campaign_id:
+        raise ValueError("blind reviews belong to a different campaign")
+    if review_bundle.public_bundle_sha256 != answer_key.public_bundle_sha256:
+        raise ValueError("blind reviews belong to a different public review packet")
+    reviews = review_bundle.reviews
+    if not reviews:
+        return _HumanMetrics(
+            mean_weighted_score=None,
+            lowest_dimension_mean=None,
+            continuity_rate=None,
+            preference_rate=None,
+        )
 
     case_by_id = {case.case_id: case for case in plan.cases}
     answers = {answer.comparison_id: answer for answer in answer_key.answers}

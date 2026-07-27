@@ -2,10 +2,12 @@
 
 from __future__ import annotations
 
+import csv
 import hashlib
 import json
 from datetime import UTC, datetime
 from decimal import Decimal
+from io import StringIO
 from pathlib import Path
 from uuid import UUID, uuid5
 
@@ -26,6 +28,8 @@ from open_hollywood_api.services.model_profiles import (
     ModelProfileStore,
 )
 from open_hollywood_engine.evaluations import (
+    HUMAN_REVIEW_SCHEMA_VERSION,
+    REVIEW_CSV_COLUMNS,
     BenchmarkCase,
     BenchmarkCaseExecutionError,
     BenchmarkCaseStatus,
@@ -40,9 +44,13 @@ from open_hollywood_engine.evaluations import (
     EvaluationDimension,
     HardGate,
     HumanComparisonReview,
+    HumanReviewBundle,
     build_benchmark_plan,
     build_blind_bundle,
     load_benchmark_corpus,
+    parse_review_csvs,
+    render_review_csv,
+    render_review_guide,
     run_benchmark_plan,
     summarize_benchmark,
 )
@@ -165,6 +173,26 @@ class RoutedFixtureGateway(FixtureGateway):
 
     async def close(self) -> None:
         self.closed = True
+
+
+def _complete_review_form(form: str, *, maximum_rows: int | None = None) -> str:
+    reader = csv.DictReader(StringIO(form, newline=""))
+    rows = list(reader)
+    if maximum_rows is not None:
+        rows = rows[:maximum_rows]
+    for row in rows:
+        row["preference"] = "a"
+        for dimension in EvaluationDimension:
+            row[f"candidate_a_score__{dimension.value}"] = "4"
+            row[f"candidate_b_score__{dimension.value}"] = "4"
+        for gate in HardGate:
+            row[f"candidate_a_gate__{gate.value}"] = "true"
+            row[f"candidate_b_gate__{gate.value}"] = "true"
+    output = StringIO(newline="")
+    writer = csv.DictWriter(output, fieldnames=REVIEW_CSV_COLUMNS, lineterminator="\n")
+    writer.writeheader()
+    writer.writerows(rows)
+    return output.getvalue()
 
 
 @pytest.fixture
@@ -466,6 +494,58 @@ async def test_blind_bundle_hides_provenance_and_randomizes_stably(
 
 
 @pytest.mark.anyio
+async def test_review_csv_round_trip_is_bound_to_exact_public_packet(
+    benchmark_plan: tuple[BenchmarkCorpus, BenchmarkPlan],
+) -> None:
+    corpus, plan = benchmark_plan
+    report = await run_benchmark_plan(
+        plan=plan,
+        corpus=corpus,
+        executor=FixtureExecutor(),
+    )
+    public, answer_key = build_blind_bundle(
+        plan=plan,
+        corpus=corpus,
+        results=report.results,
+        blinding_key=b"0123456789abcdef0123456789abcdef",
+    )
+    form = render_review_csv(public, reviewer_id="reviewer-1")
+    guide = render_review_guide(public, reviewer_id="reviewer-1")
+    completed_form = _complete_review_form(form, maximum_rows=1)
+
+    review_bundle = parse_review_csvs(
+        public,
+        (completed_form,),
+    )
+    summary = summarize_benchmark(
+        plan=plan,
+        results=report.results,
+        answer_key=answer_key,
+        review_bundle=review_bundle,
+    )
+
+    assert review_bundle.public_bundle_sha256 == answer_key.public_bundle_sha256
+    assert "Do events follow convincingly" in guide
+    assert answer_key.public_bundle_sha256 in guide
+    assert len(review_bundle.reviews) == 1
+    assert summary.human_review_count == 1
+    with pytest.raises(ValueError, match="preference"):
+        parse_review_csvs(public, (form,))
+    with pytest.raises(ValueError, match="score each comparison only once"):
+        parse_review_csvs(public, (completed_form, completed_form))
+    mismatched = review_bundle.model_copy(
+        update={"public_bundle_sha256": "0" * 64},
+    )
+    with pytest.raises(ValueError, match="different public review packet"):
+        summarize_benchmark(
+            plan=plan,
+            results=report.results,
+            answer_key=answer_key,
+            review_bundle=mismatched,
+        )
+
+
+@pytest.mark.anyio
 async def test_operator_packages_separate_review_evidence_and_summarizes(
     benchmark_plan: tuple[BenchmarkCorpus, BenchmarkPlan],
     tmp_path: Path,
@@ -481,6 +561,9 @@ async def test_operator_packages_separate_review_evidence_and_summarizes(
     key_path = tmp_path / "private.key"
     public_path = tmp_path / "review.json"
     answer_path = tmp_path / "answers.json"
+    review_form_path = tmp_path / "reviewer-1.csv"
+    review_guide_path = tmp_path / "reviewer-1.md"
+    review_bundle_path = tmp_path / "reviews.json"
     summary_path = tmp_path / "summary.json"
     plan_path.write_text(plan.model_dump_json(), encoding="utf-8")
     report_path.write_text(report.model_dump_json(), encoding="utf-8")
@@ -507,6 +590,43 @@ async def test_operator_packages_separate_review_evidence_and_summarizes(
     assert (
         evaluation_main(
             [
+                "create-review-form",
+                "--public-bundle",
+                str(public_path),
+                "--reviewer-id",
+                "reviewer-1",
+                "--output",
+                str(review_form_path),
+                "--guide-output",
+                str(review_guide_path),
+            ]
+        )
+        == 0
+    )
+    review_form_path.write_text(
+        _complete_review_form(
+            review_form_path.read_text(encoding="utf-8"),
+            maximum_rows=1,
+        ),
+        encoding="utf-8",
+    )
+    assert (
+        evaluation_main(
+            [
+                "import-reviews",
+                "--public-bundle",
+                str(public_path),
+                "--input",
+                str(review_form_path),
+                "--output",
+                str(review_bundle_path),
+            ]
+        )
+        == 0
+    )
+    assert (
+        evaluation_main(
+            [
                 "summarize",
                 "--plan",
                 str(plan_path),
@@ -522,7 +642,12 @@ async def test_operator_packages_separate_review_evidence_and_summarizes(
     public_text = public_path.read_text(encoding="utf-8")
     assert len(json.loads(public_text)["comparisons"]) == 60
     assert "ollama" not in public_text
-    assert len(json.loads(answer_path.read_text(encoding="utf-8"))["answers"]) == 60
+    answer_key = json.loads(answer_path.read_text(encoding="utf-8"))
+    assert len(answer_key["answers"]) == 60
+    reviews = json.loads(review_bundle_path.read_text(encoding="utf-8"))
+    assert reviews["public_bundle_sha256"] == answer_key["public_bundle_sha256"]
+    assert len(reviews["reviews"]) == 1
+    assert answer_key["public_bundle_sha256"] in review_guide_path.read_text(encoding="utf-8")
     summary = json.loads(summary_path.read_text(encoding="utf-8"))
     assert summary["human_review_count"] == 0
     assert summary["criteria"]["weighted_human_score_at_least_3_5"] is None
@@ -575,7 +700,12 @@ async def test_summary_maps_blind_preference_back_to_agentic_system(
         plan=plan,
         results=report.results,
         answer_key=answer_key,
-        reviews=(review,),
+        review_bundle=HumanReviewBundle(
+            schema_version=HUMAN_REVIEW_SCHEMA_VERSION,
+            campaign_id=plan.campaign_id,
+            public_bundle_sha256=answer_key.public_bundle_sha256,
+            reviews=(review,),
+        ),
     )
 
     assert summary.agentic_baseline_preference_rate == 1

@@ -118,12 +118,14 @@ benchmark materializes immutable Scene Plans and an initial Story Bible,
 executes the checkpointed writer/critic/continuity/bible-maintainer loop,
 and deterministically assembles accepted scene versions into a complete
 benchmark story with exact usage and lineage. The formal
-operator can now stage all three profiles, preserve the mandatory Blueprint
+operator flow can stage all three profiles, preserve the mandatory Blueprint
 approval as an explicit per-case command, route frozen local/cloud deployments
 through signed-in local Ollama or direct Ollama Cloud, and resume production
-into the same atomically checkpointed report. The formal Local/Cloud/Hybrid
-campaign and blind human reviews remain pending, so Step 19 is not yet marked
-complete.
+into the same atomically checkpointed report. It also creates reviewer-specific
+CSV forms and provenance-free rubric guides, imports complete human scores, and
+cryptographically binds review evidence to the exact public blind packet and
+private answer key. The formal Local/Cloud/Hybrid campaign and actual blind
+human reviews remain pending, so Step 19 is not yet marked complete.
 
 The v0.1 target is deliberately narrow: short prose fiction, local-first
 storage, optional local/cloud/hybrid inference, and one mandatory story
