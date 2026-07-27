@@ -219,7 +219,11 @@ class OllamaGateway:
 
         payload = await self._request_json("POST", "/api/chat", json=body)
         try:
-            response = self._parse_response(payload, deployment=deployment)
+            response = self._parse_response(
+                payload,
+                deployment=deployment,
+                requested_model_identifier=request.model_identifier,
+            )
         except ModelGatewayError:
             raise
         except (ValueError, OverflowError) as exc:
@@ -265,6 +269,12 @@ class OllamaGateway:
             ) from exc
         try:
             response = await self._client.request(method, path, json=json)
+        except httpx.TimeoutException as exc:
+            raise ModelGatewayError(
+                ModelGatewayErrorCode.PROVIDER_TIMEOUT,
+                "Ollama request timed out",
+                retryable=True,
+            ) from exc
         except httpx.TransportError as exc:
             raise ModelGatewayError(
                 ModelGatewayErrorCode.PROVIDER_UNAVAILABLE,
@@ -317,7 +327,11 @@ class OllamaGateway:
         )
 
     def _parse_response(
-        self, payload: Mapping[str, Any], *, deployment: ModelDeployment
+        self,
+        payload: Mapping[str, Any],
+        *,
+        deployment: ModelDeployment,
+        requested_model_identifier: str,
     ) -> ModelResponse:
         if payload.get("done") is not True:
             raise _invalid_field("done")
@@ -328,9 +342,20 @@ class OllamaGateway:
             created_at = datetime.fromisoformat(created_at_text.replace("Z", "+00:00"))
         except ValueError as exc:
             raise _invalid_field("created_at") from exc
+        provider_model_identifier = _require_string(payload.get("model"), field_name="model")
+        if not _ollama_model_identifiers_match(
+            requested=requested_model_identifier,
+            reported=provider_model_identifier,
+            deployment=deployment,
+        ):
+            raise ModelGatewayError(
+                ModelGatewayErrorCode.INVALID_RESPONSE,
+                "Ollama returned a response from a different model",
+                retryable=False,
+            )
         return ModelResponse(
             provider=self.provider,
-            model_identifier=_require_string(payload.get("model"), field_name="model"),
+            model_identifier=requested_model_identifier,
             deployment=deployment,
             content=content,
             thinking=_optional_string(message.get("thinking"), field_name="message.thinking"),
@@ -357,7 +382,29 @@ class OllamaGateway:
                 ),
             ),
             estimated_cost_usd=Decimal("0"),
+            provider_model_identifier=provider_model_identifier,
         )
+
+
+def _ollama_model_identifiers_match(
+    *,
+    requested: str,
+    reported: str,
+    deployment: ModelDeployment,
+) -> bool:
+    if requested == reported:
+        return True
+    if deployment is not ModelDeployment.CLOUD:
+        return False
+    return _cloud_alias_stem(requested) == _cloud_alias_stem(reported)
+
+
+def _cloud_alias_stem(model_identifier: str) -> str:
+    if model_identifier.endswith("-cloud"):
+        return model_identifier.removesuffix("-cloud")
+    if model_identifier.endswith(":cloud"):
+        return model_identifier.removesuffix(":cloud")
+    return model_identifier
 
 
 def _require_mapping(value: object, *, field_name: str) -> Mapping[str, Any]:

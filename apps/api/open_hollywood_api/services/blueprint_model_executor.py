@@ -450,6 +450,12 @@ class BenchmarkBlueprintNodeExecutor(BlueprintNodeExecutor):
             invocation.output_tokens = response.usage.output_tokens
             invocation.estimated_cost_usd = response.estimated_cost_usd
             invocation.latency_ms = response.timing.total_ms
+            invocation.request_settings = {
+                **invocation.request_settings,
+                "provider_response_model_identifier": (
+                    response.provider_model_identifier or response.model_identifier
+                ),
+            }
             invocation.schema_validation_succeeded = True
             invocation.completed_at = datetime.now(UTC)
             return references

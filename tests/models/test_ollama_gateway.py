@@ -41,9 +41,13 @@ def _cloud_secret() -> SecretValue:
     return SecretValue("unit-test-runtime-credential")
 
 
-def _request(*, response_schema: dict[str, Any] | None = None) -> ModelRequest:
+def _request(
+    *,
+    model_identifier: str = "gemma4:e4b",
+    response_schema: dict[str, Any] | None = None,
+) -> ModelRequest:
     return ModelRequest(
-        model_identifier="gemma4:e4b",
+        model_identifier=model_identifier,
         messages=(
             ModelMessage(MessageRole.SYSTEM, "You are a story architect."),
             ModelMessage(MessageRole.USER, "Create a supernatural premise."),
@@ -225,6 +229,36 @@ async def test_generate_maps_portable_settings_budget_schema_and_usage() -> None
     assert response.estimated_cost_usd == 0
 
 
+async def test_cloud_response_preserves_requested_alias_and_reported_model() -> None:
+    transport = _transport(
+        lambda _request: httpx.Response(
+            200,
+            json=_chat_response(model="gemma4:31b"),
+        )
+    )
+    async with OllamaGateway(transport=transport) as gateway:
+        response = await gateway.generate(_request(model_identifier="gemma4:31b-cloud"))
+
+    assert response.model_identifier == "gemma4:31b-cloud"
+    assert response.provider_model_identifier == "gemma4:31b"
+    assert response.deployment is ModelDeployment.CLOUD
+
+
+async def test_response_from_different_model_is_rejected() -> None:
+    transport = _transport(
+        lambda _request: httpx.Response(
+            200,
+            json=_chat_response(model="other-model:31b"),
+        )
+    )
+    async with OllamaGateway(transport=transport) as gateway:
+        with pytest.raises(ModelGatewayError) as error:
+            await gateway.generate(_request(model_identifier="gemma4:31b-cloud"))
+
+    assert error.value.code is ModelGatewayErrorCode.INVALID_RESPONSE
+    assert "different model" in str(error.value)
+
+
 async def test_direct_cloud_uses_bearer_authentication() -> None:
     def handler(request: httpx.Request) -> httpx.Response:
         assert request.headers["Authorization"] == "Bearer unit-test-runtime-credential"
@@ -389,4 +423,17 @@ async def test_transport_failure_is_retryable_provider_unavailable() -> None:
             await gateway.list_models()
 
     assert error.value.code is ModelGatewayErrorCode.PROVIDER_UNAVAILABLE
+    assert error.value.retryable is True
+
+
+async def test_transport_timeout_is_retryable_provider_timeout() -> None:
+    def handler(request: httpx.Request) -> httpx.Response:
+        raise httpx.ReadTimeout("request timed out", request=request)
+
+    async with OllamaGateway(transport=_transport(handler)) as gateway:
+        with pytest.raises(ModelGatewayError) as error:
+            await gateway.list_models()
+
+    assert error.value.code is ModelGatewayErrorCode.PROVIDER_TIMEOUT
+    assert str(error.value) == "Ollama request timed out"
     assert error.value.retryable is True

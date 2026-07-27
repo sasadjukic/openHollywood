@@ -141,12 +141,18 @@ layer now executes the direct single-model baseline through a bounded
 provider-neutral call and persists its frozen prompt, invocation, workflow, and
 immutable story lineage idempotently. Campaign reports checkpoint atomically
 after each case, failed cases retry only when explicitly requested, and
-operator commands create separated public/private review packets and summaries
-from schema-validated evidence. Agentic cases now enter the real durable Story
-Blueprint graph: every registered specialist resolves its exact frozen profile
-selection, receives deterministic immutable inputs and benchmark constraints,
-uses schema enforcement when the deployment supports it, records a budgeted
-invocation plus output lineage, validates cross-artifact invariants, and pauses
+operator-configurable Ollama timeouts support long-form calls while
+distinguishing provider timeouts from outages. Retrying after an interrupted
+process closes stale running baseline attempts and preserves their immutable
+input lineage. Ollama Cloud response aliases are accepted only when they
+normalize to the frozen requested model; requested and provider-reported
+identifiers are both persisted. Operator commands create separated
+public/private review packets and summaries from schema-validated evidence.
+Agentic cases now enter the real durable Story Blueprint graph: every registered
+specialist resolves its exact frozen profile selection, receives deterministic
+immutable inputs and benchmark constraints, uses schema enforcement when the
+deployment supports it, records a budgeted invocation plus output lineage,
+validates cross-artifact invariants, and pauses
 at the mandatory human approval interrupt. Replaying a paused case performs no
 duplicate model calls. The approved handoff now materializes exact Scene
 Plan versions and an initial canonical Story Bible, creates a child production

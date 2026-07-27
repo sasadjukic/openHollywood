@@ -110,14 +110,20 @@ builds provenance-free blind A/B review packets with separate answer keys, and
 aggregates the accepted rubric, hard gates, preference rate, completion rate,
 and cost criteria. The direct baseline now runs through a bounded
 provider-neutral call with idempotent SQLite prompt, invocation, workflow, and
-story lineage; long campaigns atomically checkpoint after every case. The
-agentic path now runs profile-routed, schema-validated specialists through
-the real durable Story Blueprint graph and stops at its mandatory human
-approval interrupt without duplicate calls on replay. Once approved, the
-benchmark materializes immutable Scene Plans and an initial Story Bible,
-executes the checkpointed writer/critic/continuity/bible-maintainer loop,
-and deterministically assembles accepted scene versions into a complete
-benchmark story with exact usage and lineage. The formal
+story lineage; long campaigns atomically checkpoint after every case. Formal
+operators can extend the Ollama transport timeout for long-form inference;
+timeout failures are distinct from provider outages, and a retry reconciles
+invocations left running by an interrupted process without mutating their
+immutable input artifacts. Ollama Cloud response aliases are normalized only
+when they resolve to the requested frozen model, while both requested and
+provider-reported identifiers remain persisted for audit. The agentic path now
+runs profile-routed, schema-validated specialists through the real durable Story
+Blueprint graph and stops at its mandatory human approval interrupt without
+duplicate calls on replay. Once approved, the benchmark materializes immutable
+Scene Plans and an initial Story Bible, executes the checkpointed
+writer/critic/continuity/bible-maintainer loop, and deterministically assembles
+accepted scene versions into a complete benchmark story with exact usage and
+lineage. The formal
 operator flow can stage all three profiles, preserve the mandatory Blueprint
 approval as an explicit per-case command, route frozen local/cloud deployments
 through signed-in local Ollama or direct Ollama Cloud, and resume production
