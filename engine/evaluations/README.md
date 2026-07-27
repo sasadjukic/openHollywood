@@ -51,10 +51,34 @@ atomically replaces a validated JSON report after every new terminal case, so
 process failure does not discard hours of completed inference. Failed results
 remain resume evidence unless retry is explicitly requested.
 
+The operator flow preserves the mandatory human checkpoint:
+
+```powershell
+uv run --extra api python -m scripts.evaluation_harness plan `
+  --output data/benchmark-plan.json
+uv run --extra api python -m scripts.evaluation_harness run-baseline `
+  --plan data/benchmark-plan.json --report data/benchmark-report.json
+uv run --extra api python -m scripts.evaluation_harness prepare-agentic `
+  --plan data/benchmark-plan.json
+uv run --extra api python -m scripts.evaluation_harness approve-blueprints `
+  --plan data/benchmark-plan.json --case-id <reviewed-case-id>
+uv run --extra api python -m scripts.evaluation_harness run-agentic `
+  --plan data/benchmark-plan.json --report data/benchmark-report.json
+```
+
+`prepare-agentic` runs Local, Cloud, and Hybrid cases sequentially and stops
+each one at its durable Story Blueprint interrupt. The operator must explicitly
+approve reviewed case IDs before `run-agentic` will start production. Every
+stage is idempotent and uses the same SQLite lineage and atomically checkpointed
+report. Repeat `--target local`, `--target cloud`, or `--target hybrid` to stage
+a subset. By default, cloud-tagged models are reached through the signed-in
+local Ollama server. Pass `--direct-ollama-cloud` to route cloud deployments
+directly with the runtime-only `OLLAMA_API_KEY`; Hybrid then uses separate local
+and cloud gateways selected from the frozen campaign snapshot.
+
 The initial 12-prompt corpus is stored at
 `benchmarks/v0.1/corpus.json`. The corpus must never be edited silently; change
 a prompt version or create a new corpus version.
 
-The current Step 19 implementation is still in progress: operator wiring for
-all configured provider deployments, blind human reviews, and the formal
-budget-authorized benchmark campaign have not run yet.
+The current Step 19 implementation is still in progress: blind human reviews
+and the formal budget-authorized benchmark campaign have not run yet.
