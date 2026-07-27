@@ -32,6 +32,7 @@ from open_hollywood_engine.models.profiles import (
     ModelProfileMode,
     ModelSelection,
 )
+from open_hollywood_engine.models.routing import CampaignModelGateway
 from open_hollywood_engine.secrets import EnvironmentSecretStore, ModelSecret, SecretValue
 
 __all__ = [
@@ -63,6 +64,7 @@ __all__ = [
     "OllamaHost",
     "SecretValue",
     "BLUEPRINT_SPECIALIST_ROLES",
+    "CampaignModelGateway",
     "DIALOGUE_SPECIALIST_ROLES",
     "REGISTERED_SPECIALIST_ROLES",
 ]

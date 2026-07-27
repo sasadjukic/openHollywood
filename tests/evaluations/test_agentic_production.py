@@ -24,6 +24,11 @@ from open_hollywood_api.services.blueprint_model_executor import (
     BenchmarkBlueprintNodeExecutor,
 )
 from open_hollywood_api.services.blueprint_workflow import BlueprintWorkflowService
+from open_hollywood_api.services.evaluation_campaign import (
+    approve_agentic_cases,
+    prepare_agentic_cases,
+    run_agentic_cases,
+)
 from open_hollywood_api.services.model_profiles import (
     BUILTIN_PROFILE_IDS,
     ModelProfileStore,
@@ -50,11 +55,14 @@ from open_hollywood_engine.artifacts import (
 from open_hollywood_engine.evaluations import (
     BenchmarkCase,
     BenchmarkCaseExecutionError,
+    BenchmarkPlan,
     BenchmarkProfileSnapshot,
     BenchmarkSystem,
+    build_benchmark_plan,
     load_benchmark_corpus,
 )
 from open_hollywood_engine.models import (
+    MODEL_PRESETS,
     ModelDeployment,
     ModelProfileMode,
     ModelRequest,
@@ -64,11 +72,14 @@ from open_hollywood_engine.models import (
     ModelUsage,
 )
 from open_hollywood_engine.workflows import (
+    SCENE_PRODUCTION_GRAPH_VERSION,
+    STORY_BLUEPRINT_GRAPH_VERSION,
     BlueprintDecisionAction,
     BlueprintHumanDecision,
 )
 from sqlalchemy import Engine, func, select
 
+from scripts.evaluation_harness import AtomicJsonReportCheckpoint
 from tests.evaluations.test_agentic_blueprint import (
     CAMPAIGN_ID,
     CORPUS_PATH,
@@ -331,3 +342,132 @@ async def test_approved_blueprint_runs_durable_production_and_replays(
     assert len(output.artifact_version_ids) == 6
     assert output.content.count("\n\n") == 2
     assert len(gateway.requests) == request_count
+
+
+@pytest.mark.anyio
+async def test_operator_runs_agentic_case_only_after_explicit_approval(
+    migrated_database_path: Path,
+    database_engine: Engine,
+    tmp_path: Path,
+) -> None:
+    corpus = load_benchmark_corpus(CORPUS_PATH)
+    local = ModelSelection(
+        provider="ollama",
+        model_identifier="local-fixture",
+        deployment=ModelDeployment.LOCAL,
+    )
+    cloud = ModelSelection(
+        provider="ollama",
+        model_identifier="cloud-fixture",
+        deployment=ModelDeployment.CLOUD,
+    )
+    full_plan = build_benchmark_plan(
+        campaign_id=CAMPAIGN_ID,
+        corpus=corpus,
+        baseline_model=cloud,
+        profiles={
+            ModelProfileMode.LOCAL: BenchmarkProfileSnapshot.from_configuration(
+                profile_id=BUILTIN_PROFILE_IDS[ModelProfileMode.LOCAL],
+                configuration=MODEL_PRESETS[ModelProfileMode.LOCAL].configuration(
+                    local_model=local
+                ),
+            ),
+            ModelProfileMode.CLOUD: BenchmarkProfileSnapshot.from_configuration(
+                profile_id=BUILTIN_PROFILE_IDS[ModelProfileMode.CLOUD],
+                configuration=MODEL_PRESETS[ModelProfileMode.CLOUD].configuration(
+                    cloud_model=cloud
+                ),
+            ),
+            ModelProfileMode.HYBRID: BenchmarkProfileSnapshot.from_configuration(
+                profile_id=BUILTIN_PROFILE_IDS[ModelProfileMode.HYBRID],
+                configuration=MODEL_PRESETS[ModelProfileMode.HYBRID].configuration(
+                    local_model=local,
+                    cloud_model=cloud,
+                ),
+            ),
+        },
+        workflow_versions={
+            "story_blueprint": STORY_BLUEPRINT_GRAPH_VERSION,
+            "scene_production": SCENE_PRODUCTION_GRAPH_VERSION,
+        },
+    )
+    local_case = next(case for case in full_plan.cases if case.target_key == "local")
+    plan = BenchmarkPlan(
+        schema_version=full_plan.schema_version,
+        campaign_id=full_plan.campaign_id,
+        corpus_id=full_plan.corpus_id,
+        corpus_version=full_plan.corpus_version,
+        corpus_sha256=full_plan.corpus_sha256,
+        workflow_versions=full_plan.workflow_versions,
+        cases=(local_case,),
+    )
+    session_factory = create_session_factory(database_engine)
+    ModelProfileStore(session_factory).configure_profile(
+        BUILTIN_PROFILE_IDS[ModelProfileMode.LOCAL],
+        local_model=local,
+        cloud_model=None,
+    )
+    gateway = ProductionFixtureGateway(corpus.prompts[0].prompt, corpus.prompts[0])
+    report_path = tmp_path / "campaign" / "report.json"
+
+    prepared = await prepare_agentic_cases(
+        plan=plan,
+        corpus=corpus,
+        database_path=migrated_database_path,
+        session_factory=session_factory,
+        gateway=gateway,
+        target_keys=frozenset({"local"}),
+    )
+
+    assert len(prepared) == 1
+    assert prepared[0].awaiting_approval is True
+    assert len(gateway.requests) == 6
+    with pytest.raises(ValueError, match="explicit Blueprint approval"):
+        await run_agentic_cases(
+            plan=plan,
+            corpus=corpus,
+            database_path=migrated_database_path,
+            session_factory=session_factory,
+            gateway=gateway,
+            prior_report=None,
+            checkpoint=AtomicJsonReportCheckpoint(report_path, plan),
+            target_keys=frozenset({"local"}),
+        )
+    assert not report_path.exists()
+
+    approved = await approve_agentic_cases(
+        plan=plan,
+        corpus=corpus,
+        database_path=migrated_database_path,
+        session_factory=session_factory,
+        gateway=gateway,
+        case_ids=(local_case.case_id,),
+        target_keys=frozenset({"local"}),
+    )
+    report = await run_agentic_cases(
+        plan=plan,
+        corpus=corpus,
+        database_path=migrated_database_path,
+        session_factory=session_factory,
+        gateway=gateway,
+        prior_report=None,
+        checkpoint=AtomicJsonReportCheckpoint(report_path, plan),
+        target_keys=frozenset({"local"}),
+    )
+    request_count = len(gateway.requests)
+    replay = await run_agentic_cases(
+        plan=plan,
+        corpus=corpus,
+        database_path=migrated_database_path,
+        session_factory=session_factory,
+        gateway=gateway,
+        prior_report=report,
+        checkpoint=AtomicJsonReportCheckpoint(report_path, plan),
+        target_keys=frozenset({"local"}),
+    )
+
+    assert approved[0].awaiting_approval is False
+    assert len(report.results) == 1
+    assert report.results[0].output is not None
+    assert replay == report
+    assert len(gateway.requests) == request_count == 18

@@ -154,23 +154,29 @@ run, and invokes the real SQLite-checkpointed writer, critic, continuity, and
 bible-maintainer graph. Production nodes reserve durable graph/call/token/cost
 budgets, profile-routed structured calls persist exact input lineage, accepted
 scene deltas advance the Story Bible through the deterministic reducer, and
-successful task fingerprints replay without duplicate calls. A final
-deterministic assembly persists the complete benchmark story and returns its
-Blueprint, accepted-scene, final-bible, manuscript, invocation, usage, latency,
-cost, and hard-gate evidence as `BenchmarkOutput`. The mandatory Blueprint
-approval remains fail-closed, and production pauses before a call that would
-exceed its reserved budget. Remaining before completion: wire and validate
-operator execution for every configured provider deployment, run the formal
-corpus across all three profiles and the single-model baseline within an
-authorized budget, collect blind human reviews, and preserve the resulting
-campaign evidence. Evidence so far:
+ successful task fingerprints replay without duplicate calls. A final
+ deterministic assembly persists the complete benchmark story and returns its
+ Blueprint, accepted-scene, final-bible, manuscript, invocation, usage, latency,
+ cost, and hard-gate evidence as `BenchmarkOutput`. The mandatory Blueprint
+ approval remains fail-closed, and production pauses before a call that would
+ exceed its reserved budget. The resumable operator flow now stages all Local,
+ Cloud, and Hybrid Blueprint cases, requires explicit per-case approval, then
+ runs approved production into the same atomically checkpointed report.
+ Frozen Ollama deployment routing supports cloud models through a signed-in
+ local daemon or a runtime-secret-backed direct cloud endpoint, including
+ split local/cloud Hybrid execution. Remaining before completion: run the
+ formal corpus across all three profiles and the single-model baseline within
+ an authorized budget, collect blind human reviews, and preserve the resulting
+ campaign evidence. Evidence so far:
 `benchmarks/v0.1/corpus.json`,
 `engine/open_hollywood_engine/evaluations/`,
 `apps/api/open_hollywood_api/services/agentic_benchmark.py`,
 `apps/api/open_hollywood_api/services/blueprint_model_executor.py`,
+`apps/api/open_hollywood_api/services/evaluation_campaign.py`,
 `apps/api/open_hollywood_api/services/evaluation_execution.py`,
 `apps/api/open_hollywood_api/services/production_model_executor.py`,
 `apps/api/open_hollywood_api/services/production_workflow.py`,
+`engine/open_hollywood_engine/models/routing.py`,
 `scripts/evaluation_harness.py`, and `tests/evaluations/`.
 
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.

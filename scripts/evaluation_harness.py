@@ -14,6 +14,13 @@ from open_hollywood_api.persistence.database import (
     create_session_factory,
     create_sqlite_engine,
 )
+from open_hollywood_api.services.agentic_benchmark import AgenticBlueprintPreparation
+from open_hollywood_api.services.evaluation_campaign import (
+    AGENTIC_TARGET_KEYS,
+    approve_agentic_cases,
+    prepare_agentic_cases,
+    run_agentic_cases,
+)
 from open_hollywood_api.services.evaluation_execution import (
     DirectBaselineBenchmarkExecutor,
 )
@@ -31,7 +38,17 @@ from open_hollywood_engine.evaluations import (
     run_benchmark_plan,
     summarize_benchmark,
 )
-from open_hollywood_engine.models import ModelProfileMode, OllamaGateway, OllamaHost
+from open_hollywood_engine.models import (
+    CampaignModelGateway,
+    EnvironmentSecretStore,
+    ModelDeployment,
+    ModelGateway,
+    ModelProfileConfiguration,
+    ModelProfileMode,
+    ModelSelection,
+    OllamaGateway,
+    OllamaHost,
+)
 from open_hollywood_engine.workflows import (
     SCENE_PRODUCTION_GRAPH_VERSION,
     STORY_BLUEPRINT_GRAPH_VERSION,
@@ -121,14 +138,46 @@ def _parser() -> argparse.ArgumentParser:
 
     run_baseline = commands.add_parser(
         "run-baseline",
-        help="Run or resume only the direct single-model cases through local Ollama.",
+        help="Run or resume the direct single-model cases through configured Ollama routing.",
     )
     run_baseline.add_argument("--corpus", type=Path, default=DEFAULT_CORPUS_PATH)
     run_baseline.add_argument("--database", type=Path, default=DEFAULT_DATABASE_PATH)
     run_baseline.add_argument("--plan", type=Path, required=True)
     run_baseline.add_argument("--report", type=Path, required=True)
     run_baseline.add_argument("--ollama-base-url", type=str)
+    run_baseline.add_argument("--direct-ollama-cloud", action="store_true")
+    run_baseline.add_argument("--ollama-cloud-base-url", type=str)
     run_baseline.add_argument("--retry-failed", action="store_true")
+
+    prepare_agentic = commands.add_parser(
+        "prepare-agentic",
+        help=(
+            "Run or replay agentic Blueprint generation and stop at the mandatory "
+            "human approval interrupt."
+        ),
+    )
+    _add_agentic_execution_arguments(prepare_agentic)
+
+    approve_blueprints = commands.add_parser(
+        "approve-blueprints",
+        help="Explicitly approve one or more prepared benchmark Blueprints.",
+    )
+    _add_agentic_execution_arguments(approve_blueprints)
+    approve_blueprints.add_argument(
+        "--case-id",
+        type=UUID,
+        action="append",
+        required=True,
+        help="Prepared agentic case to approve; repeat for multiple reviewed cases.",
+    )
+
+    run_agentic = commands.add_parser(
+        "run-agentic",
+        help="Run or resume approved Local, Cloud, and Hybrid production cases.",
+    )
+    _add_agentic_execution_arguments(run_agentic)
+    run_agentic.add_argument("--report", type=Path, required=True)
+    run_agentic.add_argument("--retry-failed", action="store_true")
 
     key = commands.add_parser(
         "create-review-key",
@@ -161,6 +210,25 @@ def _parser() -> argparse.ArgumentParser:
     summary.add_argument("--output", type=Path, required=True)
     summary.add_argument("--overwrite", action="store_true")
     return parser
+
+
+def _add_agentic_execution_arguments(parser: argparse.ArgumentParser) -> None:
+    parser.add_argument("--corpus", type=Path, default=DEFAULT_CORPUS_PATH)
+    parser.add_argument("--database", type=Path, default=DEFAULT_DATABASE_PATH)
+    parser.add_argument("--plan", type=Path, required=True)
+    parser.add_argument(
+        "--target",
+        action="append",
+        choices=sorted(AGENTIC_TARGET_KEYS),
+        help="Agentic profile target; repeat as needed. Defaults to all three profiles.",
+    )
+    parser.add_argument("--ollama-base-url", type=str)
+    parser.add_argument(
+        "--direct-ollama-cloud",
+        action="store_true",
+        help="Route cloud deployments directly to Ollama Cloud using OLLAMA_API_KEY.",
+    )
+    parser.add_argument("--ollama-cloud-base-url", type=str)
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -238,6 +306,8 @@ def main(argv: list[str] | None = None) -> int:
                 report_path=report_path,
                 prior_report=prior_report,
                 ollama_base_url=args.ollama_base_url,
+                direct_ollama_cloud=args.direct_ollama_cloud,
+                ollama_cloud_base_url=args.ollama_cloud_base_url,
                 retry_failed=args.retry_failed,
             )
         )
@@ -256,6 +326,121 @@ def main(argv: list[str] | None = None) -> int:
                         result.status.value == "succeeded" for result in baseline_results
                     ),
                     "report": str(report_path.resolve()),
+                },
+                indent=2,
+                sort_keys=True,
+            )
+        )
+        return 0
+
+    if args.command == "prepare-agentic":
+        target_keys = _agentic_target_keys(args.target)
+        preparations = asyncio.run(
+            _prepare_agentic_with_ollama(
+                plan=plan,
+                corpus_path=args.corpus,
+                database_path=args.database,
+                target_keys=target_keys,
+                ollama_base_url=args.ollama_base_url,
+                direct_ollama_cloud=args.direct_ollama_cloud,
+                ollama_cloud_base_url=args.ollama_cloud_base_url,
+            )
+        )
+        print(
+            json.dumps(
+                {
+                    "campaign_id": str(plan.campaign_id),
+                    "prepared": len(preparations),
+                    "awaiting_approval": sum(
+                        preparation.awaiting_approval for preparation in preparations
+                    ),
+                    "cases": [
+                        {
+                            "case_id": str(preparation.case_id),
+                            "workflow_run_id": str(preparation.workflow_run_id),
+                            "awaiting_approval": preparation.awaiting_approval,
+                            "interrupt_id": preparation.interrupt_id,
+                        }
+                        for preparation in preparations
+                    ],
+                },
+                indent=2,
+                sort_keys=True,
+            )
+        )
+        return 0
+
+    if args.command == "approve-blueprints":
+        target_keys = _agentic_target_keys(args.target)
+        approved = asyncio.run(
+            _approve_agentic_with_ollama(
+                plan=plan,
+                corpus_path=args.corpus,
+                database_path=args.database,
+                case_ids=tuple(args.case_id),
+                target_keys=target_keys,
+                ollama_base_url=args.ollama_base_url,
+                direct_ollama_cloud=args.direct_ollama_cloud,
+                ollama_cloud_base_url=args.ollama_cloud_base_url,
+            )
+        )
+        print(
+            json.dumps(
+                {
+                    "campaign_id": str(plan.campaign_id),
+                    "approved": len(approved),
+                    "cases": [
+                        {
+                            "case_id": str(preparation.case_id),
+                            "workflow_run_id": str(preparation.workflow_run_id),
+                        }
+                        for preparation in approved
+                    ],
+                },
+                indent=2,
+                sort_keys=True,
+            )
+        )
+        return 0
+
+    if args.command == "run-agentic":
+        target_keys = _agentic_target_keys(args.target)
+        report_path = args.report
+        prior_report = (
+            BenchmarkRunReport.model_validate(_read_json(report_path))
+            if report_path.exists()
+            else None
+        )
+        if prior_report is not None:
+            _require_matching_report(plan, prior_report)
+        report = asyncio.run(
+            _run_agentic_with_ollama(
+                plan=plan,
+                corpus_path=args.corpus,
+                database_path=args.database,
+                report_path=report_path,
+                prior_report=prior_report,
+                target_keys=target_keys,
+                ollama_base_url=args.ollama_base_url,
+                direct_ollama_cloud=args.direct_ollama_cloud,
+                ollama_cloud_base_url=args.ollama_cloud_base_url,
+                retry_failed=args.retry_failed,
+            )
+        )
+        selected_case_ids = {case.case_id for case in plan.cases if case.target_key in target_keys}
+        selected_results = [
+            result for result in report.results if result.case_id in selected_case_ids
+        ]
+        print(
+            json.dumps(
+                {
+                    "campaign_id": str(plan.campaign_id),
+                    "agentic_completed": len(selected_results),
+                    "agentic_succeeded": sum(
+                        result.status.value == "succeeded" for result in selected_results
+                    ),
+                    "report": str(report_path.resolve()),
+                    "targets": sorted(target_keys),
                 },
                 indent=2,
                 sort_keys=True,
@@ -346,10 +531,18 @@ async def _run_direct_baseline(
     report_path: Path,
     prior_report: BenchmarkRunReport | None,
     ollama_base_url: str | None,
+    direct_ollama_cloud: bool,
+    ollama_cloud_base_url: str | None,
     retry_failed: bool,
 ) -> BenchmarkRunReport:
     engine = create_sqlite_engine(database_path)
-    gateway = OllamaGateway(host=OllamaHost.LOCAL, base_url=ollama_base_url)
+    gateway = _ollama_campaign_gateway(
+        plan,
+        target_keys=frozenset({"baseline"}),
+        ollama_base_url=ollama_base_url,
+        direct_ollama_cloud=direct_ollama_cloud,
+        ollama_cloud_base_url=ollama_cloud_base_url,
+    )
     try:
         executor = DirectBaselineBenchmarkExecutor(
             campaign_id=plan.campaign_id,
@@ -368,6 +561,192 @@ async def _run_direct_baseline(
     finally:
         await gateway.close()
         engine.dispose()
+
+
+async def _prepare_agentic_with_ollama(
+    *,
+    plan: BenchmarkPlan,
+    corpus_path: Path,
+    database_path: Path,
+    target_keys: frozenset[str],
+    ollama_base_url: str | None,
+    direct_ollama_cloud: bool,
+    ollama_cloud_base_url: str | None,
+) -> tuple[AgenticBlueprintPreparation, ...]:
+    engine = create_sqlite_engine(database_path)
+    gateway = _ollama_campaign_gateway(
+        plan,
+        target_keys=target_keys,
+        ollama_base_url=ollama_base_url,
+        direct_ollama_cloud=direct_ollama_cloud,
+        ollama_cloud_base_url=ollama_cloud_base_url,
+    )
+    try:
+        return await prepare_agentic_cases(
+            plan=plan,
+            corpus=load_benchmark_corpus(corpus_path),
+            database_path=database_path,
+            session_factory=create_session_factory(engine),
+            gateway=gateway,
+            target_keys=target_keys,
+        )
+    finally:
+        await gateway.close()
+        engine.dispose()
+
+
+async def _approve_agentic_with_ollama(
+    *,
+    plan: BenchmarkPlan,
+    corpus_path: Path,
+    database_path: Path,
+    case_ids: tuple[UUID, ...],
+    target_keys: frozenset[str],
+    ollama_base_url: str | None,
+    direct_ollama_cloud: bool,
+    ollama_cloud_base_url: str | None,
+) -> tuple[AgenticBlueprintPreparation, ...]:
+    engine = create_sqlite_engine(database_path)
+    gateway = _ollama_campaign_gateway(
+        plan,
+        target_keys=target_keys,
+        ollama_base_url=ollama_base_url,
+        direct_ollama_cloud=direct_ollama_cloud,
+        ollama_cloud_base_url=ollama_cloud_base_url,
+    )
+    try:
+        return await approve_agentic_cases(
+            plan=plan,
+            corpus=load_benchmark_corpus(corpus_path),
+            database_path=database_path,
+            session_factory=create_session_factory(engine),
+            gateway=gateway,
+            case_ids=case_ids,
+            target_keys=target_keys,
+        )
+    finally:
+        await gateway.close()
+        engine.dispose()
+
+
+async def _run_agentic_with_ollama(
+    *,
+    plan: BenchmarkPlan,
+    corpus_path: Path,
+    database_path: Path,
+    report_path: Path,
+    prior_report: BenchmarkRunReport | None,
+    target_keys: frozenset[str],
+    ollama_base_url: str | None,
+    direct_ollama_cloud: bool,
+    ollama_cloud_base_url: str | None,
+    retry_failed: bool,
+) -> BenchmarkRunReport:
+    engine = create_sqlite_engine(database_path)
+    gateway = _ollama_campaign_gateway(
+        plan,
+        target_keys=target_keys,
+        ollama_base_url=ollama_base_url,
+        direct_ollama_cloud=direct_ollama_cloud,
+        ollama_cloud_base_url=ollama_cloud_base_url,
+    )
+    try:
+        return await run_agentic_cases(
+            plan=plan,
+            corpus=load_benchmark_corpus(corpus_path),
+            database_path=database_path,
+            session_factory=create_session_factory(engine),
+            gateway=gateway,
+            prior_report=prior_report,
+            checkpoint=AtomicJsonReportCheckpoint(report_path, plan),
+            target_keys=target_keys,
+            retry_failed=retry_failed,
+        )
+    finally:
+        await gateway.close()
+        engine.dispose()
+
+
+def _agentic_target_keys(raw_targets: list[str] | None) -> frozenset[str]:
+    target_keys = frozenset(raw_targets or AGENTIC_TARGET_KEYS)
+    if not target_keys or not target_keys.issubset(AGENTIC_TARGET_KEYS):
+        raise ValueError("agentic targets must select Local, Cloud, or Hybrid")
+    return target_keys
+
+
+def _ollama_campaign_gateway(
+    plan: BenchmarkPlan,
+    *,
+    target_keys: frozenset[str],
+    ollama_base_url: str | None,
+    direct_ollama_cloud: bool,
+    ollama_cloud_base_url: str | None,
+) -> ModelGateway:
+    if ollama_cloud_base_url is not None and not direct_ollama_cloud:
+        raise ValueError("--ollama-cloud-base-url requires --direct-ollama-cloud")
+    model_deployments = _campaign_model_deployments(plan, target_keys)
+    if not direct_ollama_cloud:
+        return OllamaGateway(
+            host=OllamaHost.LOCAL,
+            base_url=ollama_base_url,
+        )
+
+    deployments: dict[ModelDeployment, ModelGateway] = {}
+    required_deployments = set(model_deployments.values())
+    if ModelDeployment.LOCAL in required_deployments:
+        deployments[ModelDeployment.LOCAL] = OllamaGateway(
+            host=OllamaHost.LOCAL,
+            base_url=ollama_base_url,
+        )
+    if ModelDeployment.CLOUD in required_deployments:
+        deployments[ModelDeployment.CLOUD] = OllamaGateway.from_secret_store(
+            EnvironmentSecretStore(),
+            host=OllamaHost.CLOUD,
+            base_url=ollama_cloud_base_url,
+        )
+    return CampaignModelGateway(
+        provider="ollama",
+        deployments=deployments,
+        model_deployments=model_deployments,
+    )
+
+
+def _campaign_model_deployments(
+    plan: BenchmarkPlan,
+    target_keys: frozenset[str],
+) -> dict[str, ModelDeployment]:
+    selections: list[ModelSelection] = []
+    for case in plan.cases:
+        if case.target_key not in target_keys:
+            continue
+        if case.baseline_model is not None:
+            selections.append(case.baseline_model.to_selection())
+            continue
+        if case.profile is None:
+            raise ValueError(f"agentic campaign case {case.case_id} has no profile")
+        configuration = ModelProfileConfiguration.from_data(case.profile.configuration)
+        selections.extend(
+            selection for selection in configuration.models.values() if selection is not None
+        )
+    if not selections:
+        raise ValueError("the campaign has no model selections for the requested targets")
+    providers = {selection.provider for selection in selections}
+    if providers != {"ollama"}:
+        formatted = ", ".join(sorted(providers))
+        raise ValueError(
+            "the current operator runtime supports only Ollama campaign selections; "
+            f"found: {formatted}"
+        )
+    model_deployments: dict[str, ModelDeployment] = {}
+    for selection in selections:
+        existing = model_deployments.get(selection.model_identifier)
+        if existing is not None and existing is not selection.deployment:
+            raise ValueError(
+                f"model identifier {selection.model_identifier!r} is frozen as both "
+                "local and cloud; direct deployment routing would be ambiguous"
+            )
+        model_deployments[selection.model_identifier] = selection.deployment
+    return model_deployments
 
 
 def _read_json(path: Path) -> Any:

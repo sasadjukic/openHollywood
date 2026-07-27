@@ -48,9 +48,14 @@ from open_hollywood_engine.evaluations import (
 )
 from open_hollywood_engine.models import (
     MODEL_PRESETS,
+    CampaignModelGateway,
+    InvocationContext,
+    MessageRole,
+    ModelCallBudget,
     ModelCapabilities,
     ModelDeployment,
     ModelDescriptor,
+    ModelMessage,
     ModelProfileMode,
     ModelRequest,
     ModelResponse,
@@ -133,6 +138,33 @@ class FixtureGateway:
 
     async def close(self) -> None:
         return None
+
+
+class RoutedFixtureGateway(FixtureGateway):
+    """Track which deployment receives a routed campaign request."""
+
+    def __init__(self, deployment: ModelDeployment) -> None:
+        self.deployment = deployment
+        self.requests: list[ModelRequest] = []
+        self.closed = False
+
+    async def generate(self, request: ModelRequest) -> ModelResponse:
+        self.requests.append(request)
+        return ModelResponse(
+            provider=self.provider,
+            model_identifier=request.model_identifier,
+            deployment=self.deployment,
+            content="routed response",
+            thinking=None,
+            finish_reason="stop",
+            created_at=datetime.now(UTC),
+            usage=ModelUsage(input_tokens=1, output_tokens=1),
+            timing=ModelTiming(total_ms=1),
+            estimated_cost_usd=Decimal("0"),
+        )
+
+    async def close(self) -> None:
+        self.closed = True
 
 
 @pytest.fixture
@@ -221,6 +253,47 @@ def test_plan_expands_every_prompt_into_baseline_and_three_profiles(
         )
         == plan
     )
+
+
+@pytest.mark.anyio
+async def test_campaign_gateway_routes_frozen_models_by_deployment() -> None:
+    local = RoutedFixtureGateway(ModelDeployment.LOCAL)
+    cloud = RoutedFixtureGateway(ModelDeployment.CLOUD)
+    gateway = CampaignModelGateway(
+        provider="ollama",
+        deployments={
+            ModelDeployment.LOCAL: local,
+            ModelDeployment.CLOUD: cloud,
+        },
+        model_deployments={
+            "local-fixture": ModelDeployment.LOCAL,
+            "cloud-fixture": ModelDeployment.CLOUD,
+        },
+    )
+
+    for model_identifier in ("local-fixture", "cloud-fixture"):
+        response = await gateway.generate(
+            ModelRequest(
+                model_identifier=model_identifier,
+                messages=(ModelMessage(role=MessageRole.USER, content="route me"),),
+                budget=ModelCallBudget(
+                    max_input_tokens=10,
+                    max_output_tokens=10,
+                    max_cost_usd=Decimal("1"),
+                ),
+                invocation=InvocationContext(
+                    specialist_role="fixture",
+                    prompt_template_version="1",
+                ),
+            )
+        )
+        assert response.model_identifier == model_identifier
+    await gateway.close()
+
+    assert [request.model_identifier for request in local.requests] == ["local-fixture"]
+    assert [request.model_identifier for request in cloud.requests] == ["cloud-fixture"]
+    assert local.closed is True
+    assert cloud.closed is True
 
 
 @pytest.mark.anyio
