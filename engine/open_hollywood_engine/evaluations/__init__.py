@@ -46,6 +46,15 @@ from open_hollywood_engine.evaluations.corpus import (
     BenchmarkCorpusError,
     load_benchmark_corpus,
 )
+from open_hollywood_engine.evaluations.evidence import (
+    EVIDENCE_SCHEMA_VERSION,
+    CampaignEvidenceFile,
+    CampaignEvidenceManifest,
+    EvidenceConfidentiality,
+    EvidenceRole,
+    build_campaign_evidence_archive,
+    verify_campaign_evidence_archive,
+)
 from open_hollywood_engine.evaluations.harness import (
     BenchmarkCaseExecutionError,
     BenchmarkCaseExecutor,
@@ -67,6 +76,7 @@ __all__ = [
     "CANONICAL_RUBRIC_VERSION",
     "DEFAULT_COMPARISON_PAIRS",
     "EVALUATION_WEIGHTS",
+    "EVIDENCE_SCHEMA_VERSION",
     "HUMAN_REVIEW_SCHEMA_VERSION",
     "REVIEW_CSV_COLUMNS",
     "V01_CORPUS_ID",
@@ -90,6 +100,8 @@ __all__ = [
     "BenchmarkSummary",
     "BenchmarkSystem",
     "BenchmarkTargetMetrics",
+    "CampaignEvidenceFile",
+    "CampaignEvidenceManifest",
     "BlindAnswer",
     "BlindAnswerKey",
     "BlindComparison",
@@ -98,6 +110,8 @@ __all__ = [
     "BlindPublicBundle",
     "CanonicalStoryScore",
     "EvaluationDimension",
+    "EvidenceConfidentiality",
+    "EvidenceRole",
     "FictionMaturity",
     "HardGate",
     "HumanComparisonReview",
@@ -105,6 +119,7 @@ __all__ = [
     "TargetWordCount",
     "build_benchmark_plan",
     "build_blind_bundle",
+    "build_campaign_evidence_archive",
     "canonical_sha256",
     "load_benchmark_corpus",
     "parse_review_csvs",
@@ -112,4 +127,5 @@ __all__ = [
     "render_review_guide",
     "run_benchmark_plan",
     "summarize_benchmark",
+    "verify_campaign_evidence_archive",
 ]
