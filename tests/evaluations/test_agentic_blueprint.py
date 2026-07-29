@@ -234,7 +234,7 @@ async def test_agentic_case_runs_real_blueprint_graph_to_durable_approval(
     assert prepared.interrupt_id is not None
     assert len(gateway.requests) == 6
     assert all(request.response_schema is not None for request in gateway.requests)
-    assert all(request.invocation.prompt_template_version == "6" for request in gateway.requests)
+    assert all(request.invocation.prompt_template_version == "7" for request in gateway.requests)
     brief_payload = json.loads(gateway.requests[0].messages[-1].content)
     assert brief_payload["output_invariants"] == {
         "application_assembles_authoritative_fields": [
@@ -280,6 +280,16 @@ async def test_agentic_case_runs_real_blueprint_graph_to_durable_approval(
         for request in gateway.requests
         if request.invocation.specialist_role == "blueprint_integrator"
     )
+    integration_schema = integration_request.response_schema
+    assert integration_schema is not None
+    integration_properties = integration_schema.get("properties")
+    assert isinstance(integration_properties, dict)
+    world_summary_schema = integration_properties["world_summary"]
+    beats_schema = integration_properties["beats"]
+    assert isinstance(world_summary_schema, dict)
+    assert isinstance(beats_schema, dict)
+    assert world_summary_schema["maxLength"] == 2_000
+    assert beats_schema["maxItems"] == 16
     integration_payload = json.loads(integration_request.messages[-1].content)
     assert integration_payload["output_invariants"] == {
         "application_assembles_authoritative_input_artifacts": True,
@@ -287,6 +297,8 @@ async def test_agentic_case_runs_real_blueprint_graph_to_durable_approval(
         "allowed_character_ids": sorted(character.id for character in gateway.blueprint.characters),
         "allowed_location_ids": sorted(location.id for location in gateway.blueprint.locations),
         "required_scene_count": gateway.brief.target_scene_count,
+        "maximum_beat_count": gateway.brief.target_scene_count * 2,
+        "maximum_world_summary_words": 250,
         "every_beat_id_must_appear_in_a_scene_plan": True,
     }
     world_request = next(
@@ -375,6 +387,7 @@ async def test_brief_rejects_model_attempt_to_rewrite_authoritative_fields(
             invocation.error_code == "schema_validation_failed" for invocation in invocations
         )
         assert all(invocation.schema_validation_succeeded is False for invocation in invocations)
+        assert [invocation.retry_count for invocation in invocations] == [0, 1]
         assert all(invocation.output_tokens == 500 for invocation in invocations)
         assert all(
             invocation.request_settings["provider_finish_reason"] == "stop"
@@ -384,3 +397,13 @@ async def test_brief_rejects_model_attempt_to_rewrite_authoritative_fields(
             len(invocation.request_settings["provider_response_content_sha256"]) == 64
             for invocation in invocations
         )
+    retry_payload = json.loads(gateway.requests[1].messages[-1].content)
+    assert retry_payload["retry_context"]["attempt_number"] == 2
+    assert (
+        retry_payload["retry_context"]["previous_failure"]["error_code"]
+        == "schema_validation_failed"
+    )
+    assert (
+        "required_elements:extra_forbidden"
+        in (retry_payload["retry_context"]["previous_failure"]["message"])
+    )

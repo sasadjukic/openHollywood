@@ -163,8 +163,12 @@ optional model fields from weakening benchmark intent. Prompted non-schema
 invariants preserve exact benchmark constraints; parallel World specialists
 cannot invent unresolved character references; the integrator emits only new
 beats and scene plans, and the application deterministically assembles immutable
-specialist artifacts into the Story Blueprint. Operators can prepare selected
-cases independently. The
+specialist artifacts into the Story Blueprint. Prompt contract v7 bounds
+integration to a compact world summary and no more than two beats per scene.
+Prompt-only cloud structured-output retries persist their attempt number and
+receive safe validation locations plus provider finish metadata without storing
+or echoing the failed story response. Operators can prepare selected cases
+independently. The
 approved handoff now materializes exact Scene Plan versions and an initial
 canonical Story Bible, creates a child production run, and invokes the real
 SQLite-checkpointed writer, critic, continuity, and bible-maintainer graph.

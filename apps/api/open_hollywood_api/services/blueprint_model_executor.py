@@ -7,7 +7,7 @@ import hashlib
 import json
 from collections.abc import Mapping
 from datetime import UTC, datetime
-from typing import Any, cast
+from typing import Any, Self, cast
 from uuid import UUID, uuid4
 
 from open_hollywood_engine.artifacts import (
@@ -52,7 +52,7 @@ from open_hollywood_engine.workflows import (
     RetryableSpecialistError,
     RunBudget,
 )
-from pydantic import BaseModel, ConfigDict, Field, ValidationError
+from pydantic import BaseModel, ConfigDict, Field, ValidationError, model_validator
 from sqlalchemy import insert, select
 from sqlalchemy.orm import Session, joinedload, sessionmaker
 
@@ -70,7 +70,7 @@ from open_hollywood_api.persistence.models import (
 from open_hollywood_api.persistence.secret_policy import active_secret_guard
 from open_hollywood_api.services.structured_output import normalize_json_document
 
-BLUEPRINT_MODEL_PROMPT_VERSION = "6"
+BLUEPRINT_MODEL_PROMPT_VERSION = "7"
 
 
 class _SpecialistContractError(ValueError):
@@ -107,9 +107,29 @@ class _CharacterOutput(_StructuredOutput):
 
 
 class _IntegrationOutput(_StructuredOutput):
-    world_summary: str = Field(min_length=1)
-    beats: tuple[Beat, ...] = Field(min_length=1)
-    scene_plans: tuple[ScenePlan, ...] = Field(min_length=3, max_length=8)
+    world_summary: str = Field(
+        min_length=1,
+        max_length=2_000,
+        description="A compact world synthesis of at most 250 words.",
+    )
+    beats: tuple[Beat, ...] = Field(
+        min_length=1,
+        max_length=16,
+        description="A compact causal sequence with no more than two beats per scene.",
+    )
+    scene_plans: tuple[ScenePlan, ...] = Field(
+        min_length=3,
+        max_length=8,
+        description="The exact requested scene count using concise narrative text fields.",
+    )
+
+    @model_validator(mode="after")
+    def keep_plan_bounded(self) -> Self:
+        if len(self.beats) > len(self.scene_plans) * 2:
+            raise ValueError("integration cannot create more than two beats per scene")
+        if len(self.world_summary.split()) > 250:
+            raise ValueError("integration world summary cannot exceed 250 words")
+        return self
 
 
 type _BlueprintOutput = (
@@ -149,7 +169,9 @@ _NODE_INSTRUCTIONS: Mapping[BlueprintNode, str] = {
         "Generate only a world summary, causal beat sequence, and the exact requested "
         "number of contiguous scene plans. Reference the supplied character, location, "
         "world-rule, and premise identifiers without repeating or rewriting those artifacts. "
-        "Reach the declared ending."
+        "Reach the declared ending. Be compact: keep the world summary under 250 words, "
+        "create no more than two beats per scene, and use one concise sentence in each "
+        "narrative text field."
     ),
     BlueprintNode.EVALUATION: (
         "Evaluate the exact Story Blueprint against causal structure, character depth, "
@@ -195,6 +217,14 @@ class BenchmarkBlueprintNodeExecutor(BlueprintNodeExecutor):
             revision_instruction=execution.revision_instruction,
             constraints=execution.constraints,
             schema=output_model.model_json_schema(),
+            retry_context=(
+                {
+                    "attempt_number": execution.attempt_number,
+                    "previous_failure": execution.previous_failure,
+                }
+                if execution.previous_failure is not None
+                else None
+            ),
         )
         invocation_id = await asyncio.to_thread(
             self._start_invocation,
@@ -275,11 +305,12 @@ class BenchmarkBlueprintNodeExecutor(BlueprintNodeExecutor):
                 "specialist output changed authoritative artifact inputs"
             ) from error
         except (ValueError, json.JSONDecodeError) as error:
+            failure_message = _structured_failure_message(error, response)
             await asyncio.to_thread(
                 self._fail_invocation,
                 invocation_id,
                 code="schema_validation_failed",
-                message="The specialist returned invalid structured output.",
+                message=failure_message,
                 schema_valid=False,
                 response=response,
             )
@@ -360,6 +391,12 @@ class BenchmarkBlueprintNodeExecutor(BlueprintNodeExecutor):
                     "run_seed": run_seed,
                 }
             )
+            attempt_number, previous_failure = _retry_context(
+                session,
+                workflow_run_id=run.id,
+                specialist_role=task.specialist_role,
+                task_fingerprint=fingerprint,
+            )
             return _Execution(
                 workflow_run_id=run.id,
                 project_id=run.project_id,
@@ -379,6 +416,8 @@ class BenchmarkBlueprintNodeExecutor(BlueprintNodeExecutor):
                 ),
                 run_seed=run_seed,
                 task_fingerprint=fingerprint,
+                attempt_number=attempt_number,
+                previous_failure=previous_failure,
             )
 
     def _replay(self, task_fingerprint: str) -> BlueprintNodeResult | None:
@@ -431,6 +470,7 @@ class BenchmarkBlueprintNodeExecutor(BlueprintNodeExecutor):
                 provider=execution.selection.provider,
                 model_identifier=execution.selection.model_identifier,
                 status=InvocationStatus.RUNNING,
+                retry_count=execution.attempt_number - 1,
                 request_settings={
                     "deployment": execution.selection.deployment.value,
                     "graph_version": STORY_BLUEPRINT_GRAPH_VERSION,
@@ -440,6 +480,7 @@ class BenchmarkBlueprintNodeExecutor(BlueprintNodeExecutor):
                     "run_seed": execution.run_seed,
                     "schema_enforced": schema_enforced,
                     "task_fingerprint": execution.task_fingerprint,
+                    "attempt_number": execution.attempt_number,
                     "temperature": _temperature(task.node),
                     "top_p": 0.95,
                     "thinking": False,
@@ -548,6 +589,62 @@ def _apply_response_metadata(
     }
 
 
+def _retry_context(
+    session: Session,
+    *,
+    workflow_run_id: UUID,
+    specialist_role: str,
+    task_fingerprint: str,
+) -> tuple[int, dict[str, object] | None]:
+    candidates = session.scalars(
+        select(AgentInvocation)
+        .where(
+            AgentInvocation.workflow_run_id == workflow_run_id,
+            AgentInvocation.specialist_role == specialist_role,
+            AgentInvocation.status == InvocationStatus.FAILED,
+        )
+        .order_by(AgentInvocation.started_at, AgentInvocation.id)
+    ).all()
+    failures = tuple(
+        invocation
+        for invocation in candidates
+        if invocation.request_settings.get("task_fingerprint") == task_fingerprint
+        and invocation.request_settings.get("prompt_template_version")
+        == BLUEPRINT_MODEL_PROMPT_VERSION
+    )
+    if not failures:
+        return 1, None
+    latest = failures[-1]
+    return len(failures) + 1, {
+        "error_code": latest.error_code or "unknown",
+        "message": latest.error_message or "No structural diagnostic was recorded.",
+        "provider_finish_reason": latest.request_settings.get("provider_finish_reason"),
+        "provider_response_length": latest.request_settings.get("provider_response_content_length"),
+    }
+
+
+def _structured_failure_message(
+    error: ValueError,
+    response: ModelResponse,
+) -> str:
+    locations: list[str] = []
+    if isinstance(error, ValidationError):
+        for item in error.errors(
+            include_url=False,
+            include_context=False,
+            include_input=False,
+        )[:12]:
+            location = ".".join(str(value) for value in item["loc"]) or "$"
+            locations.append(f"{location}:{item['type']}")
+    else:
+        locations.append(f"$:{type(error).__name__}")
+    joined = ", ".join(locations)
+    return (
+        "Structured output validation failed "
+        f"(provider_finish_reason={response.finish_reason}): {joined}."
+    )
+
+
 class _Execution:
     def __init__(
         self,
@@ -566,6 +663,8 @@ class _Execution:
         call_budget: ModelCallBudget,
         run_seed: int,
         task_fingerprint: str,
+        attempt_number: int,
+        previous_failure: dict[str, object] | None,
     ) -> None:
         self.workflow_run_id = workflow_run_id
         self.project_id = project_id
@@ -581,6 +680,8 @@ class _Execution:
         self.call_budget = call_budget
         self.run_seed = run_seed
         self.task_fingerprint = task_fingerprint
+        self.attempt_number = attempt_number
+        self.previous_failure = previous_failure
 
 
 def _messages(
@@ -592,30 +693,36 @@ def _messages(
     revision_instruction: str | None,
     constraints: dict[str, object],
     schema: dict[str, Any],
+    retry_context: dict[str, object] | None,
 ) -> tuple[ModelMessage, ...]:
     system = (
         "You are a registered Open Hollywood Story Blueprint specialist. "
         f"{instruction} Return only one JSON value conforming exactly to the supplied "
-        "schema. Do not include Markdown, commentary, hidden reasoning, or undeclared fields."
+        "schema. Do not include Markdown, commentary, hidden reasoning, or undeclared fields. "
+        "If retry_context is present, correct every reported structural error and make the "
+        "replacement more concise rather than expanding it."
     )
-    user = json.dumps(
-        {
-            "assignment": {
-                "node": task.node.value,
-                "specialist_role": task.specialist_role,
-                "human_revision_instruction": revision_instruction,
-            },
-            "frozen_user_premise": premise,
-            "frozen_benchmark_constraints": constraints,
-            "input_artifacts": inputs,
-            "output_invariants": _output_invariants(
-                node=task.node,
-                premise=premise,
-                constraints=constraints,
-                inputs=inputs,
-            ),
-            "output_schema": schema,
+    payload: dict[str, object] = {
+        "assignment": {
+            "node": task.node.value,
+            "specialist_role": task.specialist_role,
+            "human_revision_instruction": revision_instruction,
         },
+        "frozen_user_premise": premise,
+        "frozen_benchmark_constraints": constraints,
+        "input_artifacts": inputs,
+        "output_invariants": _output_invariants(
+            node=task.node,
+            premise=premise,
+            constraints=constraints,
+            inputs=inputs,
+        ),
+        "output_schema": schema,
+    }
+    if retry_context is not None:
+        payload["retry_context"] = retry_context
+    user = json.dumps(
+        payload,
         ensure_ascii=False,
         separators=(",", ":"),
         sort_keys=True,
@@ -674,6 +781,12 @@ def _output_invariants(
                 ArtifactKind.LOCATION,
             ),
             "required_scene_count": brief.get("target_scene_count"),
+            "maximum_beat_count": (
+                brief["target_scene_count"] * 2
+                if isinstance(brief.get("target_scene_count"), int)
+                else None
+            ),
+            "maximum_world_summary_words": 250,
             "every_beat_id_must_appear_in_a_scene_plan": True,
         }
     if node is BlueprintNode.EVALUATION:
