@@ -17,6 +17,7 @@ from open_hollywood_engine.artifacts import (
     CreativeBrief,
     Critique,
     Location,
+    MaturityMode,
     Premise,
     Relationship,
     ScenePlan,
@@ -69,7 +70,7 @@ from open_hollywood_api.persistence.models import (
 from open_hollywood_api.persistence.secret_policy import active_secret_guard
 from open_hollywood_api.services.structured_output import normalize_json_document
 
-BLUEPRINT_MODEL_PROMPT_VERSION = "5"
+BLUEPRINT_MODEL_PROMPT_VERSION = "6"
 
 
 class _SpecialistContractError(ValueError):
@@ -78,6 +79,21 @@ class _SpecialistContractError(ValueError):
 
 class _StructuredOutput(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
+
+
+class _BriefOutput(_StructuredOutput):
+    interpretation: str = Field(min_length=1)
+    assumptions: tuple[str, ...] = ()
+    tone: tuple[str, ...] = Field(min_length=1)
+    intended_effect: str = Field(min_length=1)
+    target_audience: str = Field(min_length=1)
+    target_word_count: int = Field(ge=2500, le=5000)
+    target_scene_count: int = Field(ge=3, le=8)
+    target_significant_character_count: int = Field(ge=2, le=5)
+    central_dramatic_question: str = Field(min_length=1)
+    themes: tuple[str, ...] = Field(min_length=1)
+    style_constraints: tuple[str, ...] = ()
+    authorized_ambiguities: tuple[str, ...] = ()
 
 
 class _WorldOutput(_StructuredOutput):
@@ -101,7 +117,7 @@ type _BlueprintOutput = (
 )
 
 _OUTPUT_MODELS: Mapping[BlueprintNode, type[BaseModel]] = {
-    BlueprintNode.BRIEF: CreativeBrief,
+    BlueprintNode.BRIEF: _BriefOutput,
     BlueprintNode.PREMISE: Premise,
     BlueprintNode.WORLD_SPECIALIST: _WorldOutput,
     BlueprintNode.CHARACTER_SPECIALIST: _CharacterOutput,
@@ -111,9 +127,9 @@ _OUTPUT_MODELS: Mapping[BlueprintNode, type[BaseModel]] = {
 
 _NODE_INSTRUCTIONS: Mapping[BlueprintNode, str] = {
     BlueprintNode.BRIEF: (
-        "Convert the frozen user premise and constraints into an authoritative "
-        "short-prose Creative Brief. Infer missing creative choices explicitly. "
-        "Copy every value named by output_invariants exactly, including punctuation."
+        "Generate only the creative choices needed to complete a short-prose Creative "
+        "Brief. Infer missing choices explicitly. The application deterministically "
+        "attaches every authoritative value identified by output_invariants."
     ),
     BlueprintNode.PREMISE: (
         "Develop the Creative Brief into a causally specific premise, thematic "
@@ -619,16 +635,15 @@ def _output_invariants(
 ) -> dict[str, object]:
     if node is BlueprintNode.BRIEF:
         return {
-            "original_premise": premise,
-            "maturity": constraints.get("intended_maturity"),
-            "required_elements_must_include_exactly": constraints.get(
+            "application_assembles_authoritative_fields": [
+                "original_premise",
+                "story_format",
+                "genres",
+                "maturity",
                 "required_elements",
-                [],
-            ),
-            "forbidden_elements_must_include_exactly": constraints.get(
-                "forbidden_shortcuts",
-                [],
-            ),
+                "forbidden_elements",
+            ],
+            "generate_only": list(_BriefOutput.model_fields),
             "target_word_count_range": constraints.get("target_word_count"),
         }
     if node is BlueprintNode.CHARACTER_SPECIALIST:
@@ -685,6 +700,42 @@ def _materialize_output(
     output: BaseModel,
     execution: _Execution,
 ) -> _BlueprintOutput:
+    if node is BlueprintNode.BRIEF:
+        if not isinstance(output, _BriefOutput):
+            raise BlueprintWorkflowError("brief returned an incompatible output")
+        maturity_value = execution.constraints.get("intended_maturity")
+        if not isinstance(maturity_value, str):
+            raise BlueprintWorkflowError("benchmark maturity constraint is missing or invalid")
+        try:
+            maturity = MaturityMode(maturity_value)
+        except ValueError as error:
+            raise BlueprintWorkflowError(
+                "benchmark maturity constraint is missing or invalid"
+            ) from error
+        try:
+            return CreativeBrief(
+                original_premise=execution.premise,
+                story_format=StoryFormat.SHORT_PROSE,
+                genres=_constraint_texts(execution.constraints, "genres"),
+                maturity=maturity,
+                required_elements=_constraint_texts(
+                    execution.constraints,
+                    "required_elements",
+                    allow_empty=True,
+                ),
+                forbidden_elements=_constraint_texts(
+                    execution.constraints,
+                    "forbidden_shortcuts",
+                    allow_empty=True,
+                ),
+                **output.model_dump(),
+            )
+        except ValidationError as error:
+            first = error.errors(include_url=False)[0]
+            location = ".".join(str(value) for value in first["loc"]) or "creative_brief"
+            raise _SpecialistContractError(
+                f"Materialized Creative Brief violates {location}: {first['msg']}"
+            ) from error
     if node is not BlueprintNode.INTEGRATION:
         return cast(_BlueprintOutput, output)
     if not isinstance(output, _IntegrationOutput):
@@ -743,6 +794,22 @@ def _input_identifiers(
     return sorted(
         str(value["content"]["id"]) for value in inputs if value["artifact_kind"] == kind.value
     )
+
+
+def _constraint_texts(
+    constraints: Mapping[str, object],
+    key: str,
+    *,
+    allow_empty: bool = False,
+) -> tuple[str, ...]:
+    value = constraints.get(key)
+    if (
+        not isinstance(value, (list, tuple))
+        or (not allow_empty and not value)
+        or any(not isinstance(item, str) or not item.strip() for item in value)
+    ):
+        raise BlueprintWorkflowError(f"benchmark {key} constraint is missing or invalid")
+    return tuple(value)
 
 
 def _artifact_outputs(
