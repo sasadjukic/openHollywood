@@ -129,6 +129,10 @@ Creative Brief prompt contract v6 likewise asks the model only for creative
 choices; the application attaches the exact frozen premise, format, genres,
 maturity, required elements, and forbidden elements so optional model fields
 cannot silently weaken benchmark intent.
+Prompt contract v7 also bounds Blueprint integration to a compact world summary
+and at most two beats per scene. When prompt-only cloud structured output fails,
+the persisted retry count and safe validation locations feed the one allowed
+retry without retaining or echoing the failed story response.
 Operators can prepare selected cases independently. Once approved, the
 benchmark materializes immutable Scene Plans and an initial Story Bible, executes
 the checkpointed
