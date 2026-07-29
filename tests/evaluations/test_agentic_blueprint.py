@@ -88,6 +88,7 @@ class BlueprintFixtureGateway:
             unresolved_decisions=source.unresolved_decisions,
         )
         self.blueprint = source.model_copy(update={"creative_brief": self.brief})
+        self.brief_response_overrides: dict[str, Any] = {}
         self.requests: list[ModelRequest] = []
 
     async def generate(self, request: ModelRequest) -> ModelResponse:
@@ -95,7 +96,18 @@ class BlueprintFixtureGateway:
         role = request.invocation.specialist_role
         value: Any
         if role == "brief_architect":
-            value = self.brief
+            value = self.brief.model_dump(
+                mode="json",
+                exclude={
+                    "original_premise",
+                    "story_format",
+                    "genres",
+                    "maturity",
+                    "required_elements",
+                    "forbidden_elements",
+                },
+            )
+            value.update(self.brief_response_overrides)
         elif role == "premise_architect":
             value = self.premise
         elif role == "world_builder":
@@ -222,15 +234,47 @@ async def test_agentic_case_runs_real_blueprint_graph_to_durable_approval(
     assert prepared.interrupt_id is not None
     assert len(gateway.requests) == 6
     assert all(request.response_schema is not None for request in gateway.requests)
-    assert all(request.invocation.prompt_template_version == "5" for request in gateway.requests)
+    assert all(request.invocation.prompt_template_version == "6" for request in gateway.requests)
     brief_payload = json.loads(gateway.requests[0].messages[-1].content)
     assert brief_payload["output_invariants"] == {
-        "original_premise": prompt.prompt,
-        "maturity": prompt.intended_maturity.value,
-        "required_elements_must_include_exactly": list(prompt.required_elements),
-        "forbidden_elements_must_include_exactly": list(prompt.forbidden_shortcuts),
+        "application_assembles_authoritative_fields": [
+            "original_premise",
+            "story_format",
+            "genres",
+            "maturity",
+            "required_elements",
+            "forbidden_elements",
+        ],
+        "generate_only": [
+            "interpretation",
+            "assumptions",
+            "tone",
+            "intended_effect",
+            "target_audience",
+            "target_word_count",
+            "target_scene_count",
+            "target_significant_character_count",
+            "central_dramatic_question",
+            "themes",
+            "style_constraints",
+            "authorized_ambiguities",
+        ],
         "target_word_count_range": prompt.target_word_count.model_dump(mode="json"),
     }
+    brief_schema = gateway.requests[0].response_schema
+    assert brief_schema is not None
+    brief_properties = brief_schema.get("properties")
+    assert isinstance(brief_properties, dict)
+    assert set(brief_properties).isdisjoint(
+        {
+            "original_premise",
+            "story_format",
+            "genres",
+            "maturity",
+            "required_elements",
+            "forbidden_elements",
+        }
+    )
     integration_request = next(
         request
         for request in gateway.requests
@@ -268,10 +312,21 @@ async def test_agentic_case_runs_real_blueprint_graph_to_durable_approval(
         ).all()
         assert all(invocation.status is InvocationStatus.SUCCEEDED for invocation in invocations)
         assert all(invocation.input_versions for invocation in invocations)
+        brief = session.scalar(
+            select(Artifact).where(Artifact.artifact_type == ArtifactKind.CREATIVE_BRIEF.value)
+        )
+        assert brief is not None
+        content = brief.versions[-1].content
+        assert content["original_premise"] == prompt.prompt
+        assert content["story_format"] == "short_prose"
+        assert content["genres"] == list(prompt.genres)
+        assert content["maturity"] == prompt.intended_maturity.value
+        assert content["required_elements"] == list(prompt.required_elements)
+        assert content["forbidden_elements"] == list(prompt.forbidden_shortcuts)
 
 
 @pytest.mark.anyio
-async def test_schema_valid_constraint_drift_is_classified_as_artifact_failure(
+async def test_brief_rejects_model_attempt_to_rewrite_authoritative_fields(
     migrated_database_path: Path,
     database_engine: Engine,
 ) -> None:
@@ -300,9 +355,7 @@ async def test_schema_valid_constraint_drift_is_classified_as_artifact_failure(
         ),
     )
     gateway = BlueprintFixtureGateway(prompt.prompt, prompt)
-    gateway.brief = gateway.brief.model_copy(
-        update={"required_elements": ("A paraphrased requirement.",)}
-    )
+    gateway.brief_response_overrides["required_elements"] = ["A paraphrased requirement."]
     service = AgenticBenchmarkBlueprintService(
         campaign_id=CAMPAIGN_ID,
         database_path=migrated_database_path,
@@ -319,9 +372,9 @@ async def test_schema_valid_constraint_drift_is_classified_as_artifact_failure(
         ).all()
         assert len(invocations) == 2
         assert all(
-            invocation.error_code == "artifact_contract_failed" for invocation in invocations
+            invocation.error_code == "schema_validation_failed" for invocation in invocations
         )
-        assert all(invocation.schema_validation_succeeded is True for invocation in invocations)
+        assert all(invocation.schema_validation_succeeded is False for invocation in invocations)
         assert all(invocation.output_tokens == 500 for invocation in invocations)
         assert all(
             invocation.request_settings["provider_finish_reason"] == "stop"

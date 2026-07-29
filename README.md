@@ -125,6 +125,10 @@ interrupt without duplicate calls on replay. Prompted non-schema invariants keep
 benchmark constraints exact, parallel World output cannot invent unresolved
 character IDs, and integration generates only new beats and scene plans while
 the application assembles authoritative specialist artifacts deterministically.
+Creative Brief prompt contract v6 likewise asks the model only for creative
+choices; the application attaches the exact frozen premise, format, genres,
+maturity, required elements, and forbidden elements so optional model fields
+cannot silently weaken benchmark intent.
 Operators can prepare selected cases independently. Once approved, the
 benchmark materializes immutable Scene Plans and an initial Story Bible, executes
 the checkpointed

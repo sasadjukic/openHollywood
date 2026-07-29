@@ -156,11 +156,15 @@ receives deterministic immutable inputs and benchmark constraints, uses schema
 enforcement when the deployment supports it, records a budgeted invocation plus
 output lineage, validates cross-artifact invariants, and pauses
 at the mandatory human approval interrupt. Replaying a paused case performs no
-duplicate model calls. Prompted non-schema invariants preserve exact benchmark
-constraints; parallel World specialists cannot invent unresolved character
-references; the integrator emits only new beats and scene plans, and the
-application deterministically assembles immutable specialist artifacts into the
-Story Blueprint. Operators can prepare selected cases independently. The
+duplicate model calls. Creative Brief prompt contract v6 requests only creative
+choices and the application deterministically attaches the frozen premise,
+format, genres, maturity, required elements, and forbidden elements; this keeps
+optional model fields from weakening benchmark intent. Prompted non-schema
+invariants preserve exact benchmark constraints; parallel World specialists
+cannot invent unresolved character references; the integrator emits only new
+beats and scene plans, and the application deterministically assembles immutable
+specialist artifacts into the Story Blueprint. Operators can prepare selected
+cases independently. The
 approved handoff now materializes exact Scene Plan versions and an initial
 canonical Story Bible, creates a child production run, and invokes the real
 SQLite-checkpointed writer, critic, continuity, and bible-maintainer graph.
