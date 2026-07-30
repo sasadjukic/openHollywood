@@ -234,7 +234,7 @@ async def test_agentic_case_runs_real_blueprint_graph_to_durable_approval(
     assert prepared.interrupt_id is not None
     assert len(gateway.requests) == 6
     assert all(request.response_schema is not None for request in gateway.requests)
-    assert all(request.invocation.prompt_template_version == "7" for request in gateway.requests)
+    assert all(request.invocation.prompt_template_version == "9" for request in gateway.requests)
     brief_payload = json.loads(gateway.requests[0].messages[-1].content)
     assert brief_payload["output_invariants"] == {
         "application_assembles_authoritative_fields": [
@@ -286,10 +286,17 @@ async def test_agentic_case_runs_real_blueprint_graph_to_durable_approval(
     assert isinstance(integration_properties, dict)
     world_summary_schema = integration_properties["world_summary"]
     beats_schema = integration_properties["beats"]
+    scene_plans_schema = integration_properties["scene_plans"]
     assert isinstance(world_summary_schema, dict)
     assert isinstance(beats_schema, dict)
-    assert world_summary_schema["maxLength"] == 2_000
-    assert beats_schema["maxItems"] == 16
+    assert isinstance(scene_plans_schema, dict)
+    assert "maxLength" not in world_summary_schema
+    assert world_summary_schema["description"] == (
+        "A compact world synthesis of at most 250 words."
+    )
+    assert beats_schema["maxItems"] == gateway.brief.target_scene_count * 2
+    assert scene_plans_schema["minItems"] == gateway.brief.target_scene_count
+    assert scene_plans_schema["maxItems"] == gateway.brief.target_scene_count
     integration_payload = json.loads(integration_request.messages[-1].content)
     assert integration_payload["output_invariants"] == {
         "application_assembles_authoritative_input_artifacts": True,

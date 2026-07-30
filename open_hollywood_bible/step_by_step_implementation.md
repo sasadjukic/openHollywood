@@ -135,7 +135,7 @@ PDF/DOCX export.** A provider-neutral, invariant-checked manuscript contract
 assembles only complete latest versions of approved Scene Draft artifacts in
 unique, contiguous three-to-eight-scene order. The canonical Markdown renderer normalizes line endings and escapes structural markup. A separate typed Fountain screenplay contract renders title pages, forced headings and action, dialogue structures, transitions, sections, synopses, centered text, and page breaks without guessing script structure from prose. Searchable US-Letter PDF and editable US-Letter DOCX exporters use fixed metadata and canonicalized containers so identical inputs produce identical bytes. FastAPI exposes an export manifest, exact immutable source-version lineage, SHA-256 ETags, sanitized downloads, and fail-closed `409` behavior; the generated TypeScript SDK and workspace enable Markdown, PDF, and DOCX controls only for exportable projects. Evidence: `engine/open_hollywood_engine/rendering/`, `apps/api/open_hollywood_api/services/exports.py`, `apps/api/open_hollywood_api/routes/exports.py`, generated contracts, workspace export controls, and rendering/API/React tests. All four representative PDF pages and all four representative DOCX pages passed visual inspection. Ruff, mypy, 140 pytest tests, Prettier, ESLint, TypeScript, 5 Vitest tests, and the production build pass.
 
-19. [~] **IN PROGRESS 2026-07-26 — Build the evaluation harness** and run the benchmark corpus across local, cloud, and hybrid profiles. The provider-neutral harness core now strictly validates the frozen 12-prompt v0.1 corpus and pins its canonical digest, exact graph versions, direct-model baseline, complete secret-free Local/Cloud/Hybrid profile snapshots, and prompt seeds into a deterministic 48-case campaign plan. Sequential case execution is failure-isolated and resumable from terminal results; successful outputs must carry exact workflow-run, model-invocation, and immutable artifact-version lineage. The accepted weighted rubric and hard gates are executable contracts. Deterministic A/B packaging separates provenance-free reviewer documents from the private answer key, and reporting maps blind human preferences back to systems while calculating the accepted completion, continuity, quality, preference, and cost thresholds. The operator command validates corpus integrity
+19. [~] **IN PROGRESS 2026-07-26 — Build the evaluation harness** and run the benchmark corpus across local, cloud, and hybrid profiles. The provider-neutral harness core now strictly validates the frozen 12-prompt v0.1 corpus and pins its canonical digest, exact graph and prompt-contract versions, direct-model baseline, complete secret-free Local/Cloud/Hybrid profile snapshots, and prompt seeds into a deterministic 48-case campaign plan. Sequential case execution is failure-isolated and resumable from terminal results; successful outputs must carry exact workflow-run, model-invocation, and immutable artifact-version lineage. The accepted weighted rubric and hard gates are executable contracts. Deterministic A/B packaging separates provenance-free reviewer documents from the private answer key, and reporting maps blind human preferences back to systems while calculating the accepted completion, continuity, quality, preference, and cost thresholds. The operator command validates corpus integrity
 and creates plans from fully configured persisted presets. The application
 layer now executes the direct single-model baseline through a bounded
 provider-neutral call and persists its frozen prompt, invocation, workflow, and
@@ -163,11 +163,18 @@ optional model fields from weakening benchmark intent. Prompted non-schema
 invariants preserve exact benchmark constraints; parallel World specialists
 cannot invent unresolved character references; the integrator emits only new
 beats and scene plans, and the application deterministically assembles immutable
-specialist artifacts into the Story Blueprint. Prompt contract v7 bounds
-integration to a compact world summary and no more than two beats per scene.
-Prompt-only cloud structured-output retries persist their attempt number and
-receive safe validation locations plus provider finish metadata without storing
-or echoing the failed story response. Operators can prepare selected cases
+specialist artifacts into the Story Blueprint. Prompt contract v9 binds
+integration to a compact world summary, the Creative Brief's exact scene count,
+and no more than two beats per scene. Prompt-only cloud structured-output retries
+persist their attempt number and receive safe validation locations plus provider
+finish metadata without storing or echoing the failed story response. Word bounds
+remain application-validated instead of emitting grammar keywords unsupported by
+local Ollama structured output. Model-executing operator commands now reject a
+campaign plan when its baseline, Blueprint, production prompt, or graph versions
+differ from the running build. A 12-case Local qualification reached the
+mandatory approval interrupt while prompt contracts v6 through v9 were being
+hardened; that heterogeneous run is diagnostic evidence only and must not be
+sealed as the final frozen campaign. Operators can prepare selected cases
 independently. The
 approved handoff now materializes exact Scene Plan versions and an initial
 canonical Story Bible, creates a child production run, and invokes the real

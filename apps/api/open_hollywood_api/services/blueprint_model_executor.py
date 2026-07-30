@@ -6,6 +6,7 @@ import asyncio
 import hashlib
 import json
 from collections.abc import Mapping
+from copy import deepcopy
 from datetime import UTC, datetime
 from typing import Any, Self, cast
 from uuid import UUID, uuid4
@@ -70,7 +71,7 @@ from open_hollywood_api.persistence.models import (
 from open_hollywood_api.persistence.secret_policy import active_secret_guard
 from open_hollywood_api.services.structured_output import normalize_json_document
 
-BLUEPRINT_MODEL_PROMPT_VERSION = "7"
+BLUEPRINT_MODEL_PROMPT_VERSION = "9"
 
 
 class _SpecialistContractError(ValueError):
@@ -109,7 +110,6 @@ class _CharacterOutput(_StructuredOutput):
 class _IntegrationOutput(_StructuredOutput):
     world_summary: str = Field(
         min_length=1,
-        max_length=2_000,
         description="A compact world synthesis of at most 250 words.",
     )
     beats: tuple[Beat, ...] = Field(
@@ -209,6 +209,11 @@ class BenchmarkBlueprintNodeExecutor(BlueprintNodeExecutor):
         )
         if existing is not None:
             return existing
+        response_schema = _response_schema(
+            node=task.node,
+            output_model=output_model,
+            execution=execution,
+        )
         messages = _messages(
             task=task,
             instruction=_NODE_INSTRUCTIONS[task.node],
@@ -216,7 +221,7 @@ class BenchmarkBlueprintNodeExecutor(BlueprintNodeExecutor):
             inputs=execution.inputs,
             revision_instruction=execution.revision_instruction,
             constraints=execution.constraints,
-            schema=output_model.model_json_schema(),
+            schema=response_schema,
             retry_context=(
                 {
                     "attempt_number": execution.attempt_number,
@@ -250,9 +255,7 @@ class BenchmarkBlueprintNodeExecutor(BlueprintNodeExecutor):
                 thinking=False,
             ),
             response_schema=(
-                output_model.model_json_schema()
-                if execution.selection.deployment is ModelDeployment.LOCAL
-                else None
+                response_schema if execution.selection.deployment is ModelDeployment.LOCAL else None
             ),
         )
         try:
@@ -635,7 +638,7 @@ def _structured_failure_message(
             include_input=False,
         )[:12]:
             location = ".".join(str(value) for value in item["loc"]) or "$"
-            locations.append(f"{location}:{item['type']}")
+            locations.append(f"{location}:{item['type']}:{item['msg']}")
     else:
         locations.append(f"$:{type(error).__name__}")
     joined = ", ".join(locations)
@@ -682,6 +685,31 @@ class _Execution:
         self.task_fingerprint = task_fingerprint
         self.attempt_number = attempt_number
         self.previous_failure = previous_failure
+
+
+def _response_schema(
+    *,
+    node: BlueprintNode,
+    output_model: type[BaseModel],
+    execution: _Execution,
+) -> dict[str, Any]:
+    schema = deepcopy(output_model.model_json_schema())
+    if node is not BlueprintNode.INTEGRATION:
+        return schema
+    brief = CreativeBrief.model_validate(
+        _single_input(execution.inputs, ArtifactKind.CREATIVE_BRIEF)
+    )
+    properties = schema.get("properties")
+    if not isinstance(properties, dict):
+        raise BlueprintWorkflowError("integration schema properties are missing")
+    scene_plans = properties.get("scene_plans")
+    beats = properties.get("beats")
+    if not isinstance(scene_plans, dict) or not isinstance(beats, dict):
+        raise BlueprintWorkflowError("integration collection schemas are missing")
+    scene_plans["minItems"] = brief.target_scene_count
+    scene_plans["maxItems"] = brief.target_scene_count
+    beats["maxItems"] = brief.target_scene_count * 2
+    return schema
 
 
 def _messages(

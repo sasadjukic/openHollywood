@@ -18,6 +18,9 @@ from open_hollywood_api.persistence.database import (
     create_sqlite_engine,
 )
 from open_hollywood_api.services.agentic_benchmark import AgenticBlueprintPreparation
+from open_hollywood_api.services.blueprint_model_executor import (
+    BLUEPRINT_MODEL_PROMPT_VERSION,
+)
 from open_hollywood_api.services.evaluation_campaign import (
     AGENTIC_TARGET_KEYS,
     approve_agentic_cases,
@@ -25,6 +28,7 @@ from open_hollywood_api.services.evaluation_campaign import (
     run_agentic_cases,
 )
 from open_hollywood_api.services.evaluation_execution import (
+    DIRECT_STORY_PROMPT_VERSION,
     DirectBaselineBenchmarkExecutor,
 )
 from open_hollywood_api.services.model_profiles import ModelProfileStore
@@ -61,6 +65,7 @@ from open_hollywood_engine.models import (
 )
 from open_hollywood_engine.workflows import (
     SCENE_PRODUCTION_GRAPH_VERSION,
+    SCENE_PRODUCTION_PROMPT_TEMPLATE_VERSION,
     STORY_BLUEPRINT_GRAPH_VERSION,
 )
 
@@ -116,11 +121,27 @@ def create_plan_from_database(
         corpus=corpus,
         baseline_model=baseline_model,
         profiles=profiles,
-        workflow_versions={
-            "story_blueprint": STORY_BLUEPRINT_GRAPH_VERSION,
-            "scene_production": SCENE_PRODUCTION_GRAPH_VERSION,
-        },
+        workflow_versions=_current_runtime_versions(),
     )
+
+
+def _current_runtime_versions() -> dict[str, str]:
+    return {
+        "direct_story_prompt": DIRECT_STORY_PROMPT_VERSION,
+        "story_blueprint": STORY_BLUEPRINT_GRAPH_VERSION,
+        "story_blueprint_prompt": BLUEPRINT_MODEL_PROMPT_VERSION,
+        "scene_production": SCENE_PRODUCTION_GRAPH_VERSION,
+        "scene_production_prompt": SCENE_PRODUCTION_PROMPT_TEMPLATE_VERSION,
+    }
+
+
+def _require_current_runtime_versions(plan: BenchmarkPlan) -> None:
+    expected = _current_runtime_versions()
+    if plan.workflow_versions != expected:
+        raise ValueError(
+            "benchmark plan runtime versions do not match this Open Hollywood build; "
+            "create a new campaign plan before model execution"
+        )
 
 
 def _parser() -> argparse.ArgumentParser:
@@ -472,6 +493,13 @@ def main(argv: list[str] | None = None) -> int:
         return 0
 
     plan = BenchmarkPlan.model_validate(_read_json(args.plan))
+    if args.command in {
+        "run-baseline",
+        "prepare-agentic",
+        "approve-blueprints",
+        "run-agentic",
+    }:
+        _require_current_runtime_versions(plan)
     if args.command == "run-baseline":
         report_path = args.report
         prior_report = (
