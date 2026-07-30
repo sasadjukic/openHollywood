@@ -104,8 +104,8 @@ workspace shows Markdown, PDF, and DOCX controls only when the manuscript
 invariants pass.
 
 The Step 19 evaluation harness is now in progress. Its provider-neutral core
-loads the frozen 12-prompt v0.1 corpus, pins exact graph and model-profile
-snapshots into 48-case campaign plans, resumes failure-isolated case execution,
+loads the frozen 12-prompt v0.1 corpus, pins exact graph, prompt-contract, and
+model-profile snapshots into 48-case campaign plans, resumes failure-isolated case execution,
 builds provenance-free blind A/B review packets with separate answer keys, and
 aggregates the accepted rubric, hard gates, preference rate, completion rate,
 and cost criteria. The direct baseline now runs through a bounded
@@ -129,10 +129,15 @@ Creative Brief prompt contract v6 likewise asks the model only for creative
 choices; the application attaches the exact frozen premise, format, genres,
 maturity, required elements, and forbidden elements so optional model fields
 cannot silently weaken benchmark intent.
-Prompt contract v7 also bounds Blueprint integration to a compact world summary
-and at most two beats per scene. When prompt-only cloud structured output fails,
-the persisted retry count and safe validation locations feed the one allowed
-retry without retaining or echoing the failed story response.
+Prompt contract v9 also bounds Blueprint integration to a compact world summary,
+the Creative Brief's exact scene count, and at most two beats per scene. When
+prompt-only cloud structured output fails, the persisted retry count and safe
+validation locations feed the one allowed retry without retaining or echoing the
+failed story response. Word bounds remain application-validated instead of
+emitting grammar keywords unsupported by local Ollama structured output.
+Model-executing operator commands reject campaign plans whose baseline,
+Blueprint, production prompt, or graph versions differ from the running build,
+so diagnostic staging cannot silently become formal benchmark evidence.
 Operators can prepare selected cases independently. Once approved, the
 benchmark materializes immutable Scene Plans and an initial Story Bible, executes
 the checkpointed

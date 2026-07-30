@@ -82,6 +82,8 @@ from sqlalchemy import Engine, func, select
 
 from scripts.evaluation_harness import (
     AtomicJsonReportCheckpoint,
+    _current_runtime_versions,
+    _require_current_runtime_versions,
     _write_json_atomically,
     create_plan_from_database,
 )
@@ -1000,6 +1002,17 @@ def test_operator_plan_snapshots_configured_database_profiles(
     )
 
     assert len(plan.cases) == 48
+    assert plan.workflow_versions == _current_runtime_versions()
     assert {case.profile.mode for case in plan.cases if case.profile is not None} == set(
         ModelProfileMode
     )
+    drifted = plan.model_copy(
+        update={
+            "workflow_versions": {
+                **plan.workflow_versions,
+                "story_blueprint_prompt": "older",
+            }
+        }
+    )
+    with pytest.raises(ValueError, match="runtime versions do not match"):
+        _require_current_runtime_versions(drifted)
