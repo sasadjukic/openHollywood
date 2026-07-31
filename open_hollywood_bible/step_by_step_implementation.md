@@ -171,11 +171,18 @@ finish metadata without storing or echoing the failed story response. Word bound
 remain application-validated instead of emitting grammar keywords unsupported by
 local Ollama structured output. Model-executing operator commands now reject a
 campaign plan when its baseline, Blueprint, production prompt, or graph versions
-differ from the running build. A 12-case Local qualification reached the
-mandatory approval interrupt while prompt contracts v6 through v9 were being
-hardened; that heterogeneous run is diagnostic evidence only and must not be
-sealed as the final frozen campaign. Operators can prepare selected cases
-independently. The
+differ from the running build, including the direct-story graph and nested
+dialogue subgraph. Blueprint graph v4, scene-production graph v2, and dialogue
+subgraph v2 give model-backed nodes a 900-second formal long-form ceiling while
+retaining bounded execution; cancelled or timed-out calls now close their
+persisted invocation instead of remaining `RUNNING`. A 12-case Local
+qualification reached the mandatory approval interrupt while prompt contracts
+v6 through v9 were being hardened. A subsequent frozen v9 staging campaign
+completed all 12 Baselines after one explicit provider-timeout retry, paused all
+12 Local Blueprints, and paused 9 Cloud Blueprints before exposing the prior
+120-second graph-node ceiling on Cloud OH-010. Both campaigns are diagnostic
+evidence only and must not be sealed as the final frozen campaign. Operators can
+prepare selected cases independently. The
 approved handoff now materializes exact Scene Plan versions and an initial
 canonical Story Bible, creates a child production run, and invokes the real
 SQLite-checkpointed writer, critic, continuity, and bible-maintainer graph.

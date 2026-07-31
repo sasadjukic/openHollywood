@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import csv
 import hashlib
 import json
@@ -75,6 +76,9 @@ from open_hollywood_engine.models import (
     ModelUsage,
 )
 from open_hollywood_engine.workflows import (
+    BLUEPRINT_NODE_DEFINITIONS,
+    DIALOGUE_NODE_DEFINITIONS,
+    PRODUCTION_NODE_DEFINITIONS,
     SCENE_PRODUCTION_GRAPH_VERSION,
     STORY_BLUEPRINT_GRAPH_VERSION,
 )
@@ -164,6 +168,20 @@ class InterruptedFixtureGateway(FixtureGateway):
     async def generate(self, request: ModelRequest) -> ModelResponse:
         self.requests.append(request)
         raise SimulatedProcessExit
+
+
+class BlockingFixtureGateway(FixtureGateway):
+    """Hold one request until its caller cancels the in-flight task."""
+
+    def __init__(self, response: ModelResponse) -> None:
+        super().__init__(response)
+        self.started = asyncio.Event()
+
+    async def generate(self, request: ModelRequest) -> ModelResponse:
+        self.requests.append(request)
+        self.started.set()
+        await asyncio.Event().wait()
+        raise AssertionError("the blocking gateway must be cancelled")
 
 
 class RoutedFixtureGateway(FixtureGateway):
@@ -531,6 +549,48 @@ async def test_direct_baseline_reconciles_interrupted_attempt_before_retry(
         assert output.invocation_ids == (invocations[1].id,)
 
 
+@pytest.mark.anyio
+async def test_direct_baseline_cancellation_marks_invocation_terminal(
+    benchmark_plan: tuple[BenchmarkCorpus, BenchmarkPlan],
+    database_engine: Engine,
+) -> None:
+    corpus, plan = benchmark_plan
+    case = plan.cases[0]
+    response = ModelResponse(
+        provider="ollama",
+        model_identifier="cloud-fixture",
+        deployment=ModelDeployment.CLOUD,
+        content="unused",
+        thinking=None,
+        finish_reason="stop",
+        created_at=datetime.now(UTC),
+        usage=ModelUsage(input_tokens=0, output_tokens=0),
+        timing=ModelTiming(total_ms=0),
+        estimated_cost_usd=Decimal("0"),
+    )
+    gateway = BlockingFixtureGateway(response)
+    executor = DirectBaselineBenchmarkExecutor(
+        campaign_id=plan.campaign_id,
+        session_factory=create_session_factory(database_engine),
+        gateway=gateway,
+    )
+    task = asyncio.create_task(executor.execute(case, corpus.prompts[0]))
+    await gateway.started.wait()
+
+    task.cancel()
+    with pytest.raises(asyncio.CancelledError):
+        await task
+
+    with create_session_factory(database_engine)() as session:
+        invocation = session.scalar(select(AgentInvocation))
+        run = session.scalar(select(WorkflowRun))
+        assert invocation is not None
+        assert invocation.status is InvocationStatus.FAILED
+        assert invocation.error_code == "cancelled_execution"
+        assert run is not None
+        assert run.status is RunStatus.FAILED
+
+
 def test_operator_parses_long_form_ollama_timeout() -> None:
     from scripts.evaluation_harness import _parser
 
@@ -547,6 +607,29 @@ def test_operator_parses_long_form_ollama_timeout() -> None:
     )
 
     assert args.ollama_timeout_seconds == 900.0
+
+
+def test_formal_runtime_versions_cover_every_nested_graph_and_timeout() -> None:
+    versions = _current_runtime_versions()
+
+    assert {
+        "direct_story",
+        "direct_story_prompt",
+        "dialogue_subgraph",
+        "story_blueprint",
+        "story_blueprint_prompt",
+        "scene_production",
+        "scene_production_prompt",
+    } == set(versions)
+    assert all(
+        definition.timeout_seconds == 900 for definition in BLUEPRINT_NODE_DEFINITIONS.values()
+    )
+    assert all(
+        definition.timeout_seconds == 900 for definition in DIALOGUE_NODE_DEFINITIONS.values()
+    )
+    assert all(
+        definition.timeout_seconds == 900 for definition in PRODUCTION_NODE_DEFINITIONS.values()
+    )
 
 
 def test_atomic_report_write_retries_transient_windows_file_lock(

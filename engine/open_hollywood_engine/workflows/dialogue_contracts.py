@@ -19,9 +19,10 @@ from open_hollywood_engine.models.contracts import ModelCallBudget
 from open_hollywood_engine.workflows.contracts import ArtifactReference
 
 DIALOGUE_SUBGRAPH_NAME = "character_dialogue"
-DIALOGUE_SUBGRAPH_VERSION = "1"
+DIALOGUE_SUBGRAPH_VERSION = "2"
 DIALOGUE_PROMPT_TEMPLATE_VERSION = "1"
 DEFAULT_MAX_DIALOGUE_ROUNDS = 30
+DEFAULT_DIALOGUE_NODE_TIMEOUT_SECONDS = 900
 CHARACTER_ACTOR_ROLE = "character_actor"
 DIALOGUE_DIRECTOR_ROLE = "dialogue_director"
 
@@ -52,7 +53,7 @@ class DialogueNodeDefinition:
 
     node: DialogueNode
     specialist_role: str
-    timeout_seconds: int = 120
+    timeout_seconds: int = DEFAULT_DIALOGUE_NODE_TIMEOUT_SECONDS
     max_attempts: int = 2
 
     def __post_init__(self) -> None:

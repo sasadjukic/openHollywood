@@ -253,6 +253,15 @@ class BenchmarkProductionExecutor(SceneProductionExecutor):
                 output,
                 response,
             )
+        except asyncio.CancelledError:
+            await asyncio.to_thread(
+                self._fail_invocation,
+                invocation_id,
+                "cancelled_execution",
+                "The production specialist call was cancelled before completion.",
+                None,
+            )
+            raise
         except ModelGatewayError as error:
             await asyncio.to_thread(
                 self._fail_invocation,

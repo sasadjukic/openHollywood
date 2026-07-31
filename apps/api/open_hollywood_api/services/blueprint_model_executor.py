@@ -274,6 +274,15 @@ class BenchmarkBlueprintNodeExecutor(BlueprintNodeExecutor):
                 response=response,
                 outputs=_artifact_outputs(task.node, output),
             )
+        except asyncio.CancelledError:
+            await asyncio.to_thread(
+                self._fail_invocation,
+                invocation_id,
+                code="cancelled_execution",
+                message="The Blueprint specialist call was cancelled before completion.",
+                schema_valid=None,
+            )
+            raise
         except ModelGatewayError as error:
             await asyncio.to_thread(
                 self._fail_invocation,
