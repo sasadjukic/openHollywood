@@ -28,6 +28,7 @@ from open_hollywood_api.services.evaluation_campaign import (
     run_agentic_cases,
 )
 from open_hollywood_api.services.evaluation_execution import (
+    DIRECT_STORY_GRAPH_VERSION,
     DIRECT_STORY_PROMPT_VERSION,
     DirectBaselineBenchmarkExecutor,
 )
@@ -64,6 +65,7 @@ from open_hollywood_engine.models import (
     OllamaHost,
 )
 from open_hollywood_engine.workflows import (
+    DIALOGUE_SUBGRAPH_VERSION,
     SCENE_PRODUCTION_GRAPH_VERSION,
     SCENE_PRODUCTION_PROMPT_TEMPLATE_VERSION,
     STORY_BLUEPRINT_GRAPH_VERSION,
@@ -127,7 +129,9 @@ def create_plan_from_database(
 
 def _current_runtime_versions() -> dict[str, str]:
     return {
+        "direct_story": DIRECT_STORY_GRAPH_VERSION,
         "direct_story_prompt": DIRECT_STORY_PROMPT_VERSION,
+        "dialogue_subgraph": DIALOGUE_SUBGRAPH_VERSION,
         "story_blueprint": STORY_BLUEPRINT_GRAPH_VERSION,
         "story_blueprint_prompt": BLUEPRINT_MODEL_PROMPT_VERSION,
         "scene_production": SCENE_PRODUCTION_GRAPH_VERSION,

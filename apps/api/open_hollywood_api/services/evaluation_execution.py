@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import hashlib
 from datetime import UTC, datetime
 from decimal import Decimal
@@ -45,7 +46,7 @@ from open_hollywood_api.persistence.models import (
 )
 
 DIRECT_STORY_WORKFLOW_NAME = "benchmark_direct_story"
-DIRECT_STORY_GRAPH_VERSION = "1"
+DIRECT_STORY_GRAPH_VERSION = "2"
 DIRECT_STORY_PROMPT_VERSION = "1"
 DEFAULT_BASELINE_CALL_BUDGET = ModelCallBudget(
     max_input_tokens=8_192,
@@ -135,6 +136,14 @@ class DirectBaselineBenchmarkExecutor:
                 content=content,
                 response=response,
             )
+        except asyncio.CancelledError:
+            self._fail_attempt(
+                run_id=run_id,
+                invocation_id=invocation_id,
+                code="cancelled_execution",
+                message="The direct Baseline call was cancelled before completion.",
+            )
+            raise
         except BenchmarkCaseExecutionError as error:
             self._fail_attempt(
                 run_id=run_id,

@@ -138,6 +138,12 @@ emitting grammar keywords unsupported by local Ollama structured output.
 Model-executing operator commands reject campaign plans whose baseline,
 Blueprint, production prompt, or graph versions differ from the running build,
 so diagnostic staging cannot silently become formal benchmark evidence.
+The frozen runtime snapshot includes the direct-story graph and nested dialogue
+subgraph as well. Blueprint graph v4, scene-production graph v2, and dialogue
+subgraph v2 allow model-backed nodes up to 900 seconds for formal long-form
+inference; ordinary provider timeouts can remain shorter. Cancelling or timing
+out a model task now closes its persisted invocation instead of leaving it
+indefinitely running.
 Operators can prepare selected cases independently. Once approved, the
 benchmark materializes immutable Scene Plans and an initial Story Bible, executes
 the checkpointed

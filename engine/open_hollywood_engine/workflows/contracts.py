@@ -12,8 +12,9 @@ from uuid import UUID
 from open_hollywood_engine.artifacts import ArtifactKind
 
 STORY_BLUEPRINT_WORKFLOW_NAME = "story_blueprint"
-STORY_BLUEPRINT_GRAPH_VERSION = "3"
+STORY_BLUEPRINT_GRAPH_VERSION = "4"
 DEFAULT_MAX_GRAPH_STEPS = 12
+DEFAULT_MODEL_NODE_TIMEOUT_SECONDS = 900
 
 
 class BlueprintNode(StrEnum):
@@ -100,7 +101,7 @@ class BlueprintNodeDefinition:
     specialist_role: str | None
     input_kinds: tuple[ArtifactKind, ...] = ()
     output_requirements: tuple[ArtifactOutputRequirement, ...] = ()
-    timeout_seconds: int = 120
+    timeout_seconds: int = DEFAULT_MODEL_NODE_TIMEOUT_SECONDS
     max_attempts: int = 2
 
     def __post_init__(self) -> None:

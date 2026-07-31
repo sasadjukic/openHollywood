@@ -26,8 +26,9 @@ from open_hollywood_engine.workflows.dialogue_contracts import (
 )
 
 SCENE_PRODUCTION_WORKFLOW_NAME = "scene_production"
-SCENE_PRODUCTION_GRAPH_VERSION = "1"
+SCENE_PRODUCTION_GRAPH_VERSION = "2"
 SCENE_PRODUCTION_PROMPT_TEMPLATE_VERSION = "1"
+DEFAULT_PRODUCTION_NODE_TIMEOUT_SECONDS = 900
 DEFAULT_MAX_REVISION_CYCLES = 2
 MAX_REVISION_CYCLES = 5
 MIN_PRODUCTION_UNITS = 3
@@ -67,7 +68,7 @@ class ProductionNodeDefinition:
 
     node: ProductionNode
     specialist_role: str | None
-    timeout_seconds: int = 120
+    timeout_seconds: int = DEFAULT_PRODUCTION_NODE_TIMEOUT_SECONDS
     max_attempts: int = 2
 
     def __post_init__(self) -> None:
