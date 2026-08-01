@@ -186,11 +186,18 @@ prepare selected cases independently. Batch preparation now isolates terminal
 Blueprint failures and continues with sibling cases; production reporting
 pre-seeds those failed cases while still requiring explicit approval for every
 surviving Blueprint. The July 31 replacement campaign completed all 12 Baselines
-without retry and paused its first 7 Local Blueprints before Local OH-008
-exhausted the bounded integration repair by twice emitting the unknown literal
-location ID `null`. That valid model failure exposed and now verifies the
-operator-level failure-isolation path; the campaign remains resumable after the
-repair is merged. The
+without retry. After the operator-level failure-isolation repair was merged,
+Blueprint staging resumed and settled every agentic case with no open workflow
+or invocation: Local paused 11 of 12 at approval and retained OH-008 as a
+terminal integration failure after twice emitting the unknown literal location
+ID `null`; Cloud paused all 12 at approval; Hybrid paused 7 of 12 and retained
+terminal failures for OH-006, OH-008, and OH-010 at integration, OH-009 at the
+World specialist, and OH-012 at the Character specialist after bounded
+structured-output repair. No Blueprint has been approved on the operator's
+behalf. The current staging yield is therefore 30 of 36 agentic cases (83.3%),
+which cannot meet the accepted 95% technical-completion threshold unless failed
+cases are explicitly rerun successfully or superseded by a new frozen campaign.
+The
 approved handoff now materializes exact Scene Plan versions and an initial
 canonical Story Bible, creates a child production run, and invokes the real
 SQLite-checkpointed writer, critic, continuity, and bible-maintainer graph.
