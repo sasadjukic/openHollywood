@@ -135,100 +135,17 @@ PDF/DOCX export.** A provider-neutral, invariant-checked manuscript contract
 assembles only complete latest versions of approved Scene Draft artifacts in
 unique, contiguous three-to-eight-scene order. The canonical Markdown renderer normalizes line endings and escapes structural markup. A separate typed Fountain screenplay contract renders title pages, forced headings and action, dialogue structures, transitions, sections, synopses, centered text, and page breaks without guessing script structure from prose. Searchable US-Letter PDF and editable US-Letter DOCX exporters use fixed metadata and canonicalized containers so identical inputs produce identical bytes. FastAPI exposes an export manifest, exact immutable source-version lineage, SHA-256 ETags, sanitized downloads, and fail-closed `409` behavior; the generated TypeScript SDK and workspace enable Markdown, PDF, and DOCX controls only for exportable projects. Evidence: `engine/open_hollywood_engine/rendering/`, `apps/api/open_hollywood_api/services/exports.py`, `apps/api/open_hollywood_api/routes/exports.py`, generated contracts, workspace export controls, and rendering/API/React tests. All four representative PDF pages and all four representative DOCX pages passed visual inspection. Ruff, mypy, 140 pytest tests, Prettier, ESLint, TypeScript, 5 Vitest tests, and the production build pass.
 
-19. [~] **IN PROGRESS 2026-07-26 — Build the evaluation harness** and run the benchmark corpus across local, cloud, and hybrid profiles. The provider-neutral harness core now strictly validates the frozen 12-prompt v0.1 corpus and pins its canonical digest, exact graph and prompt-contract versions, direct-model baseline, complete secret-free Local/Cloud/Hybrid profile snapshots, and prompt seeds into a deterministic 48-case campaign plan. Sequential case execution is failure-isolated and resumable from terminal results; successful outputs must carry exact workflow-run, model-invocation, and immutable artifact-version lineage. The accepted weighted rubric and hard gates are executable contracts. Deterministic A/B packaging separates provenance-free reviewer documents from the private answer key, and reporting maps blind human preferences back to systems while calculating the accepted completion, continuity, quality, preference, and cost thresholds. The operator command validates corpus integrity
-and creates plans from fully configured persisted presets. The application
-layer now executes the direct single-model baseline through a bounded
-provider-neutral call and persists its frozen prompt, invocation, workflow, and
-immutable story lineage idempotently. Campaign reports checkpoint atomically
-after each case, failed cases retry only when explicitly requested, and
-operator-configurable Ollama timeouts support long-form calls while
-distinguishing provider timeouts from outages. Retrying after an interrupted
-process closes stale running baseline attempts and preserves their immutable
-input lineage. Ollama Cloud response aliases are accepted only when they
-normalize to the frozen requested model; requested and provider-reported
-identifiers are both persisted. Operator commands create separated
-public/private review packets and summaries from schema-validated evidence.
-Failed structured calls retain provider usage, finish reason, response hash, and
-length, while a lone JSON fence is normalized without accepting surrounding
+19. [~] **IN PROGRESS 2026-07-26 — Build the evaluation harness** and run the benchmark corpus across local, cloud, and hybrid profiles. The provider-neutral harness core now strictly validates the frozen 12-prompt v0.1 corpus and pins its canonical digest, exact graph and prompt-contract versions, direct-model baseline, complete secret-free Local/Cloud/Hybrid profile snapshots, and prompt seeds into a deterministic 48-case campaign plan. Sequential case execution is failure-isolated and resumable from terminal results; successful outputs must carry exact workflow-run, model-invocation, and immutable artifact-version lineage. The accepted weighted rubric and hard gates are executable contracts. Deterministic A/B packaging separates provenance-free reviewer documents from the private answer key, and reporting maps blind human preferences back to systems while calculating the accepted completion, continuity, quality, preference, and cost thresholds. The operator command validates corpus integrity and creates plans from fully configured persisted presets. The application layer now executes the direct single-model baseline through a bounded provider-neutral call and persists its frozen prompt, invocation, workflow, and immutable story lineage idempotently. Campaign reports checkpoint atomically after each case, failed cases retry only when explicitly requested, and operator-configurable Ollama timeouts support long-form calls while distinguishing provider timeouts from outages. Retrying after an interrupted process closes stale running baseline attempts and preserves their immutable input lineage. Ollama Cloud response aliases are accepted only when they normalize to the frozen requested model; requested and provider-reported identifiers are both persisted. Operator commands create separated public/private review packets and summaries from schema-validated evidence. Failed structured calls retain provider usage, finish reason, response hash, and length, while a lone JSON fence is normalized without accepting surrounding
 commentary. Agentic cases now enter the real durable Story Blueprint graph:
 every registered specialist resolves its exact frozen profile selection,
-receives deterministic immutable inputs and benchmark constraints, uses schema
-enforcement when the deployment supports it, records a budgeted invocation plus
-output lineage, validates cross-artifact invariants, and pauses
-at the mandatory human approval interrupt. Replaying a paused case performs no
-duplicate model calls. Creative Brief prompt contract v6 requests only creative
-choices and the application deterministically attaches the frozen premise,
-format, genres, maturity, required elements, and forbidden elements; this keeps
-optional model fields from weakening benchmark intent. Prompted non-schema
-invariants preserve exact benchmark constraints; parallel World specialists
-cannot invent unresolved character references; the integrator emits only new
-beats and scene plans, and the application deterministically assembles immutable
-specialist artifacts into the Story Blueprint. Prompt contract v9 binds
-integration to a compact world summary, the Creative Brief's exact scene count,
-and no more than two beats per scene. Prompt-only cloud structured-output retries
-persist their attempt number and receive safe validation locations plus provider
-finish metadata without storing or echoing the failed story response. Word bounds
-remain application-validated instead of emitting grammar keywords unsupported by
-local Ollama structured output. Model-executing operator commands now reject a
-campaign plan when its baseline, Blueprint, production prompt, or graph versions
-differ from the running build, including the direct-story graph and nested
-dialogue subgraph. Blueprint graph v4, scene-production graph v2, and dialogue
-subgraph v2 give model-backed nodes a 900-second formal long-form ceiling while
-retaining bounded execution; cancelled or timed-out calls now close their
-persisted invocation instead of remaining `RUNNING`. A 12-case Local
-qualification reached the mandatory approval interrupt while prompt contracts
-v6 through v9 were being hardened. A subsequent frozen v9 staging campaign
-completed all 12 Baselines after one explicit provider-timeout retry, paused all
-12 Local Blueprints, and paused 9 Cloud Blueprints before exposing the prior
-120-second graph-node ceiling on Cloud OH-010. Both campaigns are diagnostic
-evidence only and must not be sealed as the final frozen campaign. Operators can
-prepare selected cases independently. Batch preparation now isolates terminal
-Blueprint failures and continues with sibling cases; production reporting
-pre-seeds those failed cases while still requiring explicit approval for every
-surviving Blueprint. The July 31 replacement campaign completed all 12 Baselines
-without retry. After the operator-level failure-isolation repair was merged,
-Blueprint staging resumed and settled every agentic case with no open workflow
-or invocation: Local paused 11 of 12 at approval and retained OH-008 as a
-terminal integration failure after twice emitting the unknown literal location
-ID `null`; Cloud paused all 12 at approval; Hybrid paused 7 of 12 and retained
-terminal failures for OH-006, OH-008, and OH-010 at integration, OH-009 at the
-World specialist, and OH-012 at the Character specialist after bounded
-structured-output repair. No Blueprint has been approved on the operator's
-behalf. The current staging yield is therefore 30 of 36 agentic cases (83.3%),
-which cannot meet the accepted 95% technical-completion threshold unless failed
-cases are explicitly rerun successfully or superseded by a new frozen campaign.
-The
-approved handoff now materializes exact Scene Plan versions and an initial
-canonical Story Bible, creates a child production run, and invokes the real
-SQLite-checkpointed writer, critic, continuity, and bible-maintainer graph.
-Production nodes reserve durable graph/call/token/cost budgets, profile-routed
-structured calls persist exact input lineage, accepted scene deltas advance the
-Story Bible through the deterministic reducer, and
- successful task fingerprints replay without duplicate calls. A final
- deterministic assembly persists the complete benchmark story and returns its
- Blueprint, accepted-scene, final-bible, manuscript, invocation, usage, latency,
- cost, and hard-gate evidence as `BenchmarkOutput`. The mandatory Blueprint
- approval remains fail-closed, and production pauses before a call that would
- exceed its reserved budget. The resumable operator flow now stages all Local,
- Cloud, and Hybrid Blueprint cases, requires explicit per-case approval, then
- runs approved production into the same atomically checkpointed report.
- Frozen Ollama deployment routing supports cloud models through a signed-in
- local daemon or a runtime-secret-backed direct cloud endpoint, including
- split local/cloud Hybrid execution. Reviewer-specific CSV forms and
- provenance-free Markdown guides now carry the canonical rubric, score anchors,
- and hard gates; strict import merges completed forms while rejecting
- incomplete, duplicate, foreign-campaign, or unknown-comparison evidence.
- Review schema v2 binds every submission to the exact public-packet digest,
- which reporting verifies against the separately stored private answer key.
- Complete evidence can now be sealed into a deterministic archive only when
- every planned case has a terminal result, every blinded comparison has human
- review coverage, and the corpus, plan, report, packets, reviews, declared
- budget, and recomputed summary agree. Its manifest records fixed public/private
- paths, counts, and per-member SHA-256 digests; independent verification
- reproduces the canonical archive and rejects tampering or partial evidence.
- Remaining before completion: run the formal corpus across all three profiles
- and the single-model baseline within an authorized budget, collect the actual
- blind human reviews, and seal the resulting evidence. Evidence so far:
+receives deterministic immutable inputs and benchmark constraints, uses schema enforcement when the deployment supports it, records a budgeted invocation plus output lineage, validates cross-artifact invariants, and pauses at the mandatory human approval interrupt. Replaying a paused case performs no duplicate model calls. Creative Brief prompt contract v6 requests only creative choices and the application deterministically attaches the frozen premise, format, genres, maturity, required elements, and forbidden elements; this keeps optional model fields from weakening benchmark intent. Prompted non-schema invariants preserve exact benchmark constraints; parallel World specialists cannot invent unresolved character references; the integrator emits only new beats and scene plans, and the application deterministically assembles immutable specialist artifacts into the Story Blueprint. Prompt contract v9 binds integration to a compact world summary, the Creative Brief's exact scene count, and no more than two beats per scene. Prompt-only cloud structured-output retries
+persist their attempt number and receive safe validation locations plus provider finish metadata without storing or echoing the failed story response. Word bounds remain application-validated instead of emitting grammar keywords unsupported by local Ollama structured output. Model-executing operator commands now reject a campaign plan when its baseline, Blueprint, production prompt, or graph versions differ from the running build, including the direct-story graph and nested dialogue subgraph. Blueprint graph v4, scene-production graph v2, and dialogue
+subgraph v2 give model-backed nodes a 900-second formal long-form ceiling while retaining bounded execution; cancelled or timed-out calls now close their persisted invocation instead of remaining `RUNNING`. A 12-case Local
+qualification reached the mandatory approval interrupt while prompt contracts v6 through v9 were being hardened. A subsequent frozen v9 staging campaign completed all 12 Baselines after one explicit provider-timeout retry, paused all 12 Local Blueprints, and paused 9 Cloud Blueprints before exposing the prior 120-second graph-node ceiling on Cloud OH-010. Both campaigns are diagnostic evidence only and must not be sealed as the final frozen campaign. Operators can prepare selected cases independently. Batch preparation now isolates terminal Blueprint failures and continues with sibling cases; production reporting pre-seeds those failed cases while still requiring explicit approval for every surviving Blueprint. The July 31 replacement campaign completed all 12 Baselines
+without retry. After the operator-level failure-isolation repair was merged, Blueprint staging resumed and settled every agentic case with no open workflow or invocation: Local paused 11 of 12 at approval and retained OH-008 as a terminal integration failure after twice emitting the unknown literal location ID `null`; Cloud paused all 12 at approval; Hybrid paused 7 of 12 and retained terminal failures for OH-006, OH-008, and OH-010 at integration, OH-009 at the World specialist, and OH-012 at the Character specialist after bounded structured-output repair. No Blueprint has been approved on the operator's behalf. The current staging yield is therefore 30 of 36 agentic cases (83.3%), which cannot meet the accepted 95% technical-completion threshold unless failed cases are explicitly rerun successfully or superseded by a new frozen campaign.
+An August 1 frozen replacement campaign changed only the Hybrid cloud model from Nemotron to `gemma4:31b-cloud` while retaining the same accepted graph and prompt-contract versions. Its Baseline completed 12 of 12 after one explicit retry recovered an OH-009 provider HTTP 500; Local paused 11 of 12 at approval and retained OH-006 as a terminal integration failure after invalid cross-specialist character references and missing scene-plan beats exhausted bounded repair; Cloud paused all 12; and Hybrid paused all 12, with one invalid Cloud integration response recovered by bounded repair. All 35 surviving Blueprints remain at the mandatory approval checkpoint and no campaign workflow or invocation remains active. The 35-of-36 Blueprint staging yield is 97.2%, above the accepted 95% technical-completion threshold; final technical completion remains contingent on approved production finishing those cases.
+The approved handoff now materializes exact Scene Plan versions and an initial canonical Story Bible, creates a child production run, and invokes the real SQLite-checkpointed writer, critic, continuity, and bible-maintainer graph. Production nodes reserve durable graph/call/token/cost budgets, profile-routed structured calls persist exact input lineage, accepted scene deltas advance the Story Bible through the deterministic reducer, and successful task fingerprints replay without duplicate calls. A final deterministic assembly persists the complete benchmark story and returns its Blueprint, accepted-scene, final-bible, manuscript, invocation, usage, latency, cost, and hard-gate evidence as `BenchmarkOutput`. The mandatory Blueprint approval remains fail-closed, and production pauses before a call that would exceed its reserved budget. The resumable operator flow now stages all Local, Cloud, and Hybrid Blueprint cases, requires explicit per-case approval, then runs approved production into the same atomically checkpointed report. Frozen Ollama deployment routing supports cloud models through a signed-in local daemon or a runtime-secret-backed direct cloud endpoint, including split local/cloud Hybrid execution. Reviewer-specific CSV forms and provenance-free Markdown guides now carry the canonical rubric, score anchors, and hard gates; strict import merges completed forms while rejecting incomplete, duplicate, foreign-campaign, or unknown-comparison evidence. Review schema v2 binds every submission to the exact public-packet digest, which reporting verifies against the separately stored private answer key Complete evidence can now be sealed into a deterministic archive only when
+every planned case has a terminal result, every blinded comparison has human review coverage, and the corpus, plan, report, packets, reviews, declared budget, and recomputed summary agree. Its manifest records fixed public/private paths, counts, and per-member SHA-256 digests; independent verification reproduces the canonical archive and rejects tampering or partial evidence. Remaining before completion: run the formal corpus across all three profiles and the single-model baseline within an authorized budget, collect the actual blind human reviews, and seal the resulting evidence. Evidence so far:
 `benchmarks/v0.1/corpus.json`,
 `engine/open_hollywood_engine/evaluations/`,
 `engine/open_hollywood_engine/evaluations/evidence.py`,
