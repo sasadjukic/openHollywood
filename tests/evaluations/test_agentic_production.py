@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+from dataclasses import replace
 from datetime import UTC, datetime
 from decimal import Decimal
 from pathlib import Path
@@ -55,6 +56,7 @@ from open_hollywood_engine.artifacts import (
 from open_hollywood_engine.evaluations import (
     BenchmarkCase,
     BenchmarkCaseExecutionError,
+    BenchmarkCaseStatus,
     BenchmarkPlan,
     BenchmarkProfileSnapshot,
     BenchmarkSystem,
@@ -215,6 +217,26 @@ class ProductionFixtureGateway(BlueprintFixtureGateway):
             timing=ModelTiming(total_ms=120),
             estimated_cost_usd=Decimal("0"),
         )
+
+
+class FirstBlueprintFailureGateway(ProductionFixtureGateway):
+    """Exhaust integration repair for the first case, then return valid outputs."""
+
+    def __init__(self, prompt_text: str, prompt: Any) -> None:
+        super().__init__(prompt_text, prompt)
+        self.invalid_integrations = 0
+
+    async def generate(self, request: ModelRequest) -> ModelResponse:
+        response = await super().generate(request)
+        if (
+            request.invocation.specialist_role == "blueprint_integrator"
+            and self.invalid_integrations < 2
+        ):
+            self.invalid_integrations += 1
+            content = json.loads(response.content)
+            content["scene_plans"][0]["location_id"] = "null"
+            return replace(response, content=json.dumps(content))
+        return response
 
 
 @pytest.mark.anyio
@@ -471,3 +493,99 @@ async def test_operator_runs_agentic_case_only_after_explicit_approval(
     assert report.results[0].output is not None
     assert replay == report
     assert len(gateway.requests) == request_count == 18
+
+
+@pytest.mark.anyio
+async def test_operator_isolates_failed_blueprint_and_runs_approved_sibling(
+    migrated_database_path: Path,
+    database_engine: Engine,
+    tmp_path: Path,
+) -> None:
+    corpus = load_benchmark_corpus(CORPUS_PATH)
+    local = ModelSelection(
+        provider="ollama",
+        model_identifier="local-fixture",
+        deployment=ModelDeployment.LOCAL,
+    )
+    cloud = ModelSelection(
+        provider="ollama",
+        model_identifier="cloud-fixture",
+        deployment=ModelDeployment.CLOUD,
+    )
+    snapshots = {
+        mode: BenchmarkProfileSnapshot.from_configuration(
+            profile_id=BUILTIN_PROFILE_IDS[mode],
+            configuration=MODEL_PRESETS[mode].configuration(
+                local_model=local if mode is not ModelProfileMode.CLOUD else None,
+                cloud_model=cloud if mode is not ModelProfileMode.LOCAL else None,
+            ),
+        )
+        for mode in ModelProfileMode
+    }
+    full_plan = build_benchmark_plan(
+        campaign_id=CAMPAIGN_ID,
+        corpus=corpus,
+        baseline_model=cloud,
+        profiles=snapshots,
+        workflow_versions={
+            "story_blueprint": STORY_BLUEPRINT_GRAPH_VERSION,
+            "scene_production": SCENE_PRODUCTION_GRAPH_VERSION,
+        },
+    )
+    local_cases = tuple(case for case in full_plan.cases if case.target_key == "local")[:2]
+    plan = full_plan.model_copy(update={"cases": local_cases})
+    session_factory = create_session_factory(database_engine)
+    ModelProfileStore(session_factory).configure_profile(
+        BUILTIN_PROFILE_IDS[ModelProfileMode.LOCAL],
+        local_model=local,
+        cloud_model=None,
+    )
+    gateway = FirstBlueprintFailureGateway(corpus.prompts[0].prompt, corpus.prompts[0])
+
+    prepared = await prepare_agentic_cases(
+        plan=plan,
+        corpus=corpus,
+        database_path=migrated_database_path,
+        session_factory=session_factory,
+        gateway=gateway,
+        target_keys=frozenset({"local"}),
+    )
+
+    assert [item.case_id for item in prepared] == [local_cases[1].case_id]
+    request_count = len(gateway.requests)
+    replayed_preparation = await prepare_agentic_cases(
+        plan=plan,
+        corpus=corpus,
+        database_path=migrated_database_path,
+        session_factory=session_factory,
+        gateway=gateway,
+        target_keys=frozenset({"local"}),
+    )
+    assert replayed_preparation == prepared
+    assert len(gateway.requests) == request_count
+    await approve_agentic_cases(
+        plan=plan,
+        corpus=corpus,
+        database_path=migrated_database_path,
+        session_factory=session_factory,
+        gateway=gateway,
+        case_ids=(local_cases[1].case_id,),
+        target_keys=frozenset({"local"}),
+    )
+    report = await run_agentic_cases(
+        plan=plan,
+        corpus=corpus,
+        database_path=migrated_database_path,
+        session_factory=session_factory,
+        gateway=gateway,
+        prior_report=None,
+        checkpoint=AtomicJsonReportCheckpoint(tmp_path / "report.json", plan),
+        target_keys=frozenset({"local"}),
+    )
+
+    assert [result.status for result in report.results] == [
+        BenchmarkCaseStatus.FAILED,
+        BenchmarkCaseStatus.SUCCEEDED,
+    ]
+    assert report.results[0].error_code == "artifact_contract_failed"
+    assert report.results[1].output is not None
