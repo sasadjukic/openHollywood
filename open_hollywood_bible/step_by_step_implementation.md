@@ -182,7 +182,15 @@ completed all 12 Baselines after one explicit provider-timeout retry, paused all
 12 Local Blueprints, and paused 9 Cloud Blueprints before exposing the prior
 120-second graph-node ceiling on Cloud OH-010. Both campaigns are diagnostic
 evidence only and must not be sealed as the final frozen campaign. Operators can
-prepare selected cases independently. The
+prepare selected cases independently. Batch preparation now isolates terminal
+Blueprint failures and continues with sibling cases; production reporting
+pre-seeds those failed cases while still requiring explicit approval for every
+surviving Blueprint. The July 31 replacement campaign completed all 12 Baselines
+without retry and paused its first 7 Local Blueprints before Local OH-008
+exhausted the bounded integration repair by twice emitting the unknown literal
+location ID `null`. That valid model failure exposed and now verifies the
+operator-level failure-isolation path; the campaign remains resumable after the
+repair is merged. The
 approved handoff now materializes exact Scene Plan versions and an initial
 canonical Story Bible, creates a child production run, and invokes the real
 SQLite-checkpointed writer, critic, continuity, and bible-maintainer graph.

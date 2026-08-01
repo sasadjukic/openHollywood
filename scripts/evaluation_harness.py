@@ -564,11 +564,23 @@ def main(argv: list[str] | None = None) -> int:
                 ollama_timeout_seconds=args.ollama_timeout_seconds,
             )
         )
+        preparation_case_ids = tuple(
+            case.case_id
+            for case in plan.cases
+            if case.target_key in target_keys
+            and (args.case_id is None or case.case_id in set(args.case_id))
+        )
+        prepared_ids = {preparation.case_id for preparation in preparations}
+        failed_case_ids = tuple(
+            case_id for case_id in preparation_case_ids if case_id not in prepared_ids
+        )
         print(
             json.dumps(
                 {
                     "campaign_id": str(plan.campaign_id),
                     "prepared": len(preparations),
+                    "failed": len(failed_case_ids),
+                    "failed_case_ids": [str(case_id) for case_id in failed_case_ids],
                     "awaiting_approval": sum(
                         preparation.awaiting_approval for preparation in preparations
                     ),

@@ -144,7 +144,10 @@ subgraph v2 allow model-backed nodes up to 900 seconds for formal long-form
 inference; ordinary provider timeouts can remain shorter. Cancelling or timing
 out a model task now closes its persisted invocation instead of leaving it
 indefinitely running.
-Operators can prepare selected cases independently. Once approved, the
+Operators can prepare selected cases independently. Batch preparation isolates
+terminal Blueprint failures and continues with sibling cases; production reports
+carry those failures forward while still requiring explicit approval for every
+surviving Blueprint. Once approved, the
 benchmark materializes immutable Scene Plans and an initial Story Bible, executes
 the checkpointed
 writer/critic/continuity/bible-maintainer loop, and deterministically assembles

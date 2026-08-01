@@ -8,6 +8,8 @@ from uuid import UUID, uuid5
 
 from open_hollywood_engine.evaluations import (
     BenchmarkCase,
+    BenchmarkCaseResult,
+    BenchmarkCaseStatus,
     BenchmarkCorpus,
     BenchmarkPlan,
     BenchmarkPrompt,
@@ -20,9 +22,15 @@ from open_hollywood_engine.workflows import (
     BlueprintDecisionAction,
     BlueprintHumanDecision,
 )
+from sqlalchemy import select
 from sqlalchemy.orm import Session, sessionmaker
 
-from open_hollywood_api.persistence.models import RunStatus, WorkflowRun
+from open_hollywood_api.persistence.models import (
+    AgentInvocation,
+    InvocationStatus,
+    RunStatus,
+    WorkflowRun,
+)
 from open_hollywood_api.services.agentic_benchmark import (
     AgenticBenchmarkBlueprintService,
     AgenticBenchmarkCaseExecutor,
@@ -60,12 +68,18 @@ async def prepare_agentic_cases(
     )
     preparations: list[AgenticBlueprintPreparation] = []
     for case in cases:
-        preparations.append(
-            await service.prepare(
+        if _blueprint_run_failed(session_factory, case):
+            continue
+        try:
+            preparation = await service.prepare(
                 case,
                 prompts[(case.prompt_id, case.prompt_version)],
             )
-        )
+        except Exception:
+            if not _blueprint_run_failed(session_factory, case):
+                raise
+        else:
+            preparations.append(preparation)
     return tuple(preparations)
 
 
@@ -178,7 +192,11 @@ async def run_agentic_cases(
 ) -> BenchmarkRunReport:
     """Run approved agentic cases and checkpoint each terminal result."""
     cases = _selected_agentic_cases(plan, corpus, target_keys)
-    _require_approved_runs(session_factory, plan.campaign_id, cases)
+    blueprint_failures = _require_resolved_blueprint_runs(
+        session_factory,
+        plan.campaign_id,
+        cases,
+    )
     executor = AgenticBenchmarkCaseExecutor(
         campaign_id=plan.campaign_id,
         database_path=database_path,
@@ -189,7 +207,7 @@ async def run_agentic_cases(
         plan=plan,
         corpus=corpus,
         executor=executor,
-        prior_results=prior_report.results if prior_report is not None else (),
+        prior_results=_merge_blueprint_failures(prior_report, blueprint_failures),
         checkpoint=checkpoint,
         retry_failed=retry_failed,
         target_keys=target_keys,
@@ -242,12 +260,13 @@ def _require_prepared_runs(
             _require_campaign_run(run, campaign_id, case)
 
 
-def _require_approved_runs(
+def _require_resolved_blueprint_runs(
     session_factory: sessionmaker[Session],
     campaign_id: UUID,
     cases: Iterable[BenchmarkCase],
-) -> None:
+) -> tuple[BenchmarkCaseResult, ...]:
     unapproved: list[UUID] = []
+    failures: list[BenchmarkCaseResult] = []
     with session_factory() as session:
         for case in cases:
             run = session.get(
@@ -258,7 +277,9 @@ def _require_approved_runs(
                 unapproved.append(case.case_id)
                 continue
             _require_campaign_run(run, campaign_id, case)
-            if run.status is not RunStatus.SUCCEEDED:
+            if run.status is RunStatus.FAILED:
+                failures.append(_blueprint_failure_result(session, run, case))
+            elif run.status is not RunStatus.SUCCEEDED:
                 unapproved.append(case.case_id)
     if unapproved:
         formatted = ", ".join(str(case_id) for case_id in unapproved)
@@ -266,6 +287,65 @@ def _require_approved_runs(
             "all selected agentic cases require explicit Blueprint approval before "
             f"production; pending cases: {formatted}"
         )
+    return tuple(failures)
+
+
+def _blueprint_run_failed(
+    session_factory: sessionmaker[Session],
+    case: BenchmarkCase,
+) -> bool:
+    with session_factory() as session:
+        run = session.get(
+            WorkflowRun,
+            uuid5(case.case_id, "agentic-blueprint-workflow"),
+        )
+        return run is not None and run.status is RunStatus.FAILED
+
+
+def _blueprint_failure_result(
+    session: Session,
+    run: WorkflowRun,
+    case: BenchmarkCase,
+) -> BenchmarkCaseResult:
+    invocation = session.scalar(
+        select(AgentInvocation)
+        .where(
+            AgentInvocation.workflow_run_id == run.id,
+            AgentInvocation.status == InvocationStatus.FAILED,
+        )
+        .order_by(AgentInvocation.started_at.desc(), AgentInvocation.id.desc())
+        .limit(1)
+    )
+    return BenchmarkCaseResult(
+        case_id=case.case_id,
+        status=BenchmarkCaseStatus.FAILED,
+        error_code=(
+            invocation.error_code
+            if invocation is not None and invocation.error_code
+            else run.error_code or "blueprint_preparation_failed"
+        ),
+        error_message=(
+            invocation.error_message
+            if invocation is not None and invocation.error_message
+            else run.error_message or "Blueprint preparation failed before approval."
+        )[:2_000],
+    )
+
+
+def _merge_blueprint_failures(
+    prior_report: BenchmarkRunReport | None,
+    failures: tuple[BenchmarkCaseResult, ...],
+) -> tuple[BenchmarkCaseResult, ...]:
+    prior = prior_report.results if prior_report is not None else ()
+    prior_by_id = {result.case_id: result for result in prior}
+    for failure in failures:
+        existing = prior_by_id.get(failure.case_id)
+        if existing is not None and existing != failure:
+            raise ValueError(
+                f"prior result for failed Blueprint case {failure.case_id} does not match"
+            )
+        prior_by_id[failure.case_id] = failure
+    return tuple(prior_by_id.values())
 
 
 def _require_campaign_run(
