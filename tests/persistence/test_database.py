@@ -27,6 +27,7 @@ EXPECTED_TABLES = {
     "human_decisions",
     "messages",
     "model_profiles",
+    "project_deletion_requests",
     "projects",
     "workflow_runs",
     "workflow_run_controls",

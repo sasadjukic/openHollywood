@@ -65,6 +65,20 @@ langgraph_writes = Table(
     Column("value", LargeBinary),
 )
 
+# A row exists only inside the transaction that deletes its owning project.
+# The workflow-event trigger uses it to distinguish aggregate teardown from an
+# attempt to mutate append-only history during the project's lifetime.
+project_deletion_requests = Table(
+    "project_deletion_requests",
+    Base.metadata,
+    Column(
+        "project_id",
+        Uuid,
+        ForeignKey("projects.id", ondelete="CASCADE"),
+        primary_key=True,
+    ),
+)
+
 
 def utc_now() -> datetime:
     """Return an aware UTC timestamp for application-side defaults."""

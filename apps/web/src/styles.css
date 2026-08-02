@@ -201,7 +201,9 @@ textarea:focus-visible {
 
 .workspace-nav {
   display: flex;
+  min-height: 0;
   flex-direction: column;
+  overflow: hidden;
   border-right: 1px solid var(--border);
 }
 
@@ -209,11 +211,20 @@ textarea:focus-visible {
   padding: 22px 14px 12px;
 }
 
+.workspace-nav > .nav-section:first-of-type {
+  display: flex;
+  min-height: 180px;
+  flex: 3 1 0;
+  flex-direction: column;
+}
+
 .nav-section--artifacts {
-  flex: 1;
-  min-height: 0;
+  display: flex;
+  min-height: 120px;
+  flex: 2 1 0;
+  flex-direction: column;
   padding-top: 18px;
-  overflow-y: auto;
+  overflow: hidden;
   border-top: 1px solid var(--border);
 }
 
@@ -230,7 +241,43 @@ textarea:focus-visible {
 .project-list,
 .artifact-list {
   display: grid;
+  min-height: 0;
   gap: 4px;
+  align-content: start;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+}
+
+.project-list,
+.artifact-list,
+.story-intake,
+.conversation-panel,
+.inspector-scroll,
+.preset-grid {
+  scrollbar-color: rgb(184 193 192 / 35%) transparent;
+  scrollbar-width: thin;
+}
+
+.project-list::-webkit-scrollbar,
+.artifact-list::-webkit-scrollbar,
+.story-intake::-webkit-scrollbar,
+.conversation-panel::-webkit-scrollbar,
+.inspector-scroll::-webkit-scrollbar,
+.preset-grid::-webkit-scrollbar {
+  width: 9px;
+}
+
+.project-list::-webkit-scrollbar-thumb,
+.artifact-list::-webkit-scrollbar-thumb,
+.story-intake::-webkit-scrollbar-thumb,
+.conversation-panel::-webkit-scrollbar-thumb,
+.inspector-scroll::-webkit-scrollbar-thumb,
+.preset-grid::-webkit-scrollbar-thumb {
+  border: 2px solid transparent;
+  border-radius: 999px;
+  background: rgb(184 193 192 / 35%);
+  background-clip: padding-box;
 }
 
 .new-story-button {
@@ -273,6 +320,22 @@ textarea:focus-visible {
   line-height: 1.55;
 }
 
+.project-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 30px;
+  align-items: center;
+  border-radius: 10px;
+}
+
+.project-row:hover {
+  background: rgb(255 255 255 / 3.5%);
+}
+
+.project-row--active {
+  background: rgb(129 193 217 / 8%);
+  box-shadow: inset 0 0 0 1px rgb(129 193 217 / 10%);
+}
+
 .project-button,
 .artifact-button {
   display: grid;
@@ -286,15 +349,43 @@ textarea:focus-visible {
   cursor: pointer;
 }
 
-.project-button:hover,
 .artifact-button:hover {
   background: rgb(255 255 255 / 3.5%);
 }
 
-.project-button--active,
 .artifact-button--active {
   background: rgb(129 193 217 / 8%);
   box-shadow: inset 0 0 0 1px rgb(129 193 217 / 10%);
+}
+
+.project-delete {
+  display: grid;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border-radius: 7px;
+  place-items: center;
+  color: var(--muted-dim);
+  background: transparent;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.project-delete:hover:not(:disabled) {
+  color: var(--pink);
+  background: rgb(233 165 165 / 9%);
+}
+
+.project-delete:disabled {
+  opacity: 0.28;
+  cursor: not-allowed;
+}
+
+.nav-error {
+  margin: 8px 10px 0;
+  color: var(--pink);
+  font-size: 0.66rem;
+  line-height: 1.45;
 }
 
 .project-button > span:last-child,
@@ -410,8 +501,11 @@ textarea:focus-visible {
 .story-intake {
   display: grid;
   min-height: 0;
+  flex: 1;
   padding: clamp(30px, 6vh, 72px) clamp(24px, 6vw, 76px);
   overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
   align-content: start;
 }
 
@@ -427,10 +521,10 @@ textarea:focus-visible {
 }
 
 .story-intake-copy h1 {
-  max-width: 680px;
+  max-width: 800px;
   margin: 0;
   font-family: var(--serif);
-  font-size: clamp(2.3rem, 5vw, 4.4rem);
+  font-size: clamp(1.9rem, 2.4vw, 2.7rem);
   font-weight: 500;
   letter-spacing: -0.045em;
   line-height: 1;
@@ -491,9 +585,11 @@ textarea:focus-visible {
 }
 
 .premise-field textarea {
-  min-height: 160px;
+  min-height: 58px;
+  max-height: clamp(160px, 34vh, 320px);
   padding: 14px;
-  resize: vertical;
+  overflow-y: hidden;
+  resize: none;
   font-family: var(--serif);
   font-size: 1.04rem;
   line-height: 1.65;
@@ -742,6 +838,8 @@ textarea:focus-visible {
   min-height: 0;
   flex: 1;
   overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
   scroll-behavior: smooth;
 }
 
@@ -1097,6 +1195,8 @@ textarea:focus-visible {
   min-height: 0;
   flex: 1;
   overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
 }
 
 .inspector-empty {
@@ -1625,7 +1725,7 @@ textarea:focus-visible {
   }
 
   .story-intake-copy h1 {
-    font-size: clamp(2.2rem, 12vw, 3.2rem);
+    font-size: clamp(1.9rem, 9vw, 2.6rem);
   }
 
   .premise-composer {

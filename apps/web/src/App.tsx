@@ -4,14 +4,16 @@ import type {
   ModelProfileSummary,
   ModelSelectionInput,
   ProjectExportFormat,
+  ProjectList,
   RunBudgetPatch,
   RunControlAction,
   WorkspaceArtifact,
   WorkspaceRun,
 } from "@open-hollywood/contracts";
-import { useRef, useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 
 import {
+  controlRun,
   fetchArtifactVersion,
   fetchModelCatalog,
   fetchModelProfiles,
@@ -21,7 +23,7 @@ import {
   fetchServiceStatus,
   fetchWorkflowEvents,
   projectExportUrl,
-  controlRun,
+  removeStoryProject,
   saveModelProfile,
   selectModelProfile,
   startStoryProject,
@@ -249,6 +251,34 @@ export function App() {
       setCreatingStory(false);
     },
   });
+  const deleteProjectMutation = useMutation({
+    mutationFn: removeStoryProject,
+    onSuccess: async (_result, deletedProjectId) => {
+      queryClient.setQueryData<ProjectList>(projectsQueryKey, (current) =>
+        current
+          ? {
+              ...current,
+              projects: current.projects.filter(
+                (project) => project.id !== deletedProjectId,
+              ),
+            }
+          : current,
+      );
+      queryClient.removeQueries({
+        queryKey: ["workspace", deletedProjectId],
+      });
+      queryClient.removeQueries({
+        queryKey: ["project-exports", deletedProjectId],
+      });
+      if (selectedProjectId === deletedProjectId) {
+        setRequestedProjectId(null);
+        setRequestedArtifactId(null);
+        setRequestedVersionId(null);
+        setInspectorOpen(false);
+      }
+      await queryClient.invalidateQueries({ queryKey: projectsQueryKey });
+    },
+  });
 
   const connectionState = serviceStatus.isPending
     ? "connecting"
@@ -322,46 +352,81 @@ export function App() {
               New story
             </button>
             <div className="project-list">
-              {projectsQuery.data.projects.map((project) => (
-                <button
-                  className={`project-button ${
-                    project.id === selectedProjectId
-                      ? "project-button--active"
-                      : ""
-                  }`}
-                  key={project.id}
-                  type="button"
-                  onClick={() => {
-                    setCreatingStory(false);
-                    setRequestedProjectId(project.id);
-                    setRequestedArtifactId(null);
-                    setRequestedVersionId(null);
-                    setNavigationOpen(false);
-                  }}
-                >
-                  <span
-                    className={`project-status project-status--${
-                      project.latest_workflow_status ?? "idle"
+              {projectsQuery.data.projects.map((project) => {
+                const mustStopBeforeDelete = ["pending", "running"].includes(
+                  project.latest_workflow_status ?? "",
+                );
+                return (
+                  <div
+                    className={`project-row ${
+                      project.id === selectedProjectId
+                        ? "project-row--active"
+                        : ""
                     }`}
-                    aria-hidden="true"
-                  />
-                  <span>
-                    <strong>{project.name}</strong>
-                    <small>
-                      {project.artifact_count} artifacts ·{" "}
-                      {humanize(
-                        project.latest_workflow_status ?? "Not started",
-                      )}
-                    </small>
-                  </span>
-                </button>
-              ))}
+                    key={project.id}
+                  >
+                    <button
+                      className="project-button"
+                      type="button"
+                      onClick={() => {
+                        setCreatingStory(false);
+                        setRequestedProjectId(project.id);
+                        setRequestedArtifactId(null);
+                        setRequestedVersionId(null);
+                        setNavigationOpen(false);
+                      }}
+                    >
+                      <span
+                        className={`project-status project-status--${
+                          project.latest_workflow_status ?? "idle"
+                        }`}
+                        aria-hidden="true"
+                      />
+                      <span>
+                        <strong>{project.name}</strong>
+                        <small>
+                          {project.artifact_count} artifacts ·{" "}
+                          {humanize(
+                            project.latest_workflow_status ?? "Not started",
+                          )}
+                        </small>
+                      </span>
+                    </button>
+                    <button
+                      aria-label={`Delete story ${project.name}`}
+                      className="project-delete"
+                      disabled={
+                        mustStopBeforeDelete || deleteProjectMutation.isPending
+                      }
+                      title={
+                        mustStopBeforeDelete
+                          ? "Stop this story's workflow before deleting it"
+                          : `Delete ${project.name}`
+                      }
+                      type="button"
+                      onClick={() => {
+                        const confirmed = window.confirm(
+                          `Delete “${project.name}”? This permanently removes its messages, workflow history, and artifacts from this device.`,
+                        );
+                        if (confirmed) {
+                          deleteProjectMutation.mutate(project.id);
+                        }
+                      }}
+                    >
+                      <span aria-hidden="true">×</span>
+                    </button>
+                  </div>
+                );
+              })}
               {projectsQuery.data.projects.length === 0 && (
                 <p className="nav-empty">
                   Your local story library is ready for its first premise.
                 </p>
               )}
             </div>
+            {deleteProjectMutation.error instanceof Error && (
+              <p className="nav-error">{deleteProjectMutation.error.message}</p>
+            )}
           </section>
 
           <section className="nav-section nav-section--artifacts">
@@ -1036,6 +1101,20 @@ function StoryIntake({
   title: string;
 }) {
   const canSubmit = premise.trim().length > 0 && !isPending;
+  const premiseInput = useRef<HTMLTextAreaElement>(null);
+
+  useLayoutEffect(() => {
+    const textarea = premiseInput.current;
+    if (!textarea) {
+      return;
+    }
+    textarea.style.height = "auto";
+    textarea.style.height = `${String(textarea.scrollHeight)}px`;
+    const maxHeight = Number.parseFloat(getComputedStyle(textarea).maxHeight);
+    textarea.style.overflowY =
+      textarea.scrollHeight > maxHeight ? "auto" : "hidden";
+  }, [premise]);
+
   return (
     <section className="story-intake" aria-labelledby="story-intake-heading">
       <div className="story-intake-copy">
@@ -1084,7 +1163,8 @@ function StoryIntake({
               onPremiseChange(event.target.value);
             }}
             placeholder="A brand-new stroller waits outside an abandoned, windowless building..."
-            rows={8}
+            ref={premiseInput}
+            rows={1}
             value={premise}
           />
         </label>

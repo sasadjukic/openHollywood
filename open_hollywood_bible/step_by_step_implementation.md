@@ -91,7 +91,8 @@ workflow/API/persistence integration tests. Migration upgrade/downgrade and
 metadata parity, Ruff, mypy, 86 pytest tests, Prettier, ESLint, TypeScript,
 Vitest, and the production build pass.
 
-12. [x] **COMPLETED 2026-07-23; INTAKE CORRECTED 2026-07-25 — Build the
+12. [x] **COMPLETED 2026-07-23; INTAKE CORRECTED 2026-07-25; UX CORRECTED
+2026-08-02 — Build the
 workspace UI around persisted data.** The responsive three-panel React workspace
 now lists durable projects and story artifacts, merges persisted chat with
 workflow activity, presents current run and checkpoint status, and renders
@@ -103,9 +104,15 @@ user message, queued Story Blueprint run, and safe workflow event. The Story
 Blueprint checkpoint supports approve, revise, reject, and fork through the
 generated SDK. FastAPI boundaries assemble UI-safe project workspaces and
 artifact details directly from SQLite while excluding checkpoints, prompts, and
-secrets. Loading, empty, disconnected, and mobile panel states are covered.
+secrets. Each desktop panel now exposes bounded independent scrolling, the
+premise composer grows with its content, and stopped stories can be permanently
+removed with their complete local workflow and artifact aggregate. Loading,
+empty, disconnected, and mobile panel states are covered.
 Evidence:
-`apps/api/open_hollywood_api/services/workspace.py`, `apps/api/open_hollywood_api/routes/workspace.py`, `apps/web/src/`, generated contracts, and API/React tests. Ruff, mypy, 89 pytest tests, Prettier, ESLint, TypeScript, Vitest, and the production build pass.
+`apps/api/open_hollywood_api/services/workspace.py`,
+`apps/api/open_hollywood_api/routes/workspace.py`, `apps/web/src/`, generated
+contracts, and API/React tests. Ruff, mypy, 178 pytest tests, Prettier, ESLint,
+TypeScript, 7 Vitest tests, and the production build pass.
 
 13. [x] **COMPLETED 2026-07-23 — Add Local, Cloud, and Hybrid model
 presets.** Provider-neutral, schema-versioned preset contracts now route every registered Story Blueprint specialist to an exact local or cloud model. Local keeps all roles on-device, Cloud assigns all roles to cloud inference, and Hybrid keeps structured preparation and evaluation local while sending high-impact creative reasoning to cloud. The three presets are seeded idempotently into SQLite without guessed model names, cannot activate until every required model slot is configured, and resolve exact role assignments for future invocations. FastAPI exposes durable configuration, atomic activation, and failure-isolated dynamic Ollama catalog discovery; the responsive workspace settings surface uses the generated SDK and persists no credentials. Evidence: `engine/open_hollywood_engine/models/profiles.py`, `apps/api/open_hollywood_api/services/model_profiles.py`, `apps/api/open_hollywood_api/routes/model_profiles.py`, `apps/web/src/components/ModelSettings.tsx`, generated contracts, and engine/API/React tests. Ruff, mypy, 99 pytest tests, Prettier, ESLint, TypeScript, 4 Vitest tests, and the production build pass.

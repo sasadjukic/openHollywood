@@ -22,6 +22,9 @@ import type {
   CreateStoryProjectData,
   CreateStoryProjectErrors,
   CreateStoryProjectResponses,
+  DeleteStoryProjectData,
+  DeleteStoryProjectErrors,
+  DeleteStoryProjectResponses,
   DownloadProjectExportData,
   DownloadProjectExportErrors,
   DownloadProjectExportResponses,
@@ -210,6 +213,24 @@ export const createStoryProject = <ThrowOnError extends boolean = false>(
       ...options.headers,
     },
   });
+
+/**
+ * Delete a stopped local story project
+ *
+ * Remove one stopped story and its conversations, runs, and artifacts.
+ */
+export const deleteStoryProject = <ThrowOnError extends boolean = false>(
+  options: Options<DeleteStoryProjectData, ThrowOnError>,
+): RequestResult<
+  DeleteStoryProjectResponses,
+  DeleteStoryProjectErrors,
+  ThrowOnError
+> =>
+  (options.client ?? client).delete<
+    DeleteStoryProjectResponses,
+    DeleteStoryProjectErrors,
+    ThrowOnError
+  >({ url: "/api/v1/projects/{project_id}", ...options });
 
 /**
  * List deterministic exports available for one project

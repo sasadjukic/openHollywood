@@ -9,22 +9,27 @@ from httpx import ASGITransport, AsyncClient
 from open_hollywood_api.app import create_app
 from open_hollywood_api.persistence.database import create_session_factory
 from open_hollywood_api.persistence.models import (
+    AgentInvocation,
     Artifact,
     ArtifactStatus,
     ArtifactVersion,
     Conversation,
     Evaluation,
+    InvocationStatus,
     Message,
     MessageRole,
     Project,
     RunStatus,
     WorkflowEvent,
     WorkflowRun,
+    agent_invocation_inputs,
+    langgraph_checkpoints,
+    langgraph_writes,
 )
 from open_hollywood_api.services.workflow_events import WorkflowEventStore
 from open_hollywood_api.services.workspace import WorkspaceStore
 from open_hollywood_engine.workflows import RunPauseReason
-from sqlalchemy import Engine, func, select
+from sqlalchemy import Engine, func, insert, select
 
 pytestmark = pytest.mark.anyio
 
@@ -86,9 +91,24 @@ def _persist_workspace(database_engine: Engine) -> tuple[UUID, UUID, UUID]:
             content_sha256="1" * 64,
             change_summary="Initial integrated blueprint",
         )
+        invocation = AgentInvocation(
+            workflow_run=workflow_run,
+            specialist_role="blueprint_integrator",
+            provider="test-provider",
+            model_identifier="test-model",
+            status=InvocationStatus.SUCCEEDED,
+            request_settings={},
+            prompt_sha256="3" * 64,
+            input_tokens=100,
+            output_tokens=200,
+            estimated_cost_usd=Decimal("0"),
+            schema_validation_succeeded=True,
+            input_versions=[first_version],
+        )
         second_version = ArtifactVersion(
             artifact=artifact,
             parent_version=first_version,
+            created_by_invocation=invocation,
             version_number=2,
             schema_version="1",
             content={
@@ -291,3 +311,78 @@ async def test_reused_intake_request_id_rejects_different_story(
 
     assert first.status_code == 201
     assert conflicting.status_code == 409
+
+
+async def test_stopped_project_can_be_deleted_with_its_durable_workspace(
+    database_engine: Engine,
+) -> None:
+    project_id, workflow_run_id, _ = _persist_workspace(database_engine)
+    session_factory = create_session_factory(database_engine)
+    application = create_app(
+        workflow_event_store=WorkflowEventStore(session_factory),
+        workspace_store=WorkspaceStore(session_factory),
+    )
+    transport = ASGITransport(app=application)
+    with session_factory.begin() as session:
+        session.execute(
+            insert(langgraph_checkpoints).values(
+                thread_id=str(workflow_run_id),
+                checkpoint_ns="",
+                checkpoint_id="checkpoint-delete-test",
+                checkpoint=b"checkpoint",
+                metadata=b"metadata",
+            )
+        )
+        session.execute(
+            insert(langgraph_writes).values(
+                thread_id=str(workflow_run_id),
+                checkpoint_ns="",
+                checkpoint_id="checkpoint-delete-test",
+                task_id="task-delete-test",
+                idx=0,
+                channel="result",
+                value=b"value",
+            )
+        )
+
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
+        response = await client.delete(f"/api/v1/projects/{project_id}")
+        missing_workspace = await client.get(f"/api/v1/projects/{project_id}/workspace")
+
+    assert response.status_code == 204
+    assert missing_workspace.status_code == 404
+    with session_factory() as session:
+        assert session.scalar(select(func.count(Project.id))) == 0
+        assert session.scalar(select(func.count(Conversation.id))) == 0
+        assert session.scalar(select(func.count(WorkflowRun.id))) == 0
+        assert session.scalar(select(func.count(Message.id))) == 0
+        assert session.scalar(select(func.count(Artifact.id))) == 0
+        assert session.scalar(select(func.count(ArtifactVersion.id))) == 0
+        assert session.scalar(select(func.count(AgentInvocation.id))) == 0
+        assert session.scalar(select(func.count(Evaluation.id))) == 0
+        assert session.scalar(select(func.count(WorkflowEvent.id))) == 0
+        assert session.scalar(select(func.count()).select_from(agent_invocation_inputs)) == 0
+        assert session.scalar(select(func.count()).select_from(langgraph_checkpoints)) == 0
+        assert session.scalar(select(func.count()).select_from(langgraph_writes)) == 0
+        assert session.get(WorkflowRun, workflow_run_id) is None
+
+
+async def test_active_project_must_be_stopped_before_deletion(
+    database_engine: Engine,
+) -> None:
+    project_id, workflow_run_id, _ = _persist_workspace(database_engine)
+    session_factory = create_session_factory(database_engine)
+    with session_factory.begin() as session:
+        workflow_run = session.get(WorkflowRun, workflow_run_id)
+        assert workflow_run is not None
+        workflow_run.status = RunStatus.RUNNING
+
+    application = create_app(workspace_store=WorkspaceStore(session_factory))
+    transport = ASGITransport(app=application)
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
+        response = await client.delete(f"/api/v1/projects/{project_id}")
+
+    assert response.status_code == 409
+    assert response.json()["detail"] == "Stop the active workflow before deleting this story"
+    with session_factory() as session:
+        assert session.get(Project, project_id) is not None

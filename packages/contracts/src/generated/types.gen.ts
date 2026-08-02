@@ -1267,6 +1267,46 @@ export type CreateStoryProjectResponses = {
 export type CreateStoryProjectResponse2 =
   CreateStoryProjectResponses[keyof CreateStoryProjectResponses];
 
+export type DeleteStoryProjectData = {
+  body?: never;
+  path: {
+    /**
+     * Project Id
+     */
+    project_id: string;
+  };
+  query?: never;
+  url: "/api/v1/projects/{project_id}";
+};
+
+export type DeleteStoryProjectErrors = {
+  /**
+   * Project not found
+   */
+  404: unknown;
+  /**
+   * Project is active or referenced by another story
+   */
+  409: unknown;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type DeleteStoryProjectError =
+  DeleteStoryProjectErrors[keyof DeleteStoryProjectErrors];
+
+export type DeleteStoryProjectResponses = {
+  /**
+   * Successful Response
+   */
+  204: void;
+};
+
+export type DeleteStoryProjectResponse =
+  DeleteStoryProjectResponses[keyof DeleteStoryProjectResponses];
+
 export type ListProjectExportsData = {
   body?: never;
   path: {

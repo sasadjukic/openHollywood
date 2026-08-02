@@ -27,6 +27,7 @@ function renderApp() {
 }
 
 function configureWorkspaceApi() {
+  let projectDeleted = false;
   const fetchMock = vi.fn((input: RequestInfo | URL, init?: RequestInit) => {
     const request = input instanceof Request ? input : null;
     const url = request?.url ?? requestUrl(input);
@@ -44,22 +45,28 @@ function configureWorkspaceApi() {
     if (url.endsWith("/api/v1/projects")) {
       return Promise.resolve(
         jsonResponse({
-          projects: [
-            {
-              artifact_count: 1,
-              conversation_count: 1,
-              description: "A supernatural horror story.",
-              id: projectId,
-              latest_workflow_run_id: runId,
-              latest_workflow_status: "paused",
-              name: "The Untouched Stroller",
-              status: "active",
-              story_format: "short_prose",
-              updated_at: now,
-            },
-          ],
+          projects: projectDeleted
+            ? []
+            : [
+                {
+                  artifact_count: 1,
+                  conversation_count: 1,
+                  description: "A supernatural horror story.",
+                  id: projectId,
+                  latest_workflow_run_id: runId,
+                  latest_workflow_status: "paused",
+                  name: "The Untouched Stroller",
+                  status: "active",
+                  story_format: "short_prose",
+                  updated_at: now,
+                },
+              ],
         }),
       );
+    }
+    if (url.endsWith(`/api/v1/projects/${projectId}`) && method === "DELETE") {
+      projectDeleted = true;
+      return Promise.resolve(new Response(null, { status: 204 }));
     }
     if (url.endsWith("/api/v1/model-profiles") && method === "GET") {
       return Promise.resolve(jsonResponse(modelProfilesResponse()));
@@ -332,6 +339,39 @@ describe("App", () => {
     expect(
       screen.queryByRole("button", { name: "Resume" }),
     ).not.toBeInTheDocument();
+  });
+
+  it("confirms and deletes a stopped story from the library", async () => {
+    const user = userEvent.setup();
+    const fetchMock = configureWorkspaceApi();
+    const confirm = vi.spyOn(window, "confirm").mockReturnValue(true);
+
+    renderApp();
+
+    await screen.findByRole("heading", { name: "The Untouched Stroller" });
+    await user.click(
+      screen.getByRole("button", {
+        name: "Delete story The Untouched Stroller",
+      }),
+    );
+
+    expect(confirm).toHaveBeenCalledWith(
+      expect.stringContaining("permanently"),
+    );
+    expect(
+      await screen.findByRole("heading", {
+        name: "What should the studio create?",
+      }),
+    ).toBeInTheDocument();
+    expect(
+      fetchMock.mock.calls.some(([input, init]) => {
+        const request = input instanceof Request ? input : null;
+        return (
+          requestUrl(input).endsWith(`/api/v1/projects/${projectId}`) &&
+          (request?.method ?? init?.method) === "DELETE"
+        );
+      }),
+    ).toBe(true);
   });
 
   it("requires guidance for revision and submits approval without it", async () => {

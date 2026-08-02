@@ -2002,6 +2002,47 @@
         "tags": ["workspace"]
       }
     },
+    "/api/v1/projects/{project_id}": {
+      "delete": {
+        "description": "Remove one stopped story and its conversations, runs, and artifacts.",
+        "operationId": "deleteStoryProject",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "project_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Project Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "404": {
+            "description": "Project not found"
+          },
+          "409": {
+            "description": "Project is active or referenced by another story"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Delete a stopped local story project",
+        "tags": ["workspace"]
+      }
+    },
     "/api/v1/projects/{project_id}/exports": {
       "get": {
         "description": "Return export readiness and the exact source artifact versions.",

@@ -9,7 +9,9 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from open_hollywood_api.dependencies import get_workspace_store
 from open_hollywood_api.services.workspace import (
     WorkspaceArtifactVersionNotFoundError,
+    WorkspaceProjectActiveError,
     WorkspaceProjectNotFoundError,
+    WorkspaceProjectReferencedError,
     WorkspaceRequestConflictError,
     WorkspaceStore,
 )
@@ -69,6 +71,40 @@ async def list_projects(store: WorkspaceStoreDependency) -> ProjectList:
     """Return project navigation data ordered by recent activity."""
     records = await anyio.to_thread.run_sync(store.list_projects)
     return ProjectList(projects=[ProjectSummary.from_record(record) for record in records])
+
+
+@router.delete(
+    "/projects/{project_id}",
+    operation_id="deleteStoryProject",
+    responses={
+        404: {"description": "Project not found"},
+        409: {"description": "Project is active or referenced by another story"},
+    },
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="Delete a stopped local story project",
+)
+async def delete_story_project(
+    project_id: UUID,
+    store: WorkspaceStoreDependency,
+) -> None:
+    """Remove one stopped story and its conversations, runs, and artifacts."""
+    try:
+        await anyio.to_thread.run_sync(store.delete_project, project_id)
+    except WorkspaceProjectNotFoundError as error:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Project not found",
+        ) from error
+    except WorkspaceProjectActiveError as error:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Stop the active workflow before deleting this story",
+        ) from error
+    except WorkspaceProjectReferencedError as error:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Another story depends on this project's artifact versions",
+        ) from error
 
 
 @router.get(

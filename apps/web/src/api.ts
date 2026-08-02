@@ -3,6 +3,7 @@ import {
   configureModelProfile,
   controlWorkflowRun,
   createStoryProject,
+  deleteStoryProject,
   getArtifactVersion,
   getHealth,
   getProjectWorkspace,
@@ -62,6 +63,17 @@ export async function startStoryProject(input: {
     },
   });
   return requireData(result, "The new story could not be created.");
+}
+
+export async function removeStoryProject(projectId: string): Promise<void> {
+  const result = await deleteStoryProject({
+    path: { project_id: projectId },
+  });
+  if (result.error) {
+    throw new Error(
+      "This story could not be deleted. Stop its workflow first, then try again.",
+    );
+  }
 }
 
 export async function fetchProjectWorkspace(

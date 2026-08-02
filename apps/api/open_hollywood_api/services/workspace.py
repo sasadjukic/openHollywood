@@ -16,10 +16,11 @@ from open_hollywood_engine.workflows import (
     RunBudget,
     RunPauseReason,
 )
-from sqlalchemy import select
+from sqlalchemy import delete, insert, or_, select, update
 from sqlalchemy.orm import Session, joinedload, selectinload, sessionmaker
 
 from open_hollywood_api.persistence.models import (
+    AgentInvocation,
     Artifact,
     ArtifactVersion,
     Conversation,
@@ -30,6 +31,10 @@ from open_hollywood_api.persistence.models import (
     RunStatus,
     WorkflowEvent,
     WorkflowRun,
+    agent_invocation_inputs,
+    langgraph_checkpoints,
+    langgraph_writes,
+    project_deletion_requests,
 )
 from open_hollywood_api.services.run_controls import run_usage
 
@@ -177,6 +182,14 @@ class WorkspaceRequestConflictError(RuntimeError):
     """Raised when an intake request ID is reused with different content."""
 
 
+class WorkspaceProjectActiveError(RuntimeError):
+    """Raised when deletion would race an executable workflow run."""
+
+
+class WorkspaceProjectReferencedError(RuntimeError):
+    """Raised when another project depends on the project's artifact lineage."""
+
+
 class WorkspaceStore:
     """Read and create persisted workspace records through one boundary."""
 
@@ -263,6 +276,89 @@ class WorkspaceStore:
                 workflow_run_id=workflow_run.id,
                 status=workflow_run.status.value,
             )
+
+    def delete_project(self, project_id: UUID) -> None:
+        """Delete one stopped story and all of its durable local data."""
+        with self._session_factory.begin() as session:
+            project_exists = session.scalar(select(Project.id).where(Project.id == project_id))
+            if project_exists is None:
+                raise WorkspaceProjectNotFoundError(str(project_id))
+
+            run_ids = tuple(
+                session.scalars(select(WorkflowRun.id).where(WorkflowRun.project_id == project_id))
+            )
+            active_run = session.scalar(
+                select(WorkflowRun.id)
+                .where(
+                    WorkflowRun.project_id == project_id,
+                    WorkflowRun.status.in_((RunStatus.PENDING, RunStatus.RUNNING)),
+                )
+                .limit(1)
+            )
+            if active_run is not None:
+                raise WorkspaceProjectActiveError(str(project_id))
+
+            artifact_version_ids = (
+                select(ArtifactVersion.id).join(Artifact).where(Artifact.project_id == project_id)
+            )
+            invocation_ids = (
+                select(AgentInvocation.id)
+                .join(WorkflowRun)
+                .where(WorkflowRun.project_id == project_id)
+            )
+            external_reference = session.scalar(
+                select(AgentInvocation.id)
+                .join(
+                    agent_invocation_inputs,
+                    agent_invocation_inputs.c.agent_invocation_id == AgentInvocation.id,
+                )
+                .join(WorkflowRun)
+                .where(
+                    agent_invocation_inputs.c.artifact_version_id.in_(artifact_version_ids),
+                    WorkflowRun.project_id != project_id,
+                )
+                .limit(1)
+            )
+            if external_reference is not None:
+                raise WorkspaceProjectReferencedError(str(project_id))
+
+            session.execute(insert(project_deletion_requests).values(project_id=project_id))
+
+            if run_ids:
+                checkpoint_threads = tuple(str(run_id) for run_id in run_ids)
+                session.execute(
+                    delete(langgraph_writes).where(
+                        langgraph_writes.c.thread_id.in_(checkpoint_threads)
+                    )
+                )
+                session.execute(
+                    delete(langgraph_checkpoints).where(
+                        langgraph_checkpoints.c.thread_id.in_(checkpoint_threads)
+                    )
+                )
+                # Workflow events are append-only during a story's lifetime. A
+                # user-requested project teardown removes their owning aggregate.
+                session.execute(
+                    delete(WorkflowEvent).where(WorkflowEvent.workflow_run_id.in_(run_ids))
+                )
+
+            session.execute(
+                delete(agent_invocation_inputs).where(
+                    or_(
+                        agent_invocation_inputs.c.artifact_version_id.in_(artifact_version_ids),
+                        agent_invocation_inputs.c.agent_invocation_id.in_(invocation_ids),
+                    )
+                )
+            )
+            # Parent links are restrictive by design for ordinary immutable
+            # version operations. Clear only the links inside this aggregate so
+            # SQLite can cascade the explicit whole-project deletion.
+            session.execute(
+                update(ArtifactVersion)
+                .where(ArtifactVersion.id.in_(artifact_version_ids))
+                .values(parent_version_id=None)
+            )
+            session.execute(delete(Project).where(Project.id == project_id))
 
     def get_project_workspace(self, project_id: UUID) -> ProjectWorkspaceRecord:
         """Load one complete workspace shell from SQLite."""
