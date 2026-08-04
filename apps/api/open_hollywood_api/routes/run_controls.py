@@ -5,24 +5,22 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, status
 
-from open_hollywood_api.dependencies import get_blueprint_workflow_service
+from open_hollywood_api.dependencies import get_workflow_command_service
 from open_hollywood_api.run_control_models import (
     RunControlRequest,
     RunControlResponse,
 )
-from open_hollywood_api.services.blueprint_workflow import (
-    BlueprintWorkflowRunError,
-    BlueprintWorkflowService,
-)
+from open_hollywood_api.services.blueprint_workflow import BlueprintWorkflowRunError
 from open_hollywood_api.services.run_controls import RunControlError
+from open_hollywood_api.services.workflow_commands import WorkflowCommandService
 
 router = APIRouter(
     prefix="/workflow-runs/{workflow_run_id}/controls",
     tags=["run-controls"],
 )
-BlueprintServiceDependency = Annotated[
-    BlueprintWorkflowService,
-    Depends(get_blueprint_workflow_service),
+WorkflowCommandDependency = Annotated[
+    WorkflowCommandService,
+    Depends(get_workflow_command_service),
 ]
 
 
@@ -40,7 +38,7 @@ BlueprintServiceDependency = Annotated[
 async def control_workflow_run(
     workflow_run_id: UUID,
     request: RunControlRequest,
-    service: BlueprintServiceDependency,
+    service: WorkflowCommandDependency,
 ) -> RunControlResponse:
     """Apply one idempotent command to the registered workflow runtime."""
     try:

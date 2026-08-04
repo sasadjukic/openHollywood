@@ -6,6 +6,7 @@ requires-python = "==3.13.*"
 members = [
     "open-hollywood-api",
     "open-hollywood-engine",
+    "open-hollywood-worker",
     "open-hollywood-workspace",
 ]
 
@@ -552,6 +553,21 @@ requires-dist = [
 ]
 
 [[package]]
+name = "open-hollywood-worker"
+version = "0.0.0"
+source = { editable = "apps/worker" }
+dependencies = [
+    { name = "open-hollywood-api" },
+    { name = "open-hollywood-engine" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "open-hollywood-api", editable = "apps/api" },
+    { name = "open-hollywood-engine", editable = "engine" },
+]
+
+[[package]]
 name = "open-hollywood-workspace"
 version = "0.0.0"
 source = { virtual = "." }
@@ -563,6 +579,7 @@ dependencies = [
     { name = "langgraph" },
     { name = "langgraph-checkpoint-sqlite" },
     { name = "open-hollywood-api" },
+    { name = "open-hollywood-worker" },
     { name = "pydantic" },
     { name = "sqlalchemy" },
 ]
@@ -591,6 +608,7 @@ requires-dist = [
     { name = "langgraph", specifier = ">=1.2.9,<2.0" },
     { name = "langgraph-checkpoint-sqlite", specifier = ">=3.1.0,<4.0" },
     { name = "open-hollywood-api", editable = "apps/api" },
+    { name = "open-hollywood-worker", editable = "apps/worker" },
     { name = "pydantic", specifier = ">=2.13.4,<3.0" },
     { name = "sqlalchemy", specifier = ">=2.0.41,<3.0" },
     { name = "uvicorn", extras = ["standard"], marker = "extra == 'api'", specifier = ">=0.35.0,<1.0" },

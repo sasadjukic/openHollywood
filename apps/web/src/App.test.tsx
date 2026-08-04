@@ -26,7 +26,7 @@ function renderApp() {
   );
 }
 
-function configureWorkspaceApi() {
+function configureWorkspaceApi(options?: { controlError?: string }) {
   let projectDeleted = false;
   const fetchMock = vi.fn((input: RequestInfo | URL, init?: RequestInit) => {
     const request = input instanceof Request ? input : null;
@@ -161,6 +161,11 @@ function configureWorkspaceApi() {
       url.includes(`/api/v1/workflow-runs/${runId}/controls`) &&
       method === "POST"
     ) {
+      if (options?.controlError) {
+        return Promise.resolve(
+          jsonResponse({ detail: options.controlError }, 503),
+        );
+      }
       return Promise.resolve(
         jsonResponse({
           action: "stop",
@@ -431,6 +436,23 @@ describe("App", () => {
     await expect((request as Request).clone().json()).resolves.toMatchObject({
       action: "stop",
     });
+  });
+
+  it("shows the API detail when the workflow runtime is unavailable", async () => {
+    const user = userEvent.setup();
+    configureWorkspaceApi({
+      controlError:
+        "Workflow execution is unavailable; start the API through the workflow worker",
+    });
+
+    renderApp();
+    await user.click(await screen.findByRole("button", { name: "Stop" }));
+
+    expect(
+      await screen.findByText(
+        "Workflow execution is unavailable; start the API through the workflow worker",
+      ),
+    ).toBeInTheDocument();
   });
 
   it("keeps the local-library recovery state when the API is unavailable", async () => {

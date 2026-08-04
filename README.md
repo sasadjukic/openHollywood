@@ -93,6 +93,13 @@ model-backed node so an unaffordable next call pauses with partial artifacts
 preserved. Human approval remains a distinct pause reason and still requires
 the Story Blueprint decision flow.
 
+The browser runtime is composed through the local workflow worker. It claims
+ordinary queued Story Blueprint runs sequentially, freezes the active complete
+model profile before the first call, resumes durable checkpoints after restart,
+and starts scene production after Blueprint approval. Benchmark runs remain
+isolated under the operator harness and are never claimed by the interactive
+worker.
+
 Completed short-prose projects now have a deterministic publication boundary.
 The provider-neutral engine assembles only complete, latest approved Scene
 Draft versions in contiguous story order, renders canonical Markdown, and
@@ -211,9 +218,9 @@ uv sync --extra api
 pnpm install
 ```
 
-The uv workspace installs `open_hollywood_engine` and `open_hollywood_api` as
-editable local packages. No `PYTHONPATH` configuration or Uvicorn `--app-dir`
-option is required.
+The uv workspace installs `open_hollywood_engine`, `open_hollywood_api`, and
+`open_hollywood_worker` as editable local packages. No `PYTHONPATH`
+configuration or Uvicorn `--app-dir` option is required.
 
 Create or upgrade the local SQLite database before starting the API. The
 default database is `./data/open_hollywood.db`:
@@ -222,12 +229,12 @@ default database is `./data/open_hollywood.db`:
 uv run alembic upgrade head
 ```
 
-Then start the API and web client in separate terminals.
+Then start the worker-composed API and web client in separate terminals.
 
-Terminal 1 — API:
+Terminal 1 — API + workflow worker:
 
 ```powershell
-uv run --extra api uvicorn open_hollywood_api.app:app --reload
+uv run --extra api uvicorn open_hollywood_worker.app:app --reload
 ```
 
 Terminal 2 — web client:
@@ -240,13 +247,17 @@ Open `http://127.0.0.1:5173`. The API health endpoint is
 `http://127.0.0.1:8000/api/v1/health`, and its interactive documentation is at
 `http://127.0.0.1:8000/docs`.
 
+`open_hollywood_api.app:app` remains available for API-only contract and storage
+development, but it intentionally has no workflow executor. Use the
+worker-composed command above for browser story execution and run controls.
+
 The defaults require no environment variables. To use another database, set
 its path in the API terminal before running Alembic and Uvicorn:
 
 ```powershell
 $env:OPEN_HOLLYWOOD_DB_PATH = "C:\path\to\open_hollywood.db"
 uv run alembic upgrade head
-uv run --extra api uvicorn open_hollywood_api.app:app --reload
+uv run --extra api uvicorn open_hollywood_worker.app:app --reload
 ```
 
 To use an API origin other than `http://127.0.0.1:8000`, set the client

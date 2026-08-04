@@ -8,6 +8,7 @@ from open_hollywood_api.services.model_profiles import (
     ModelCatalogService,
     ModelProfileStore,
 )
+from open_hollywood_api.services.workflow_commands import WorkflowCommandService
 from open_hollywood_api.services.workflow_events import WorkflowEventStore
 from open_hollywood_api.services.workspace import WorkspaceStore
 
@@ -30,6 +31,19 @@ def get_blueprint_workflow_service(request: Request) -> BlueprintWorkflowService
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail="Blueprint workflow execution is unavailable",
+        )
+    return service
+
+
+def get_workflow_command_service(request: Request) -> WorkflowCommandService:
+    """Return worker-owned commands, falling back to an injected Blueprint service."""
+    service = getattr(request.app.state, "workflow_command_service", None)
+    if not isinstance(service, WorkflowCommandService):
+        service = getattr(request.app.state, "blueprint_workflow_service", None)
+    if not isinstance(service, WorkflowCommandService):
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Workflow execution is unavailable; start the API through the workflow worker",
         )
     return service
 

@@ -202,7 +202,20 @@ function requireData<T>(
   fallbackMessage: string,
 ): T {
   if (result.error || !result.data) {
-    throw new Error(fallbackMessage);
+    throw new Error(apiErrorMessage(result.error, fallbackMessage));
   }
   return result.data;
+}
+
+function apiErrorMessage(error: unknown, fallbackMessage: string): string {
+  if (typeof error === "string" && error.trim()) {
+    return error;
+  }
+  if (error && typeof error === "object" && "detail" in error) {
+    const detail = error.detail;
+    if (typeof detail === "string" && detail.trim()) {
+      return detail;
+    }
+  }
+  return fallbackMessage;
 }

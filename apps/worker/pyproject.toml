@@ -1,0 +1,24 @@
+[project]
+name = "open-hollywood-worker"
+version = "0.0.0"
+description = "Durable local workflow worker and application composition for Open Hollywood"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.13,<3.14"
+classifiers = ["Private :: Do Not Upload"]
+dependencies = [
+  "open-hollywood-api",
+  "open-hollywood-engine",
+]
+
+[tool.uv.sources]
+open-hollywood-api = { workspace = true }
+open-hollywood-engine = { workspace = true }
+
+[build-system]
+requires = ["uv_build>=0.11.28,<0.12"]
+build-backend = "uv_build"
+
+[tool.uv.build-backend]
+module-name = "open_hollywood_worker"
+module-root = ""

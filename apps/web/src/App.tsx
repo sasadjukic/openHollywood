@@ -94,6 +94,19 @@ export function App() {
       return fetchProjectWorkspace(selectedProjectId);
     },
     queryKey: ["workspace", selectedProjectId],
+    refetchInterval: (query) => {
+      const latestRun = query.state.data?.workflow_runs[0];
+      if (!latestRun) {
+        return false;
+      }
+      if (latestRun.status === "pending" || latestRun.status === "running") {
+        return 1_000;
+      }
+      return latestRun.workflow_name === "story_blueprint" &&
+        latestRun.status === "succeeded"
+        ? 1_000
+        : false;
+    },
   });
   const workspace = workspaceQuery.data;
   const activeRun = workspace?.workflow_runs[0];
@@ -107,6 +120,10 @@ export function App() {
       return fetchProjectExports(selectedProjectId);
     },
     queryKey: ["project-exports", selectedProjectId],
+    refetchInterval: (query) =>
+      query.state.data && query.state.data.available_formats.length > 0
+        ? false
+        : 3_000,
   });
 
   const eventsQuery = useQuery({
@@ -119,7 +136,9 @@ export function App() {
     },
     queryKey: ["workflow-events", activeRunId],
     refetchInterval:
-      activeRun?.status === "running" || activeRun?.status === "paused"
+      activeRun?.status === "pending" ||
+      activeRun?.status === "running" ||
+      activeRun?.status === "paused"
         ? 3_000
         : false,
   });

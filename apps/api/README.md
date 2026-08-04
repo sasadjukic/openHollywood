@@ -18,12 +18,17 @@ From the repository root:
 ```powershell
 uv sync --extra api
 uv run alembic upgrade head
-uv run --extra api uvicorn open_hollywood_api.app:app --reload
+uv run --extra api uvicorn open_hollywood_worker.app:app --reload
 ```
 
-The root uv workspace installs `open_hollywood_api` and
-`open_hollywood_engine` as editable local packages. Do not add either source
-directory to `PYTHONPATH`.
+The worker-composed application is the normal browser runtime: it provides this
+API and the single durable workflow claimant in one local process. Starting
+`open_hollywood_api.app:app` directly is useful for API-only development, but
+workflow decisions and run controls return `503` because no executor is attached.
+
+The root uv workspace installs `open_hollywood_api`, `open_hollywood_engine`,
+and `open_hollywood_worker` as editable local packages. Do not add their source
+directories to `PYTHONPATH`.
 
 The initial `/api/v1/health` boundary provides a typed vertical slice for the
 generated web SDK. Interactive API documentation is available at `/docs` and

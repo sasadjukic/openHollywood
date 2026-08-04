@@ -181,8 +181,8 @@ _NODE_INSTRUCTIONS: Mapping[BlueprintNode, str] = {
 }
 
 
-class BenchmarkBlueprintNodeExecutor(BlueprintNodeExecutor):
-    """Execute benchmark Blueprint roles through one provider-neutral gateway."""
+class ProfileRoutedBlueprintNodeExecutor(BlueprintNodeExecutor):
+    """Execute profile-routed Blueprint roles through one provider-neutral gateway."""
 
     def __init__(
         self,
@@ -1343,3 +1343,7 @@ def _integer_input(
     if not isinstance(result, int) or isinstance(result, bool):
         raise BlueprintWorkflowError(f"workflow input {key!r} must be an integer")
     return result
+
+
+# Preserve the public name used by the frozen evaluation harness.
+BenchmarkBlueprintNodeExecutor = ProfileRoutedBlueprintNodeExecutor

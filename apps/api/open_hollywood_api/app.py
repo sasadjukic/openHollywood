@@ -29,6 +29,7 @@ from open_hollywood_api.services.model_profiles import (
     ModelCatalogService,
     ModelProfileStore,
 )
+from open_hollywood_api.services.workflow_commands import WorkflowCommandService
 from open_hollywood_api.services.workflow_events import WorkflowEventStore
 from open_hollywood_api.services.workspace import WorkspaceStore
 
@@ -117,6 +118,7 @@ def create_app(
     project_export_store: ProjectExportStore | None = None,
     model_profile_store: ModelProfileStore | None = None,
     model_catalog_service: ModelCatalogService | None = None,
+    workflow_command_service: WorkflowCommandService | None = None,
 ) -> FastAPI:
     """Build the API application without starting process-level side effects."""
     application = FastAPI(
@@ -127,6 +129,7 @@ def create_app(
     )
     application.state.workflow_event_store = workflow_event_store
     application.state.blueprint_workflow_service = blueprint_workflow_service
+    application.state.workflow_command_service = workflow_command_service
     application.state.workspace_store = workspace_store
     application.state.project_export_store = project_export_store
     application.state.model_profile_store = model_profile_store

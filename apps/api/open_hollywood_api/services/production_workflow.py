@@ -195,7 +195,7 @@ def _dialogue_disabled() -> NoReturn:
     )
 
 
-class BenchmarkSceneProductionService:
+class SceneProductionService:
     """Materialize an approved handoff and run the durable production graph."""
 
     def __init__(
@@ -217,7 +217,7 @@ class BenchmarkSceneProductionService:
             self._run_controls,
         )
 
-    async def __aenter__(self) -> BenchmarkSceneProductionService:
+    async def __aenter__(self) -> SceneProductionService:
         self._connection = await aiosqlite.connect(str(self._database_path))
         await self._connection.execute("PRAGMA journal_mode=WAL")
         await self._connection.execute("PRAGMA busy_timeout=5000")
@@ -466,14 +466,6 @@ class BenchmarkSceneProductionService:
                 per_call_cost_usd=call_budget.max_cost_usd,
             )
             expected_input = {
-                "benchmark_campaign_id": _text_input(
-                    blueprint_run.input_state,
-                    "benchmark_campaign_id",
-                ),
-                "benchmark_case_id": _text_input(
-                    blueprint_run.input_state,
-                    "benchmark_case_id",
-                ),
                 "benchmark_constraints": constraints,
                 "blueprint_workflow_run_id": str(blueprint_run_id),
                 "approved_blueprint_version_id": str(approved_blueprint.version_id),
@@ -482,6 +474,18 @@ class BenchmarkSceneProductionService:
                 "model_profile_configuration_sha256": configuration_sha256,
                 "run_seed": run_seed,
             }
+            for optional_key in (
+                "benchmark_campaign_id",
+                "benchmark_case_id",
+                "execution_kind",
+            ):
+                optional_value = blueprint_run.input_state.get(optional_key)
+                if optional_value is not None:
+                    if not isinstance(optional_value, str) or not optional_value:
+                        raise SceneProductionWorkflowRunError(
+                            f"Blueprint workflow input {optional_key!r} must be text"
+                        )
+                    expected_input[optional_key] = optional_value
             production_run = session.get(WorkflowRun, production_run_id)
             if production_run is None:
                 production_run = WorkflowRun(
@@ -594,9 +598,7 @@ class BenchmarkSceneProductionService:
         self,
     ) -> tuple[ProductionCompiledGraph, AsyncSqliteSaver]:
         if self._graph is None or self._checkpointer is None:
-            raise RuntimeError(
-                "BenchmarkSceneProductionService must be used as an async context manager"
-            )
+            raise RuntimeError("SceneProductionService must be used as an async context manager")
         return self._graph, self._checkpointer
 
 
@@ -814,3 +816,7 @@ def _integer_input(value: dict[str, Any], key: str) -> int:
             f"Blueprint workflow input {key!r} must be an integer"
         )
     return result
+
+
+# Preserve the public name used by the frozen evaluation harness.
+BenchmarkSceneProductionService = SceneProductionService

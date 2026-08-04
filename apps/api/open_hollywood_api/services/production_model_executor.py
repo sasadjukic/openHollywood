@@ -107,7 +107,7 @@ _INSTRUCTIONS: Mapping[_Operation, str] = {
 }
 
 
-class BenchmarkProductionExecutor(SceneProductionExecutor):
+class ProfileRoutedProductionExecutor(SceneProductionExecutor):
     """Execute production specialists with exact lineage and idempotent replay."""
 
     def __init__(
@@ -977,3 +977,7 @@ def _integer_input(value: Mapping[str, Any], key: str) -> int:
     if not isinstance(result, int) or isinstance(result, bool):
         raise SceneProductionError(f"workflow input {key!r} must be an integer")
     return result
+
+
+# Preserve the public name used by the frozen evaluation harness.
+BenchmarkProductionExecutor = ProfileRoutedProductionExecutor

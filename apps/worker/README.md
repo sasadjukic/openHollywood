@@ -1,19 +1,24 @@
 # Workflow worker
 
-Long-running process that claims durable workflow runs and executes the creative
-engine. The shared Step 10 execution service now runs or resumes the fixed Story
-Blueprint LangGraph with SQLite checkpoints; a standalone claiming loop remains
-future worker work.
+Long-running local process that claims durable workflow runs and executes the
+creative engine. Start the browser runtime from the repository root with:
 
-The worker must support cancellation, checkpoint recovery, idempotency, and
-hard run budgets.
+```powershell
+uv run --extra api uvicorn open_hollywood_worker.app:app --reload
+```
 
-`BlueprintWorkflowService` now also owns the durable Story Blueprint interrupt
-commands. It validates the active interrupt ID, persists a human decision
-before resuming, and can recover the resulting checkpoint through the same
-SQLite thread. Fork creates an explicitly linked child `WorkflowRun`; a future
-standalone claiming loop should attach this service to the API command
-boundary rather than reimplementing the transitions.
+The worker-composed FastAPI application owns one sequential SQLite claimant. It
+freezes the active complete Local, Cloud, or Hybrid profile onto an ordinary
+queued Story Blueprint before its first call, runs or resumes the fixed durable
+graph, and starts the child scene-production graph after Blueprint approval.
+Runs carrying benchmark campaign lineage remain isolated under the formal
+operator harness.
+
+The worker supports cooperative pause, immediate stop with open-call
+cancellation, checkpoint recovery, idempotent replay, and hard run budgets.
+`BlueprintWorkflowService` owns Story Blueprint decisions; the worker attaches
+it to the API decision boundary and exposes a workflow-agnostic command service
+for Blueprint and production controls.
 
 Workflow activity intended for the user-facing timeline is appended through the
 shared `WorkflowEventStore`. Event payloads contain concise status and artifact
@@ -21,9 +26,8 @@ references, never secrets, raw prompts, or private chain-of-thought. The API
 replays the same durable rows rather than maintaining a separate in-memory
 notification history.
 
-Step 19 now supplies the first real model-backed Blueprint executor for frozen
-benchmark cases. It routes registered roles through the exact campaign profile,
-persists every invocation and immutable typed output, and uses the existing
-Blueprint service to stop at human approval. It is intentionally not a
-standalone claiming loop and does not yet provide the persisted scene-production
-runtime required for a complete agentic story.
+The profile-routed Blueprint and production executors are shared by the browser
+runtime and Step 19 harness. Interactive runs snapshot the active profile;
+benchmark runs retain their independently frozen campaign profile, prompt,
+constraints, and lineage. Both paths persist every invocation and immutable
+typed output through the same provider-neutral contracts.
