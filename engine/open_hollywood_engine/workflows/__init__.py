@@ -117,6 +117,7 @@ from open_hollywood_engine.workflows.production_graph import (
     production_result_from_state,
 )
 from open_hollywood_engine.workflows.run_controls import (
+    INTERACTIVE_BLUEPRINT_BUDGET,
     BudgetLimit,
     RunBudget,
     RunControlAction,
@@ -229,6 +230,7 @@ __all__ = [
     "production_result_from_state",
     "build_blueprint_graph",
     "BudgetLimit",
+    "INTERACTIVE_BLUEPRINT_BUDGET",
     "RunBudget",
     "RunControlAction",
     "RunControlCommand",

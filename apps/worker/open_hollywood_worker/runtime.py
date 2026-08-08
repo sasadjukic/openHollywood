@@ -6,6 +6,7 @@ import asyncio
 import logging
 from contextlib import suppress
 from dataclasses import dataclass
+from datetime import UTC, datetime
 from enum import StrEnum
 from uuid import UUID, uuid5
 
@@ -21,11 +22,11 @@ from open_hollywood_engine.artifacts import ArtifactKind
 from open_hollywood_engine.evaluations import canonical_sha256
 from open_hollywood_engine.models import ModelProfileConfiguration
 from open_hollywood_engine.workflows import (
+    INTERACTIVE_BLUEPRINT_BUDGET,
     SCENE_PRODUCTION_WORKFLOW_NAME,
     STORY_BLUEPRINT_WORKFLOW_NAME,
-    RunBudget,
 )
-from sqlalchemy import select
+from sqlalchemy import select, update
 from sqlalchemy.orm import Session, sessionmaker
 
 LOGGER = logging.getLogger(__name__)
@@ -81,6 +82,7 @@ class WorkflowWorker:
         if self._loop_task is not None:
             raise RuntimeError("workflow worker is already running")
         self._stopping = False
+        await asyncio.to_thread(self._recover_interrupted_runs)
         self._loop_task = asyncio.create_task(self._run(), name="open-hollywood-worker")
 
     async def stop(self) -> None:
@@ -166,7 +168,7 @@ class WorkflowWorker:
                 .where(
                     WorkflowRun.workflow_name == STORY_BLUEPRINT_WORKFLOW_NAME,
                     WorkflowRun.conversation_id.is_not(None),
-                    WorkflowRun.status.in_((RunStatus.PENDING, RunStatus.RUNNING)),
+                    WorkflowRun.status == RunStatus.PENDING,
                 )
                 .order_by(WorkflowRun.created_at, WorkflowRun.id)
             ).all()
@@ -174,6 +176,8 @@ class WorkflowWorker:
                 if "benchmark_campaign_id" in run.input_state:
                     continue
                 if not self._freeze_interactive_inputs(session, run):
+                    continue
+                if not self._claim_pending_run(session, run):
                     continue
                 return _Candidate(
                     kind=_CandidateKind.BLUEPRINT,
@@ -186,7 +190,7 @@ class WorkflowWorker:
                 select(WorkflowRun)
                 .where(
                     WorkflowRun.workflow_name == SCENE_PRODUCTION_WORKFLOW_NAME,
-                    WorkflowRun.status.in_((RunStatus.PENDING, RunStatus.RUNNING)),
+                    WorkflowRun.status == RunStatus.PENDING,
                 )
                 .order_by(WorkflowRun.created_at, WorkflowRun.id)
             ).all()
@@ -195,6 +199,8 @@ class WorkflowWorker:
                 if parent_id is None or run.input_state.get("execution_kind") != (
                     INTERACTIVE_EXECUTION_KIND
                 ):
+                    continue
+                if not self._claim_pending_run(session, run):
                     continue
                 return _Candidate(
                     kind=_CandidateKind.PRODUCTION,
@@ -229,6 +235,25 @@ class WorkflowWorker:
                 )
         return None
 
+    def _recover_interrupted_runs(self) -> None:
+        """Requeue browser runs left running by a stopped local process."""
+        with self._session_factory.begin() as session:
+            interrupted = session.scalars(
+                select(WorkflowRun).where(WorkflowRun.status == RunStatus.RUNNING)
+            ).all()
+            for run in interrupted:
+                if run.input_state.get("execution_kind") != INTERACTIVE_EXECUTION_KIND:
+                    continue
+                run.status = RunStatus.PENDING
+                session.add(
+                    WorkflowEvent(
+                        workflow_run_id=run.id,
+                        event_type="workflow.execution.recovered",
+                        source="worker",
+                        payload={"node": run.current_node},
+                    )
+                )
+
     def _freeze_interactive_inputs(self, session: Session, run: WorkflowRun) -> bool:
         if run.input_state.get("execution_kind") == INTERACTIVE_EXECUTION_KIND:
             return True
@@ -251,7 +276,7 @@ class WorkflowWorker:
             "benchmark_constraints": dict(INTERACTIVE_CONSTRAINTS),
         }
         if not run.budget:
-            run.budget = RunBudget().to_data()
+            run.budget = INTERACTIVE_BLUEPRINT_BUDGET.to_data()
         session.add(
             WorkflowEvent(
                 workflow_run_id=run.id,
@@ -263,6 +288,28 @@ class WorkflowWorker:
                 },
             )
         )
+        return True
+
+    @staticmethod
+    def _claim_pending_run(session: Session, run: WorkflowRun) -> bool:
+        """Atomically give one worker ownership before any graph call starts."""
+        session.flush()
+        claimed_run_id = session.scalar(
+            update(WorkflowRun)
+            .where(
+                WorkflowRun.id == run.id,
+                WorkflowRun.status == RunStatus.PENDING,
+            )
+            .values(
+                status=RunStatus.RUNNING,
+                started_at=run.started_at or datetime.now(UTC),
+            )
+            .returning(WorkflowRun.id)
+        )
+        if claimed_run_id is None:
+            return False
+        run.status = RunStatus.RUNNING
+        run.started_at = run.started_at or datetime.now(UTC)
         return True
 
     @staticmethod

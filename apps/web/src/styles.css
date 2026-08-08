@@ -726,6 +726,25 @@ textarea:focus-visible {
   font-size: 0.68rem;
 }
 
+.run-attempt-selector {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  color: var(--muted-dim);
+  font-size: 0.64rem;
+}
+
+.run-attempt-selector select {
+  max-width: 190px;
+  min-height: 28px;
+  padding: 4px 7px;
+  border: 1px solid var(--border-strong);
+  border-radius: 7px;
+  color: var(--muted);
+  background: var(--surface-deep);
+  font-size: 0.64rem;
+}
+
 .run-status,
 .artifact-status {
   display: inline-flex;

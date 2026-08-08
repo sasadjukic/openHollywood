@@ -75,6 +75,7 @@ def create_worker_app(
                         session_factory,
                         blueprint_service,
                         cancel_active_run=worker.cancel_active_run,
+                        wake_worker=worker.wake,
                     )
                     await worker.start()
                     try:

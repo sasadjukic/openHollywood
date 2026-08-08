@@ -9,6 +9,7 @@ import type {
   RunControlAction,
   WorkspaceArtifact,
   WorkspaceRun,
+  WorkflowEventEnvelope,
 } from "@open-hollywood/contracts";
 import { useLayoutEffect, useRef, useState } from "react";
 
@@ -41,6 +42,7 @@ export function App() {
   const [requestedProjectId, setRequestedProjectId] = useState<string | null>(
     null,
   );
+  const [requestedRunId, setRequestedRunId] = useState<string | null>(null);
   const [requestedArtifactId, setRequestedArtifactId] = useState<string | null>(
     null,
   );
@@ -109,7 +111,9 @@ export function App() {
     },
   });
   const workspace = workspaceQuery.data;
-  const activeRun = workspace?.workflow_runs[0];
+  const activeRun =
+    workspace?.workflow_runs.find((run) => run.id === requestedRunId) ??
+    workspace?.workflow_runs[0];
   const activeRunId = activeRun?.id ?? null;
   const exportsQuery = useQuery({
     enabled: selectedProjectId !== null && workspace !== undefined,
@@ -120,10 +124,18 @@ export function App() {
       return fetchProjectExports(selectedProjectId);
     },
     queryKey: ["project-exports", selectedProjectId],
-    refetchInterval: (query) =>
-      query.state.data && query.state.data.available_formats.length > 0
-        ? false
-        : 3_000,
+    refetchInterval: (query) => {
+      if (
+        !query.state.data ||
+        query.state.data.available_formats.length > 0 ||
+        !activeRun
+      ) {
+        return false;
+      }
+      return activeRun.status === "pending" || activeRun.status === "running"
+        ? 3_000
+        : false;
+    },
   });
 
   const eventsQuery = useQuery({
@@ -143,11 +155,22 @@ export function App() {
         : false,
   });
 
+  const activeArtifactVersionIds =
+    activeRun?.workflow_name === "story_blueprint" && eventsQuery.data
+      ? artifactVersionIdsFromEvents(eventsQuery.data.events)
+      : new Set<string>();
+  const artifacts =
+    workspace && activeArtifactVersionIds.size > 0
+      ? workspace.artifacts.filter((artifact) =>
+          artifact.versions.some((version) =>
+            activeArtifactVersionIds.has(version.id),
+          ),
+        )
+      : (workspace?.artifacts ?? []);
+
   const selectedArtifact =
-    workspace?.artifacts.find(
-      (artifact) => artifact.id === requestedArtifactId,
-    ) ??
-    workspace?.artifacts[0] ??
+    artifacts.find((artifact) => artifact.id === requestedArtifactId) ??
+    artifacts[0] ??
     null;
   const selectedArtifactId = selectedArtifact?.id ?? null;
   const selectedVersion =
@@ -204,30 +227,33 @@ export function App() {
       action,
       budget,
       targetNode,
+      workflowRunId,
     }: {
       action: RunControlAction;
       budget?: RunBudgetPatch;
+      projectId: string;
       targetNode?: string;
+      workflowRunId: string;
     }) => {
-      if (!activeRun) {
-        throw new Error("Select a workflow run before using run controls.");
-      }
       return controlRun({
         action,
         budget,
         commandId: crypto.randomUUID(),
         targetNode,
-        workflowRunId: activeRun.id,
+        workflowRunId,
       });
     },
-    onSuccess: async () => {
+    onSuccess: async (result, variables) => {
+      if (result.resulting_workflow_run_id) {
+        setRequestedRunId(result.resulting_workflow_run_id);
+      }
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: projectsQueryKey }),
         queryClient.invalidateQueries({
-          queryKey: ["workspace", selectedProjectId],
+          queryKey: ["workspace", variables.projectId],
         }),
         queryClient.invalidateQueries({
-          queryKey: ["workflow-events", activeRunId],
+          queryKey: ["workflow-events", variables.workflowRunId],
         }),
       ]);
     },
@@ -263,6 +289,7 @@ export function App() {
     },
     onSuccess: async (created) => {
       setRequestedProjectId(created.project_id);
+      setRequestedRunId(created.workflow_run_id);
       await queryClient.invalidateQueries({ queryKey: projectsQueryKey });
       setPremise("");
       setStoryTitle("");
@@ -291,6 +318,7 @@ export function App() {
       });
       if (selectedProjectId === deletedProjectId) {
         setRequestedProjectId(null);
+        setRequestedRunId(null);
         setRequestedArtifactId(null);
         setRequestedVersionId(null);
         setInspectorOpen(false);
@@ -362,6 +390,7 @@ export function App() {
               onClick={() => {
                 intakeRequestId.current = null;
                 setCreatingStory(true);
+                setRequestedRunId(null);
                 setRequestedArtifactId(null);
                 setRequestedVersionId(null);
                 setNavigationOpen(false);
@@ -390,6 +419,7 @@ export function App() {
                       onClick={() => {
                         setCreatingStory(false);
                         setRequestedProjectId(project.id);
+                        setRequestedRunId(null);
                         setRequestedArtifactId(null);
                         setRequestedVersionId(null);
                         setNavigationOpen(false);
@@ -450,11 +480,15 @@ export function App() {
 
           <section className="nav-section nav-section--artifacts">
             <div className="nav-heading">
-              <span>Story artifacts</span>
-              <span>{workspace?.artifacts.length ?? 0}</span>
+              <span>
+                {activeArtifactVersionIds.size > 0
+                  ? "Artifacts in attempt"
+                  : "Artifacts across attempts"}
+              </span>
+              <span>{artifacts.length}</span>
             </div>
             <div className="artifact-list">
-              {workspace?.artifacts.map((artifact) => (
+              {artifacts.map((artifact) => (
                 <ArtifactButton
                   artifact={artifact}
                   isActive={artifact.id === selectedArtifactId}
@@ -548,6 +582,13 @@ export function App() {
                     }
                   />
                   <div className="run-summary">
+                    {workspace.workflow_runs.length > 1 && activeRun && (
+                      <RunAttemptSelector
+                        activeRunId={activeRun.id}
+                        onChange={setRequestedRunId}
+                        runs={workspace.workflow_runs}
+                      />
+                    )}
                     <span
                       className={`run-status run-status--${activeRun?.status ?? "idle"}`}
                     >
@@ -565,21 +606,32 @@ export function App() {
               {activeRun && (
                 <RunControls
                   error={
-                    runControlMutation.error instanceof Error
+                    runControlMutation.variables?.workflowRunId ===
+                      activeRun.id && runControlMutation.error instanceof Error
                       ? runControlMutation.error.message
-                      : null
+                      : activeRun.status === "failed"
+                        ? activeRun.error_message
+                        : null
                   }
-                  isPending={runControlMutation.isPending}
+                  isPending={
+                    runControlMutation.isPending &&
+                    runControlMutation.variables.workflowRunId === activeRun.id
+                  }
                   onCommand={(action, targetNode, budget) => {
+                    if (!selectedProjectId) {
+                      return;
+                    }
                     runControlMutation.mutate({
                       action,
                       budget,
+                      projectId: selectedProjectId,
                       targetNode,
+                      workflowRunId: activeRun.id,
                     });
                   }}
                   onRetryNodeChange={setRetryNode}
                   retryNode={
-                    retryNode.length > 0
+                    activeRun.retryable_nodes.includes(retryNode)
                       ? retryNode
                       : (activeRun.retryable_nodes[0] ?? "")
                   }
@@ -794,6 +846,61 @@ function ArtifactButton({
       </span>
     </button>
   );
+}
+
+function RunAttemptSelector({
+  activeRunId,
+  onChange,
+  runs,
+}: {
+  activeRunId: string;
+  onChange: (runId: string) => void;
+  runs: WorkspaceRun[];
+}) {
+  return (
+    <label className="run-attempt-selector">
+      <span>Attempt</span>
+      <select
+        aria-label="Workflow attempt"
+        value={activeRunId}
+        onChange={(event) => {
+          onChange(event.target.value);
+        }}
+      >
+        {runs.map((run, index) => (
+          <option key={run.id} value={run.id}>
+            {runs.length - index} · {humanize(run.status)}
+            {run.current_node ? ` at ${humanize(run.current_node)}` : ""}
+          </option>
+        ))}
+      </select>
+    </label>
+  );
+}
+
+function artifactVersionIdsFromEvents(
+  events: WorkflowEventEnvelope[],
+): Set<string> {
+  const versionIds = new Set<string>();
+  for (const event of events) {
+    for (const key of ["output_artifacts", "seed_artifacts"]) {
+      const references = event.payload[key];
+      if (!Array.isArray(references)) {
+        continue;
+      }
+      for (const reference of references) {
+        if (!reference || typeof reference !== "object") {
+          continue;
+        }
+        const record = reference as Record<string, unknown>;
+        const versionId = record.artifact_version_id ?? record.version_id;
+        if (typeof versionId === "string") {
+          versionIds.add(versionId);
+        }
+      }
+    }
+  }
+  return versionIds;
 }
 
 function RunControls({

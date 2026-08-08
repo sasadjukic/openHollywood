@@ -233,8 +233,10 @@ class RunControlCommand:
                 "budget_updates",
                 MappingProxyType(dict(self.budget_updates)),
             )
-        elif self.budget_updates is not None:
-            raise ValueError("budget_updates is only valid for update_budget")
+        elif (
+            self.action is not RunControlAction.RETRY_FROM_NODE and self.budget_updates is not None
+        ):
+            raise ValueError("budget_updates is only valid for update_budget or retry_from_node")
 
 
 def projected_budget_limits(
@@ -287,3 +289,13 @@ def _decimal(value: object, name: str) -> Decimal:
         return Decimal(str(value))
     except (InvalidOperation, ValueError) as error:
         raise ValueError(f"{name} must be a decimal") from error
+
+
+# Interactive Blueprint output is materially larger than the generic structured
+# call default. The frozen August 1 campaign established that Integration needs
+# more than 2,000 output tokens, so browser runs reserve the same proven call
+# envelope while retaining the normal $2 aggregate run ceiling.
+INTERACTIVE_BLUEPRINT_BUDGET = RunBudget(
+    per_call_input_tokens=12_000,
+    per_call_output_tokens=8_000,
+)
