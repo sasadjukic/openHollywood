@@ -1,4 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import type { ProjectWorkspace } from "@open-hollywood/contracts";
 import { client } from "@open-hollywood/contracts/client";
 import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -8,6 +9,7 @@ import { App } from "./App";
 
 const projectId = "11111111-1111-1111-1111-111111111111";
 const runId = "22222222-2222-2222-2222-222222222222";
+const previousRunId = "22222222-2222-4222-8222-111111111111";
 const artifactId = "33333333-3333-3333-3333-333333333333";
 const versionId = "44444444-4444-4444-4444-444444444444";
 const firstVersionId = "55555555-5555-5555-5555-555555555555";
@@ -26,8 +28,12 @@ function renderApp() {
   );
 }
 
-function configureWorkspaceApi(options?: { controlError?: string }) {
+function configureWorkspaceApi(options?: {
+  controlError?: string;
+  workspace?: ReturnType<typeof workspaceResponse>;
+}) {
   let projectDeleted = false;
+  const configuredWorkspace = options?.workspace ?? workspaceResponse();
   const fetchMock = vi.fn((input: RequestInfo | URL, init?: RequestInit) => {
     const request = input instanceof Request ? input : null;
     const url = request?.url ?? requestUrl(input);
@@ -100,7 +106,7 @@ function configureWorkspaceApi(options?: { controlError?: string }) {
       );
     }
     if (url.includes(`/api/v1/projects/${projectId}/workspace`)) {
-      return Promise.resolve(jsonResponse(workspaceResponse()));
+      return Promise.resolve(jsonResponse(configuredWorkspace));
     }
     if (url.endsWith(`/api/v1/projects/${projectId}/exports`)) {
       return Promise.resolve(
@@ -118,7 +124,7 @@ function configureWorkspaceApi(options?: { controlError?: string }) {
         }),
       );
     }
-    if (url.includes(`/api/v1/workflow-runs/${runId}/events`)) {
+    if (url.includes("/api/v1/workflow-runs/") && url.includes("/events")) {
       return Promise.resolve(
         jsonResponse({
           events: [
@@ -129,6 +135,14 @@ function configureWorkspaceApi(options?: { controlError?: string }) {
               payload: {
                 checkpoint: "story_blueprint",
                 interrupt_id: "interrupt-1",
+                output_artifacts: [
+                  {
+                    artifact_key: "story-blueprint",
+                    artifact_kind: "story_blueprint",
+                    artifact_version_id: versionId,
+                    schema_version: "1",
+                  },
+                ],
               },
               schema_version: "1",
               source: "approval",
@@ -158,7 +172,8 @@ function configureWorkspaceApi(options?: { controlError?: string }) {
       );
     }
     if (
-      url.includes(`/api/v1/workflow-runs/${runId}/controls`) &&
+      url.includes("/api/v1/workflow-runs/") &&
+      url.endsWith("/controls") &&
       method === "POST"
     ) {
       if (options?.controlError) {
@@ -438,6 +453,54 @@ describe("App", () => {
     });
   });
 
+  it("selects and retries an earlier failed attempt independently", async () => {
+    const user = userEvent.setup();
+    const workspace = workspaceResponse();
+    const latestRun = workspace.workflow_runs[0];
+    if (!latestRun) {
+      throw new Error("The workspace fixture requires a workflow run.");
+    }
+    latestRun.parent_workflow_run_id = previousRunId;
+    workspace.workflow_runs.push({
+      ...latestRun,
+      active_interrupt_id: null,
+      completed_at: "2026-07-23T09:53:00Z",
+      current_node: "integration",
+      error_code: "workflow_execution_failed",
+      error_message:
+        "Structured output validation failed (provider_finish_reason=length)",
+      id: previousRunId,
+      parent_workflow_run_id: null,
+      pause_reason: null,
+      status: "failed",
+      updated_at: "2026-07-23T09:53:00Z",
+    });
+    const fetchMock = configureWorkspaceApi({ workspace });
+
+    renderApp();
+    await user.selectOptions(
+      await screen.findByLabelText("Workflow attempt"),
+      previousRunId,
+    );
+
+    expect(
+      await screen.findByText(
+        "Structured output validation failed (provider_finish_reason=length)",
+      ),
+    ).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Retry" }));
+
+    await waitFor(() => {
+      expect(
+        fetchMock.mock.calls.some(([input]) =>
+          requestUrl(input).includes(
+            `/workflow-runs/${previousRunId}/controls`,
+          ),
+        ),
+      ).toBe(true);
+    });
+  });
+
   it("shows the API detail when the workflow runtime is unavailable", async () => {
     const user = userEvent.setup();
     configureWorkspaceApi({
@@ -532,7 +595,7 @@ describe("App", () => {
   });
 });
 
-function workspaceResponse() {
+function workspaceResponse(): ProjectWorkspace {
   return {
     artifacts: [
       {
@@ -644,8 +707,8 @@ function runBudget() {
     max_output_tokens: 50_000,
     max_wall_clock_seconds: 3_600,
     per_call_cost_usd: "0.25",
-    per_call_input_tokens: 8_000,
-    per_call_output_tokens: 2_000,
+    per_call_input_tokens: 12_000,
+    per_call_output_tokens: 8_000,
   };
 }
 

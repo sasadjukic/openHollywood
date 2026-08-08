@@ -28,6 +28,7 @@ from open_hollywood_api.services.production_model_executor import (
     ProfileRoutedProductionExecutor,
 )
 from open_hollywood_api.services.production_workflow import SceneProductionService
+from open_hollywood_api.services.workflow_commands import QueuedWorkflowCommandService
 from open_hollywood_api.services.workspace import WorkspaceStore
 from open_hollywood_engine.artifacts import ArtifactKind
 from open_hollywood_engine.evaluations import load_benchmark_corpus
@@ -36,6 +37,10 @@ from open_hollywood_engine.workflows import (
     SCENE_PRODUCTION_WORKFLOW_NAME,
     BlueprintDecisionAction,
     BlueprintHumanDecision,
+    RunBudget,
+    RunControlAction,
+    RunControlCommand,
+    RunControlStatus,
 )
 from open_hollywood_worker.app import create_worker_app
 from open_hollywood_worker.runtime import (
@@ -114,11 +119,44 @@ async def test_worker_claims_browser_story_and_completes_production(
             await _wait_for(
                 lambda: _run_status(session_factory, created.workflow_run_id) is RunStatus.PAUSED
             )
-            blueprint = await blueprint_service.inspect(created.workflow_run_id)
+            with session_factory.begin() as session:
+                legacy_run = session.get(WorkflowRun, created.workflow_run_id)
+                assert legacy_run is not None
+                legacy_run.budget = RunBudget().to_data()
+            initial_integrations = sum(
+                request.invocation.specialist_role == "blueprint_integrator"
+                for request in gateway.requests
+            )
+            retry = await QueuedWorkflowCommandService(
+                session_factory,
+                blueprint_service,
+                wake_worker=worker.wake,
+            ).apply_control(
+                created.workflow_run_id,
+                RunControlCommand(
+                    id=uuid4(),
+                    action=RunControlAction.RETRY_FROM_NODE,
+                    target_node="integration",
+                ),
+            )
+            assert retry.command_status is RunControlStatus.PENDING
+            assert retry.resulting_workflow_run_id is not None
+            active_blueprint_run_id = retry.resulting_workflow_run_id
+            await _wait_for(
+                lambda: _run_status(session_factory, active_blueprint_run_id) is RunStatus.PAUSED
+            )
+            assert (
+                sum(
+                    request.invocation.specialist_role == "blueprint_integrator"
+                    for request in gateway.requests
+                )
+                == initial_integrations + 1
+            )
+            blueprint = await blueprint_service.inspect(active_blueprint_run_id)
             assert blueprint.awaiting_approval is True
             assert blueprint.interrupt_id is not None
             await blueprint_service.resume(
-                created.workflow_run_id,
+                active_blueprint_run_id,
                 BlueprintHumanDecision(
                     id=uuid4(),
                     interrupt_id=blueprint.interrupt_id,
@@ -127,7 +165,7 @@ async def test_worker_claims_browser_story_and_completes_production(
             )
             await _wait_for(
                 lambda: (
-                    _production_status(session_factory, created.workflow_run_id)
+                    _production_status(session_factory, active_blueprint_run_id)
                     is RunStatus.SUCCEEDED
                 )
             )
@@ -135,15 +173,21 @@ async def test_worker_claims_browser_story_and_completes_production(
             await worker.stop()
 
     with session_factory() as session:
-        blueprint_run = session.get(WorkflowRun, created.workflow_run_id)
+        source_run = session.get(WorkflowRun, created.workflow_run_id)
+        assert source_run is not None
+        assert source_run.status is RunStatus.CANCELLED
+        assert source_run.budget["per_call_output_tokens"] == 2_000
+        blueprint_run = session.get(WorkflowRun, active_blueprint_run_id)
         assert blueprint_run is not None
         assert blueprint_run.status is RunStatus.SUCCEEDED
         assert blueprint_run.pause_reason is None
         assert blueprint_run.input_state["execution_kind"] == INTERACTIVE_EXECUTION_KIND
         assert blueprint_run.input_state["model_profile_id"] == str(local_profile_id)
+        assert blueprint_run.budget["per_call_input_tokens"] == 12_000
+        assert blueprint_run.budget["per_call_output_tokens"] == 8_000
         production_run = session.scalar(
             select(WorkflowRun).where(
-                WorkflowRun.parent_workflow_run_id == created.workflow_run_id,
+                WorkflowRun.parent_workflow_run_id == active_blueprint_run_id,
                 WorkflowRun.workflow_name == SCENE_PRODUCTION_WORKFLOW_NAME,
             )
         )

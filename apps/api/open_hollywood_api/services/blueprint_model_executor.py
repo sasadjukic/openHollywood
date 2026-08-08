@@ -326,9 +326,7 @@ class ProfileRoutedBlueprintNodeExecutor(BlueprintNodeExecutor):
                 schema_valid=False,
                 response=response,
             )
-            raise RetryableSpecialistError(
-                "specialist returned invalid structured output"
-            ) from error
+            raise RetryableSpecialistError(failure_message) from error
         return BlueprintNodeResult(artifacts=references)
 
     def _load_execution(self, task: BlueprintNodeTask) -> _Execution:

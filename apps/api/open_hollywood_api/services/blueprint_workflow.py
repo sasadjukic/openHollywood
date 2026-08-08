@@ -29,6 +29,7 @@ from open_hollywood_engine.workflows import (
     BlueprintNode,
     BlueprintNodeExecutor,
     BlueprintWorkflowObserver,
+    RunBudget,
     RunControlAction,
     RunControlCommand,
     RunControlStatus,
@@ -65,6 +66,9 @@ from open_hollywood_api.services.run_controls import (
 
 _MIN_GRAPH_STEPS = 8
 _MAX_GRAPH_STEPS = 64
+_QUEUED_RETRY_COMMAND_ID = "queued_retry_command_id"
+_QUEUED_RETRY_SEED_ARTIFACTS = "queued_retry_seed_artifacts"
+_QUEUED_RETRY_TARGET_NODE = "queued_retry_target_node"
 
 
 @dataclass(frozen=True, slots=True)
@@ -76,6 +80,13 @@ class BlueprintWorkflowExecution:
     artifacts: tuple[ArtifactReference, ...]
     awaiting_approval: bool
     interrupt_id: str | None = None
+
+
+@dataclass(frozen=True, slots=True)
+class _QueuedBlueprintRetry:
+    command_id: UUID
+    target_node: BlueprintNode
+    seed_artifacts: tuple[ArtifactReference, ...]
 
 
 class BlueprintWorkflowRunError(RuntimeError):
@@ -304,9 +315,123 @@ class BlueprintWorkflowService:
 
         config = _graph_config(workflow_run_id, max_graph_steps)
         existing = await checkpointer.aget_tuple(config)
+        queued_retry = self._queued_retry(workflow_run_id)
         graph_input: BlueprintGraphState | None
-        graph_input = None if existing is not None else initial_blueprint_state(workflow_run_id)
-        return await self._invoke(workflow_run_id, graph_input, config=config)
+        if existing is not None:
+            graph_input = None
+        elif queued_retry is not None:
+            graph_input = initial_blueprint_retry_state(
+                workflow_run_id,
+                queued_retry.seed_artifacts,
+                queued_retry.target_node,
+                queued_retry.command_id,
+            )
+        else:
+            graph_input = initial_blueprint_state(workflow_run_id)
+        try:
+            execution = await self._invoke(workflow_run_id, graph_input, config=config)
+        except Exception as error:
+            if queued_retry is not None:
+                self._run_controls.fail_command(queued_retry.command_id, error)
+            raise
+        if queued_retry is not None:
+            self._run_controls.complete_retry(
+                queued_retry.command_id,
+                workflow_run_id,
+                execution.checkpoint_id,
+            )
+        return execution
+
+    async def queue_retry_from_node(
+        self,
+        workflow_run_id: UUID,
+        command: RunControlCommand,
+    ) -> RunControlResult:
+        """Create one durable retry child without executing it in the API task."""
+        result = self._run_controls.begin_retry(workflow_run_id, command)
+        if result.resulting_workflow_run_id is not None:
+            return result
+        try:
+            target = BlueprintNode(command.target_node or "")
+        except ValueError as error:
+            self._run_controls.fail_command(command.id, error)
+            raise RunControlError("retry target is not a registered blueprint node") from error
+        if target not in BLUEPRINT_RETRYABLE_NODES:
+            retry_error = RunControlError(f"node {target.value} cannot be retried")
+            self._run_controls.fail_command(command.id, retry_error)
+            raise retry_error
+
+        graph, _ = self._require_open()
+        max_steps, _ = self._run_configuration(workflow_run_id)
+        source_snapshot = await graph.aget_state(_graph_config(workflow_run_id, max_steps))
+        source_artifacts = artifact_references_from_state(_snapshot_state(source_snapshot))
+        source_checkpoint_id = _checkpoint_id(source_snapshot)
+        seed_artifacts = initial_blueprint_retry_state(
+            workflow_run_id,
+            source_artifacts,
+            target,
+            command.id,
+        )["artifacts"]
+
+        with self._session_factory.begin() as session:
+            record = session.get(WorkflowRunControl, command.id)
+            if record is None:
+                raise RunControlError("retry command disappeared before child creation")
+            if record.resulting_workflow_run_id is not None:
+                return self._run_controls.result(command.id)
+            source = _require_run(session, workflow_run_id)
+            budget = RunBudget.from_data(
+                source.budget,
+                default_max_graph_steps=DEFAULT_MAX_GRAPH_STEPS,
+            ).replace(command.budget_updates or {})
+            child = WorkflowRun(
+                project_id=source.project_id,
+                conversation_id=source.conversation_id,
+                parent_workflow_run_id=source.id,
+                forked_from_checkpoint_id=source_checkpoint_id,
+                workflow_name=source.workflow_name,
+                graph_version=source.graph_version,
+                status=RunStatus.PENDING,
+                input_state={
+                    **source.input_state,
+                    _QUEUED_RETRY_COMMAND_ID: str(command.id),
+                    _QUEUED_RETRY_SEED_ARTIFACTS: seed_artifacts,
+                    _QUEUED_RETRY_TARGET_NODE: target.value,
+                },
+                budget=budget.to_data(),
+            )
+            session.add(child)
+            session.flush()
+            record.resulting_workflow_run_id = child.id
+            record.checkpoint_id = source_checkpoint_id
+            if source.status is RunStatus.PAUSED:
+                source.status = RunStatus.CANCELLED
+                source.pause_reason = None
+                source.completed_at = datetime.now(UTC)
+            _add_event(
+                session,
+                workflow_run_id,
+                "workflow.retry.queued",
+                {
+                    "command_id": str(command.id),
+                    "resulting_workflow_run_id": str(child.id),
+                    "target_node": target.value,
+                },
+                source="user",
+            )
+            _add_event(
+                session,
+                child.id,
+                "workflow.retry.started",
+                {
+                    "command_id": str(command.id),
+                    "seed_artifacts": seed_artifacts,
+                    "source_workflow_run_id": str(source.id),
+                    "target_node": target.value,
+                },
+                source="worker",
+            )
+        return self._run_controls.result(command.id)
 
     async def inspect(self, workflow_run_id: UUID) -> BlueprintWorkflowExecution:
         """Return the latest durable graph state without advancing execution."""
@@ -492,6 +617,10 @@ class BlueprintWorkflowService:
                 child = _require_run(session, child_run_id)
             else:
                 source = _require_run(session, workflow_run_id)
+                child_budget = RunBudget.from_data(
+                    source.budget,
+                    default_max_graph_steps=DEFAULT_MAX_GRAPH_STEPS,
+                ).replace(command.budget_updates or {})
                 child = WorkflowRun(
                     project_id=source.project_id,
                     conversation_id=source.conversation_id,
@@ -501,7 +630,7 @@ class BlueprintWorkflowService:
                     graph_version=source.graph_version,
                     status=RunStatus.PENDING,
                     input_state=dict(source.input_state),
-                    budget=dict(source.budget),
+                    budget=child_budget.to_data(),
                 )
                 session.add(child)
                 session.flush()
@@ -811,6 +940,37 @@ class BlueprintWorkflowService:
                 )
             return raw_steps, workflow_run.status
 
+    def _queued_retry(self, workflow_run_id: UUID) -> _QueuedBlueprintRetry | None:
+        with self._session_factory() as session:
+            workflow_run = _require_run(session, workflow_run_id)
+            raw_command_id = workflow_run.input_state.get(_QUEUED_RETRY_COMMAND_ID)
+            raw_target = workflow_run.input_state.get(_QUEUED_RETRY_TARGET_NODE)
+            raw_artifacts = workflow_run.input_state.get(_QUEUED_RETRY_SEED_ARTIFACTS)
+            if raw_command_id is None and raw_target is None and raw_artifacts is None:
+                return None
+            if (
+                not isinstance(raw_command_id, str)
+                or not isinstance(raw_target, str)
+                or not isinstance(raw_artifacts, list)
+            ):
+                raise BlueprintWorkflowRunError("queued retry metadata is invalid")
+            try:
+                command_id = UUID(raw_command_id)
+                target = BlueprintNode(raw_target)
+                seed_artifacts = tuple(
+                    _artifact_reference_from_payload(item) for item in raw_artifacts
+                )
+            except (TypeError, ValueError) as error:
+                raise BlueprintWorkflowRunError("queued retry metadata is invalid") from error
+            command = session.get(WorkflowRunControl, command_id)
+            if command is None or command.resulting_workflow_run_id != workflow_run.id:
+                raise BlueprintWorkflowRunError("queued retry command does not own its child run")
+            return _QueuedBlueprintRetry(
+                command_id=command_id,
+                target_node=target,
+                seed_artifacts=seed_artifacts,
+            )
+
     async def _sync_checkpoint_id(
         self,
         workflow_run_id: UUID,
@@ -989,3 +1149,20 @@ def _artifact_payload(artifact: ArtifactReference) -> dict[str, str]:
         "artifact_version_id": str(artifact.version_id),
         "schema_version": artifact.schema_version,
     }
+
+
+def _artifact_reference_from_payload(value: object) -> ArtifactReference:
+    if not isinstance(value, dict):
+        raise TypeError("artifact reference must be an object")
+    kind = value.get("kind")
+    artifact_key = value.get("artifact_key")
+    version_id = value.get("version_id")
+    schema_version = value.get("schema_version")
+    if not all(isinstance(item, str) for item in (kind, artifact_key, version_id, schema_version)):
+        raise TypeError("artifact reference fields must be strings")
+    return ArtifactReference(
+        kind=ArtifactKind(cast(str, kind)),
+        artifact_key=cast(str, artifact_key),
+        version_id=UUID(cast(str, version_id)),
+        schema_version=cast(str, schema_version),
+    )
