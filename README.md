@@ -161,7 +161,8 @@ writer/critic/continuity/bible-maintainer loop, and deterministically assembles
 accepted scene versions into a complete benchmark story with exact usage and
 lineage. The formal
 operator flow can stage all three profiles, preserve the mandatory Blueprint
-approval as an explicit per-case command, route frozen local/cloud deployments
+approval through an offline, digest-bound human review packet and completed
+reviewer form, route frozen local/cloud deployments
 through signed-in local Ollama or direct Ollama Cloud, and resume production
 into the same atomically checkpointed report. It also creates reviewer-specific
 CSV forms and provenance-free rubric guides, imports complete human scores, and

@@ -4,6 +4,17 @@ from open_hollywood_engine.evaluations.blind import (
     DEFAULT_COMPARISON_PAIRS,
     build_blind_bundle,
 )
+from open_hollywood_engine.evaluations.blueprint_reviews import (
+    BLUEPRINT_REVIEW_CSV_COLUMNS,
+    BLUEPRINT_REVIEW_SCHEMA_VERSION,
+    BlueprintApprovalBundle,
+    BlueprintApprovalRecord,
+    BlueprintReviewCase,
+    BlueprintReviewPacket,
+    parse_blueprint_review_csv,
+    render_blueprint_review_csv,
+    render_blueprint_review_guide,
+)
 from open_hollywood_engine.evaluations.contracts import (
     BENCHMARK_SCHEMA_VERSION,
     CANONICAL_RUBRIC_NAME,
@@ -72,6 +83,8 @@ from open_hollywood_engine.evaluations.reviews import (
 
 __all__ = [
     "BENCHMARK_SCHEMA_VERSION",
+    "BLUEPRINT_REVIEW_CSV_COLUMNS",
+    "BLUEPRINT_REVIEW_SCHEMA_VERSION",
     "CANONICAL_RUBRIC_NAME",
     "CANONICAL_RUBRIC_VERSION",
     "DEFAULT_COMPARISON_PAIRS",
@@ -100,6 +113,10 @@ __all__ = [
     "BenchmarkSummary",
     "BenchmarkSystem",
     "BenchmarkTargetMetrics",
+    "BlueprintApprovalBundle",
+    "BlueprintApprovalRecord",
+    "BlueprintReviewCase",
+    "BlueprintReviewPacket",
     "CampaignEvidenceFile",
     "CampaignEvidenceManifest",
     "BlindAnswer",
@@ -123,6 +140,9 @@ __all__ = [
     "canonical_sha256",
     "load_benchmark_corpus",
     "parse_review_csvs",
+    "parse_blueprint_review_csv",
+    "render_blueprint_review_csv",
+    "render_blueprint_review_guide",
     "render_review_csv",
     "render_review_guide",
     "run_benchmark_plan",
