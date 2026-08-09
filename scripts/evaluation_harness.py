@@ -23,7 +23,8 @@ from open_hollywood_api.services.blueprint_model_executor import (
 )
 from open_hollywood_api.services.evaluation_campaign import (
     AGENTIC_TARGET_KEYS,
-    approve_agentic_cases,
+    approve_reviewed_agentic_cases,
+    build_blueprint_review_packet,
     prepare_agentic_cases,
     run_agentic_cases,
 )
@@ -41,12 +42,17 @@ from open_hollywood_engine.evaluations import (
     BenchmarkSummary,
     BlindAnswerKey,
     BlindPublicBundle,
+    BlueprintApprovalBundle,
+    BlueprintReviewPacket,
     HumanReviewBundle,
     build_benchmark_plan,
     build_blind_bundle,
     build_campaign_evidence_archive,
     load_benchmark_corpus,
+    parse_blueprint_review_csv,
     parse_review_csvs,
+    render_blueprint_review_csv,
+    render_blueprint_review_guide,
     render_review_csv,
     render_review_guide,
     run_benchmark_plan,
@@ -199,18 +205,24 @@ def _parser() -> argparse.ArgumentParser:
         help="Agentic case to prepare; repeat as needed. Defaults to every selected target case.",
     )
 
+    package_blueprints = commands.add_parser(
+        "package-blueprint-review",
+        help="Create a digest-bound Blueprint dossier and human approval form.",
+    )
+    _add_agentic_review_arguments(package_blueprints)
+    package_blueprints.add_argument("--reviewer-id", type=str, required=True)
+    package_blueprints.add_argument("--packet-output", type=Path, required=True)
+    package_blueprints.add_argument("--form-output", type=Path, required=True)
+    package_blueprints.add_argument("--guide-output", type=Path, required=True)
+    package_blueprints.add_argument("--overwrite", action="store_true")
+
     approve_blueprints = commands.add_parser(
         "approve-blueprints",
-        help="Explicitly approve one or more prepared benchmark Blueprints.",
+        help="Apply a completed digest-bound human Blueprint approval form.",
     )
-    _add_agentic_execution_arguments(approve_blueprints)
-    approve_blueprints.add_argument(
-        "--case-id",
-        type=UUID,
-        action="append",
-        required=True,
-        help="Prepared agentic case to approve; repeat for multiple reviewed cases.",
-    )
+    _add_agentic_review_arguments(approve_blueprints)
+    approve_blueprints.add_argument("--packet", type=Path, required=True)
+    approve_blueprints.add_argument("--review-form", type=Path, required=True)
 
     run_agentic = commands.add_parser(
         "run-agentic",
@@ -300,6 +312,11 @@ def _parser() -> argparse.ArgumentParser:
 
 
 def _add_agentic_execution_arguments(parser: argparse.ArgumentParser) -> None:
+    _add_agentic_review_arguments(parser)
+    _add_ollama_execution_arguments(parser)
+
+
+def _add_agentic_review_arguments(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--corpus", type=Path, default=DEFAULT_CORPUS_PATH)
     parser.add_argument("--database", type=Path, default=DEFAULT_DATABASE_PATH)
     parser.add_argument("--plan", type=Path, required=True)
@@ -309,7 +326,6 @@ def _add_agentic_execution_arguments(parser: argparse.ArgumentParser) -> None:
         choices=sorted(AGENTIC_TARGET_KEYS),
         help="Agentic profile target; repeat as needed. Defaults to all three profiles.",
     )
-    _add_ollama_execution_arguments(parser)
 
 
 def _add_ollama_execution_arguments(parser: argparse.ArgumentParser) -> None:
@@ -500,6 +516,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.command in {
         "run-baseline",
         "prepare-agentic",
+        "package-blueprint-review",
         "approve-blueprints",
         "run-agentic",
     }:
@@ -600,19 +617,57 @@ def main(argv: list[str] | None = None) -> int:
         )
         return 0
 
-    if args.command == "approve-blueprints":
+    if args.command == "package-blueprint-review":
+        blueprint_outputs = (args.packet_output, args.form_output, args.guide_output)
+        if len({path.resolve() for path in blueprint_outputs}) != len(blueprint_outputs):
+            raise ValueError("Blueprint review packet, form, and guide need distinct paths")
+        _require_writable_outputs(blueprint_outputs, overwrite=args.overwrite)
         target_keys = _agentic_target_keys(args.target)
-        approved = asyncio.run(
-            _approve_agentic_with_ollama(
+        packet = asyncio.run(
+            _build_blueprint_review(
                 plan=plan,
                 corpus_path=args.corpus,
                 database_path=args.database,
-                case_ids=tuple(args.case_id),
                 target_keys=target_keys,
-                ollama_base_url=args.ollama_base_url,
-                direct_ollama_cloud=args.direct_ollama_cloud,
-                ollama_cloud_base_url=args.ollama_cloud_base_url,
-                ollama_timeout_seconds=args.ollama_timeout_seconds,
+            )
+        )
+        form = render_blueprint_review_csv(packet, reviewer_id=args.reviewer_id)
+        guide = render_blueprint_review_guide(packet, reviewer_id=args.reviewer_id)
+        _write_json_atomically(args.packet_output, packet.model_dump(mode="json"))
+        _write_bytes_atomically(args.form_output, form.encode("utf-8"))
+        _write_bytes_atomically(args.guide_output, guide.encode("utf-8"))
+        print(
+            json.dumps(
+                {
+                    "campaign_id": str(plan.campaign_id),
+                    "form_output": str(args.form_output.resolve()),
+                    "guide_output": str(args.guide_output.resolve()),
+                    "packet_output": str(args.packet_output.resolve()),
+                    "packet_sha256": packet.content_sha256,
+                    "reviewer_id": args.reviewer_id.strip(),
+                    "surviving_blueprints": len(packet.cases),
+                },
+                indent=2,
+                sort_keys=True,
+            )
+        )
+        return 0
+
+    if args.command == "approve-blueprints":
+        target_keys = _agentic_target_keys(args.target)
+        packet = BlueprintReviewPacket.model_validate(_read_json(args.packet))
+        approvals = parse_blueprint_review_csv(
+            packet,
+            args.review_form.read_text(encoding="utf-8-sig"),
+        )
+        approved = asyncio.run(
+            _approve_reviewed_blueprints(
+                plan=plan,
+                corpus_path=args.corpus,
+                database_path=args.database,
+                packet=packet,
+                approvals=approvals,
+                target_keys=target_keys,
             )
         )
         print(
@@ -620,6 +675,8 @@ def main(argv: list[str] | None = None) -> int:
                 {
                     "campaign_id": str(plan.campaign_id),
                     "approved": len(approved),
+                    "packet_sha256": packet.content_sha256,
+                    "reviewer_id": approvals.reviewer_id,
                     "cases": [
                         {
                             "case_id": str(preparation.case_id),
@@ -829,39 +886,47 @@ async def _prepare_agentic_with_ollama(
         engine.dispose()
 
 
-async def _approve_agentic_with_ollama(
+async def _build_blueprint_review(
     *,
     plan: BenchmarkPlan,
     corpus_path: Path,
     database_path: Path,
-    case_ids: tuple[UUID, ...],
     target_keys: frozenset[str],
-    ollama_base_url: str | None,
-    direct_ollama_cloud: bool,
-    ollama_cloud_base_url: str | None,
-    ollama_timeout_seconds: float,
-) -> tuple[AgenticBlueprintPreparation, ...]:
+) -> BlueprintReviewPacket:
     engine = create_sqlite_engine(database_path)
-    gateway = _ollama_campaign_gateway(
-        plan,
-        target_keys=target_keys,
-        ollama_base_url=ollama_base_url,
-        direct_ollama_cloud=direct_ollama_cloud,
-        ollama_cloud_base_url=ollama_cloud_base_url,
-        ollama_timeout_seconds=ollama_timeout_seconds,
-    )
     try:
-        return await approve_agentic_cases(
+        return await build_blueprint_review_packet(
             plan=plan,
             corpus=load_benchmark_corpus(corpus_path),
             database_path=database_path,
             session_factory=create_session_factory(engine),
-            gateway=gateway,
-            case_ids=case_ids,
             target_keys=target_keys,
         )
     finally:
-        await gateway.close()
+        engine.dispose()
+
+
+async def _approve_reviewed_blueprints(
+    *,
+    plan: BenchmarkPlan,
+    corpus_path: Path,
+    database_path: Path,
+    packet: BlueprintReviewPacket,
+    approvals: BlueprintApprovalBundle,
+    target_keys: frozenset[str],
+) -> tuple[AgenticBlueprintPreparation, ...]:
+    engine = create_sqlite_engine(database_path)
+    try:
+        return await approve_reviewed_agentic_cases(
+            plan=plan,
+            corpus=load_benchmark_corpus(corpus_path),
+            database_path=database_path,
+            session_factory=create_session_factory(engine),
+            packet=packet,
+            approvals=approvals,
+            target_keys=target_keys,
+        )
+    finally:
         engine.dispose()
 
 

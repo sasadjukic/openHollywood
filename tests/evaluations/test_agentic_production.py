@@ -27,6 +27,8 @@ from open_hollywood_api.services.blueprint_model_executor import (
 from open_hollywood_api.services.blueprint_workflow import BlueprintWorkflowService
 from open_hollywood_api.services.evaluation_campaign import (
     approve_agentic_cases,
+    approve_reviewed_agentic_cases,
+    build_blueprint_review_packet,
     prepare_agentic_cases,
     run_agentic_cases,
 )
@@ -62,6 +64,9 @@ from open_hollywood_engine.evaluations import (
     BenchmarkSystem,
     build_benchmark_plan,
     load_benchmark_corpus,
+    parse_blueprint_review_csv,
+    render_blueprint_review_csv,
+    render_blueprint_review_guide,
 )
 from open_hollywood_engine.models import (
     MODEL_PRESETS,
@@ -457,13 +462,34 @@ async def test_operator_runs_agentic_case_only_after_explicit_approval(
         )
     assert not report_path.exists()
 
-    approved = await approve_agentic_cases(
+    packet = await build_blueprint_review_packet(
         plan=plan,
         corpus=corpus,
         database_path=migrated_database_path,
         session_factory=session_factory,
-        gateway=gateway,
-        case_ids=(local_case.case_id,),
+        target_keys=frozenset({"local"}),
+    )
+    form = render_blueprint_review_csv(packet, reviewer_id="human-reviewer")
+    with pytest.raises(ValueError, match="must contain 'yes'"):
+        parse_blueprint_review_csv(packet, form)
+    approvals = parse_blueprint_review_csv(packet, form.replace(",,\n", ",yes,\n"))
+    guide = render_blueprint_review_guide(packet, reviewer_id="human-reviewer")
+    approved = await approve_reviewed_agentic_cases(
+        plan=plan,
+        corpus=corpus,
+        database_path=migrated_database_path,
+        session_factory=session_factory,
+        packet=packet,
+        approvals=approvals,
+        target_keys=frozenset({"local"}),
+    )
+    approval_replay = await approve_reviewed_agentic_cases(
+        plan=plan,
+        corpus=corpus,
+        database_path=migrated_database_path,
+        session_factory=session_factory,
+        packet=packet,
+        approvals=approvals,
         target_keys=frozenset({"local"}),
     )
     report = await run_agentic_cases(
@@ -489,6 +515,9 @@ async def test_operator_runs_agentic_case_only_after_explicit_approval(
     )
 
     assert approved[0].awaiting_approval is False
+    assert approval_replay == approved
+    assert packet.content_sha256 in guide
+    assert local_case.prompt_id in guide
     assert len(report.results) == 1
     assert report.results[0].output is not None
     assert replay == report

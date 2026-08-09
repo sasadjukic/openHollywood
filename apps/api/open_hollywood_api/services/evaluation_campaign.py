@@ -6,7 +6,9 @@ from collections.abc import Iterable
 from pathlib import Path
 from uuid import UUID, uuid5
 
+from open_hollywood_engine.artifacts import ArtifactKind, Critique, StoryBlueprint
 from open_hollywood_engine.evaluations import (
+    BLUEPRINT_REVIEW_SCHEMA_VERSION,
     BenchmarkCase,
     BenchmarkCaseResult,
     BenchmarkCaseStatus,
@@ -15,20 +17,31 @@ from open_hollywood_engine.evaluations import (
     BenchmarkPrompt,
     BenchmarkReportCheckpoint,
     BenchmarkRunReport,
+    BlueprintApprovalBundle,
+    BlueprintApprovalRecord,
+    BlueprintReviewCase,
+    BlueprintReviewPacket,
     run_benchmark_plan,
 )
 from open_hollywood_engine.models import ModelGateway, ModelProfileMode
 from open_hollywood_engine.workflows import (
+    ArtifactReference,
     BlueprintDecisionAction,
     BlueprintHumanDecision,
+    BlueprintNodeResult,
+    BlueprintNodeTask,
+    RunPauseReason,
 )
 from sqlalchemy import select
 from sqlalchemy.orm import Session, sessionmaker
 
 from open_hollywood_api.persistence.models import (
     AgentInvocation,
+    ArtifactStatus,
+    ArtifactVersion,
     InvocationStatus,
     RunStatus,
+    WorkflowEvent,
     WorkflowRun,
 )
 from open_hollywood_api.services.agentic_benchmark import (
@@ -39,9 +52,20 @@ from open_hollywood_api.services.agentic_benchmark import (
 from open_hollywood_api.services.blueprint_model_executor import (
     BenchmarkBlueprintNodeExecutor,
 )
-from open_hollywood_api.services.blueprint_workflow import BlueprintWorkflowService
+from open_hollywood_api.services.blueprint_workflow import (
+    BlueprintWorkflowExecution,
+    BlueprintWorkflowService,
+)
 
 AGENTIC_TARGET_KEYS = frozenset(mode.value for mode in ModelProfileMode)
+
+
+class _InspectionOnlyBlueprintExecutor:
+    """Compile the graph for inspection and approval without enabling model calls."""
+
+    async def execute(self, task: BlueprintNodeTask) -> BlueprintNodeResult:
+        del task
+        raise RuntimeError("Blueprint review must not execute model-backed nodes")
 
 
 async def prepare_agentic_cases(
@@ -178,6 +202,153 @@ async def approve_agentic_cases(
     return tuple(approved)
 
 
+async def build_blueprint_review_packet(
+    *,
+    plan: BenchmarkPlan,
+    corpus: BenchmarkCorpus,
+    database_path: Path,
+    session_factory: sessionmaker[Session],
+    target_keys: frozenset[str] = AGENTIC_TARGET_KEYS,
+) -> BlueprintReviewPacket:
+    """Load every surviving paused case into a deterministic human-review packet."""
+    selected = _selected_agentic_cases(plan, corpus, target_keys)
+    prompts = _campaign_prompts(plan, corpus)
+    reviewable = _reviewable_cases(session_factory, plan.campaign_id, selected)
+    review_cases: list[BlueprintReviewCase] = []
+    async with BlueprintWorkflowService(
+        database_path,
+        session_factory,
+        _InspectionOnlyBlueprintExecutor(),
+    ) as workflow:
+        for case in reviewable:
+            execution = await workflow.inspect(uuid5(case.case_id, "agentic-blueprint-workflow"))
+            if not execution.awaiting_approval or execution.interrupt_id is None:
+                raise ValueError(f"agentic case {case.case_id} is not awaiting Blueprint approval")
+            blueprint_reference = _single_artifact_reference(
+                execution.artifacts,
+                ArtifactKind.STORY_BLUEPRINT,
+                case.case_id,
+            )
+            critique_reference = _single_artifact_reference(
+                execution.artifacts,
+                ArtifactKind.CRITIQUE,
+                case.case_id,
+            )
+            with session_factory() as session:
+                run = session.get(WorkflowRun, execution.workflow_run_id)
+                if run is None:
+                    raise ValueError(f"agentic case {case.case_id} has no workflow run")
+                blueprint_version = _load_review_version(
+                    session,
+                    blueprint_reference,
+                    project_id=run.project_id,
+                )
+                critique_version = _load_review_version(
+                    session,
+                    critique_reference,
+                    project_id=run.project_id,
+                )
+                blueprint = StoryBlueprint.model_validate(blueprint_version.content)
+                critique = Critique.model_validate(critique_version.content)
+            review_cases.append(
+                BlueprintReviewCase(
+                    case_id=case.case_id,
+                    prompt=prompts[(case.prompt_id, case.prompt_version)],
+                    target_key=case.target_key,
+                    workflow_run_id=execution.workflow_run_id,
+                    interrupt_id=execution.interrupt_id,
+                    blueprint_version_id=blueprint_reference.version_id,
+                    blueprint_content_sha256=blueprint_version.content_sha256,
+                    blueprint=blueprint,
+                    critique_version_id=critique_reference.version_id,
+                    critique_content_sha256=critique_version.content_sha256,
+                    critique=critique,
+                )
+            )
+    return BlueprintReviewPacket(
+        schema_version=BLUEPRINT_REVIEW_SCHEMA_VERSION,
+        campaign_id=plan.campaign_id,
+        corpus_sha256=corpus.content_sha256,
+        plan_sha256=plan.content_sha256,
+        cases=tuple(review_cases),
+    )
+
+
+async def approve_reviewed_agentic_cases(
+    *,
+    plan: BenchmarkPlan,
+    corpus: BenchmarkCorpus,
+    database_path: Path,
+    session_factory: sessionmaker[Session],
+    packet: BlueprintReviewPacket,
+    approvals: BlueprintApprovalBundle,
+    target_keys: frozenset[str] = AGENTIC_TARGET_KEYS,
+) -> tuple[AgenticBlueprintPreparation, ...]:
+    """Apply a complete digest-bound human approval form without model access."""
+    _validate_review_documents(
+        plan,
+        corpus,
+        packet,
+        approvals,
+        target_keys,
+        session_factory,
+    )
+    packet_by_id = {case.case_id: case for case in packet.cases}
+    approved: list[AgenticBlueprintPreparation] = []
+    executor = _InspectionOnlyBlueprintExecutor()
+    async with BlueprintWorkflowService(database_path, session_factory, executor) as workflow:
+        inspections = {
+            case.case_id: await workflow.inspect(case.workflow_run_id) for case in packet.cases
+        }
+        for approval in approvals.approvals:
+            case = packet_by_id[approval.case_id]
+            execution = inspections[approval.case_id]
+            if execution.workflow_run_id != approval.workflow_run_id:
+                raise ValueError(f"Blueprint workflow changed for case {approval.case_id}")
+            _require_reviewed_reference(execution, case, approval)
+        for approval in approvals.approvals:
+            case = packet_by_id[approval.case_id]
+            execution = inspections[approval.case_id]
+            if not execution.awaiting_approval or execution.interrupt_id is None:
+                _require_existing_approval(session_factory, case, approvals)
+                approved.append(
+                    AgenticBlueprintPreparation(
+                        case_id=case.case_id,
+                        project_id=_run_project_id(session_factory, case.workflow_run_id),
+                        workflow_run_id=case.workflow_run_id,
+                        artifacts=execution.artifacts,
+                        awaiting_approval=False,
+                        interrupt_id=None,
+                    )
+                )
+                continue
+            decision = BlueprintHumanDecision(
+                id=_review_decision_id(case, packet.content_sha256),
+                interrupt_id=execution.interrupt_id,
+                action=BlueprintDecisionAction.APPROVE,
+            )
+            _record_blueprint_review_event(
+                session_factory,
+                case,
+                approvals,
+                decision.id,
+            )
+            resumed = await workflow.resume(case.workflow_run_id, decision)
+            if resumed.awaiting_approval:
+                raise RuntimeError("approved benchmark Blueprint remained paused")
+            approved.append(
+                AgenticBlueprintPreparation(
+                    case_id=case.case_id,
+                    project_id=_run_project_id(session_factory, case.workflow_run_id),
+                    workflow_run_id=resumed.workflow_run_id,
+                    artifacts=resumed.artifacts,
+                    awaiting_approval=False,
+                    interrupt_id=None,
+                )
+            )
+    return tuple(approved)
+
+
 async def run_agentic_cases(
     *,
     plan: BenchmarkPlan,
@@ -258,6 +429,220 @@ def _require_prepared_runs(
             if run is None or run.status not in {RunStatus.PAUSED, RunStatus.SUCCEEDED}:
                 raise ValueError(f"agentic case {case.case_id} must be prepared before approval")
             _require_campaign_run(run, campaign_id, case)
+
+
+def _reviewable_cases(
+    session_factory: sessionmaker[Session],
+    campaign_id: UUID,
+    cases: Iterable[BenchmarkCase],
+) -> tuple[BenchmarkCase, ...]:
+    reviewable: list[BenchmarkCase] = []
+    with session_factory() as session:
+        for case in cases:
+            run = session.get(
+                WorkflowRun,
+                uuid5(case.case_id, "agentic-blueprint-workflow"),
+            )
+            if run is None:
+                raise ValueError(f"agentic case {case.case_id} has not been prepared")
+            _require_campaign_run(run, campaign_id, case)
+            if run.status is RunStatus.FAILED:
+                continue
+            if (
+                run.status is not RunStatus.PAUSED
+                or run.pause_reason is not RunPauseReason.HUMAN_APPROVAL
+            ):
+                raise ValueError(f"agentic case {case.case_id} is not paused at Blueprint approval")
+            reviewable.append(case)
+    if not reviewable:
+        raise ValueError("the selected campaign has no surviving Blueprints to review")
+    return tuple(reviewable)
+
+
+def _single_artifact_reference(
+    artifacts: tuple[ArtifactReference, ...],
+    kind: ArtifactKind,
+    case_id: UUID,
+) -> ArtifactReference:
+    matches = tuple(reference for reference in artifacts if reference.kind is kind)
+    if len(matches) != 1:
+        raise ValueError(
+            f"agentic case {case_id} requires exactly one active {kind.value} artifact"
+        )
+    return matches[0]
+
+
+def _load_review_version(
+    session: Session,
+    reference: ArtifactReference,
+    *,
+    project_id: UUID,
+) -> ArtifactVersion:
+    version = session.get(ArtifactVersion, reference.version_id)
+    if (
+        version is None
+        or version.schema_version != reference.schema_version
+        or version.artifact.project_id != project_id
+        or version.artifact.artifact_key != reference.artifact_key
+        or version.artifact.artifact_type != reference.kind.value
+    ):
+        raise ValueError(f"review artifact lineage is invalid for {reference.artifact_key}")
+    session.expunge(version)
+    return version
+
+
+def _validate_review_documents(
+    plan: BenchmarkPlan,
+    corpus: BenchmarkCorpus,
+    packet: BlueprintReviewPacket,
+    approvals: BlueprintApprovalBundle,
+    target_keys: frozenset[str],
+    session_factory: sessionmaker[Session],
+) -> None:
+    selected = _selected_agentic_cases(plan, corpus, target_keys)
+    selected_by_id = {case.case_id: case for case in selected}
+    if (
+        packet.campaign_id != plan.campaign_id
+        or packet.corpus_sha256 != corpus.content_sha256
+        or packet.plan_sha256 != plan.content_sha256
+    ):
+        raise ValueError("Blueprint review packet does not match the campaign plan and corpus")
+    if (
+        approvals.campaign_id != packet.campaign_id
+        or approvals.plan_sha256 != packet.plan_sha256
+        or approvals.packet_sha256 != packet.content_sha256
+    ):
+        raise ValueError("Blueprint approval form does not match the review packet")
+    packet_ids = tuple(case.case_id for case in packet.cases)
+    approval_ids = tuple(approval.case_id for approval in approvals.approvals)
+    if packet_ids != approval_ids:
+        raise ValueError("Blueprint approval form must preserve complete packet case order")
+    surviving_ids: list[UUID] = []
+    with session_factory() as session:
+        for planned in selected:
+            run = session.get(
+                WorkflowRun,
+                uuid5(planned.case_id, "agentic-blueprint-workflow"),
+            )
+            if run is None:
+                raise ValueError(f"agentic case {planned.case_id} has not been prepared")
+            _require_campaign_run(run, plan.campaign_id, planned)
+            if run.status is not RunStatus.FAILED:
+                surviving_ids.append(planned.case_id)
+    if packet_ids != tuple(surviving_ids):
+        raise ValueError("Blueprint review packet must cover every surviving selected case")
+    for review_case in packet.cases:
+        matched = selected_by_id.get(review_case.case_id)
+        if (
+            matched is None
+            or review_case.prompt.prompt_id != matched.prompt_id
+            or review_case.prompt.version != matched.prompt_version
+            or review_case.target_key != matched.target_key
+            or review_case.workflow_run_id != uuid5(matched.case_id, "agentic-blueprint-workflow")
+        ):
+            raise ValueError(
+                f"Blueprint review case {review_case.case_id} does not match the campaign plan"
+            )
+
+
+def _require_reviewed_reference(
+    execution: BlueprintWorkflowExecution,
+    case: BlueprintReviewCase,
+    approval: BlueprintApprovalRecord,
+) -> None:
+    reference = _single_artifact_reference(
+        execution.artifacts,
+        ArtifactKind.STORY_BLUEPRINT,
+        case.case_id,
+    )
+    if (
+        reference.version_id != case.blueprint_version_id
+        or approval.blueprint_version_id != case.blueprint_version_id
+        or approval.blueprint_content_sha256 != case.blueprint_content_sha256
+    ):
+        raise ValueError(f"reviewed Blueprint changed for case {case.case_id}")
+
+
+def _require_existing_approval(
+    session_factory: sessionmaker[Session],
+    case: BlueprintReviewCase,
+    approvals: BlueprintApprovalBundle,
+) -> None:
+    with session_factory() as session:
+        run = session.get(WorkflowRun, case.workflow_run_id)
+        version = session.get(ArtifactVersion, case.blueprint_version_id)
+        decision_id = str(_review_decision_id(case, approvals.packet_sha256))
+        review_events = session.scalars(
+            select(WorkflowEvent).where(
+                WorkflowEvent.workflow_run_id == case.workflow_run_id,
+                WorkflowEvent.event_type == "benchmark.blueprint.review.confirmed",
+            )
+        ).all()
+        if (
+            run is None
+            or run.status is not RunStatus.SUCCEEDED
+            or version is None
+            or version.content_sha256 != case.blueprint_content_sha256
+            or version.artifact.status is not ArtifactStatus.APPROVED
+            or not any(
+                event.payload.get("decision_id") == decision_id
+                and event.payload.get("packet_sha256") == approvals.packet_sha256
+                and event.payload.get("reviewer_id") == approvals.reviewer_id
+                for event in review_events
+            )
+        ):
+            raise ValueError(f"case {case.case_id} is not approved at the reviewed Blueprint")
+
+
+def _run_project_id(
+    session_factory: sessionmaker[Session],
+    workflow_run_id: UUID,
+) -> UUID:
+    with session_factory() as session:
+        run = session.get(WorkflowRun, workflow_run_id)
+        if run is None:
+            raise ValueError(f"workflow run {workflow_run_id} does not exist")
+        return run.project_id
+
+
+def _record_blueprint_review_event(
+    session_factory: sessionmaker[Session],
+    case: BlueprintReviewCase,
+    approvals: BlueprintApprovalBundle,
+    decision_id: UUID,
+) -> None:
+    payload = {
+        "blueprint_content_sha256": case.blueprint_content_sha256,
+        "blueprint_version_id": str(case.blueprint_version_id),
+        "decision_id": str(decision_id),
+        "packet_sha256": approvals.packet_sha256,
+        "reviewer_id": approvals.reviewer_id,
+    }
+    with session_factory.begin() as session:
+        existing = session.scalars(
+            select(WorkflowEvent).where(
+                WorkflowEvent.workflow_run_id == case.workflow_run_id,
+                WorkflowEvent.event_type == "benchmark.blueprint.review.confirmed",
+            )
+        ).all()
+        if any(event.payload.get("decision_id") == str(decision_id) for event in existing):
+            return
+        session.add(
+            WorkflowEvent(
+                workflow_run_id=case.workflow_run_id,
+                event_type="benchmark.blueprint.review.confirmed",
+                source="human",
+                schema_version=BLUEPRINT_REVIEW_SCHEMA_VERSION,
+                payload=payload,
+            )
+        )
+
+
+def _review_decision_id(case: BlueprintReviewCase, packet_sha256: str) -> UUID:
+    return uuid5(
+        case.case_id,
+        f"benchmark-blueprint-review:{case.interrupt_id}:{packet_sha256}",
+    )
 
 
 def _require_resolved_blueprint_runs(

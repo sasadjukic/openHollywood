@@ -48,6 +48,55 @@ invocation, and complete story version in SQLite. It assigns only syntactic
 hard gates automatically. Gates requiring literary judgment remain `null`
 until a blind reviewer submits the canonical rubric.
 
+Run or resume agentic Blueprint preparation. The command stops at the mandatory
+human checkpoint and never approves a Blueprint on the operator's behalf:
+
+```powershell
+uv run --extra api python scripts/evaluation_harness.py prepare-agentic `
+  --database data/open_hollywood.db `
+  --plan data/benchmarks/v0.1/formal-2026-08-01/plan.json
+```
+
+Once every selected case has either failed terminally or reached that checkpoint,
+create a deterministic review packet, readable Markdown dossier, and reviewer
+CSV. This step is offline and makes no model calls:
+
+```powershell
+uv run --extra api python scripts/evaluation_harness.py package-blueprint-review `
+  --database data/open_hollywood.db `
+  --plan data/benchmarks/v0.1/formal-2026-08-01/plan.json `
+  --reviewer-id primary-reviewer `
+  --packet-output data/benchmarks/v0.1/formal-2026-08-01/blueprint-review-packet.json `
+  --guide-output data/benchmarks/v0.1/formal-2026-08-01/blueprint-review-guide.md `
+  --form-output data/benchmarks/v0.1/formal-2026-08-01/blueprint-review.csv
+```
+
+Review every Blueprint in the Markdown dossier. Enter `yes` in `approved` only
+after approving the exact Blueprint version shown; notes are optional. Do not
+edit the prefilled lineage fields. The approval command rejects incomplete
+coverage, changed lineage, a foreign campaign, or a Blueprint whose immutable
+version or digest no longer matches the packet. It is also offline:
+
+```powershell
+uv run --extra api python scripts/evaluation_harness.py approve-blueprints `
+  --database data/open_hollywood.db `
+  --plan data/benchmarks/v0.1/formal-2026-08-01/plan.json `
+  --packet data/benchmarks/v0.1/formal-2026-08-01/blueprint-review-packet.json `
+  --review-form data/benchmarks/v0.1/formal-2026-08-01/blueprint-review.csv
+```
+
+Each applied approval writes a durable human event containing the reviewer ID,
+review-packet digest, and exact Blueprint version/digest before resolving the
+existing LangGraph interrupt. Replaying the same completed form is idempotent.
+After all approvals are applied, run or resume autonomous production:
+
+```powershell
+uv run --extra api python scripts/evaluation_harness.py run-agentic `
+  --database data/open_hollywood.db `
+  --plan data/benchmarks/v0.1/formal-2026-08-01/plan.json `
+  --report data/benchmarks/v0.1/formal-2026-08-01/report.json
+```
+
 Create a private blinding key, then build separate public and private review
 artifacts:
 
