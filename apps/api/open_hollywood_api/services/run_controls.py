@@ -118,6 +118,7 @@ class RunControlStore:
                     f"workflow cannot stop from status {workflow_run.status.value}"
                 )
             workflow_run.status = RunStatus.CANCELLED
+            finish_active_interval(workflow_run)
             workflow_run.pause_reason = None
             workflow_run.completed_at = datetime.now(UTC)
             workflow_run.error_code = None
@@ -406,6 +407,7 @@ def _apply_pause(
     budget_limits: tuple[BudgetLimit, ...] = (),
     usage: RunUsage | None = None,
 ) -> None:
+    finish_active_interval(workflow_run)
     workflow_run.status = RunStatus.PAUSED
     workflow_run.pause_reason = reason
     workflow_run.error_code = None
@@ -434,9 +436,12 @@ def _mark_applied(
 
 def run_usage(workflow_run: WorkflowRun) -> RunUsage:
     now = datetime.now(UTC)
-    started_at = workflow_run.started_at
-    if started_at is not None and started_at.tzinfo is None:
-        started_at = started_at.replace(tzinfo=UTC)
+    active_seconds = workflow_run.active_elapsed_seconds
+    active_started_at = workflow_run.active_started_at
+    if active_started_at is not None and active_started_at.tzinfo is None:
+        active_started_at = active_started_at.replace(tzinfo=UTC)
+    if active_started_at is not None and workflow_run.status is RunStatus.RUNNING:
+        active_seconds += max(0, int((now - active_started_at).total_seconds()))
     return RunUsage(
         graph_steps=sum(
             event.event_type == "workflow.node.started" for event in workflow_run.events
@@ -448,10 +453,44 @@ def run_usage(workflow_run: WorkflowRun) -> RunUsage:
             (invocation.estimated_cost_usd for invocation in workflow_run.invocations),
             start=Decimal("0"),
         ),
-        wall_clock_seconds=(
-            max(0, int((now - started_at).total_seconds())) if started_at is not None else 0
-        ),
+        wall_clock_seconds=active_seconds,
     )
+
+
+def start_active_interval(
+    workflow_run: WorkflowRun,
+    *,
+    now: datetime | None = None,
+) -> None:
+    """Open one execution interval unless the current node already owns one."""
+    if workflow_run.active_started_at is None:
+        workflow_run.active_started_at = now or datetime.now(UTC)
+
+
+def abandon_active_interval(workflow_run: WorkflowRun) -> None:
+    """Discard an unclosed interval left by an interrupted process."""
+    workflow_run.active_started_at = None
+
+
+def finish_active_interval(
+    workflow_run: WorkflowRun,
+    *,
+    now: datetime | None = None,
+) -> None:
+    """Accumulate and close the current execution interval, if any."""
+    started_at = workflow_run.active_started_at
+    if started_at is None:
+        return
+    ended_at = now or datetime.now(UTC)
+    if started_at.tzinfo is None:
+        started_at = started_at.replace(tzinfo=UTC)
+    if ended_at.tzinfo is None:
+        ended_at = ended_at.replace(tzinfo=UTC)
+    workflow_run.active_elapsed_seconds += max(
+        0,
+        int((ended_at - started_at).total_seconds()),
+    )
+    workflow_run.active_started_at = None
 
 
 def _result(

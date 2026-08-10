@@ -263,7 +263,10 @@ class AgenticBenchmarkCaseExecutor:
         database_path: Path,
         session_factory: sessionmaker[Session],
         gateway: ModelGateway,
+        cost_ceiling_usd: Decimal = Decimal("5.00"),
     ) -> None:
+        if not cost_ceiling_usd.is_finite() or cost_ceiling_usd < 0:
+            raise ValueError("cost_ceiling_usd must be finite and non-negative")
         self._session_factory = session_factory
         self._gateway = gateway
         self._blueprints = AgenticBenchmarkBlueprintService(
@@ -274,6 +277,7 @@ class AgenticBenchmarkCaseExecutor:
         )
         self._database_path = database_path
         self._campaign_id = campaign_id
+        self._cost_ceiling_usd = cost_ceiling_usd
 
     async def execute(
         self,
@@ -309,6 +313,7 @@ class AgenticBenchmarkCaseExecutor:
                 database_path=self._database_path,
                 session_factory=self._session_factory,
                 executor=production_executor,
+                cost_ceiling_usd=(None if case.target_key == "local" else self._cost_ceiling_usd),
             ) as production:
                 execution = await production.execute(
                     prepared.workflow_run_id,

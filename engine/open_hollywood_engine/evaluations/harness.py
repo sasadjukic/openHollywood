@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from typing import Protocol
+from uuid import UUID
 
 from open_hollywood_engine.evaluations.contracts import (
     BENCHMARK_SCHEMA_VERSION,
@@ -59,6 +60,7 @@ async def run_benchmark_plan(
     checkpoint: BenchmarkReportCheckpoint | None = None,
     retry_failed: bool = False,
     target_keys: frozenset[str] | None = None,
+    case_ids: frozenset[UUID] | None = None,
 ) -> BenchmarkRunReport:
     """Execute missing cases in stable order and checkpoint every new result."""
     _require_matching_corpus(plan, corpus)
@@ -71,6 +73,8 @@ async def run_benchmark_plan(
     known_targets = {case.target_key for case in plan.cases}
     if target_keys is not None and not target_keys.issubset(known_targets):
         raise ValueError("target_keys contains an unknown benchmark target")
+    if case_ids is not None and not case_ids.issubset(planned_ids):
+        raise ValueError("case_ids contains an unknown benchmark case")
 
     prompts = {(prompt.prompt_id, prompt.version): prompt for prompt in corpus.prompts}
     results: list[BenchmarkCaseResult] = []
@@ -80,6 +84,8 @@ async def run_benchmark_plan(
             results.append(prior)
             continue
         if target_keys is not None and case.target_key not in target_keys:
+            continue
+        if case_ids is not None and case.case_id not in case_ids:
             continue
         prompt = prompts[(case.prompt_id, case.prompt_version)]
         try:

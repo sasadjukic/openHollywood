@@ -14,11 +14,13 @@ from uuid import UUID, uuid4
 
 from open_hollywood_engine.artifacts import (
     ArtifactKind,
+    ContinuityCategory,
     ContinuityReport,
     Critique,
     SceneDraft,
     StoryBible,
     StoryBibleInvariantError,
+    StoryBibleThread,
     StoryBibleUpdate,
     apply_story_bible_update,
 )
@@ -55,7 +57,7 @@ from open_hollywood_engine.workflows import (
     StoryBibleUpdateResult,
     StoryBibleUpdateTask,
 )
-from pydantic import BaseModel
+from pydantic import BaseModel, ValidationError
 from sqlalchemy import insert, select
 from sqlalchemy.orm import Session, joinedload, sessionmaker
 
@@ -242,7 +244,10 @@ class ProfileRoutedProductionExecutor(SceneProductionExecutor):
         try:
             response = await self._gateway.generate(request)
             _require_matching_response(response, execution)
-            output = output_model.model_validate_json(normalize_json_document(response.content))
+            output_data = json.loads(normalize_json_document(response.content))
+            output = output_model.model_validate(
+                _materialize_output_data(operation, task, execution, output_data)
+            )
             _validate_output(operation, task, output)
             references = await asyncio.to_thread(
                 self._complete_invocation,
@@ -284,11 +289,12 @@ class ProfileRoutedProductionExecutor(SceneProductionExecutor):
             )
             raise
         except (ValueError, json.JSONDecodeError, StoryBibleInvariantError) as error:
+            diagnostic = _structured_failure_message(error, response)
             await asyncio.to_thread(
                 self._fail_invocation,
                 invocation_id,
                 "schema_validation_failed",
-                "The production specialist returned invalid structured output.",
+                diagnostic,
                 False,
                 response,
             )
@@ -358,6 +364,12 @@ class ProfileRoutedProductionExecutor(SceneProductionExecutor):
                     "run_seed": run_seed,
                 }
             )
+            attempt_number, previous_failure = _retry_context(
+                session,
+                workflow_run_id=run.id,
+                specialist_role=specialist_role,
+                task_fingerprint=fingerprint,
+            )
             return _Execution(
                 workflow_run_id=run.id,
                 project_id=run.project_id,
@@ -373,6 +385,8 @@ class ProfileRoutedProductionExecutor(SceneProductionExecutor):
                 task_fingerprint=fingerprint,
                 unit_id=_unit_id(task),
                 revision_number=_revision_number(task),
+                attempt_number=attempt_number,
+                previous_failure=previous_failure,
             )
 
     def _replay(
@@ -441,6 +455,7 @@ class ProfileRoutedProductionExecutor(SceneProductionExecutor):
                 provider=execution.selection.provider,
                 model_identifier=execution.selection.model_identifier,
                 status=InvocationStatus.RUNNING,
+                retry_count=execution.attempt_number - 1,
                 request_settings={
                     "deployment": execution.selection.deployment.value,
                     "graph_version": SCENE_PRODUCTION_GRAPH_VERSION,
@@ -450,6 +465,7 @@ class ProfileRoutedProductionExecutor(SceneProductionExecutor):
                     "run_seed": execution.seed,
                     "schema_enforced": (execution.selection.deployment is ModelDeployment.LOCAL),
                     "task_fingerprint": execution.task_fingerprint,
+                    "attempt_number": execution.attempt_number,
                     "temperature": _temperature(operation),
                     "top_p": 0.95,
                     "thinking": False,
@@ -585,6 +601,61 @@ def _apply_response_metadata(
     }
 
 
+def _retry_context(
+    session: Session,
+    *,
+    workflow_run_id: UUID,
+    specialist_role: str,
+    task_fingerprint: str,
+) -> tuple[int, dict[str, object] | None]:
+    candidates = session.scalars(
+        select(AgentInvocation)
+        .where(
+            AgentInvocation.workflow_run_id == workflow_run_id,
+            AgentInvocation.specialist_role == specialist_role,
+            AgentInvocation.status == InvocationStatus.FAILED,
+        )
+        .order_by(AgentInvocation.started_at, AgentInvocation.id)
+    ).all()
+    failures = tuple(
+        invocation
+        for invocation in candidates
+        if invocation.request_settings.get("task_fingerprint") == task_fingerprint
+        and invocation.request_settings.get("prompt_template_version")
+        == SCENE_PRODUCTION_PROMPT_TEMPLATE_VERSION
+    )
+    if not failures:
+        return 1, None
+    latest = failures[-1]
+    return len(failures) + 1, {
+        "error_code": latest.error_code or "unknown",
+        "message": latest.error_message or "No structural diagnostic was recorded.",
+        "provider_finish_reason": latest.request_settings.get("provider_finish_reason"),
+        "provider_response_length": latest.request_settings.get("provider_response_content_length"),
+    }
+
+
+def _structured_failure_message(
+    error: ValueError | StoryBibleInvariantError,
+    response: ModelResponse,
+) -> str:
+    locations: list[str] = []
+    if isinstance(error, ValidationError):
+        for item in error.errors(
+            include_url=False,
+            include_context=False,
+            include_input=False,
+        )[:12]:
+            location = ".".join(str(value) for value in item["loc"]) or "$"
+            locations.append(f"{location}:{item['type']}:{item['msg']}")
+    else:
+        locations.append(f"$:{type(error).__name__}")
+    return (
+        "Structured output validation failed "
+        f"(provider_finish_reason={response.finish_reason}): {', '.join(locations)}."
+    )
+
+
 @dataclass(frozen=True, slots=True)
 class _Execution:
     workflow_run_id: UUID
@@ -601,6 +672,8 @@ class _Execution:
     task_fingerprint: str
     unit_id: str
     revision_number: int
+    attempt_number: int
+    previous_failure: dict[str, object] | None
 
 
 def _messages(
@@ -612,20 +685,24 @@ def _messages(
         "You are a registered Open Hollywood scene-production specialist. "
         f"{_INSTRUCTIONS[operation]} Return only one JSON value conforming exactly "
         "to the supplied schema. Do not include Markdown, commentary, hidden reasoning, "
-        "or undeclared fields."
+        "or undeclared fields. If retry_context is present, correct every reported "
+        "structural error without changing the assignment or inventing new lineage."
     )
-    user = json.dumps(
-        {
-            "assignment": {
-                "operation": operation.value,
-                "specialist_role": execution.specialist_role,
-                "unit_id": execution.unit_id,
-                "revision_number": execution.revision_number,
-            },
-            "frozen_benchmark_constraints": execution.constraints,
-            "input_artifacts": execution.inputs,
-            "output_schema": schema,
+    payload: dict[str, object] = {
+        "assignment": {
+            "operation": operation.value,
+            "specialist_role": execution.specialist_role,
+            "unit_id": execution.unit_id,
+            "revision_number": execution.revision_number,
         },
+        "frozen_benchmark_constraints": execution.constraints,
+        "input_artifacts": execution.inputs,
+        "output_schema": schema,
+    }
+    if execution.previous_failure is not None:
+        payload["retry_context"] = execution.previous_failure
+    user = json.dumps(
+        payload,
         ensure_ascii=False,
         separators=(",", ":"),
         sort_keys=True,
@@ -688,6 +765,229 @@ def _validate_output(
         or update.accepted_scene.artifact_version_id != update_task.accepted_draft.version_id
     ):
         raise ValueError("story-bible update does not match its exact inputs")
+
+
+def _materialize_output_data(
+    operation: _Operation,
+    task: object,
+    execution: _Execution,
+    output_data: object,
+) -> dict[str, Any]:
+    """Attach application-owned identity and lineage to model-authored output."""
+    if not isinstance(output_data, dict):
+        raise ValueError("production specialist output must be a JSON object")
+    materialized = dict(output_data)
+    if operation is _Operation.WRITE:
+        writing = cast(SceneWritingTask, task)
+        materialized.update(
+            scene_id=writing.unit.unit_id,
+            scene_number=writing.unit.unit_number,
+            revision_number=writing.revision_number,
+        )
+        return materialized
+    if operation is _Operation.CRITIQUE:
+        critique_task = cast(SceneCritiqueTask, task)
+        materialized.update(
+            target_artifact_kind=ArtifactKind.SCENE_DRAFT.value,
+            target_artifact_key=critique_task.draft.artifact_key,
+            target_artifact_version_id=str(critique_task.draft.version_id),
+        )
+        return materialized
+    if operation is _Operation.CONTINUITY:
+        continuity_task = cast(ContinuityCheckTask, task)
+        scene_id = continuity_task.unit.unit_id
+        materialized.update(
+            story_bible_version_id=str(continuity_task.story_bible.version_id),
+            scene_version_id=str(continuity_task.draft.version_id),
+            scene_plan_version_id=str(continuity_task.unit.plan.version_id),
+            scene_id=scene_id,
+            scene_number=continuity_task.unit.unit_number,
+            checked_categories=[category.value for category in ContinuityCategory],
+        )
+        findings = materialized.get("findings")
+        if isinstance(findings, list):
+            materialized["findings"] = [
+                _materialize_continuity_finding(finding, scene_id) for finding in findings
+            ]
+        return materialized
+
+    update_task = cast(StoryBibleUpdateTask, task)
+    scene_id = update_task.unit.unit_id
+    materialized.update(
+        source_story_bible_version_id=str(update_task.source_story_bible.version_id),
+        continuity_report_version_id=str(update_task.continuity_report.version_id),
+    )
+    accepted_scene = materialized.get("accepted_scene")
+    if not isinstance(accepted_scene, dict):
+        raise ValueError("story-bible update must contain accepted_scene")
+    materialized["accepted_scene"] = {
+        **accepted_scene,
+        "scene_id": scene_id,
+        "scene_number": update_task.unit.unit_number,
+        "artifact_version_id": str(update_task.accepted_draft.version_id),
+    }
+    _materialize_scene_origin(materialized, "timeline_events", "scene_id", scene_id)
+    source_story_bible = _source_story_bible(execution)
+    timeline_events = materialized.get("timeline_events")
+    if isinstance(timeline_events, list):
+        materialized["timeline_events"] = [
+            (
+                {
+                    **event,
+                    "id": f"{scene_id}_timeline_event_{index}",
+                    "sequence": len(source_story_bible.timeline) + index,
+                }
+                if isinstance(event, dict)
+                else event
+            )
+            for index, event in enumerate(timeline_events, start=1)
+        ]
+    _materialize_scene_origin(
+        materialized,
+        "established_facts",
+        "established_scene_id",
+        scene_id,
+    )
+    established_facts = materialized.get("established_facts")
+    fact_id_map: dict[str, str] = {}
+    if isinstance(established_facts, list):
+        for index, fact in enumerate(established_facts, start=1):
+            if isinstance(fact, dict) and isinstance(fact.get("id"), str):
+                fact_id_map[cast(str, fact["id"])] = f"{scene_id}_established_fact_{index}"
+        materialized["established_facts"] = [
+            (
+                {**fact, "id": f"{scene_id}_established_fact_{index}"}
+                if isinstance(fact, dict)
+                else fact
+            )
+            for index, fact in enumerate(established_facts, start=1)
+        ]
+    for field_name in (
+        "character_states",
+        "relationship_states",
+        "location_states",
+    ):
+        _materialize_scene_origin(
+            materialized,
+            field_name,
+            "last_updated_scene_id",
+            scene_id,
+        )
+    character_states = materialized.get("character_states")
+    if isinstance(character_states, list):
+        materialized["character_states"] = [
+            _materialize_character_state(state, fact_id_map) for state in character_states
+        ]
+    thread_changes = materialized.get("thread_changes")
+    if isinstance(thread_changes, list):
+        current_threads = {thread.id: thread for thread in source_story_bible.threads}
+        materialized["thread_changes"] = [
+            _materialize_thread_change(change, scene_id, current_threads)
+            for change in thread_changes
+        ]
+    contradictions = materialized.get("prohibited_contradictions")
+    if isinstance(contradictions, list):
+        materialized["prohibited_contradictions"] = _new_prohibitions(
+            contradictions,
+            source_story_bible.prohibited_contradictions,
+        )
+    return materialized
+
+
+def _source_story_bible(execution: _Execution) -> StoryBible:
+    story_bibles = [
+        item.get("content")
+        for item in execution.inputs
+        if item.get("artifact_kind") == ArtifactKind.STORY_BIBLE.value
+    ]
+    if len(story_bibles) != 1:
+        raise ValueError("story-bible update requires one exact source story bible")
+    return StoryBible.model_validate(story_bibles[0])
+
+
+def _materialize_character_state(
+    state: object,
+    fact_id_map: Mapping[str, str],
+) -> object:
+    if not isinstance(state, dict):
+        return state
+    knowledge_fact_ids = state.get("knowledge_fact_ids")
+    if not isinstance(knowledge_fact_ids, list):
+        return state
+    return {
+        **state,
+        "knowledge_fact_ids": [
+            fact_id_map.get(fact_id, fact_id) if isinstance(fact_id, str) else fact_id
+            for fact_id in knowledge_fact_ids
+        ],
+    }
+
+
+def _materialize_thread_change(
+    change: object,
+    scene_id: str,
+    current_threads: Mapping[str, StoryBibleThread],
+) -> object:
+    if not isinstance(change, dict):
+        return change
+    materialized = dict(change)
+    thread_id = change.get("id")
+    existing = current_threads.get(thread_id) if isinstance(thread_id, str) else None
+    if existing is None:
+        materialized["introduced_scene_id"] = scene_id
+    else:
+        existing_data = existing.model_dump(mode="json")
+        materialized.update(
+            kind=existing_data["kind"],
+            statement=existing_data["statement"],
+            introduced_scene_id=existing_data["introduced_scene_id"],
+        )
+    if change.get("resolved_scene_id") is not None:
+        materialized["resolved_scene_id"] = scene_id
+    return materialized
+
+
+def _new_prohibitions(
+    proposed: list[object],
+    existing: tuple[str, ...],
+) -> list[object]:
+    seen = set(existing)
+    materialized: list[object] = []
+    for contradiction in proposed:
+        if not isinstance(contradiction, str):
+            materialized.append(contradiction)
+        elif contradiction not in seen:
+            seen.add(contradiction)
+            materialized.append(contradiction)
+    return materialized
+
+
+def _materialize_continuity_finding(finding: object, scene_id: str) -> object:
+    if not isinstance(finding, dict):
+        return finding
+    related_scene_ids = finding.get("related_scene_ids")
+    model_scene_ids = related_scene_ids if isinstance(related_scene_ids, list) else []
+    materialized = {
+        **finding,
+        "related_scene_ids": list(dict.fromkeys((*model_scene_ids, scene_id))),
+    }
+    if finding.get("severity") in {"error", "blocking"}:
+        materialized["blocks_approval"] = True
+    return materialized
+
+
+def _materialize_scene_origin(
+    output_data: dict[str, Any],
+    collection_name: str,
+    origin_field: str,
+    scene_id: str,
+) -> None:
+    collection = output_data.get(collection_name)
+    if not isinstance(collection, list):
+        return
+    output_data[collection_name] = [
+        {**item, origin_field: scene_id} if isinstance(item, dict) else item for item in collection
+    ]
 
 
 def _writing_inputs(task: SceneWritingTask) -> tuple[ArtifactReference, ...]:

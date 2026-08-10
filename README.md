@@ -164,7 +164,20 @@ operator flow can stage all three profiles, preserve the mandatory Blueprint
 approval through an offline, digest-bound human review packet and completed
 reviewer form, route frozen local/cloud deployments
 through signed-in local Ollama or direct Ollama Cloud, and resume production
-into the same atomically checkpointed report. It also creates reviewer-specific
+into the same atomically checkpointed report. `run-agentic --case-id` is
+repeatable, allowing deterministic operator-sized batches without creating a
+new campaign; separate processes merge their case results under an interprocess
+checkpoint lock instead of overwriting one another. `--batch-size` plus
+one-based `--batch-number` also partitions the selected target in frozen plan
+order (for example, Cloud batches 1-3 at size 4). Production wall-clock budgets
+count persisted active node intervals rather than paused downtime, and
+an interrupted open interval is discarded when the durable graph is recovered.
+Cloud and Hybrid stories default to a configurable `$5.00` aggregate ceiling
+(`--cost-ceiling-usd`) while recorded provider cost remains the actual billed or
+reported amount; Local production retains its derived no-cloud ceiling. The
+bounded second production attempt now receives safe structural validation
+diagnostics and records its retry ordinal without application-authored semantic
+repairs. The harness also creates reviewer-specific
 CSV forms and provenance-free rubric guides, imports complete human scores, and
 cryptographically binds review evidence to the exact public blind packet and
 private answer key. Complete campaigns can be sealed into deterministic,
