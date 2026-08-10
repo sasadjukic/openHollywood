@@ -2,10 +2,18 @@
 
 from __future__ import annotations
 
+from datetime import UTC, datetime, timedelta
 from decimal import Decimal
 from uuid import NAMESPACE_URL, uuid4, uuid5
 
 import pytest
+from open_hollywood_api.persistence.models import RunStatus, WorkflowRun
+from open_hollywood_api.services.run_controls import (
+    abandon_active_interval,
+    finish_active_interval,
+    run_usage,
+    start_active_interval,
+)
 from open_hollywood_engine.artifacts import ArtifactKind
 from open_hollywood_engine.workflows import (
     ArtifactReference,
@@ -81,6 +89,28 @@ def test_run_control_commands_reject_action_specific_extra_data() -> None:
             action=RunControlAction.UPDATE_BUDGET,
             budget_updates={},
         )
+
+
+def test_active_runtime_excludes_pauses_and_replaces_interrupted_interval() -> None:
+    started = datetime(2026, 8, 10, 10, 0, tzinfo=UTC)
+    run = WorkflowRun(
+        project_id=uuid4(),
+        workflow_name="fixture",
+        graph_version="1",
+        status=RunStatus.RUNNING,
+        input_state={},
+        budget={},
+        active_elapsed_seconds=7,
+    )
+
+    start_active_interval(run, now=started)
+    abandon_active_interval(run)
+    start_active_interval(run, now=started + timedelta(minutes=30))
+    finish_active_interval(run, now=started + timedelta(minutes=30, seconds=5))
+    run.status = RunStatus.PAUSED
+
+    assert run_usage(run).wall_clock_seconds == 12
+    assert run.active_started_at is None
 
 
 def test_retry_state_keeps_only_exact_prerequisites_and_independent_sibling() -> None:

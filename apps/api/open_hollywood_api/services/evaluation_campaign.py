@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import Iterable
+from decimal import Decimal
 from pathlib import Path
 from uuid import UUID, uuid5
 
@@ -359,10 +360,12 @@ async def run_agentic_cases(
     prior_report: BenchmarkRunReport | None,
     checkpoint: BenchmarkReportCheckpoint | None,
     target_keys: frozenset[str] = AGENTIC_TARGET_KEYS,
+    case_ids: tuple[UUID, ...] | None = None,
     retry_failed: bool = False,
+    cost_ceiling_usd: Decimal = Decimal("5.00"),
 ) -> BenchmarkRunReport:
     """Run approved agentic cases and checkpoint each terminal result."""
-    cases = _selected_agentic_cases(plan, corpus, target_keys)
+    cases = _selected_agentic_cases(plan, corpus, target_keys, case_ids=case_ids)
     blueprint_failures = _require_resolved_blueprint_runs(
         session_factory,
         plan.campaign_id,
@@ -373,6 +376,7 @@ async def run_agentic_cases(
         database_path=database_path,
         session_factory=session_factory,
         gateway=gateway,
+        cost_ceiling_usd=cost_ceiling_usd,
     )
     return await run_benchmark_plan(
         plan=plan,
@@ -382,6 +386,7 @@ async def run_agentic_cases(
         checkpoint=checkpoint,
         retry_failed=retry_failed,
         target_keys=target_keys,
+        case_ids=frozenset(case.case_id for case in cases),
     )
 
 
@@ -389,11 +394,23 @@ def _selected_agentic_cases(
     plan: BenchmarkPlan,
     corpus: BenchmarkCorpus,
     target_keys: frozenset[str],
+    *,
+    case_ids: tuple[UUID, ...] | None = None,
 ) -> tuple[BenchmarkCase, ...]:
     _campaign_prompts(plan, corpus)
     if not target_keys or not target_keys.issubset(AGENTIC_TARGET_KEYS):
         raise ValueError("agentic target keys must select Local, Cloud, or Hybrid")
-    cases = tuple(case for case in plan.cases if case.target_key in target_keys)
+    selected_ids = set(case_ids) if case_ids is not None else None
+    if selected_ids is not None:
+        planned_ids = {case.case_id for case in plan.cases}
+        unknown = selected_ids - planned_ids
+        if unknown:
+            raise ValueError(f"unknown benchmark case IDs: {sorted(map(str, unknown))}")
+    cases = tuple(
+        case
+        for case in plan.cases
+        if case.target_key in target_keys and (selected_ids is None or case.case_id in selected_ids)
+    )
     if not cases:
         raise ValueError("the campaign plan has no cases for the selected agentic targets")
     return cases

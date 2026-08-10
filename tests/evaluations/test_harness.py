@@ -86,6 +86,7 @@ from sqlalchemy import Engine, func, select
 
 from scripts.evaluation_harness import (
     AtomicJsonReportCheckpoint,
+    _agentic_case_batch,
     _current_runtime_versions,
     _require_current_runtime_versions,
     _write_json_atomically,
@@ -439,6 +440,74 @@ async def test_harness_can_stage_only_one_campaign_target(
 
     assert len(report.results) == 12
     assert executor.calls == [case.case_id for case in plan.cases if case.target_key == "baseline"]
+
+
+@pytest.mark.anyio
+async def test_harness_can_stage_an_exact_case_batch(
+    benchmark_plan: tuple[BenchmarkCorpus, BenchmarkPlan],
+) -> None:
+    corpus, plan = benchmark_plan
+    selected = frozenset((plan.cases[1].case_id, plan.cases[3].case_id))
+    executor = FixtureExecutor()
+
+    report = await run_benchmark_plan(
+        plan=plan,
+        corpus=corpus,
+        executor=executor,
+        case_ids=selected,
+    )
+
+    assert executor.calls == [case.case_id for case in plan.cases if case.case_id in selected]
+    assert {result.case_id for result in report.results} == selected
+
+
+def test_operator_partitions_one_target_in_frozen_plan_order(
+    benchmark_plan: tuple[BenchmarkCorpus, BenchmarkPlan],
+) -> None:
+    _, plan = benchmark_plan
+    cloud_ids = tuple(case.case_id for case in plan.cases if case.target_key == "cloud")
+
+    batches = tuple(
+        _agentic_case_batch(
+            plan,
+            target_keys=frozenset({"cloud"}),
+            explicit_case_ids=None,
+            batch_size=4,
+            batch_number=number,
+        )
+        for number in (1, 2, 3)
+    )
+
+    assert batches == (cloud_ids[:4], cloud_ids[4:8], cloud_ids[8:12])
+
+
+@pytest.mark.anyio
+async def test_atomic_checkpoint_merges_stale_parallel_batches(
+    benchmark_plan: tuple[BenchmarkCorpus, BenchmarkPlan],
+    tmp_path: Path,
+) -> None:
+    corpus, plan = benchmark_plan
+    report_path = tmp_path / "campaign" / "report.json"
+    first_id = plan.cases[0].case_id
+    second_id = plan.cases[1].case_id
+
+    await run_benchmark_plan(
+        plan=plan,
+        corpus=corpus,
+        executor=FixtureExecutor(),
+        checkpoint=AtomicJsonReportCheckpoint(report_path, plan),
+        case_ids=frozenset({first_id}),
+    )
+    await run_benchmark_plan(
+        plan=plan,
+        corpus=corpus,
+        executor=FixtureExecutor(),
+        checkpoint=AtomicJsonReportCheckpoint(report_path, plan),
+        case_ids=frozenset({second_id}),
+    )
+
+    merged = BenchmarkRunReport.model_validate(json.loads(report_path.read_text(encoding="utf-8")))
+    assert [result.case_id for result in merged.results] == [first_id, second_id]
 
 
 @pytest.mark.anyio

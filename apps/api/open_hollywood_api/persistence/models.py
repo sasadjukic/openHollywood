@@ -324,6 +324,8 @@ class WorkflowRun(TimestampedRecord, Base):
         )
     )
     started_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    active_started_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    active_elapsed_seconds: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
     completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     error_code: Mapped[str | None] = mapped_column(String(100))
     error_message: Mapped[str | None] = mapped_column(Text)

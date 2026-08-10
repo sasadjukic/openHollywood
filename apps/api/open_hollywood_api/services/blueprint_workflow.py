@@ -62,6 +62,8 @@ from open_hollywood_api.services.run_controls import (
     RunControlStore,
     WorkflowPausedSignal,
     WorkflowStoppedSignal,
+    finish_active_interval,
+    start_active_interval,
 )
 
 _MIN_GRAPH_STEPS = 8
@@ -120,6 +122,7 @@ class SqlAlchemyBlueprintWorkflowObserver(BlueprintWorkflowObserver):
             workflow_run.pause_reason = None
             workflow_run.current_node = node.value
             workflow_run.started_at = workflow_run.started_at or datetime.now(UTC)
+            start_active_interval(workflow_run)
             workflow_run.error_code = None
             workflow_run.error_message = None
             _add_event(
@@ -145,7 +148,8 @@ class SqlAlchemyBlueprintWorkflowObserver(BlueprintWorkflowObserver):
         artifacts: tuple[ArtifactReference, ...],
     ) -> None:
         with self._session_factory.begin() as session:
-            _require_run(session, workflow_run_id)
+            workflow_run = _require_run(session, workflow_run_id)
+            finish_active_interval(workflow_run)
             _add_event(
                 session,
                 workflow_run_id,
@@ -240,6 +244,7 @@ class SqlAlchemyBlueprintWorkflowObserver(BlueprintWorkflowObserver):
     def _workflow_failed(self, workflow_run_id: UUID, safe_message: str) -> None:
         with self._session_factory.begin() as session:
             workflow_run = _require_run(session, workflow_run_id)
+            finish_active_interval(workflow_run)
             workflow_run.status = RunStatus.FAILED
             workflow_run.pause_reason = None
             workflow_run.error_code = "workflow_execution_failed"
@@ -883,6 +888,7 @@ class BlueprintWorkflowService:
                     "approved blueprint does not belong to the workflow project"
                 )
             artifact.status = ArtifactStatus.APPROVED
+            finish_active_interval(workflow_run)
             workflow_run.status = RunStatus.SUCCEEDED
             workflow_run.pause_reason = None
             workflow_run.completed_at = datetime.now(UTC)

@@ -38,6 +38,7 @@ from open_hollywood_api.services.model_profiles import (
 )
 from open_hollywood_api.services.production_model_executor import (
     BenchmarkProductionExecutor,
+    _materialize_continuity_finding,
 )
 from open_hollywood_api.services.production_workflow import (
     BenchmarkSceneProductionService,
@@ -95,7 +96,7 @@ from tests.evaluations.test_agentic_blueprint import (
 
 
 class ProductionFixtureGateway(BlueprintFixtureGateway):
-    """Add coherent production-role responses to the Blueprint fixture."""
+    """Add production responses with deliberately invented application lineage."""
 
     async def generate(self, request: ModelRequest) -> ModelResponse:
         if request.invocation.specialist_role in {
@@ -210,11 +211,44 @@ class ProductionFixtureGateway(BlueprintFixtureGateway):
             )
         else:
             raise AssertionError(f"unexpected specialist role {role}")
+        content = json.loads(value.model_dump_json())
+        invented_version_id = "20240730-a1b2-43d4-a5f6-7890abcdef00"
+        if role == "scene_writer":
+            content["scene_id"] = "model_invented_scene"
+            content["scene_number"] = 999
+            content["revision_number"] = 999
+        elif role == "scene_critic":
+            content["target_artifact_key"] = "model_invented_draft"
+            content["target_artifact_version_id"] = invented_version_id
+        elif role == "continuity_supervisor":
+            content.update(
+                story_bible_version_id=invented_version_id,
+                scene_version_id=invented_version_id,
+                scene_plan_version_id=invented_version_id,
+                scene_id="model_invented_scene",
+                scene_number=999,
+            )
+        elif role == "story_bible_maintainer":
+            content["source_story_bible_version_id"] = invented_version_id
+            content["continuity_report_version_id"] = invented_version_id
+            content["accepted_scene"].update(
+                scene_id="model_invented_scene",
+                scene_number=999,
+                artifact_version_id=invented_version_id,
+            )
+            for event in content["timeline_events"]:
+                event["scene_id"] = "model_invented_scene"
+                event["id"] = "model_invented_event"
+                event["sequence"] = 999
+            content["prohibited_contradictions"] = [
+                "fixture canonical prohibition",
+                "fixture canonical prohibition",
+            ]
         return ModelResponse(
             provider=self.provider,
             model_identifier=request.model_identifier,
             deployment=ModelDeployment.LOCAL,
-            content=value.model_dump_json(),
+            content=json.dumps(content),
             thinking=None,
             finish_reason="stop",
             created_at=datetime.now(UTC),
@@ -242,6 +276,43 @@ class FirstBlueprintFailureGateway(ProductionFixtureGateway):
             content["scene_plans"][0]["location_id"] = "null"
             return replace(response, content=json.dumps(content))
         return response
+
+
+class OneProductionRepairGateway(ProductionFixtureGateway):
+    """Return one malformed continuity document and verify the bounded repair prompt."""
+
+    def __init__(self, prompt_text: str, prompt: Any) -> None:
+        super().__init__(prompt_text, prompt)
+        self.invalid_sent = False
+        self.repair_contexts: list[dict[str, object]] = []
+
+    async def generate(self, request: ModelRequest) -> ModelResponse:
+        if request.invocation.specialist_role != "continuity_supervisor":
+            return await super().generate(request)
+        response = await super().generate(request)
+        payload = json.loads(request.messages[-1].content)
+        retry_context = payload.get("retry_context")
+        if isinstance(retry_context, dict):
+            self.repair_contexts.append(retry_context)
+        if not self.invalid_sent:
+            self.invalid_sent = True
+            return replace(response, content="[]")
+        return response
+
+
+def test_continuity_routing_flag_is_derived_from_blocking_severity() -> None:
+    finding = _materialize_continuity_finding(
+        {
+            "severity": "blocking",
+            "blocks_approval": False,
+            "related_scene_ids": ["model_invented_scene"],
+        },
+        "scene_1",
+    )
+
+    assert isinstance(finding, dict)
+    assert finding["blocks_approval"] is True
+    assert finding["related_scene_ids"] == ["model_invented_scene", "scene_1"]
 
 
 @pytest.mark.anyio
@@ -274,7 +345,7 @@ async def test_approved_blueprint_runs_durable_production_and_replays(
             configuration=profile.configuration,
         ),
     )
-    gateway = ProductionFixtureGateway(prompt.prompt, prompt)
+    gateway = OneProductionRepairGateway(prompt.prompt, prompt)
     blueprint_service = AgenticBenchmarkBlueprintService(
         campaign_id=CAMPAIGN_ID,
         database_path=migrated_database_path,
@@ -322,6 +393,7 @@ async def test_approved_blueprint_runs_durable_production_and_replays(
         database_path=migrated_database_path,
         session_factory=session_factory,
         executor=production_executor,
+        cost_ceiling_usd=Decimal("5.00"),
     ) as production_service:
         execution = await production_service.execute(
             prepared.workflow_run_id,
@@ -337,7 +409,9 @@ async def test_approved_blueprint_runs_durable_production_and_replays(
     assert execution.status is RunStatus.SUCCEEDED
     assert execution.result is not None
     assert len(execution.result.accepted_units) == 3
-    assert len(gateway.requests) == request_count == 18
+    assert len(gateway.requests) == request_count == 19
+    assert len(gateway.repair_contexts) == 1
+    assert "Structured output validation failed" in str(gateway.repair_contexts[0]["message"])
     assert all(request.response_schema is not None for request in gateway.requests)
     with session_factory() as session:
         production_run = session.get(WorkflowRun, execution.workflow_run_id)
@@ -345,14 +419,16 @@ async def test_approved_blueprint_runs_durable_production_and_replays(
         assert production_run.parent_workflow_run_id == prepared.workflow_run_id
         assert production_run.status is RunStatus.SUCCEEDED
         assert production_run.checkpoint_id == execution.checkpoint_id
-        assert session.scalar(select(func.count()).select_from(AgentInvocation)) == 18
+        assert production_run.budget["max_cost_usd"] == "5.00"
+        assert session.scalar(select(func.count()).select_from(AgentInvocation)) == 19
         production_invocations = session.scalars(
             select(AgentInvocation).where(
                 AgentInvocation.workflow_run_id == execution.workflow_run_id
             )
         ).all()
-        assert len(production_invocations) == 12
+        assert len(production_invocations) == 13
         assert all(invocation.input_versions for invocation in production_invocations)
+        assert sum(invocation.retry_count == 1 for invocation in production_invocations) == 1
 
     case_executor = AgenticBenchmarkCaseExecutor(
         campaign_id=CAMPAIGN_ID,
@@ -365,7 +441,7 @@ async def test_approved_blueprint_runs_durable_production_and_replays(
 
     assert output == output_replay
     assert output.workflow_run_id == execution.workflow_run_id
-    assert len(output.invocation_ids) == 18
+    assert len(output.invocation_ids) == 19
     assert len(output.artifact_version_ids) == 6
     assert output.content.count("\n\n") == 2
     assert len(gateway.requests) == request_count

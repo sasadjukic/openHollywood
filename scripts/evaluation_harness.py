@@ -6,9 +6,12 @@ import argparse
 import asyncio
 import hashlib
 import json
+import os
 import secrets
 import time
-from decimal import Decimal
+from collections.abc import Iterator
+from contextlib import contextmanager
+from decimal import Decimal, InvalidOperation
 from pathlib import Path
 from typing import Any
 from uuid import UUID, uuid4
@@ -82,6 +85,8 @@ DEFAULT_CORPUS_PATH = WORKSPACE_ROOT / "benchmarks" / "v0.1" / "corpus.json"
 DEFAULT_DATABASE_PATH = WORKSPACE_ROOT / "data" / "open_hollywood.db"
 DEFAULT_CAMPAIGN_OLLAMA_TIMEOUT_SECONDS = 600.0
 ATOMIC_REPLACE_ATTEMPTS = 5
+REPORT_LOCK_TIMEOUT_SECONDS = 10.0
+STALE_REPORT_LOCK_SECONDS = 300.0
 
 
 class AtomicJsonReportCheckpoint:
@@ -92,9 +97,15 @@ class AtomicJsonReportCheckpoint:
         self._plan = plan
 
     async def save(self, report: BenchmarkRunReport) -> None:
-        """Validate campaign identity before atomically replacing the report."""
+        """Merge concurrent campaign progress before atomically replacing the report."""
         _require_matching_report(self._plan, report)
-        _write_json_atomically(self._path, report.model_dump(mode="json"))
+        with _report_file_lock(self._path):
+            merged = report
+            if self._path.exists():
+                persisted = BenchmarkRunReport.model_validate(_read_json(self._path))
+                _require_matching_report(self._plan, persisted)
+                merged = _merge_checkpoint_reports(self._plan, persisted, report)
+            _write_json_atomically(self._path, merged.model_dump(mode="json"))
 
 
 def create_plan_from_database(
@@ -231,6 +242,28 @@ def _parser() -> argparse.ArgumentParser:
     _add_agentic_execution_arguments(run_agentic)
     run_agentic.add_argument("--report", type=Path, required=True)
     run_agentic.add_argument("--retry-failed", action="store_true")
+    run_agentic.add_argument(
+        "--case-id",
+        type=UUID,
+        action="append",
+        help="Agentic case to run; repeat as needed. Defaults to every selected target case.",
+    )
+    run_agentic.add_argument(
+        "--cost-ceiling-usd",
+        type=_non_negative_decimal,
+        default=Decimal("5.00"),
+        help="Hard aggregate production ceiling per Cloud/Hybrid story (default: $5.00).",
+    )
+    run_agentic.add_argument(
+        "--batch-size",
+        type=_positive_int,
+        help="Select this many cases from the chosen target(s) in frozen plan order.",
+    )
+    run_agentic.add_argument(
+        "--batch-number",
+        type=_positive_int,
+        help="One-based batch number; requires --batch-size.",
+    )
 
     key = commands.add_parser(
         "create-review-key",
@@ -351,6 +384,23 @@ def _positive_float(value: str) -> float:
     parsed = float(value)
     if parsed <= 0:
         raise argparse.ArgumentTypeError("value must be positive")
+    return parsed
+
+
+def _positive_int(value: str) -> int:
+    parsed = int(value)
+    if parsed < 1:
+        raise argparse.ArgumentTypeError("value must be a positive integer")
+    return parsed
+
+
+def _non_negative_decimal(value: str) -> Decimal:
+    try:
+        parsed = Decimal(value)
+    except InvalidOperation as error:
+        raise argparse.ArgumentTypeError("value must be a decimal") from error
+    if not parsed.is_finite() or parsed < 0:
+        raise argparse.ArgumentTypeError("value must be a non-negative decimal")
     return parsed
 
 
@@ -693,6 +743,13 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.command == "run-agentic":
         target_keys = _agentic_target_keys(args.target)
+        case_ids = _agentic_case_batch(
+            plan,
+            target_keys=target_keys,
+            explicit_case_ids=tuple(args.case_id) if args.case_id else None,
+            batch_size=args.batch_size,
+            batch_number=args.batch_number,
+        )
         report_path = args.report
         prior_report = (
             BenchmarkRunReport.model_validate(_read_json(report_path))
@@ -709,14 +766,20 @@ def main(argv: list[str] | None = None) -> int:
                 report_path=report_path,
                 prior_report=prior_report,
                 target_keys=target_keys,
+                case_ids=case_ids,
                 ollama_base_url=args.ollama_base_url,
                 direct_ollama_cloud=args.direct_ollama_cloud,
                 ollama_cloud_base_url=args.ollama_cloud_base_url,
                 ollama_timeout_seconds=args.ollama_timeout_seconds,
                 retry_failed=args.retry_failed,
+                cost_ceiling_usd=args.cost_ceiling_usd,
             )
         )
-        selected_case_ids = {case.case_id for case in plan.cases if case.target_key in target_keys}
+        selected_case_ids = {
+            case.case_id
+            for case in plan.cases
+            if case.target_key in target_keys and (case_ids is None or case.case_id in case_ids)
+        }
         selected_results = [
             result for result in report.results if result.case_id in selected_case_ids
         ]
@@ -938,11 +1001,13 @@ async def _run_agentic_with_ollama(
     report_path: Path,
     prior_report: BenchmarkRunReport | None,
     target_keys: frozenset[str],
+    case_ids: tuple[UUID, ...] | None,
     ollama_base_url: str | None,
     direct_ollama_cloud: bool,
     ollama_cloud_base_url: str | None,
     ollama_timeout_seconds: float,
     retry_failed: bool,
+    cost_ceiling_usd: Decimal,
 ) -> BenchmarkRunReport:
     engine = create_sqlite_engine(database_path)
     gateway = _ollama_campaign_gateway(
@@ -954,7 +1019,7 @@ async def _run_agentic_with_ollama(
         ollama_timeout_seconds=ollama_timeout_seconds,
     )
     try:
-        return await run_agentic_cases(
+        await run_agentic_cases(
             plan=plan,
             corpus=load_benchmark_corpus(corpus_path),
             database_path=database_path,
@@ -963,8 +1028,11 @@ async def _run_agentic_with_ollama(
             prior_report=prior_report,
             checkpoint=AtomicJsonReportCheckpoint(report_path, plan),
             target_keys=target_keys,
+            case_ids=case_ids,
             retry_failed=retry_failed,
+            cost_ceiling_usd=cost_ceiling_usd,
         )
+        return BenchmarkRunReport.model_validate(_read_json(report_path))
     finally:
         await gateway.close()
         engine.dispose()
@@ -975,6 +1043,29 @@ def _agentic_target_keys(raw_targets: list[str] | None) -> frozenset[str]:
     if not target_keys or not target_keys.issubset(AGENTIC_TARGET_KEYS):
         raise ValueError("agentic targets must select Local, Cloud, or Hybrid")
     return target_keys
+
+
+def _agentic_case_batch(
+    plan: BenchmarkPlan,
+    *,
+    target_keys: frozenset[str],
+    explicit_case_ids: tuple[UUID, ...] | None,
+    batch_size: int | None,
+    batch_number: int | None,
+) -> tuple[UUID, ...] | None:
+    if explicit_case_ids is not None and batch_size is not None:
+        raise ValueError("--case-id cannot be combined with --batch-size")
+    if batch_number is not None and batch_size is None:
+        raise ValueError("--batch-number requires --batch-size")
+    if batch_size is None:
+        return explicit_case_ids
+    number = batch_number or 1
+    candidates = tuple(case.case_id for case in plan.cases if case.target_key in target_keys)
+    start = (number - 1) * batch_size
+    selected = candidates[start : start + batch_size]
+    if not selected:
+        raise ValueError(f"batch {number} is empty for {len(candidates)} selected target cases")
+    return selected
 
 
 def _ollama_campaign_gateway(
@@ -1096,6 +1187,52 @@ def _write_json_atomically(path: Path, value: Any) -> None:
         + "\n"
     ).encode()
     _write_bytes_atomically(path, encoded)
+
+
+def _merge_checkpoint_reports(
+    plan: BenchmarkPlan,
+    persisted: BenchmarkRunReport,
+    incoming: BenchmarkRunReport,
+) -> BenchmarkRunReport:
+    """Union progress while never replacing a successful case with a failure."""
+    by_id = {result.case_id: result for result in persisted.results}
+    for result in incoming.results:
+        previous = by_id.get(result.case_id)
+        if previous is None or previous.status.value != "succeeded":
+            by_id[result.case_id] = result
+    ordered_ids = tuple(case.case_id for case in plan.cases if case.case_id in by_id)
+    return incoming.model_copy(update={"results": tuple(by_id[case_id] for case_id in ordered_ids)})
+
+
+@contextmanager
+def _report_file_lock(path: Path) -> Iterator[None]:
+    """Hold a small cross-process lock beside one report file."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    lock_path = path.with_name(f".{path.name}.lock")
+    deadline = time.monotonic() + REPORT_LOCK_TIMEOUT_SECONDS
+    descriptor: int | None = None
+    while descriptor is None:
+        try:
+            descriptor = os.open(lock_path, os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+        except FileExistsError:
+            try:
+                stale = time.time() - lock_path.stat().st_mtime > STALE_REPORT_LOCK_SECONDS
+            except FileNotFoundError:
+                continue
+            if stale:
+                lock_path.unlink(missing_ok=True)
+                continue
+            if time.monotonic() >= deadline:
+                raise TimeoutError(
+                    f"timed out waiting for report checkpoint lock {lock_path}"
+                ) from None
+            time.sleep(0.05)
+    try:
+        os.write(descriptor, str(os.getpid()).encode())
+        yield
+    finally:
+        os.close(descriptor)
+        lock_path.unlink(missing_ok=True)
 
 
 def _write_bytes_atomically(path: Path, value: bytes) -> None:

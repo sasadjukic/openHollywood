@@ -66,6 +66,9 @@ from open_hollywood_api.services.run_controls import (
     RunControlStore,
     WorkflowPausedSignal,
     WorkflowStoppedSignal,
+    abandon_active_interval,
+    finish_active_interval,
+    start_active_interval,
 )
 
 MAX_PRODUCTION_GRAPH_STEPS = 128
@@ -120,6 +123,7 @@ class SqlAlchemySceneProductionObserver(SceneProductionWorkflowObserver):
             run.status = RunStatus.RUNNING
             run.current_node = node.value
             run.started_at = run.started_at or datetime.now(UTC)
+            start_active_interval(run)
             run.error_code = None
             run.error_message = None
             _add_event(
@@ -150,7 +154,8 @@ class SqlAlchemySceneProductionObserver(SceneProductionWorkflowObserver):
         artifacts: tuple[ArtifactReference, ...],
     ) -> None:
         with self._session_factory.begin() as session:
-            _require_run(session, workflow_run_id)
+            run = _require_run(session, workflow_run_id)
+            finish_active_interval(run)
             if node is ProductionNode.ACCEPT:
                 for reference in artifacts:
                     version = session.get(ArtifactVersion, reference.version_id)
@@ -204,10 +209,16 @@ class SceneProductionService:
         database_path: Path,
         session_factory: sessionmaker[Session],
         executor: SceneProductionExecutor,
+        cost_ceiling_usd: Decimal | None = None,
     ) -> None:
+        if cost_ceiling_usd is not None and (
+            not cost_ceiling_usd.is_finite() or cost_ceiling_usd < Decimal("0.20")
+        ):
+            raise ValueError("cost_ceiling_usd must be at least the per-call ceiling")
         self._database_path = database_path
         self._session_factory = session_factory
         self._executor = executor
+        self._cost_ceiling_usd = cost_ceiling_usd
         self._connection: aiosqlite.Connection | None = None
         self._checkpointer: AsyncSqliteSaver | None = None
         self._graph: ProductionCompiledGraph | None = None
@@ -264,6 +275,11 @@ class SceneProductionService:
         if status not in {RunStatus.PENDING, RunStatus.RUNNING, RunStatus.FAILED}:
             raise SceneProductionWorkflowRunError(
                 f"production cannot execute from status {status.value}"
+            )
+        if status is RunStatus.RUNNING:
+            await asyncio.to_thread(
+                self._recover_interrupted_run,
+                production.workflow_run_id,
             )
         config = _graph_config(production.workflow_run_id, max_steps)
         existing = await checkpointer.aget_tuple(config)
@@ -459,7 +475,11 @@ class SceneProductionService:
                 max_model_calls=len(units) * 8,
                 max_input_tokens=len(units) * 8 * call_budget.max_input_tokens,
                 max_output_tokens=len(units) * 8 * call_budget.max_output_tokens,
-                max_cost_usd=(Decimal(len(units) * 8) * call_budget.max_cost_usd),
+                max_cost_usd=(
+                    self._cost_ceiling_usd
+                    if self._cost_ceiling_usd is not None
+                    else Decimal(len(units) * 8) * call_budget.max_cost_usd
+                ),
                 max_wall_clock_seconds=7_200,
                 per_call_input_tokens=call_budget.max_input_tokens,
                 per_call_output_tokens=call_budget.max_output_tokens,
@@ -558,6 +578,7 @@ class SceneProductionService:
             if run.status is RunStatus.SUCCEEDED:
                 return
             run.status = RunStatus.SUCCEEDED
+            finish_active_interval(run)
             run.pause_reason = None
             run.completed_at = datetime.now(UTC)
             run.error_code = None
@@ -575,11 +596,25 @@ class SceneProductionService:
                 source=ProductionNode.ACCEPT.value,
             )
 
+    def _recover_interrupted_run(self, workflow_run_id: UUID) -> None:
+        with self._session_factory.begin() as session:
+            run = _require_run(session, workflow_run_id)
+            abandon_active_interval(run)
+            run.status = RunStatus.PENDING
+            _add_event(
+                session,
+                workflow_run_id,
+                "workflow.execution.recovered",
+                {"node": run.current_node},
+                source="system",
+            )
+
     def _fail_run(self, workflow_run_id: UUID, error: Exception) -> None:
         safe_message = active_secret_guard().redact_text(str(error))[:2_000]
         with self._session_factory.begin() as session:
             run = _require_run(session, workflow_run_id)
             run.status = RunStatus.FAILED
+            finish_active_interval(run)
             run.pause_reason = None
             run.error_code = "workflow_execution_failed"
             run.error_message = safe_message
