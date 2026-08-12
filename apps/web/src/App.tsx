@@ -209,7 +209,12 @@ export function App() {
         workflowRunId: activeRun.id,
       });
     },
-    onSuccess: async () => {
+    onSuccess: async (_result, action) => {
+      if (action === "approve") {
+        setRequestedRunId(null);
+        setRequestedArtifactId(null);
+        setRequestedVersionId(null);
+      }
       setInstruction("");
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: projectsQueryKey }),

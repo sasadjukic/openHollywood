@@ -9,6 +9,7 @@ import { App } from "./App";
 
 const projectId = "11111111-1111-1111-1111-111111111111";
 const runId = "22222222-2222-2222-2222-222222222222";
+const productionRunId = "99999999-9999-4999-8999-999999999999";
 const previousRunId = "22222222-2222-4222-8222-111111111111";
 const artifactId = "33333333-3333-3333-3333-333333333333";
 const versionId = "44444444-4444-4444-4444-444444444444";
@@ -31,8 +32,10 @@ function renderApp() {
 function configureWorkspaceApi(options?: {
   controlError?: string;
   workspace?: ReturnType<typeof workspaceResponse>;
+  workspaceAfterApproval?: ReturnType<typeof workspaceResponse>;
 }) {
   let projectDeleted = false;
+  let blueprintApproved = false;
   const configuredWorkspace = options?.workspace ?? workspaceResponse();
   const fetchMock = vi.fn((input: RequestInfo | URL, init?: RequestInit) => {
     const request = input instanceof Request ? input : null;
@@ -106,7 +109,13 @@ function configureWorkspaceApi(options?: {
       );
     }
     if (url.includes(`/api/v1/projects/${projectId}/workspace`)) {
-      return Promise.resolve(jsonResponse(configuredWorkspace));
+      return Promise.resolve(
+        jsonResponse(
+          blueprintApproved && options?.workspaceAfterApproval
+            ? options.workspaceAfterApproval
+            : configuredWorkspace,
+        ),
+      );
     }
     if (url.endsWith(`/api/v1/projects/${projectId}/exports`)) {
       return Promise.resolve(
@@ -161,6 +170,7 @@ function configureWorkspaceApi(options?: {
       url.includes(`/api/v1/workflow-runs/${runId}/decisions`) &&
       method === "POST"
     ) {
+      blueprintApproved = true;
       return Promise.resolve(
         jsonResponse({
           artifacts: [],
@@ -429,6 +439,29 @@ describe("App", () => {
     });
   });
 
+  it("follows production after approval and preserves manual run selection", async () => {
+    const user = userEvent.setup();
+    configureWorkspaceApi({
+      workspaceAfterApproval: workspaceWithRunningProduction(),
+    });
+
+    renderApp();
+    await user.click(
+      await screen.findByRole("button", { name: "Approve blueprint" }),
+    );
+
+    const selector = await screen.findByLabelText("Workflow attempt");
+    await waitFor(() => {
+      expect(selector).toHaveValue(productionRunId);
+      expect(screen.getByText("At Draft")).toBeInTheDocument();
+    });
+
+    await user.selectOptions(selector, runId);
+
+    expect(selector).toHaveValue(runId);
+    expect(screen.getByText("At Approval")).toBeInTheDocument();
+  });
+
   it("submits a durable stop command from the active run controls", async () => {
     const user = userEvent.setup();
     const fetchMock = configureWorkspaceApi();
@@ -695,6 +728,43 @@ function workspaceResponse(): ProjectWorkspace {
         workflow_name: "story_blueprint",
       },
     ],
+  };
+}
+
+function workspaceWithRunningProduction(): ProjectWorkspace {
+  const workspace = workspaceResponse();
+  const blueprint = workspace.workflow_runs[0];
+  if (!blueprint) {
+    throw new Error("The workspace fixture requires a Blueprint run.");
+  }
+  const approvedBlueprint = {
+    ...blueprint,
+    active_interrupt_id: null,
+    completed_at: "2026-07-23T10:00:01Z",
+    pause_reason: null,
+    status: "succeeded" as const,
+    updated_at: "2026-07-23T10:00:01Z",
+  };
+  const production = {
+    ...approvedBlueprint,
+    completed_at: null,
+    current_node: "draft",
+    graph_version: "2",
+    id: productionRunId,
+    parent_workflow_run_id: runId,
+    retryable_nodes: [],
+    status: "running" as const,
+    updated_at: "2026-07-23T10:00:02Z",
+    workflow_name: "scene_production",
+  };
+  return {
+    ...workspace,
+    project: {
+      ...workspace.project,
+      latest_workflow_run_id: productionRunId,
+      latest_workflow_status: "running",
+    },
+    workflow_runs: [production, approvedBlueprint],
   };
 }
 
