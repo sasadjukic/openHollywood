@@ -27,7 +27,7 @@ from open_hollywood_engine.workflows.dialogue_contracts import (
 
 SCENE_PRODUCTION_WORKFLOW_NAME = "scene_production"
 SCENE_PRODUCTION_GRAPH_VERSION = "2"
-SCENE_PRODUCTION_PROMPT_TEMPLATE_VERSION = "1"
+SCENE_PRODUCTION_PROMPT_TEMPLATE_VERSION = "7"
 DEFAULT_PRODUCTION_NODE_TIMEOUT_SECONDS = 900
 DEFAULT_MAX_REVISION_CYCLES = 2
 MAX_REVISION_CYCLES = 5
@@ -291,6 +291,7 @@ class SceneWritingTask:
     revision_number: int
     previous_draft: ArtifactReference | None = None
     previous_critique: ArtifactReference | None = None
+    previous_continuity: ArtifactReference | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -345,6 +346,7 @@ class ContinuityCheckTask:
     draft: ArtifactReference
     accepted_units: tuple[ArtifactReference, ...]
     revision_number: int
+    previous_continuity: ArtifactReference | None = None
 
 
 @dataclass(frozen=True, slots=True)
