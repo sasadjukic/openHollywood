@@ -23,6 +23,7 @@ from open_hollywood_api.persistence.models import (
 )
 from open_hollywood_api.services.evaluation_execution import (
     DirectBaselineBenchmarkExecutor,
+    automatic_hard_gates,
 )
 from open_hollywood_api.services.model_profiles import (
     BUILTIN_PROFILE_IDS,
@@ -47,6 +48,9 @@ from open_hollywood_engine.evaluations import (
     HardGate,
     HumanComparisonReview,
     HumanReviewBundle,
+    TargetWordCount,
+    WordCountAdherence,
+    WordCountStatus,
     build_benchmark_plan,
     build_blind_bundle,
     build_campaign_evidence_archive,
@@ -104,14 +108,15 @@ CAMPAIGN_ID = UUID("aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa")
 class FixtureExecutor:
     """Deterministic output boundary for orchestration tests."""
 
-    def __init__(self, *, fail_case_id: UUID | None = None) -> None:
+    def __init__(self, *, fail_case_id: UUID | None = None, word_count: int = 2_500) -> None:
         self.fail_case_id = fail_case_id
+        self.word_count = word_count
         self.calls: list[UUID] = []
 
     async def execute(
         self,
         case: BenchmarkCase,
-        _prompt: BenchmarkPrompt,
+        prompt: BenchmarkPrompt,
     ) -> BenchmarkOutput:
         self.calls.append(case.case_id)
         if case.case_id == self.fail_case_id:
@@ -119,12 +124,17 @@ class FixtureExecutor:
                 "fixture_failure",
                 "The fixture rejected this case.",
             )
-        content = " ".join(("story",) * 2_499 + (str(case.case_id),))
+        content = " ".join(("story",) * (self.word_count - 1) + (f"{case.case_id}.",))
+        adherence = WordCountAdherence.measure(
+            target=prompt.target_word_count,
+            actual=self.word_count,
+        )
         return BenchmarkOutput(
             title="Blind benchmark story",
             content=content,
             content_sha256=hashlib.sha256(content.encode()).hexdigest(),
             word_count=len(content.split()),
+            word_count_adherence=adherence,
             workflow_run_id=uuid5(case.case_id, "workflow"),
             artifact_version_ids=(uuid5(case.case_id, "artifact"),),
             invocation_ids=(uuid5(case.case_id, "invocation"),),
@@ -287,6 +297,56 @@ def test_frozen_v01_corpus_has_twelve_versioned_prompts() -> None:
         prompt.target_word_count.minimum == 2_500 and prompt.target_word_count.maximum == 5_000
         for prompt in corpus.prompts
     )
+
+
+def test_word_count_target_is_advisory_and_separate_from_hard_gates() -> None:
+    target = TargetWordCount(minimum=2_500, maximum=5_000)
+
+    adherence = WordCountAdherence.measure(target=target, actual=5_425)
+    gates = automatic_hard_gates(
+        content="A complete short-prose story ends here.",
+        finish_reason="stop",
+    )
+
+    assert adherence.policy == "advisory"
+    assert adherence.status is WordCountStatus.OVER_TARGET
+    assert adherence.deviation_words == 425
+    assert gates[HardGate.COMPLETE] is True
+    assert gates[HardGate.TARGET_FORMAT_VALID] is None
+    assert gates[HardGate.ENDING_NOT_TRUNCATED] is True
+
+
+@pytest.mark.anyio
+async def test_plan_accepts_complete_output_above_advisory_word_target(
+    benchmark_plan: tuple[BenchmarkCorpus, BenchmarkPlan],
+) -> None:
+    corpus, plan = benchmark_plan
+    case = plan.cases[0]
+
+    report = await run_benchmark_plan(
+        plan=plan,
+        corpus=corpus,
+        executor=FixtureExecutor(word_count=5_425),
+        case_ids=frozenset({case.case_id}),
+    )
+
+    result = report.results[0]
+    assert result.status is BenchmarkCaseStatus.SUCCEEDED
+    assert result.output is not None
+    assert result.output.word_count == 5_425
+    assert result.output.word_count_adherence is not None
+    assert result.output.word_count_adherence.status is WordCountStatus.OVER_TARGET
+    assert result.output.word_count_adherence.deviation_words == 425
+
+
+def test_word_count_adherence_rejects_incorrect_classification() -> None:
+    with pytest.raises(ValueError, match="does not match"):
+        WordCountAdherence(
+            target=TargetWordCount(minimum=2_500, maximum=5_000),
+            actual=5_425,
+            status=WordCountStatus.WITHIN_TARGET,
+            deviation_words=0,
+        )
 
 
 def test_plan_expands_every_prompt_into_baseline_and_three_profiles(
@@ -546,7 +606,12 @@ async def test_direct_baseline_persists_idempotent_model_and_artifact_lineage(
     assert len(gateway.requests) == 1
     assert first.title == "The Test Story"
     assert first.word_count == 2_500
+    assert first.word_count_adherence is not None
+    assert first.word_count_adherence.status is WordCountStatus.WITHIN_TARGET
+    assert first.word_count_adherence.deviation_words == 0
     assert first.estimated_cost_usd == "1.250000"
+    assert first.hard_gates[HardGate.COMPLETE] is True
+    assert first.hard_gates[HardGate.TARGET_FORMAT_VALID] is None
     assert first.hard_gates[HardGate.CENTRAL_FACTS_CONSISTENT] is None
     assert first.hard_gates[HardGate.MANDATORY_REQUIREMENTS_PRESENT] is None
     with create_session_factory(database_engine)() as session:
@@ -563,6 +628,13 @@ async def test_direct_baseline_persists_idempotent_model_and_artifact_lineage(
         assert [version.id for version in invocation.output_versions] == list(
             first.artifact_version_ids
         )
+        assert invocation.output_versions[0].content["word_count_adherence"] == {
+            "policy": "advisory",
+            "target": {"minimum": 2_500, "maximum": 5_000},
+            "actual": 2_500,
+            "status": "within_target",
+            "deviation_words": 0,
+        }
 
 
 @pytest.mark.anyio
@@ -792,6 +864,7 @@ async def test_review_csv_round_trip_is_bound_to_exact_public_packet(
 
     assert review_bundle.public_bundle_sha256 == answer_key.public_bundle_sha256
     assert "Do events follow convincingly" in guide
+    assert "word-count range is advisory, not a hard gate" in guide
     assert answer_key.public_bundle_sha256 in guide
     assert len(review_bundle.reviews) == 1
     assert summary.human_review_count == 1

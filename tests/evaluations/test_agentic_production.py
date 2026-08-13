@@ -14,6 +14,7 @@ import pytest
 from open_hollywood_api.persistence.database import create_session_factory
 from open_hollywood_api.persistence.models import (
     AgentInvocation,
+    ArtifactVersion,
     InvocationStatus,
     RunStatus,
     WorkflowRun,
@@ -71,7 +72,10 @@ from open_hollywood_engine.evaluations import (
     BenchmarkPlan,
     BenchmarkProfileSnapshot,
     BenchmarkSystem,
+    HardGate,
+    WordCountStatus,
     build_benchmark_plan,
+    canonical_sha256,
     load_benchmark_corpus,
     parse_blueprint_review_csv,
     render_blueprint_review_csv,
@@ -94,7 +98,7 @@ from open_hollywood_engine.workflows import (
     BlueprintHumanDecision,
     RetryableSceneProductionError,
 )
-from sqlalchemy import Engine, func, select
+from sqlalchemy import Engine, func, select, update
 
 from scripts.evaluation_harness import AtomicJsonReportCheckpoint
 from tests.evaluations.test_agentic_blueprint import (
@@ -1330,11 +1334,36 @@ async def test_approved_blueprint_runs_durable_production_and_replays(
     output = await case_executor.execute(case, prompt)
     output_replay = await case_executor.execute(case, prompt)
 
+    with session_factory.begin() as session:
+        story_version = session.get(ArtifactVersion, output.artifact_version_ids[-1])
+        assert story_version is not None
+        legacy_content = dict(story_version.content)
+        legacy_content.pop("word_count_adherence")
+        legacy_gates = dict(legacy_content["hard_gates"])
+        legacy_gates[HardGate.COMPLETE.value] = False
+        legacy_gates[HardGate.TARGET_FORMAT_VALID.value] = False
+        legacy_content["hard_gates"] = legacy_gates
+        # Simulate a historical immutable row created before advisory measurements existed.
+        session.execute(
+            update(ArtifactVersion)
+            .where(ArtifactVersion.id == story_version.id)
+            .values(
+                content=legacy_content,
+                content_sha256=canonical_sha256(legacy_content),
+            )
+        )
+    legacy_artifact_replay = await case_executor.execute(case, prompt)
+
     assert output == output_replay
+    assert output == legacy_artifact_replay
     assert output.workflow_run_id == execution.workflow_run_id
     assert len(output.invocation_ids) == 19
     assert len(output.artifact_version_ids) == 6
     assert output.content.count("\n\n") == 2
+    assert output.word_count_adherence is not None
+    assert output.word_count_adherence.status is WordCountStatus.UNDER_TARGET
+    assert output.hard_gates[HardGate.COMPLETE] is True
+    assert output.hard_gates[HardGate.TARGET_FORMAT_VALID] is None
     assert len(gateway.requests) == request_count
 
 

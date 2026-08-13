@@ -157,6 +157,9 @@ def render_review_guide(
             "## Hard gates",
             "",
             "Enter `true` only when the statement holds; otherwise enter `false`.",
+            "The prompt's word-count range is advisory, not a hard gate. Judge excess or "
+            "insufficient development through pacing, structure, and prose quality; mark a hard "
+            "gate false only for the defect named by that gate.",
             "",
         ]
     )
