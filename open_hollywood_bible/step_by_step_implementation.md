@@ -181,6 +181,14 @@ every planned case has a terminal result, every blinded comparison has human rev
 `engine/open_hollywood_engine/models/routing.py`,
 `scripts/evaluation_harness.py`, and `tests/evaluations/`.
 
+The benchmark now treats its 2,500–5,000-word range as advisory creative
+guidance rather than a proxy for completion or short-prose format. Every new
+output records a validated non-gating adherence measurement, automatic
+completion checks only whether the document is present and ends normally, and
+human reviewers decide the short-prose format gate. Older resumable reports and
+immutable story artifacts remain readable; advisory deviation alone cannot turn
+a technically completed story into a failed case.
+
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 
 21. [ ] **Package the stable system with Tauri** and test crash/restart, offline, missing-model, invalid-key, provider-timeout, and low-disk-space behavior.

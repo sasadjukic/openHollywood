@@ -86,7 +86,7 @@ class HardGate(StrEnum):
 
 
 class TargetWordCount(EvaluationModel):
-    """Accepted complete-story length envelope."""
+    """Advisory complete-story length target."""
 
     minimum: int = Field(ge=1)
     maximum: int = Field(ge=1)
@@ -96,6 +96,57 @@ class TargetWordCount(EvaluationModel):
         if self.minimum > self.maximum:
             raise ValueError("minimum word count must not exceed maximum")
         return self
+
+
+class WordCountStatus(StrEnum):
+    """Observed position relative to an advisory word-count target."""
+
+    UNDER_TARGET = "under_target"
+    WITHIN_TARGET = "within_target"
+    OVER_TARGET = "over_target"
+
+
+class WordCountAdherence(EvaluationModel):
+    """Non-gating measurement of one output against its advisory target."""
+
+    policy: Literal["advisory"] = "advisory"
+    target: TargetWordCount
+    actual: int = Field(ge=1)
+    status: WordCountStatus
+    deviation_words: int = Field(ge=0)
+
+    @model_validator(mode="after")
+    def validate_measurement(self) -> Self:
+        expected_status, expected_deviation = self._expected()
+        if self.status is not expected_status or self.deviation_words != expected_deviation:
+            raise ValueError("word-count adherence does not match its target and actual count")
+        return self
+
+    @classmethod
+    def measure(cls, *, target: TargetWordCount, actual: int) -> WordCountAdherence:
+        """Measure an actual count without turning the preference into a hard gate."""
+        if actual < target.minimum:
+            status = WordCountStatus.UNDER_TARGET
+            deviation = target.minimum - actual
+        elif actual > target.maximum:
+            status = WordCountStatus.OVER_TARGET
+            deviation = actual - target.maximum
+        else:
+            status = WordCountStatus.WITHIN_TARGET
+            deviation = 0
+        return cls(
+            target=target,
+            actual=actual,
+            status=status,
+            deviation_words=deviation,
+        )
+
+    def _expected(self) -> tuple[WordCountStatus, int]:
+        if self.actual < self.target.minimum:
+            return WordCountStatus.UNDER_TARGET, self.target.minimum - self.actual
+        if self.actual > self.target.maximum:
+            return WordCountStatus.OVER_TARGET, self.actual - self.target.maximum
+        return WordCountStatus.WITHIN_TARGET, 0
 
 
 class BenchmarkPrompt(EvaluationModel):
@@ -283,6 +334,7 @@ class BenchmarkOutput(EvaluationModel):
     content: NonEmptyText
     content_sha256: Sha256
     word_count: int = Field(ge=1)
+    word_count_adherence: WordCountAdherence | None = None
     workflow_run_id: UUID
     artifact_version_ids: tuple[UUID, ...] = Field(min_length=1)
     invocation_ids: tuple[UUID, ...] = Field(min_length=1)
@@ -298,6 +350,11 @@ class BenchmarkOutput(EvaluationModel):
             raise ValueError("benchmark output content digest does not match")
         if len(self.content.split()) != self.word_count:
             raise ValueError("benchmark output word count does not match its content")
+        if (
+            self.word_count_adherence is not None
+            and self.word_count_adherence.actual != self.word_count
+        ):
+            raise ValueError("benchmark word-count adherence does not match its output")
         if len(set(self.artifact_version_ids)) != len(self.artifact_version_ids):
             raise ValueError("benchmark artifact version IDs must be unique")
         if len(set(self.invocation_ids)) != len(self.invocation_ids):

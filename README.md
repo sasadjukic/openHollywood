@@ -186,6 +186,12 @@ and cross-document lineage are independently reverified. The formal
 Local/Cloud/Hybrid campaign and actual blind human reviews remain pending, so
 Step 19 is not yet marked complete.
 
+Benchmark word-count ranges are advisory creative targets. New outputs persist a
+non-gating adherence measurement with the target, actual count, status, and word
+deviation. Automatic completion reflects a finished, non-truncated document,
+while requested short-prose format remains a human hard-gate judgment; merely
+falling outside the preferred range cannot fail either gate.
+
 The v0.1 target is deliberately narrow: short prose fiction, local-first
 storage, optional local/cloud/hybrid inference, and one mandatory story
 blueprint approval before autonomous drafting.

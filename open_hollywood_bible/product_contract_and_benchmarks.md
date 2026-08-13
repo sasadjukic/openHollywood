@@ -8,6 +8,14 @@ Start with one format:
 
 > Short prose fiction: 2,500–5,000 words, 3–8 scenes, and roughly 2–5 significant characters.
 
+The word range is an advisory creative target, not an automatic quality or
+completion gate. Every completed output records its actual count, target, status
+(`under_target`, `within_target`, or `over_target`), and distance from the nearest
+target boundary. A story outside the range remains eligible for human review and
+can pass when it is complete short prose of sufficient quality. Only wording that
+explicitly declares a hard maximum or minimum creates a strict length constraint;
+runtime token, context, and cost ceilings remain separate operational limits.
+
 This is the best first test because it exercises the entire creative chain:
 
 - Interpreting a sparse premise
@@ -221,7 +229,8 @@ A story fails regardless of average score if it:
 - Contradicts a central established fact
 - Omits a mandatory prompt requirement
 - Contains placeholders or model commentary
-- Breaks the target format
+- Breaks the target format (for v0.1, it is not complete short prose fiction;
+  advisory word-count deviation alone does not break format)
 - Ends because the token limit was reached
 - Incorporates critic notes into the story as prose
 

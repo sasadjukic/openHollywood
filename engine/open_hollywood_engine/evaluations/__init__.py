@@ -49,6 +49,8 @@ from open_hollywood_engine.evaluations.contracts import (
     HumanComparisonReview,
     HumanReviewBundle,
     TargetWordCount,
+    WordCountAdherence,
+    WordCountStatus,
     canonical_sha256,
 )
 from open_hollywood_engine.evaluations.corpus import (
@@ -134,6 +136,8 @@ __all__ = [
     "HumanComparisonReview",
     "HumanReviewBundle",
     "TargetWordCount",
+    "WordCountAdherence",
+    "WordCountStatus",
     "build_benchmark_plan",
     "build_blind_bundle",
     "build_campaign_evidence_archive",

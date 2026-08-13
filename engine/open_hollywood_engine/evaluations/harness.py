@@ -15,7 +15,6 @@ from open_hollywood_engine.evaluations.contracts import (
     BenchmarkPlan,
     BenchmarkPrompt,
     BenchmarkRunReport,
-    HardGate,
 )
 
 
@@ -132,12 +131,11 @@ def _validate_output_for_prompt(
     output: BenchmarkOutput,
     prompt: BenchmarkPrompt,
 ) -> None:
-    target = prompt.target_word_count
-    within_target = target.minimum <= output.word_count <= target.maximum
-    if output.hard_gates[HardGate.TARGET_FORMAT_VALID] is not within_target:
-        raise ValueError(
-            "target-format hard gate disagrees with the frozen prompt word-count range"
-        )
+    adherence = output.word_count_adherence
+    if adherence is None:
+        raise ValueError("benchmark output must report advisory word-count adherence")
+    if adherence.target != prompt.target_word_count:
+        raise ValueError("word-count adherence does not match the frozen prompt target")
 
 
 def _require_matching_corpus(plan: BenchmarkPlan, corpus: BenchmarkCorpus) -> None:

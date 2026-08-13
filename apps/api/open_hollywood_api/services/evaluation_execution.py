@@ -15,6 +15,7 @@ from open_hollywood_engine.evaluations import (
     BenchmarkPrompt,
     BenchmarkSystem,
     HardGate,
+    WordCountAdherence,
     canonical_sha256,
 )
 from open_hollywood_engine.models import (
@@ -91,7 +92,7 @@ class DirectBaselineBenchmarkExecutor:
                 f"No runtime gateway is configured for provider {target.provider!r}.",
             )
 
-        existing = self._load_succeeded_output(case)
+        existing = self._load_succeeded_output(case, prompt)
         if existing is not None:
             return existing
 
@@ -295,10 +296,12 @@ class DirectBaselineBenchmarkExecutor:
         response: ModelResponse,
     ) -> BenchmarkOutput:
         word_count = len(content.split())
+        word_count_adherence = WordCountAdherence.measure(
+            target=prompt.target_word_count,
+            actual=word_count,
+        )
         hard_gates = automatic_hard_gates(
             content=content,
-            word_count=word_count,
-            prompt=prompt,
             finish_reason=response.finish_reason,
         )
         content_sha256 = hashlib.sha256(content.encode("utf-8")).hexdigest()
@@ -347,6 +350,7 @@ class DirectBaselineBenchmarkExecutor:
                 "content": content,
                 "content_sha256": content_sha256,
                 "word_count": word_count,
+                "word_count_adherence": word_count_adherence.model_dump(mode="json"),
                 "hard_gates": {gate.value: value for gate, value in hard_gates.items()},
             }
             version = ArtifactVersion(
@@ -384,6 +388,7 @@ class DirectBaselineBenchmarkExecutor:
                 content=content,
                 content_sha256=content_sha256,
                 word_count=word_count,
+                word_count_adherence=word_count_adherence,
                 workflow_run_id=run.id,
                 artifact_version_ids=(version.id,),
                 invocation_ids=(invocation.id,),
@@ -426,7 +431,11 @@ class DirectBaselineBenchmarkExecutor:
                     )
                 )
 
-    def _load_succeeded_output(self, case: BenchmarkCase) -> BenchmarkOutput | None:
+    def _load_succeeded_output(
+        self,
+        case: BenchmarkCase,
+        prompt: BenchmarkPrompt,
+    ) -> BenchmarkOutput | None:
         run_id = uuid5(case.case_id, "benchmark-workflow")
         with self._session_factory() as session:
             run = session.get(WorkflowRun, run_id)
@@ -455,11 +464,22 @@ class DirectBaselineBenchmarkExecutor:
                 raise RuntimeError("succeeded benchmark run has incomplete persisted lineage")
             value = version.content
             gates = {HardGate(key): gate_value for key, gate_value in value["hard_gates"].items()}
+            content = str(value["content"])
+            gates[HardGate.COMPLETE] = bool(content.strip()) and (
+                gates[HardGate.ENDING_NOT_TRUNCATED] is True
+            )
+            gates[HardGate.TARGET_FORMAT_VALID] = None
+            word_count = int(value["word_count"])
+            adherence = WordCountAdherence.measure(
+                target=prompt.target_word_count,
+                actual=word_count,
+            )
             return BenchmarkOutput(
                 title=str(value["title"]),
-                content=str(value["content"]),
+                content=content,
                 content_sha256=str(value["content_sha256"]),
-                word_count=int(value["word_count"]),
+                word_count=word_count,
+                word_count_adherence=adherence,
                 workflow_run_id=run.id,
                 artifact_version_ids=(version.id,),
                 invocation_ids=tuple(invocation.id for invocation in invocations),
@@ -562,13 +582,8 @@ def _parse_story(response_content: str, prompt: BenchmarkPrompt) -> tuple[str, s
 def automatic_hard_gates(
     *,
     content: str,
-    word_count: int,
-    prompt: BenchmarkPrompt,
     finish_reason: str | None,
 ) -> dict[HardGate, bool | None]:
-    target_valid = (
-        prompt.target_word_count.minimum <= word_count <= prompt.target_word_count.maximum
-    )
     ending_not_truncated = finish_reason == "stop" and content.rstrip().endswith(
         (".", "!", "?", "”", '"', "'")
     )
@@ -581,11 +596,11 @@ def automatic_hard_gates(
         marker in folded for marker in ("critic note:", "revision note:", "editor note:")
     )
     return {
-        HardGate.COMPLETE: target_valid and ending_not_truncated,
+        HardGate.COMPLETE: bool(content.strip()) and ending_not_truncated,
         HardGate.CENTRAL_FACTS_CONSISTENT: None,
         HardGate.MANDATORY_REQUIREMENTS_PRESENT: None,
         HardGate.NO_PLACEHOLDERS_OR_MODEL_COMMENTARY: no_placeholders,
-        HardGate.TARGET_FORMAT_VALID: target_valid,
+        HardGate.TARGET_FORMAT_VALID: None,
         HardGate.ENDING_NOT_TRUNCATED: ending_not_truncated,
         HardGate.NO_CRITIC_NOTES_IN_PROSE: no_critic_notes,
     }

@@ -16,6 +16,7 @@ from open_hollywood_engine.evaluations import (
     BenchmarkPrompt,
     BenchmarkSystem,
     HardGate,
+    WordCountAdherence,
     canonical_sha256,
 )
 from open_hollywood_engine.models import ModelGateway
@@ -372,10 +373,12 @@ class AgenticBenchmarkCaseExecutor:
             )
             title = f"Benchmark Story {prompt.prompt_id}"[:200]
             word_count = len(content.split())
+            word_count_adherence = WordCountAdherence.measure(
+                target=prompt.target_word_count,
+                actual=word_count,
+            )
             gates = automatic_hard_gates(
                 content=content,
-                word_count=word_count,
-                prompt=prompt,
                 finish_reason="stop",
             )
             gates[HardGate.CENTRAL_FACTS_CONSISTENT] = True
@@ -406,6 +409,7 @@ class AgenticBenchmarkCaseExecutor:
                 "content": content,
                 "content_sha256": content_sha256,
                 "word_count": word_count,
+                "word_count_adherence": word_count_adherence.model_dump(mode="json"),
                 "hard_gates": {gate.value: value for gate, value in gates.items()},
                 "accepted_scene_version_ids": [str(version.id) for version in scene_versions],
                 "final_story_bible_version_id": str(production_result.final_story_bible.version_id),
@@ -414,6 +418,20 @@ class AgenticBenchmarkCaseExecutor:
                 case.case_id,
                 f"agentic-benchmark-story:{content_sha256}",
             )
+            legacy_artifact_content = {
+                key: value
+                for key, value in artifact_content.items()
+                if key != "word_count_adherence"
+            }
+            legacy_gates = {gate.value: value for gate, value in gates.items()}
+            legacy_target_valid = (
+                prompt.target_word_count.minimum <= word_count <= prompt.target_word_count.maximum
+            )
+            legacy_gates[HardGate.COMPLETE.value] = legacy_target_valid and (
+                gates[HardGate.ENDING_NOT_TRUNCATED] is True
+            )
+            legacy_gates[HardGate.TARGET_FORMAT_VALID.value] = legacy_target_valid
+            legacy_artifact_content["hard_gates"] = legacy_gates
             story_version = session.get(ArtifactVersion, story_version_id)
             if story_version is None:
                 story_version = ArtifactVersion(
@@ -427,9 +445,9 @@ class AgenticBenchmarkCaseExecutor:
                 )
                 session.add(story_version)
                 session.flush()
-            elif (
-                story_version.artifact_id != story_artifact.id
-                or story_version.content != artifact_content
+            elif story_version.artifact_id != story_artifact.id or not (
+                story_version.content == artifact_content
+                or story_version.content == legacy_artifact_content
             ):
                 raise BenchmarkCaseExecutionError(
                     "agentic_lineage_conflict",
@@ -471,6 +489,7 @@ class AgenticBenchmarkCaseExecutor:
                 content=content,
                 content_sha256=content_sha256,
                 word_count=word_count,
+                word_count_adherence=word_count_adherence,
                 workflow_run_id=production_run.id,
                 artifact_version_ids=artifact_version_ids,
                 invocation_ids=tuple(row.id for row in invocation_rows),
