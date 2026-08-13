@@ -169,7 +169,11 @@ class BlueprintFixtureGateway:
         return ModelResponse(
             provider=self.provider,
             model_identifier=request.model_identifier,
-            deployment=ModelDeployment.LOCAL,
+            deployment=(
+                ModelDeployment.CLOUD
+                if request.model_identifier == "cloud-fixture"
+                else ModelDeployment.LOCAL
+            ),
             content=content,
             thinking=None,
             finish_reason="stop",

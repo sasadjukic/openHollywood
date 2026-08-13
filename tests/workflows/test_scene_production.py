@@ -96,6 +96,7 @@ class FakeProductionExecutor(SceneProductionExecutor):
         self.integration_tasks: list[DialogueIntegrationTask] = []
         self.critique_tasks: list[SceneCritiqueTask] = []
         self.continuity_tasks: list[ContinuityCheckTask] = []
+        self.continuity_artifacts: list[ArtifactReference] = []
         self.story_bible_tasks: list[StoryBibleUpdateTask] = []
 
     async def write(self, task: SceneWritingTask) -> SceneDraftResult:
@@ -188,12 +189,14 @@ class FakeProductionExecutor(SceneProductionExecutor):
             checked_categories=tuple(ContinuityCategory),
             findings=findings,
         )
+        artifact = self._reference(
+            ArtifactKind.CONTINUITY_REPORT,
+            f"{task.unit.unit_id}-continuity",
+        )
+        self.continuity_artifacts.append(artifact)
         return ContinuityCheckResult(
             report=report,
-            artifact=self._reference(
-                ArtifactKind.CONTINUITY_REPORT,
-                f"{task.unit.unit_id}-continuity",
-            ),
+            artifact=artifact,
         )
 
     async def update_story_bible(
@@ -477,6 +480,14 @@ async def test_blocking_continuity_finding_uses_bounded_revision_before_update()
     assert executor.calls.count("continuity:scene-1:0") == 1
     assert executor.calls.count("continuity:scene-1:1") == 1
     assert executor.calls.count("story_bible:scene-1") == 1
+    revision_task = next(
+        task
+        for task in executor.writing_tasks
+        if task.unit.unit_id == "scene-1" and task.revision_number == 1
+    )
+    assert revision_task.previous_continuity == executor.continuity_artifacts[0]
+    assert executor.continuity_tasks[0].previous_continuity is None
+    assert executor.continuity_tasks[1].previous_continuity == executor.continuity_artifacts[0]
     assert result.accepted_units[0].revision_cycles_used == 1
 
 

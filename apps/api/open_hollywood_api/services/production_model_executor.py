@@ -34,6 +34,7 @@ from open_hollywood_engine.models import (
     ModelGatewayError,
     ModelMessage,
     ModelProfileConfiguration,
+    ModelProfileMode,
     ModelRequest,
     ModelResponse,
     ModelSelection,
@@ -81,6 +82,41 @@ class _Operation(StrEnum):
     STORY_BIBLE_UPDATE = "story_bible_update"
 
 
+_MAX_SAFE_STRUCTURED_FAILURE_DETAIL_CHARS = 500
+_CONTINUITY_RECHECK_STAGNATION_ERROR_CODE = "continuity_recheck_stagnated"
+_CONTINUITY_FINDING_RESOLUTION_REQUIREMENT = (
+    "Every finding with severity 'error' or 'blocking' must include a non-empty, "
+    "concrete recommended_resolution. The application derives blocks_approval=true "
+    "for both severities. Findings with severity 'info' or 'warning' may use null only "
+    "when no repair is needed."
+)
+_CONTINUITY_REQUIREMENT_SCOPE = (
+    "Treat frozen benchmark constraints as story-wide completion gates unless the exact "
+    "current Scene Plan explicitly assigns one to this scene. Do not require every scene "
+    "to complete the protagonist's story-wide goal. Treat the Scene Plan goal as a "
+    "scene-local character objective whose success or failure is determined jointly by "
+    "the Plan's purpose, turning_point, outcome, and exit_state; never contradict the "
+    "planned outcome or exit_state merely to make the local goal succeed."
+)
+_CONTINUITY_RECHECK_REQUIREMENT = (
+    "When a previous Continuity Report is supplied, audit every prior error or blocking "
+    "finding against the revised draft before reporting anything new. Give every prior "
+    "blocking/error ID exactly one disposition: omit it from findings only when resolved; "
+    "otherwise preserve its ID and compatible recommended_resolution, cite fresh exact "
+    "evidence from the revised draft, and explain why the attempted repair remains "
+    "insufficient. Repeating the prior judgment, evidence, and resolution unchanged is "
+    "invalid. Do not replace prior guidance with contradictory guidance "
+    "unless new hard evidence from an exact Scene Plan or Story Bible field proves the prior "
+    "repair invalid, and then cite that field and conflict in evidence. Report a new blocking "
+    "defect only when the revision caused or newly exposed it, with evidence explaining why "
+    "it was not actionable in the previous report."
+)
+
+
+class ContinuityRecheckStagnationError(ValueError):
+    """A continuity re-check copied an unresolved judgment without new analysis."""
+
+
 _OUTPUT_MODELS: Mapping[_Operation, type[BaseModel]] = {
     _Operation.WRITE: SceneDraft,
     _Operation.CRITIQUE: Critique,
@@ -92,7 +128,9 @@ _INSTRUCTIONS: Mapping[_Operation, str] = {
     _Operation.WRITE: (
         "Write one complete short-prose scene that follows the exact Scene Plan, "
         "approved Blueprint, current canonical Story Bible, and prior accepted scenes. "
-        "On revision, address the supplied critique without changing scene identity."
+        "On revision, address the supplied critique and, when present, the exact blocking "
+        "Continuity Report including each finding's recommended_resolution, without "
+        "changing scene identity."
     ),
     _Operation.CRITIQUE: (
         "Independently evaluate the exact scene draft against its Scene Plan, the "
@@ -100,7 +138,9 @@ _INSTRUCTIONS: Mapping[_Operation, str] = {
     ),
     _Operation.CONTINUITY: (
         "Check the exact scene draft against the exact canonical Story Bible and Scene "
-        "Plan. Cover every continuity category in canonical enum order."
+        "Plan. Cover every continuity category in canonical enum order. "
+        f"{_CONTINUITY_FINDING_RESOLUTION_REQUIREMENT} "
+        f"{_CONTINUITY_REQUIREMENT_SCOPE}"
     ),
     _Operation.STORY_BIBLE_UPDATE: (
         "Return only the typed delta established by the accepted scene. Preserve the "
@@ -290,10 +330,15 @@ class ProfileRoutedProductionExecutor(SceneProductionExecutor):
             raise
         except (ValueError, json.JSONDecodeError, StoryBibleInvariantError) as error:
             diagnostic = _structured_failure_message(error, response)
+            error_code = (
+                _CONTINUITY_RECHECK_STAGNATION_ERROR_CODE
+                if isinstance(error, ContinuityRecheckStagnationError)
+                else "schema_validation_failed"
+            )
             await asyncio.to_thread(
                 self._fail_invocation,
                 invocation_id,
-                "schema_validation_failed",
+                error_code,
                 diagnostic,
                 False,
                 response,
@@ -331,11 +376,6 @@ class ProfileRoutedProductionExecutor(SceneProductionExecutor):
                 )
             if not configuration.is_complete:
                 raise SceneProductionError("scene-production model profile is incomplete")
-            selection = configuration.selection_for(specialist_role)
-            if selection.provider != self._gateway.provider:
-                raise SceneProductionError(
-                    f"no runtime gateway is configured for provider {selection.provider!r}"
-                )
             budget = RunBudget.from_data(
                 run.budget,
                 default_max_graph_steps=production.max_graph_steps,
@@ -370,6 +410,17 @@ class ProfileRoutedProductionExecutor(SceneProductionExecutor):
                 specialist_role=specialist_role,
                 task_fingerprint=fingerprint,
             )
+            selection, fallback_history = _select_production_model(
+                operation=operation,
+                specialist_role=specialist_role,
+                configuration=configuration,
+                attempt_number=attempt_number,
+                previous_failure=previous_failure,
+            )
+            if selection.provider != self._gateway.provider:
+                raise SceneProductionError(
+                    f"no runtime gateway is configured for provider {selection.provider!r}"
+                )
             return _Execution(
                 workflow_run_id=run.id,
                 project_id=run.project_id,
@@ -387,6 +438,7 @@ class ProfileRoutedProductionExecutor(SceneProductionExecutor):
                 revision_number=_revision_number(task),
                 attempt_number=attempt_number,
                 previous_failure=previous_failure,
+                fallback_history=fallback_history,
             )
 
     def _replay(
@@ -456,6 +508,7 @@ class ProfileRoutedProductionExecutor(SceneProductionExecutor):
                 model_identifier=execution.selection.model_identifier,
                 status=InvocationStatus.RUNNING,
                 retry_count=execution.attempt_number - 1,
+                fallback_history=[dict(item) for item in execution.fallback_history],
                 request_settings={
                     "deployment": execution.selection.deployment.value,
                     "graph_version": SCENE_PRODUCTION_GRAPH_VERSION,
@@ -466,6 +519,7 @@ class ProfileRoutedProductionExecutor(SceneProductionExecutor):
                     "schema_enforced": (execution.selection.deployment is ModelDeployment.LOCAL),
                     "task_fingerprint": execution.task_fingerprint,
                     "attempt_number": execution.attempt_number,
+                    "fallback_applied": bool(execution.fallback_history),
                     "temperature": _temperature(operation),
                     "top_p": 0.95,
                     "thinking": False,
@@ -648,12 +702,29 @@ def _structured_failure_message(
         )[:12]:
             location = ".".join(str(value) for value in item["loc"]) or "$"
             locations.append(f"{location}:{item['type']}:{item['msg']}")
+    elif isinstance(error, (StoryBibleInvariantError, ContinuityRecheckStagnationError)):
+        detail = _safe_structured_failure_detail(str(error))
+        locations.append(
+            f"$:{type(error).__name__}:{detail}"
+            if detail is not None
+            else f"$:{type(error).__name__}"
+        )
     else:
         locations.append(f"$:{type(error).__name__}")
     return (
         "Structured output validation failed "
         f"(provider_finish_reason={response.finish_reason}): {', '.join(locations)}."
     )
+
+
+def _safe_structured_failure_detail(message: str) -> str | None:
+    """Bound deterministic validation detail before persistence and model retry."""
+    normalized = " ".join(message.split())
+    if not normalized:
+        return None
+    if len(normalized) <= _MAX_SAFE_STRUCTURED_FAILURE_DETAIL_CHARS:
+        return normalized
+    return f"{normalized[: _MAX_SAFE_STRUCTURED_FAILURE_DETAIL_CHARS - 3]}..."
 
 
 @dataclass(frozen=True, slots=True)
@@ -674,6 +745,46 @@ class _Execution:
     revision_number: int
     attempt_number: int
     previous_failure: dict[str, object] | None
+    fallback_history: tuple[dict[str, object], ...]
+
+
+def _select_production_model(
+    *,
+    operation: _Operation,
+    specialist_role: str,
+    configuration: ModelProfileConfiguration,
+    attempt_number: int,
+    previous_failure: Mapping[str, object] | None,
+) -> tuple[ModelSelection, tuple[dict[str, object], ...]]:
+    """Escalate only a persisted Hybrid continuity-stagnation retry to cloud."""
+    primary = configuration.selection_for(specialist_role)
+    should_escalate = (
+        operation is _Operation.CONTINUITY
+        and specialist_role == "continuity_supervisor"
+        and configuration.mode is ModelProfileMode.HYBRID
+        and primary.deployment is ModelDeployment.LOCAL
+        and previous_failure is not None
+        and previous_failure.get("error_code") == _CONTINUITY_RECHECK_STAGNATION_ERROR_CODE
+    )
+    if not should_escalate:
+        return primary, ()
+
+    cloud = configuration.models[ModelDeployment.CLOUD]
+    if cloud is None:
+        raise SceneProductionError(
+            "Hybrid continuity escalation requires the frozen cloud model selection"
+        )
+    fallback = {
+        "reason": _CONTINUITY_RECHECK_STAGNATION_ERROR_CODE,
+        "attempt_number": attempt_number,
+        "from_provider": primary.provider,
+        "from_model_identifier": primary.model_identifier,
+        "from_deployment": primary.deployment.value,
+        "to_provider": cloud.provider,
+        "to_model_identifier": cloud.model_identifier,
+        "to_deployment": cloud.deployment.value,
+    }
+    return cloud, (fallback,)
 
 
 def _messages(
@@ -699,8 +810,32 @@ def _messages(
         "input_artifacts": execution.inputs,
         "output_schema": schema,
     }
+    previous_reports: tuple[dict[str, Any], ...] = ()
+    if operation is _Operation.CONTINUITY:
+        payload["output_requirements"] = {
+            "continuity_finding_resolution": (_CONTINUITY_FINDING_RESOLUTION_REQUIREMENT),
+            "requirement_scope": _CONTINUITY_REQUIREMENT_SCOPE,
+        }
+        previous_reports = tuple(
+            item
+            for item in execution.inputs
+            if item.get("artifact_kind") == ArtifactKind.CONTINUITY_REPORT.value
+        )
+        if previous_reports:
+            payload["continuity_recheck"] = {
+                "previous_report_version_ids": [
+                    item["artifact_version_id"] for item in previous_reports
+                ],
+                "verification_contract": _CONTINUITY_RECHECK_REQUIREMENT,
+            }
     if execution.previous_failure is not None:
-        payload["retry_context"] = execution.previous_failure
+        retry_context = dict(execution.previous_failure)
+        if operation is _Operation.CONTINUITY:
+            requirements = [_CONTINUITY_FINDING_RESOLUTION_REQUIREMENT]
+            if previous_reports:
+                requirements.append(_CONTINUITY_RECHECK_REQUIREMENT)
+            retry_context["required_correction"] = " ".join(requirements)
+        payload["retry_context"] = retry_context
     user = json.dumps(
         payload,
         ensure_ascii=False,
@@ -806,9 +941,16 @@ def _materialize_output_data(
         )
         findings = materialized.get("findings")
         if isinstance(findings, list):
+            prior_resolutions = _prior_continuity_resolutions(execution)
             materialized["findings"] = [
-                _materialize_continuity_finding(finding, scene_id) for finding in findings
+                _materialize_continuity_finding(
+                    finding,
+                    scene_id,
+                    prior_resolutions=prior_resolutions,
+                )
+                for finding in findings
             ]
+            _reject_stagnant_continuity_recheck(materialized["findings"], execution)
         return materialized
 
     update_task = cast(StoryBibleUpdateTask, task)
@@ -962,7 +1104,116 @@ def _new_prohibitions(
     return materialized
 
 
-def _materialize_continuity_finding(finding: object, scene_id: str) -> object:
+def _prior_continuity_resolutions(execution: _Execution) -> dict[str, str]:
+    """Return exact repair text from the single prior continuity report, if any."""
+    report = _prior_continuity_report(execution)
+    if report is None:
+        return {}
+    findings = report.get("findings")
+    if not isinstance(findings, list):
+        raise ValueError("prior continuity report findings are invalid")
+    resolutions: dict[str, str] = {}
+    for finding in findings:
+        if not isinstance(finding, dict):
+            continue
+        finding_id = finding.get("id")
+        resolution = finding.get("recommended_resolution")
+        if (
+            finding.get("severity") in {"error", "blocking"}
+            and isinstance(finding_id, str)
+            and isinstance(resolution, str)
+            and resolution.strip()
+        ):
+            resolutions[finding_id] = resolution
+    return resolutions
+
+
+def _reject_stagnant_continuity_recheck(
+    findings: list[object],
+    execution: _Execution,
+) -> None:
+    prior_report = _prior_continuity_report(execution)
+    if prior_report is None:
+        return
+    stagnant_ids = _stagnant_continuity_finding_ids(findings, prior_report)
+    if stagnant_ids:
+        raise ContinuityRecheckStagnationError(
+            "continuity re-check repeated blocking finding IDs without revised-draft "
+            f"analysis: {list(stagnant_ids)}; omit resolved IDs or cite fresh revised-draft "
+            "evidence and explain why each attempted repair remains insufficient"
+        )
+
+
+def _prior_continuity_report(execution: _Execution) -> dict[str, Any] | None:
+    reports = tuple(
+        item.get("content")
+        for item in execution.inputs
+        if item.get("artifact_kind") == ArtifactKind.CONTINUITY_REPORT.value
+    )
+    if len(reports) > 1:
+        raise ValueError("continuity re-check requires at most one prior report")
+    if not reports:
+        return None
+    report = reports[0]
+    if not isinstance(report, dict):
+        raise ValueError("prior continuity report content is invalid")
+    return report
+
+
+def _stagnant_continuity_finding_ids(
+    findings: list[object],
+    prior_report: Mapping[str, object],
+) -> tuple[str, ...]:
+    prior_findings = prior_report.get("findings")
+    if not isinstance(prior_findings, list):
+        raise ValueError("prior continuity report findings are invalid")
+    prior_by_id = {
+        finding["id"]: finding
+        for finding in prior_findings
+        if isinstance(finding, dict)
+        and isinstance(finding.get("id"), str)
+        and finding.get("severity") in {"error", "blocking"}
+    }
+    stagnant: list[str] = []
+    for finding in findings:
+        if (
+            not isinstance(finding, dict)
+            or finding.get("severity") not in {"error", "blocking"}
+            or not isinstance(finding.get("id"), str)
+        ):
+            continue
+        finding_id = cast(str, finding["id"])
+        prior = prior_by_id.get(finding_id)
+        if prior is not None and _continuity_judgment_signature(finding) == (
+            _continuity_judgment_signature(prior)
+        ):
+            stagnant.append(finding_id)
+    return tuple(stagnant)
+
+
+def _continuity_judgment_signature(finding: Mapping[str, object]) -> tuple[object, ...]:
+    evidence = finding.get("evidence")
+    return (
+        finding.get("severity"),
+        finding.get("category"),
+        _normalized_comparison_text(finding.get("summary")),
+        tuple(_normalized_comparison_text(item) for item in evidence if isinstance(item, str))
+        if isinstance(evidence, list)
+        else (),
+        _normalized_comparison_text(finding.get("recommended_resolution")),
+    )
+
+
+def _normalized_comparison_text(value: object) -> str | None:
+    return " ".join(value.split()) if isinstance(value, str) else None
+
+
+def _materialize_continuity_finding(
+    finding: object,
+    scene_id: str,
+    *,
+    prior_resolutions: Mapping[str, str] | None = None,
+) -> object:
     if not isinstance(finding, dict):
         return finding
     related_scene_ids = finding.get("related_scene_ids")
@@ -973,6 +1224,15 @@ def _materialize_continuity_finding(finding: object, scene_id: str) -> object:
     }
     if finding.get("severity") in {"error", "blocking"}:
         materialized["blocks_approval"] = True
+        resolution = finding.get("recommended_resolution")
+        finding_id = finding.get("id")
+        if (
+            (not isinstance(resolution, str) or not resolution.strip())
+            and isinstance(finding_id, str)
+            and prior_resolutions is not None
+            and finding_id in prior_resolutions
+        ):
+            materialized["recommended_resolution"] = prior_resolutions[finding_id]
     return materialized
 
 
@@ -1001,6 +1261,7 @@ def _writing_inputs(task: SceneWritingTask) -> tuple[ArtifactReference, ...]:
             *task.accepted_units,
             *((task.previous_draft,) if task.previous_draft is not None else ()),
             *((task.previous_critique,) if task.previous_critique is not None else ()),
+            *((task.previous_continuity,) if task.previous_continuity is not None else ()),
         )
     )
 
@@ -1024,6 +1285,7 @@ def _continuity_inputs(task: ContinuityCheckTask) -> tuple[ArtifactReference, ..
             task.story_bible,
             task.draft,
             *task.accepted_units,
+            *((task.previous_continuity,) if task.previous_continuity is not None else ()),
         )
     )
 

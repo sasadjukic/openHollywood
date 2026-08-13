@@ -119,6 +119,7 @@ class ProductionGraphState(DialogueGraphState, total=False):
     current_draft_artifact: DialogueArtifactReferenceState | None
     current_critique_artifact: DialogueArtifactReferenceState | None
     current_continuity_artifact: DialogueArtifactReferenceState | None
+    pending_continuity_artifact: DialogueArtifactReferenceState | None
     current_story_bible_update_artifact: DialogueArtifactReferenceState | None
     current_dialogue_runs: int
     current_acceptance_reason: str | None
@@ -165,6 +166,7 @@ def initial_production_state(production: SceneProductionInput) -> ProductionGrap
         "current_revision_number": 0,
         "current_dialogue_runs": 0,
         "current_acceptance_reason": None,
+        "pending_continuity_artifact": None,
         "revision_scheduled": False,
         "draft_artifacts": [],
         "critique_artifacts": [],
@@ -307,9 +309,21 @@ def _draft_node(
         accepted = _accepted_artifacts(state)
         previous_draft = _optional_artifact_from_state(state.get("current_draft_artifact"))
         previous_critique = _optional_artifact_from_state(state.get("current_critique_artifact"))
+        current_continuity = _optional_artifact_from_state(state.get("current_continuity_artifact"))
+        pending_continuity = _optional_artifact_from_state(state.get("pending_continuity_artifact"))
+        if (
+            current_continuity is not None
+            and pending_continuity is not None
+            and current_continuity != pending_continuity
+        ):
+            raise SceneProductionStateError(
+                "scene revision has conflicting continuity feedback artifacts"
+            )
+        previous_continuity = current_continuity or pending_continuity
         if revision_number == 0:
             previous_draft = None
             previous_critique = None
+            previous_continuity = None
         elif previous_draft is None or previous_critique is None:
             raise SceneProductionStateError(
                 "scene revision requires the previous draft and critique"
@@ -325,6 +339,7 @@ def _draft_node(
             revision_number=revision_number,
             previous_draft=previous_draft,
             previous_critique=previous_critique,
+            previous_continuity=previous_continuity,
         )
         result = await executor.write(task)
         _validate_draft(task.unit, revision_number, result, _all_inputs(task))
@@ -336,6 +351,14 @@ def _draft_node(
         draft_state = _artifact_to_state(result.artifact)
         update: dict[str, Any] = {
             "current_draft_artifact": draft_state,
+            # A blocking report is revision feedback for exactly one subsequent
+            # continuity re-check. Keep it pending through any intervening
+            # critic-only revision, while clearing the report accepted by the
+            # prior continuity node so it cannot be mistaken for a fresh pass.
+            "current_continuity_artifact": None,
+            "pending_continuity_artifact": (
+                _artifact_to_state(previous_continuity) if previous_continuity is not None else None
+            ),
             "draft_artifacts": [*state.get("draft_artifacts", []), draft_state],
         }
         if unit.dialogue_pass is not None:
@@ -489,6 +512,9 @@ def _continuity_node(
             draft=draft,
             accepted_units=_accepted_artifacts(state),
             revision_number=revision_number,
+            previous_continuity=_optional_artifact_from_state(
+                state.get("pending_continuity_artifact")
+            ),
         )
         result = await executor.check_continuity(task)
         _validate_continuity(task, result)
@@ -500,6 +526,7 @@ def _continuity_node(
         report_state = _artifact_to_state(result.artifact)
         update: dict[str, Any] = {
             "current_continuity_artifact": report_state,
+            "pending_continuity_artifact": None,
             "revision_scheduled": False,
             "continuity_artifacts": [
                 *state.get("continuity_artifacts", []),
@@ -621,6 +648,7 @@ def _accept_node(
             "current_draft_artifact": None,
             "current_critique_artifact": None,
             "current_continuity_artifact": None,
+            "pending_continuity_artifact": None,
             "current_story_bible_update_artifact": None,
             "current_dialogue_runs": 0,
             "current_acceptance_reason": None,
@@ -794,7 +822,12 @@ def _validate_continuity(
     _require_artifact_kind(result.artifact, ArtifactKind.CONTINUITY_REPORT)
     _require_new_version(
         result.artifact,
-        (task.story_bible, task.draft, task.unit.plan),
+        (
+            task.story_bible,
+            task.draft,
+            task.unit.plan,
+            *((task.previous_continuity,) if task.previous_continuity is not None else ()),
+        ),
     )
     report = result.report
     if (
@@ -883,6 +916,7 @@ def _all_inputs(task: SceneWritingTask) -> tuple[ArtifactReference, ...]:
         task.story_bible,
         *((task.previous_draft,) if task.previous_draft is not None else ()),
         *((task.previous_critique,) if task.previous_critique is not None else ()),
+        *((task.previous_continuity,) if task.previous_continuity is not None else ()),
     )
 
 
