@@ -15,6 +15,7 @@ from uuid import UUID, uuid4
 from open_hollywood_engine.artifacts import (
     ArtifactKind,
     ContinuityCategory,
+    ContinuityRecheckDisposition,
     ContinuityReport,
     Critique,
     SceneDraft,
@@ -91,25 +92,26 @@ _CONTINUITY_FINDING_RESOLUTION_REQUIREMENT = (
     "when no repair is needed."
 )
 _CONTINUITY_REQUIREMENT_SCOPE = (
-    "Treat frozen benchmark constraints as story-wide completion gates unless the exact "
-    "current Scene Plan explicitly assigns one to this scene. Do not require every scene "
-    "to complete the protagonist's story-wide goal. Treat the Scene Plan goal as a "
-    "scene-local character objective whose success or failure is determined jointly by "
-    "the Plan's purpose, turning_point, outcome, and exit_state; never contradict the "
-    "planned outcome or exit_state merely to make the local goal succeed."
+    "Use benchmark_constraint_applicability as the sole authority for benchmark gates in "
+    "this continuity call. Only due_now entries may produce an error or blocking finding. "
+    "Deferred story-wide requirements must not block the current scene. Treat the exact "
+    "Scene Plan's required_elements, continuity_requirements, purpose, turning_point, "
+    "outcome, and exit_state as current-scene obligations. A character may temporarily "
+    "consider a forbidden final explanation; it becomes a violation only if the completed "
+    "story adopts it as the actual resolution. Never rewrite a planned intermediate scene "
+    "to perform the ending's work early."
 )
 _CONTINUITY_RECHECK_REQUIREMENT = (
     "When a previous Continuity Report is supplied, audit every prior error or blocking "
-    "finding against the revised draft before reporting anything new. Give every prior "
-    "blocking/error ID exactly one disposition: omit it from findings only when resolved; "
-    "otherwise preserve its ID and compatible recommended_resolution, cite fresh exact "
-    "evidence from the revised draft, and explain why the attempted repair remains "
-    "insufficient. Repeating the prior judgment, evidence, and resolution unchanged is "
-    "invalid. Do not replace prior guidance with contradictory guidance "
-    "unless new hard evidence from an exact Scene Plan or Story Bible field proves the prior "
-    "repair invalid, and then cite that field and conflict in evidence. Report a new blocking "
-    "defect only when the revision caused or newly exposed it, with evidence explaining why "
-    "it was not actionable in the previous report."
+    "finding against the revised draft before reporting anything new. Omit a prior finding "
+    "when resolved. For an unresolved prior finding, preserve its ID, set "
+    "recheck_disposition='still_blocking', and supply repair_assessment plus revised_evidence "
+    "from the exact revised draft. The same exact quotation is allowed when the writer left "
+    "the offending passage unchanged, but repair_assessment must explain that fact. For a new "
+    "blocking defect caused or exposed by the revision, set "
+    "recheck_disposition='newly_exposed' and explain why it was not actionable before. Do not "
+    "replace prior guidance with contradictory guidance unless exact Scene Plan or Story "
+    "Bible evidence proves the prior repair invalid."
 )
 
 
@@ -435,6 +437,8 @@ class ProfileRoutedProductionExecutor(SceneProductionExecutor):
                 seed=run_seed + _unit_number(task) * 100 + _revision_number(task),
                 task_fingerprint=fingerprint,
                 unit_id=_unit_id(task),
+                unit_number=_unit_number(task),
+                unit_count=len(production.units),
                 revision_number=_revision_number(task),
                 attempt_number=attempt_number,
                 previous_failure=previous_failure,
@@ -742,6 +746,8 @@ class _Execution:
     seed: int
     task_fingerprint: str
     unit_id: str
+    unit_number: int
+    unit_count: int
     revision_number: int
     attempt_number: int
     previous_failure: dict[str, object] | None
@@ -804,17 +810,24 @@ def _messages(
             "operation": operation.value,
             "specialist_role": execution.specialist_role,
             "unit_id": execution.unit_id,
+            "unit_number": execution.unit_number,
+            "unit_count": execution.unit_count,
             "revision_number": execution.revision_number,
         },
-        "frozen_benchmark_constraints": execution.constraints,
         "input_artifacts": execution.inputs,
         "output_schema": schema,
     }
     previous_reports: tuple[dict[str, Any], ...] = ()
     if operation is _Operation.CONTINUITY:
+        payload["benchmark_constraint_applicability"] = _benchmark_constraint_applicability(
+            execution.constraints,
+            unit_number=execution.unit_number,
+            unit_count=execution.unit_count,
+        )
         payload["output_requirements"] = {
             "continuity_finding_resolution": (_CONTINUITY_FINDING_RESOLUTION_REQUIREMENT),
             "requirement_scope": _CONTINUITY_REQUIREMENT_SCOPE,
+            "recheck_analysis": _CONTINUITY_RECHECK_REQUIREMENT,
         }
         previous_reports = tuple(
             item
@@ -828,6 +841,8 @@ def _messages(
                 ],
                 "verification_contract": _CONTINUITY_RECHECK_REQUIREMENT,
             }
+    else:
+        payload["frozen_benchmark_constraints"] = execution.constraints
     if execution.previous_failure is not None:
         retry_context = dict(execution.previous_failure)
         if operation is _Operation.CONTINUITY:
@@ -846,6 +861,54 @@ def _messages(
         ModelMessage(role=MessageRole.SYSTEM, content=system),
         ModelMessage(role=MessageRole.USER, content=user),
     )
+
+
+def _benchmark_constraint_applicability(
+    constraints: Mapping[str, object],
+    *,
+    unit_number: int,
+    unit_count: int,
+) -> dict[str, object]:
+    """Expose story-wide benchmark text only when the final scene is evaluated."""
+    if unit_number < 1 or unit_count < 1 or unit_number > unit_count:
+        raise SceneProductionError("continuity assignment has invalid scene bounds")
+
+    entries: list[dict[str, str]] = []
+    for kind, key in (
+        ("required_element", "required_elements"),
+        ("forbidden_shortcut", "forbidden_shortcuts"),
+    ):
+        values = constraints.get(key)
+        if not isinstance(values, list) or any(not isinstance(value, str) for value in values):
+            raise SceneProductionError(f"benchmark {key} must be a list of text values")
+        entries.extend(
+            {
+                "id": f"{kind}_{index}",
+                "kind": kind,
+                "text": value,
+            }
+            for index, value in enumerate(values, start=1)
+        )
+
+    is_final_scene = unit_number == unit_count
+    return {
+        "policy_version": "1",
+        "current_scene_number": unit_number,
+        "final_scene_number": unit_count,
+        "is_final_scene": is_final_scene,
+        "due_now": entries if is_final_scene else [],
+        "deferred_until_final_scene": (
+            []
+            if is_final_scene
+            else [{"id": entry["id"], "kind": entry["kind"]} for entry in entries]
+        ),
+        "deferred_text_intentionally_omitted": not is_final_scene,
+        "forbidden_shortcut_semantics": (
+            "A forbidden shortcut is violated only when the completed story adopts it as "
+            "the actual explanation or resolution, not when a character temporarily "
+            "considers and later rejects it."
+        ),
+    }
 
 
 def _validate_output(
@@ -950,7 +1013,7 @@ def _materialize_output_data(
                 )
                 for finding in findings
             ]
-            _reject_stagnant_continuity_recheck(materialized["findings"], execution)
+            _validate_continuity_recheck_analysis(materialized["findings"], execution)
         return materialized
 
     update_task = cast(StoryBibleUpdateTask, task)
@@ -1128,19 +1191,38 @@ def _prior_continuity_resolutions(execution: _Execution) -> dict[str, str]:
     return resolutions
 
 
-def _reject_stagnant_continuity_recheck(
+def _validate_continuity_recheck_analysis(
     findings: list[object],
     execution: _Execution,
 ) -> None:
     prior_report = _prior_continuity_report(execution)
     if prior_report is None:
+        unexpected_ids = tuple(
+            finding["id"]
+            for finding in findings
+            if isinstance(finding, dict)
+            and isinstance(finding.get("id"), str)
+            and any(
+                (
+                    finding.get("recheck_disposition") is not None,
+                    finding.get("repair_assessment") is not None,
+                    bool(finding.get("revised_evidence")),
+                )
+            )
+        )
+        if unexpected_ids:
+            raise ValueError(
+                "initial continuity findings cannot contain re-check analysis: "
+                f"{list(unexpected_ids)}"
+            )
         return
-    stagnant_ids = _stagnant_continuity_finding_ids(findings, prior_report)
-    if stagnant_ids:
+    invalid_ids = _invalid_continuity_recheck_finding_ids(findings, prior_report)
+    if invalid_ids:
         raise ContinuityRecheckStagnationError(
-            "continuity re-check repeated blocking finding IDs without revised-draft "
-            f"analysis: {list(stagnant_ids)}; omit resolved IDs or cite fresh revised-draft "
-            "evidence and explain why each attempted repair remains insufficient"
+            "continuity re-check findings lack explicit revised-draft analysis: "
+            f"{list(invalid_ids)}; set recheck_disposition to still_blocking for preserved "
+            "IDs or newly_exposed for new IDs, and supply repair_assessment plus exact "
+            "revised_evidence"
         )
 
 
@@ -1160,7 +1242,7 @@ def _prior_continuity_report(execution: _Execution) -> dict[str, Any] | None:
     return report
 
 
-def _stagnant_continuity_finding_ids(
+def _invalid_continuity_recheck_finding_ids(
     findings: list[object],
     prior_report: Mapping[str, object],
 ) -> tuple[str, ...]:
@@ -1174,7 +1256,7 @@ def _stagnant_continuity_finding_ids(
         and isinstance(finding.get("id"), str)
         and finding.get("severity") in {"error", "blocking"}
     }
-    stagnant: list[str] = []
+    invalid: list[str] = []
     for finding in findings:
         if (
             not isinstance(finding, dict)
@@ -1183,29 +1265,22 @@ def _stagnant_continuity_finding_ids(
         ):
             continue
         finding_id = cast(str, finding["id"])
-        prior = prior_by_id.get(finding_id)
-        if prior is not None and _continuity_judgment_signature(finding) == (
-            _continuity_judgment_signature(prior)
+        expected_disposition = (
+            ContinuityRecheckDisposition.STILL_BLOCKING.value
+            if finding_id in prior_by_id
+            else ContinuityRecheckDisposition.NEWLY_EXPOSED.value
+        )
+        revised_evidence = finding.get("revised_evidence")
+        if (
+            finding.get("recheck_disposition") != expected_disposition
+            or not isinstance(finding.get("repair_assessment"), str)
+            or not cast(str, finding["repair_assessment"]).strip()
+            or not isinstance(revised_evidence, list)
+            or not revised_evidence
+            or any(not isinstance(item, str) or not item.strip() for item in revised_evidence)
         ):
-            stagnant.append(finding_id)
-    return tuple(stagnant)
-
-
-def _continuity_judgment_signature(finding: Mapping[str, object]) -> tuple[object, ...]:
-    evidence = finding.get("evidence")
-    return (
-        finding.get("severity"),
-        finding.get("category"),
-        _normalized_comparison_text(finding.get("summary")),
-        tuple(_normalized_comparison_text(item) for item in evidence if isinstance(item, str))
-        if isinstance(evidence, list)
-        else (),
-        _normalized_comparison_text(finding.get("recommended_resolution")),
-    )
-
-
-def _normalized_comparison_text(value: object) -> str | None:
-    return " ".join(value.split()) if isinstance(value, str) else None
+            invalid.append(finding_id)
+    return tuple(invalid)
 
 
 def _materialize_continuity_finding(

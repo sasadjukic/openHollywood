@@ -41,10 +41,11 @@ from open_hollywood_api.services.model_profiles import (
 from open_hollywood_api.services.production_model_executor import (
     BenchmarkProductionExecutor,
     ContinuityRecheckStagnationError,
+    _benchmark_constraint_applicability,
+    _invalid_continuity_recheck_finding_ids,
     _materialize_continuity_finding,
     _Operation,
     _select_production_model,
-    _stagnant_continuity_finding_ids,
     _structured_failure_message,
 )
 from open_hollywood_api.services.production_workflow import (
@@ -309,6 +310,7 @@ class OneProductionRepairGateway(ProductionFixtureGateway):
         self.invalid_sent = False
         self.repeat_invalid = repeat_invalid
         self.output_requirements: list[dict[str, object]] = []
+        self.constraint_applicabilities: list[dict[str, object]] = []
         self.repair_contexts: list[dict[str, object]] = []
 
     async def generate(self, request: ModelRequest) -> ModelResponse:
@@ -319,6 +321,9 @@ class OneProductionRepairGateway(ProductionFixtureGateway):
         output_requirements = payload.get("output_requirements")
         if isinstance(output_requirements, dict):
             self.output_requirements.append(output_requirements)
+        applicability = payload.get("benchmark_constraint_applicability")
+        if isinstance(applicability, dict):
+            self.constraint_applicabilities.append(applicability)
         retry_context = payload.get("retry_context")
         if isinstance(retry_context, dict):
             self.repair_contexts.append(retry_context)
@@ -397,12 +402,17 @@ class ContinuityRevisionFeedbackGateway(ProductionFixtureGateway):
 
         if not self.blocking_report_sent:
             self.blocking_report_sent = True
-            return self._blocking_response(response, resolution=self.recommended_resolution)
+            return self._blocking_response(
+                response,
+                resolution=self.recommended_resolution,
+                is_recheck=False,
+            )
         if revision_number == 1 and not self.missing_resolution_recheck_sent:
             self.missing_resolution_recheck_sent = True
             return self._blocking_response(
                 response,
                 resolution=None,
+                is_recheck=True,
                 summary="Mara still holds the brass key after crossing the east door.",
                 evidence=["The revised draft says Mara pockets the key after crossing."],
             )
@@ -413,23 +423,31 @@ class ContinuityRevisionFeedbackGateway(ProductionFixtureGateway):
         response: ModelResponse,
         *,
         resolution: str | None,
+        is_recheck: bool,
         summary: str = "Mara changes doors without returning the established key.",
         evidence: list[str] | None = None,
     ) -> ModelResponse:
         content = json.loads(response.content)
-        content["findings"] = [
-            {
-                "id": "east_door_key_continuity",
-                "severity": "blocking",
-                "category": "fact",
-                "summary": summary,
-                "evidence": evidence
-                or ["The Story Bible places Mara at the east door with the brass key."],
-                "related_scene_ids": ["model_invented_scene"],
-                "recommended_resolution": resolution,
-                "blocks_approval": False,
-            }
+        exact_evidence = evidence or [
+            "The Story Bible places Mara at the east door with the brass key."
         ]
+        finding: dict[str, object] = {
+            "id": "east_door_key_continuity",
+            "severity": "blocking",
+            "category": "fact",
+            "summary": summary,
+            "evidence": exact_evidence,
+            "related_scene_ids": ["model_invented_scene"],
+            "recommended_resolution": resolution,
+            "blocks_approval": False,
+        }
+        if is_recheck:
+            finding.update(
+                recheck_disposition="still_blocking",
+                repair_assessment=("The revision leaves the conflicting key action in place."),
+                revised_evidence=exact_evidence,
+            )
+        content["findings"] = [finding]
         return replace(response, content=json.dumps(content))
 
 
@@ -556,7 +574,7 @@ def test_new_continuity_finding_cannot_inherit_another_findings_resolution() -> 
         ContinuityFinding.model_validate(finding)
 
 
-def test_continuity_recheck_rejects_stagnation_but_allows_convergence() -> None:
+def test_continuity_recheck_requires_structured_analysis_not_rewording() -> None:
     prior_finding = {
         "id": "stalled_blocker",
         "severity": "blocking",
@@ -567,16 +585,60 @@ def test_continuity_recheck_rejects_stagnation_but_allows_convergence() -> None:
     }
     prior_report: dict[str, object] = {"findings": [prior_finding]}
 
-    assert _stagnant_continuity_finding_ids([dict(prior_finding)], prior_report) == (
+    assert _invalid_continuity_recheck_finding_ids([dict(prior_finding)], prior_report) == (
         "stalled_blocker",
     )
-    fresh_finding = {
+    assessed_finding = {
         **prior_finding,
-        "summary": "The attempted bridge remains abstract rather than causal.",
-        "evidence": ["The revised draft names control but not the failed decision."],
+        "recheck_disposition": "still_blocking",
+        "repair_assessment": "The writer left the quoted transition unchanged.",
+        "revised_evidence": ["The original draft jumps directly to ambition."],
     }
-    assert _stagnant_continuity_finding_ids([fresh_finding], prior_report) == ()
-    assert _stagnant_continuity_finding_ids([], prior_report) == ()
+    assert _invalid_continuity_recheck_finding_ids([assessed_finding], prior_report) == ()
+    assert _invalid_continuity_recheck_finding_ids([], prior_report) == ()
+
+
+def test_benchmark_constraint_text_is_deferred_until_final_scene() -> None:
+    constraints: dict[str, object] = {
+        "required_elements": ["Resolve the card's origin."],
+        "forbidden_shortcuts": ["Do not explain the card as a prank."],
+    }
+
+    non_final = _benchmark_constraint_applicability(
+        constraints,
+        unit_number=1,
+        unit_count=5,
+    )
+
+    assert non_final["is_final_scene"] is False
+    assert non_final["due_now"] == []
+    assert non_final["deferred_until_final_scene"] == [
+        {"id": "required_element_1", "kind": "required_element"},
+        {"id": "forbidden_shortcut_1", "kind": "forbidden_shortcut"},
+    ]
+    assert "Resolve the card's origin." not in json.dumps(non_final)
+    assert "Do not explain the card as a prank." not in json.dumps(non_final)
+
+    final = _benchmark_constraint_applicability(
+        constraints,
+        unit_number=5,
+        unit_count=5,
+    )
+
+    assert final["is_final_scene"] is True
+    assert final["deferred_until_final_scene"] == []
+    assert final["due_now"] == [
+        {
+            "id": "required_element_1",
+            "kind": "required_element",
+            "text": "Resolve the card's origin.",
+        },
+        {
+            "id": "forbidden_shortcut_1",
+            "kind": "forbidden_shortcut",
+            "text": "Do not explain the card as a prank.",
+        },
+    ]
 
 
 def test_stagnation_diagnostic_is_actionable_without_provider_content() -> None:
@@ -914,8 +976,13 @@ async def test_same_continuity_finding_inherits_resolution_across_recheck(
         assert "contradictory guidance" in str(recheck_contract["verification_contract"])
     recheck_payload = json.loads(gateway.continuity_recheck_prompts[0])
     output_requirements = recheck_payload["output_requirements"]
-    assert "story-wide completion gates" in output_requirements["requirement_scope"]
-    assert "planned outcome or exit_state" in output_requirements["requirement_scope"]
+    assert "sole authority" in output_requirements["requirement_scope"]
+    assert "recheck_disposition='still_blocking'" in output_requirements["recheck_analysis"]
+    applicability = recheck_payload["benchmark_constraint_applicability"]
+    assert applicability["is_final_scene"] is False
+    assert applicability["due_now"] == []
+    assert all("text" not in item for item in applicability["deferred_until_final_scene"])
+    assert "frozen_benchmark_constraints" not in recheck_payload
 
 
 @pytest.mark.parametrize(
@@ -1295,6 +1362,23 @@ async def test_approved_blueprint_runs_durable_production_and_replays(
     assert len(gateway.repair_contexts) == 1
     assert "Structured output validation failed" in str(gateway.repair_contexts[0]["message"])
     assert "recommended_resolution" in str(gateway.repair_contexts[0]["required_correction"])
+    non_final_applicabilities = [
+        item for item in gateway.constraint_applicabilities if not item["is_final_scene"]
+    ]
+    final_applicabilities = [
+        item for item in gateway.constraint_applicabilities if item["is_final_scene"]
+    ]
+    assert non_final_applicabilities
+    assert all(item["due_now"] == [] for item in non_final_applicabilities)
+    assert len(final_applicabilities) == 1
+    final_due_now = final_applicabilities[0]["due_now"]
+    assert isinstance(final_due_now, list)
+    assert all(isinstance(item, dict) for item in final_due_now)
+    final_constraint_text = {item["text"] for item in final_due_now if isinstance(item, dict)}
+    assert final_constraint_text == {
+        *prompt.required_elements,
+        *prompt.forbidden_shortcuts,
+    }
     production_requests = [
         request
         for request in gateway.requests
@@ -1306,7 +1390,7 @@ async def test_approved_blueprint_runs_durable_production_and_replays(
             "story_bible_maintainer",
         }
     ]
-    assert all(request.invocation.prompt_template_version == "7" for request in production_requests)
+    assert all(request.invocation.prompt_template_version == "8" for request in production_requests)
     assert all(request.response_schema is not None for request in gateway.requests)
     with session_factory() as session:
         production_run = session.get(WorkflowRun, execution.workflow_run_id)

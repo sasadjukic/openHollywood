@@ -177,7 +177,15 @@ Cloud and Hybrid stories default to a configurable `$5.00` aggregate ceiling
 reported amount; Local production retains its derived no-cloud ceiling. The
 bounded second production attempt now receives safe structural validation
 diagnostics and records its retry ordinal without application-authored semantic
-repairs. The harness also creates reviewer-specific
+repairs. Scene-production prompt contract v8 scopes benchmark requirements
+deterministically for continuity: non-final scenes receive only opaque IDs for
+story-wide requirements deferred until the ending, while the final scene
+receives their exact frozen text as due-now gates. Scene Plan requirements
+remain current-scene obligations throughout. Continuity re-checks express an
+unresolved or newly exposed blocker through typed disposition, repair-assessment,
+and revised-evidence fields instead of being judged by textual difference alone;
+the Local profile remains fail-closed and the existing audited Hybrid-only
+stagnation escalation remains bounded. The harness also creates reviewer-specific
 CSV forms and provenance-free rubric guides, imports complete human scores, and
 cryptographically binds review evidence to the exact public blind packet and
 private answer key. Complete campaigns can be sealed into deterministic,
@@ -321,9 +329,9 @@ uv run alembic downgrade -1
 Run the applicable quality checks before handing off a change:
 
 ```powershell
-uv run --extra api ruff check apps/api engine scripts tests migrations
-uv run --extra api ruff format --check apps/api engine scripts tests migrations
-uv run --extra api mypy apps/api engine scripts tests migrations
+uv run --extra api ruff check apps/api apps/worker engine scripts tests migrations
+uv run --extra api ruff format --check apps/api apps/worker engine scripts tests migrations
+uv run --extra api mypy apps/api apps/worker engine scripts tests migrations
 uv run --extra api pytest
 pnpm format:check
 pnpm lint

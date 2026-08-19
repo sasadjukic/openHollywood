@@ -118,6 +118,13 @@ class ContinuityCategory(StrEnum):
     SETUP_PAYOFF = "setup_payoff"
 
 
+class ContinuityRecheckDisposition(StrEnum):
+    """Explicit relationship between a re-check finding and prior feedback."""
+
+    STILL_BLOCKING = "still_blocking"
+    NEWLY_EXPOSED = "newly_exposed"
+
+
 class StoryThreadKind(StrEnum):
     """Canonical unresolved-thread types maintained during production."""
 
@@ -369,6 +376,9 @@ class ContinuityFinding(ArtifactSchema):
     related_scene_ids: tuple[ReferenceId, ...] = ()
     recommended_resolution: NonEmptyText | None = None
     blocks_approval: StrictBool = False
+    recheck_disposition: ContinuityRecheckDisposition | None = None
+    repair_assessment: NonEmptyText | None = None
+    revised_evidence: tuple[NonEmptyText, ...] = ()
 
     @model_validator(mode="after")
     def blocking_state_must_be_consistent(self) -> Self:
@@ -377,6 +387,18 @@ class ContinuityFinding(ArtifactSchema):
             raise ValueError("a blocking finding must block approval")
         if self.blocks_approval and self.recommended_resolution is None:
             raise ValueError("a finding that blocks approval requires a resolution")
+        has_recheck_analysis = self.recheck_disposition is not None
+        if has_recheck_analysis != (self.repair_assessment is not None):
+            raise ValueError(
+                "continuity re-check disposition and repair assessment must be supplied together"
+            )
+        if has_recheck_analysis != bool(self.revised_evidence):
+            raise ValueError("continuity re-check analysis requires exact revised-draft evidence")
+        if has_recheck_analysis and self.severity not in {
+            ContinuitySeverity.ERROR,
+            ContinuitySeverity.BLOCKING,
+        }:
+            raise ValueError("continuity re-check analysis is only valid for blocking findings")
         return self
 
 

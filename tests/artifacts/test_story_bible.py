@@ -8,6 +8,7 @@ import pytest
 from open_hollywood_engine.artifacts import (
     ContinuityCategory,
     ContinuityFinding,
+    ContinuityRecheckDisposition,
     ContinuityReport,
     ContinuitySeverity,
     StoryBible,
@@ -134,6 +135,32 @@ def test_continuity_report_requires_full_coverage_and_routes_severe_findings() -
             {
                 **report.model_dump(),
                 "checked_categories": (ContinuityCategory.FACT,),
+            }
+        )
+
+
+def test_continuity_recheck_analysis_is_typed_and_complete() -> None:
+    finding = ContinuityFinding(
+        id="wet_stroller",
+        severity=ContinuitySeverity.BLOCKING,
+        category=ContinuityCategory.FACT,
+        summary="The revised scene still contradicts the dry-wheels fact.",
+        evidence=("The revised scene still says the wheels are soaked.",),
+        related_scene_ids=("scene_2",),
+        recommended_resolution="Keep the stroller dry.",
+        blocks_approval=True,
+        recheck_disposition=ContinuityRecheckDisposition.STILL_BLOCKING,
+        repair_assessment="The requested repair was not applied.",
+        revised_evidence=("The revised scene still says the wheels are soaked.",),
+    )
+
+    assert finding.recheck_disposition is ContinuityRecheckDisposition.STILL_BLOCKING
+
+    with pytest.raises(ValidationError, match="repair assessment"):
+        ContinuityFinding.model_validate(
+            {
+                **finding.model_dump(),
+                "repair_assessment": None,
             }
         )
 

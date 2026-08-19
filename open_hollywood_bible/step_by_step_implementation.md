@@ -189,6 +189,37 @@ human reviewers decide the short-prose format gate. Older resumable reports and
 immutable story artifacts remain readable; advisory deviation alone cannot turn
 a technically completed story into a failed case.
 
+An August 19 Local v7 regression diagnostic reused the approved August 1
+pre-production lineage and ran the first six-case Local batch. The five
+runnable production cases fell from four prior v1 successes to one v7 success;
+three regressions began when non-final continuity calls treated story-wide
+requirements as current-scene blockers, and their re-checks then failed the
+text-signature stagnation guard. The preserved diagnostic is not final
+benchmark evidence. Scene-production prompt contract v8 now gives continuity a
+deterministic applicability packet: non-final scenes receive opaque IDs but not
+the text of requirements deferred until the ending, while the final scene
+receives the exact frozen required elements and forbidden shortcuts as due-now
+gates. Exact Scene Plan requirements remain immediate. Typed continuity
+re-check disposition, repair assessment, and revised-draft evidence replace
+lexical-difference inference, while Local remains fail-closed and the persisted
+Hybrid-only stagnation escalation remains bounded. Regression coverage asserts
+non-final/final constraint visibility, permits the same exact quotation when a
+repair assessment says the passage was unchanged, and preserves Local, Cloud,
+and Hybrid routing behavior. Evidence:
+`docs/benchmark_reports/step-19-local-v7-regression-2026-08-19.md`,
+`engine/open_hollywood_engine/artifacts/schemas.py`,
+`engine/open_hollywood_engine/workflows/production_contracts.py`,
+`apps/api/open_hollywood_api/services/production_model_executor.py`, and
+`tests/evaluations/test_agentic_production.py`. The isolated v8 canary database
+was copied byte-for-byte from the approved pre-production snapshot, migrated to
+schema 0007, and frozen into a 48-case plan with canonical digest
+`2e1a76a7fec7cec9b408e08c5e65632d0aabf62f7f93a4c1734734bb5298c788`.
+It has no production runs or report and must be exercised across representative
+Local, Cloud, and Hybrid cases before another formal campaign is started. Ruff,
+formatting, strict mypy over 133 source files, 205 pytest tests, frontend
+formatting, lint, TypeScript checking, 10 Vitest tests, and the production build
+pass.
+
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 
 21. [ ] **Package the stable system with Tauri** and test crash/restart, offline, missing-model, invalid-key, provider-timeout, and low-disk-space behavior.
