@@ -228,8 +228,24 @@ and an audited Hybrid continuity-stagnation retry drops Local guidance when it
 escalates to Cloud. The v8 canary remains immutable diagnostic evidence; another
 batch requires a new plan pinned to prompt v9. Evidence:
 `docs/benchmark_reports/step-19-local-v8-canary-2026-08-20.md`.
+The fresh v9 canary plan has canonical digest
+`83ffb10a8a1ca02f115ac0e4077e7a514cd8362fed9894790cc353a8293521b1`.
+Its first Local batch completed one of five production-runnable cases; OH-V01-004
+produced 3,365 words within target and passed every automated hard gate, while
+OH-V01-006 retained its terminal Blueprint failure. All four terminal Production
+failures were initial continuity calls that populated fields intended only for
+re-checks. Prompt contract v10 now derives an explicit `initial_check` or
+`recheck` schema from immutable input lineage, removes all three re-check-only
+fields and their enum definition from the initial schema, and withholds re-check
+instructions until a prior Continuity Report is present. The same selected
+schema is used in the prompt and Local provider grammar, and its variant is
+persisted for replay diagnostics. Canonical artifacts, bounded repair, Cloud
+routing, and Hybrid-only escalation are unchanged. The v9 canary remains
+immutable diagnostic evidence; another batch requires a new plan pinned to
+prompt v10. Evidence:
+`docs/benchmark_reports/step-19-local-v9-canary-2026-08-20.md`.
 Ruff and formatting pass over 133 files, strict mypy passes over 133 source
-files, all 210 pytest tests pass, frontend formatting/lint/type checking pass,
+files, all 212 pytest tests pass, frontend formatting/lint/type checking pass,
 all 10 Vitest tests pass, and the production build succeeds.
 
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.

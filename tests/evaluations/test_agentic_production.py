@@ -7,7 +7,7 @@ from dataclasses import replace
 from datetime import UTC, datetime
 from decimal import Decimal
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 from uuid import UUID, uuid4
 
 import pytest
@@ -42,10 +42,12 @@ from open_hollywood_api.services.production_model_executor import (
     BenchmarkProductionExecutor,
     ContinuityRecheckStagnationError,
     _benchmark_constraint_applicability,
+    _ContinuitySchemaVariant,
     _invalid_continuity_recheck_finding_ids,
     _local_schema_repair_guidance,
     _materialize_continuity_finding,
     _Operation,
+    _output_schema,
     _select_production_model,
     _structured_failure_message,
 )
@@ -730,13 +732,54 @@ def test_schema_repair_guidance_is_limited_to_local_structured_failures(
                 }
             ],
         },
+        continuity_schema_variant=_ContinuitySchemaVariant.INITIAL_CHECK,
     )
 
     assert (guidance is not None) is expects_guidance
     if guidance is not None:
         assert guidance["mode"] == "repair_only"
+        assert guidance["schema_variant"] == "initial_check"
         assert guidance["focus_locations"] == ["findings.0"]
         assert "recheck_disposition" in str(guidance["operation_rules"])
+
+
+def test_initial_continuity_schema_omits_every_recheck_only_field() -> None:
+    schema = _output_schema(
+        _Operation.CONTINUITY,
+        continuity_schema_variant=_ContinuitySchemaVariant.INITIAL_CHECK,
+    )
+    definitions = schema["$defs"]
+    properties = definitions["ContinuityFinding"]["properties"]
+
+    assert schema["title"] == "InitialContinuityReport"
+    assert "ContinuityRecheckDisposition" not in definitions
+    assert {
+        "recheck_disposition",
+        "repair_assessment",
+        "revised_evidence",
+    }.isdisjoint(properties)
+
+    canonical_definitions = ContinuityReport.model_json_schema()["$defs"]
+    canonical_properties = canonical_definitions["ContinuityFinding"]["properties"]
+    assert "ContinuityRecheckDisposition" in canonical_definitions
+    assert "recheck_disposition" in canonical_properties
+
+
+def test_continuity_recheck_schema_exposes_recheck_analysis_fields() -> None:
+    schema = _output_schema(
+        _Operation.CONTINUITY,
+        continuity_schema_variant=_ContinuitySchemaVariant.RECHECK,
+    )
+    definitions = schema["$defs"]
+    properties = definitions["ContinuityFinding"]["properties"]
+
+    assert schema["title"] == "ContinuityRecheckReport"
+    assert "ContinuityRecheckDisposition" in definitions
+    assert {
+        "recheck_disposition",
+        "repair_assessment",
+        "revised_evidence",
+    } <= properties.keys()
 
 
 @pytest.mark.parametrize(
@@ -1028,6 +1071,17 @@ async def test_same_continuity_finding_inherits_resolution_across_recheck(
         )
 
     assert execution.status is RunStatus.SUCCEEDED
+    with session_factory() as session:
+        persisted_continuity_invocations = session.scalars(
+            select(AgentInvocation).where(
+                AgentInvocation.workflow_run_id == execution.workflow_run_id,
+                AgentInvocation.specialist_role == "continuity_supervisor",
+            )
+        ).all()
+    assert {
+        invocation.request_settings["output_schema_variant"]
+        for invocation in persisted_continuity_invocations
+    } == {"initial_check", "recheck"}
     assert len(gateway.writer_revision_prompts) == 2
     assert all(
         gateway.recommended_resolution in prompt for prompt in gateway.writer_revision_prompts
@@ -1048,6 +1102,50 @@ async def test_same_continuity_finding_inherits_resolution_across_recheck(
             recheck_contract["verification_contract"]
         )
         assert "contradictory guidance" in str(recheck_contract["verification_contract"])
+
+    continuity_requests = [
+        request
+        for request in gateway.requests
+        if request.invocation.specialist_role == "continuity_supervisor"
+    ]
+    initial_requests = [
+        request
+        for request in continuity_requests
+        if json.loads(request.messages[-1].content)["assignment"]["revision_number"] == 0
+    ]
+    recheck_requests = [
+        request
+        for request in continuity_requests
+        if json.loads(request.messages[-1].content)["assignment"]["revision_number"] > 0
+    ]
+    assert initial_requests
+    assert recheck_requests
+    for request in initial_requests:
+        assert request.response_schema is not None
+        payload = json.loads(request.messages[-1].content)
+        schema = cast(dict[str, Any], request.response_schema)
+        properties = cast(dict[str, Any], schema["$defs"]["ContinuityFinding"]["properties"])
+        assert payload["output_schema_variant"] == "initial_check"
+        assert "recheck_analysis" not in payload["output_requirements"]
+        assert "continuity_recheck" not in payload
+        assert {
+            "recheck_disposition",
+            "repair_assessment",
+            "revised_evidence",
+        }.isdisjoint(properties)
+    for request in recheck_requests:
+        assert request.response_schema is not None
+        payload = json.loads(request.messages[-1].content)
+        schema = cast(dict[str, Any], request.response_schema)
+        properties = cast(dict[str, Any], schema["$defs"]["ContinuityFinding"]["properties"])
+        assert payload["output_schema_variant"] == "recheck"
+        assert "recheck_analysis" in payload["output_requirements"]
+        assert {
+            "recheck_disposition",
+            "repair_assessment",
+            "revised_evidence",
+        } <= properties.keys()
+
     recheck_payload = json.loads(gateway.continuity_recheck_prompts[0])
     output_requirements = recheck_payload["output_requirements"]
     assert "sole authority" in output_requirements["requirement_scope"]
@@ -1479,7 +1577,9 @@ async def test_approved_blueprint_runs_durable_production_and_replays(
             "story_bible_maintainer",
         }
     ]
-    assert all(request.invocation.prompt_template_version == "9" for request in production_requests)
+    assert all(
+        request.invocation.prompt_template_version == "10" for request in production_requests
+    )
     assert all(request.response_schema is not None for request in gateway.requests)
     with session_factory() as session:
         production_run = session.get(WorkflowRun, execution.workflow_run_id)

@@ -6,6 +6,7 @@ import asyncio
 import hashlib
 import json
 from collections.abc import Iterable, Mapping
+from copy import deepcopy
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from enum import StrEnum
@@ -83,9 +84,17 @@ class _Operation(StrEnum):
     STORY_BIBLE_UPDATE = "story_bible_update"
 
 
+class _ContinuitySchemaVariant(StrEnum):
+    INITIAL_CHECK = "initial_check"
+    RECHECK = "recheck"
+
+
 _MAX_SAFE_STRUCTURED_FAILURE_DETAIL_CHARS = 500
 _MAX_SAFE_STRUCTURED_FAILURE_ISSUES = 12
 _CONTINUITY_RECHECK_STAGNATION_ERROR_CODE = "continuity_recheck_stagnated"
+_CONTINUITY_RECHECK_ONLY_FIELDS = frozenset(
+    {"recheck_disposition", "repair_assessment", "revised_evidence"}
+)
 _CONTINUITY_FINDING_RESOLUTION_REQUIREMENT = (
     "Every finding with severity 'error' or 'blocking' must include a non-empty, "
     "concrete recommended_resolution. The application derives blocks_approval=true "
@@ -133,11 +142,6 @@ _LOCAL_SCHEMA_REPAIR_OPERATION_RULES: Mapping[_Operation, tuple[str, ...]] = {
         "never combine a passing verdict with a blocking issue.",
     ),
     _Operation.CONTINUITY: (
-        "For an initial check, leave recheck_disposition and repair_assessment null and "
-        "revised_evidence empty on every finding.",
-        "For a re-check, an unresolved prior or newly exposed error/blocking finding must "
-        "supply recheck_disposition, repair_assessment, and non-empty revised_evidence "
-        "together; info and warning findings must not use those fields.",
         "Every error or blocking finding needs a concrete recommended_resolution. Return "
         "an empty findings array when no defect remains.",
     ),
@@ -299,16 +303,25 @@ class ProfileRoutedProductionExecutor(SceneProductionExecutor):
         if replay is not None:
             return replay
         output_model = _OUTPUT_MODELS[operation]
+        continuity_schema_variant = (
+            _continuity_schema_variant(execution) if operation is _Operation.CONTINUITY else None
+        )
+        output_schema = _output_schema(
+            operation,
+            continuity_schema_variant=continuity_schema_variant,
+        )
         messages = _messages(
             operation,
             execution,
-            output_model.model_json_schema(),
+            output_schema,
+            continuity_schema_variant=continuity_schema_variant,
         )
         invocation_id = await asyncio.to_thread(
             self._start_invocation,
             operation,
             execution,
             messages,
+            continuity_schema_variant,
         )
         request = ModelRequest(
             model_identifier=execution.selection.model_identifier,
@@ -327,9 +340,7 @@ class ProfileRoutedProductionExecutor(SceneProductionExecutor):
                 thinking=False,
             ),
             response_schema=(
-                output_model.model_json_schema()
-                if execution.selection.deployment is ModelDeployment.LOCAL
-                else None
+                output_schema if execution.selection.deployment is ModelDeployment.LOCAL else None
             ),
         )
         try:
@@ -551,6 +562,7 @@ class ProfileRoutedProductionExecutor(SceneProductionExecutor):
         operation: _Operation,
         execution: _Execution,
         messages: tuple[ModelMessage, ...],
+        continuity_schema_variant: _ContinuitySchemaVariant | None,
     ) -> UUID:
         invocation_id = uuid4()
         with self._session_factory.begin() as session:
@@ -569,6 +581,11 @@ class ProfileRoutedProductionExecutor(SceneProductionExecutor):
                     "graph_version": SCENE_PRODUCTION_GRAPH_VERSION,
                     "model_profile_configuration_sha256": (execution.configuration_sha256),
                     "operation": operation.value,
+                    "output_schema_variant": (
+                        continuity_schema_variant.value
+                        if continuity_schema_variant is not None
+                        else "canonical"
+                    ),
                     "prompt_template_version": (SCENE_PRODUCTION_PROMPT_TEMPLATE_VERSION),
                     "run_seed": execution.seed,
                     "schema_enforced": (execution.selection.deployment is ModelDeployment.LOCAL),
@@ -854,6 +871,57 @@ class _Execution:
     fallback_history: tuple[dict[str, object], ...]
 
 
+def _continuity_schema_variant(execution: _Execution) -> _ContinuitySchemaVariant:
+    return (
+        _ContinuitySchemaVariant.RECHECK
+        if _prior_continuity_report(execution) is not None
+        else _ContinuitySchemaVariant.INITIAL_CHECK
+    )
+
+
+def _output_schema(
+    operation: _Operation,
+    *,
+    continuity_schema_variant: _ContinuitySchemaVariant | None,
+) -> dict[str, Any]:
+    """Build the exact model-facing schema without changing canonical artifacts."""
+    schema = deepcopy(_OUTPUT_MODELS[operation].model_json_schema())
+    if operation is not _Operation.CONTINUITY:
+        if continuity_schema_variant is not None:
+            raise ValueError("non-continuity output cannot use a continuity schema variant")
+        return schema
+    if continuity_schema_variant is None:
+        raise ValueError("continuity output requires a schema variant")
+
+    definitions = schema.get("$defs")
+    if not isinstance(definitions, dict):
+        raise SceneProductionError("continuity schema is missing definitions")
+    finding_schema = definitions.get("ContinuityFinding")
+    if not isinstance(finding_schema, dict):
+        raise SceneProductionError("continuity schema is missing its finding definition")
+    properties = finding_schema.get("properties")
+    if not isinstance(properties, dict):
+        raise SceneProductionError("continuity finding schema is missing properties")
+
+    if continuity_schema_variant is _ContinuitySchemaVariant.INITIAL_CHECK:
+        for field_name in _CONTINUITY_RECHECK_ONLY_FIELDS:
+            properties.pop(field_name, None)
+        required = finding_schema.get("required")
+        if isinstance(required, list):
+            finding_schema["required"] = [
+                field_name
+                for field_name in required
+                if field_name not in _CONTINUITY_RECHECK_ONLY_FIELDS
+            ]
+        definitions.pop("ContinuityRecheckDisposition", None)
+        schema["title"] = "InitialContinuityReport"
+        finding_schema["title"] = "InitialContinuityFinding"
+    else:
+        schema["title"] = "ContinuityRecheckReport"
+        finding_schema["title"] = "ContinuityRecheckFinding"
+    return schema
+
+
 def _select_production_model(
     *,
     operation: _Operation,
@@ -898,6 +966,7 @@ def _local_schema_repair_guidance(
     operation: _Operation,
     deployment: ModelDeployment,
     previous_failure: Mapping[str, object] | None,
+    continuity_schema_variant: _ContinuitySchemaVariant | None = None,
 ) -> dict[str, object] | None:
     """Build a concise repair-only packet for a failed Local structured call."""
     if (
@@ -920,24 +989,49 @@ def _local_schema_repair_guidance(
     if not focus_locations:
         focus_locations.append("$")
 
-    return {
+    operation_rules = list(_LOCAL_SCHEMA_REPAIR_OPERATION_RULES[operation])
+    if operation is _Operation.CONTINUITY:
+        if continuity_schema_variant is _ContinuitySchemaVariant.INITIAL_CHECK:
+            operation_rules.insert(
+                0,
+                "This is an initial check. The supplied schema has no re-check fields; "
+                "do not add undeclared recheck_disposition, repair_assessment, or "
+                "revised_evidence fields.",
+            )
+        elif continuity_schema_variant is _ContinuitySchemaVariant.RECHECK:
+            operation_rules.insert(
+                0,
+                "This is a re-check. An unresolved prior or newly exposed error/blocking "
+                "finding must supply recheck_disposition, repair_assessment, and non-empty "
+                "revised_evidence together; info and warning findings must not use them.",
+            )
+        else:
+            raise ValueError("continuity repair guidance requires a schema variant")
+
+    guidance: dict[str, object] = {
         "policy_version": "1",
         "mode": "repair_only",
         "focus_locations": focus_locations,
         "common_rules": list(_LOCAL_SCHEMA_REPAIR_COMMON_RULES),
-        "operation_rules": list(_LOCAL_SCHEMA_REPAIR_OPERATION_RULES[operation]),
+        "operation_rules": operation_rules,
     }
+    if continuity_schema_variant is not None:
+        guidance["schema_variant"] = continuity_schema_variant.value
+    return guidance
 
 
 def _messages(
     operation: _Operation,
     execution: _Execution,
     schema: dict[str, Any],
+    *,
+    continuity_schema_variant: _ContinuitySchemaVariant | None,
 ) -> tuple[ModelMessage, ...]:
     local_schema_repair = _local_schema_repair_guidance(
         operation=operation,
         deployment=execution.selection.deployment,
         previous_failure=execution.previous_failure,
+        continuity_schema_variant=continuity_schema_variant,
     )
     system = (
         "You are a registered Open Hollywood scene-production specialist. "
@@ -967,15 +1061,17 @@ def _messages(
     }
     previous_reports: tuple[dict[str, Any], ...] = ()
     if operation is _Operation.CONTINUITY:
+        if continuity_schema_variant is None:
+            raise ValueError("continuity messages require a schema variant")
+        payload["output_schema_variant"] = continuity_schema_variant.value
         payload["benchmark_constraint_applicability"] = _benchmark_constraint_applicability(
             execution.constraints,
             unit_number=execution.unit_number,
             unit_count=execution.unit_count,
         )
-        payload["output_requirements"] = {
+        output_requirements = {
             "continuity_finding_resolution": (_CONTINUITY_FINDING_RESOLUTION_REQUIREMENT),
             "requirement_scope": _CONTINUITY_REQUIREMENT_SCOPE,
-            "recheck_analysis": _CONTINUITY_RECHECK_REQUIREMENT,
         }
         previous_reports = tuple(
             item
@@ -983,12 +1079,14 @@ def _messages(
             if item.get("artifact_kind") == ArtifactKind.CONTINUITY_REPORT.value
         )
         if previous_reports:
+            output_requirements["recheck_analysis"] = _CONTINUITY_RECHECK_REQUIREMENT
             payload["continuity_recheck"] = {
                 "previous_report_version_ids": [
                     item["artifact_version_id"] for item in previous_reports
                 ],
                 "verification_contract": _CONTINUITY_RECHECK_REQUIREMENT,
             }
+        payload["output_requirements"] = output_requirements
     else:
         payload["frozen_benchmark_constraints"] = execution.constraints
     if execution.previous_failure is not None:

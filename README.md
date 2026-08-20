@@ -206,6 +206,18 @@ continuity re-check fields and canonical Story Bible IDs. Cloud retries do not
 receive Local guidance, and the existing Hybrid-only continuity-stagnation
 escalation remains unchanged and drops the Local packet when routed to Cloud.
 
+The first Local v9 canary batch completed one of five production-runnable cases;
+the success produced 3,365 words within target and passed every automated hard
+gate. The four terminal failures shared one exact cause: initial continuity
+calls populated fields intended only for continuity re-checks. Prompt contract
+v10 now selects an explicit `initial_check` or `recheck` output schema from
+immutable input lineage. The initial schema omits the re-check disposition,
+repair-assessment, and revised-evidence fields entirely and receives no re-check
+instructions; the re-check schema exposes them with the existing verification
+contract. The selected variant is identical in the prompt and Local provider
+grammar and is persisted for replay diagnostics. Canonical artifact validation,
+Cloud behavior, bounded repair, and Hybrid-only escalation remain unchanged.
+
 Benchmark word-count ranges are advisory creative targets. New outputs persist a
 non-gating adherence measurement with the target, actual count, status, and word
 deviation. Automatic completion reflects a finished, non-truncated document,
