@@ -214,11 +214,23 @@ and Hybrid routing behavior. Evidence:
 was copied byte-for-byte from the approved pre-production snapshot, migrated to
 schema 0007, and frozen into a 48-case plan with canonical digest
 `2e1a76a7fec7cec9b408e08c5e65632d0aabf62f7f93a4c1734734bb5298c788`.
-It has no production runs or report and must be exercised across representative
-Local, Cloud, and Hybrid cases before another formal campaign is started. Ruff,
-formatting, strict mypy over 133 source files, 205 pytest tests, frontend
-formatting, lint, TypeScript checking, 10 Vitest tests, and the production build
-pass.
+Its first six-case Local batch completed two of five production-runnable cases;
+OH-V01-006 retained its terminal Blueprint failure. The two successes passed all
+automated hard gates at 3,579 and 3,621 words. Two failures exhausted continuity
+structured-output repair after ordinary application diagnostics collapsed to
+`$:ValueError`; a third recovered continuity but exhausted Story Bible repair on
+unknown canonical fact and location IDs. Prompt contract v9 now persists a
+redacted, bounded diagnostic envelope with exact output-field locations,
+validation types, and messages without retaining provider response bodies. The
+one bounded Local retry receives those focus locations plus operation-specific
+continuity and Story Bible schema-repair rules. Cloud retries remain unchanged,
+and an audited Hybrid continuity-stagnation retry drops Local guidance when it
+escalates to Cloud. The v8 canary remains immutable diagnostic evidence; another
+batch requires a new plan pinned to prompt v9. Evidence:
+`docs/benchmark_reports/step-19-local-v8-canary-2026-08-20.md`.
+Ruff and formatting pass over 133 files, strict mypy passes over 133 source
+files, all 210 pytest tests pass, frontend formatting/lint/type checking pass,
+all 10 Vitest tests pass, and the production build succeeds.
 
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 

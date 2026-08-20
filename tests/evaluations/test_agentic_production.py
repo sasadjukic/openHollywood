@@ -43,6 +43,7 @@ from open_hollywood_api.services.production_model_executor import (
     ContinuityRecheckStagnationError,
     _benchmark_constraint_applicability,
     _invalid_continuity_recheck_finding_ids,
+    _local_schema_repair_guidance,
     _materialize_continuity_finding,
     _Operation,
     _select_production_model,
@@ -312,6 +313,7 @@ class OneProductionRepairGateway(ProductionFixtureGateway):
         self.output_requirements: list[dict[str, object]] = []
         self.constraint_applicabilities: list[dict[str, object]] = []
         self.repair_contexts: list[dict[str, object]] = []
+        self.local_schema_repairs: list[dict[str, object]] = []
 
     async def generate(self, request: ModelRequest) -> ModelResponse:
         if request.invocation.specialist_role != "continuity_supervisor":
@@ -327,6 +329,9 @@ class OneProductionRepairGateway(ProductionFixtureGateway):
         retry_context = payload.get("retry_context")
         if isinstance(retry_context, dict):
             self.repair_contexts.append(retry_context)
+        local_schema_repair = payload.get("local_schema_repair")
+        if isinstance(local_schema_repair, dict):
+            self.local_schema_repairs.append(local_schema_repair)
         if not self.invalid_sent or self.repeat_invalid:
             self.invalid_sent = True
             content = json.loads(response.content)
@@ -504,6 +509,7 @@ class RepeatedInvalidStoryBibleGateway(ProductionFixtureGateway):
         super().__init__(prompt_text, prompt)
         self.invalid_kind = invalid_kind
         self.repair_contexts: list[dict[str, object]] = []
+        self.local_schema_repairs: list[dict[str, object]] = []
 
     async def generate(self, request: ModelRequest) -> ModelResponse:
         response = await super().generate(request)
@@ -513,6 +519,9 @@ class RepeatedInvalidStoryBibleGateway(ProductionFixtureGateway):
         retry_context = payload.get("retry_context")
         if isinstance(retry_context, dict):
             self.repair_contexts.append(retry_context)
+        local_schema_repair = payload.get("local_schema_repair")
+        if isinstance(local_schema_repair, dict):
+            self.local_schema_repairs.append(local_schema_repair)
         content = json.loads(response.content)
         if self.invalid_kind == "character":
             content["character_states"] = [
@@ -662,9 +671,72 @@ def test_stagnation_diagnostic_is_actionable_without_provider_content() -> None:
 
     diagnostic = _structured_failure_message(error, response)
 
-    assert "ContinuityRecheckStagnationError" in diagnostic
+    assert "findings:ContinuityRecheckStagnationError" in diagnostic
     assert "stalled_blocker" in diagnostic
     assert private_response_content not in diagnostic
+
+
+def test_plain_value_error_diagnostic_preserves_bounded_actionable_detail() -> None:
+    private_response_content = "provider response body must remain private"
+    response = ModelResponse(
+        provider="fixture",
+        model_identifier="fixture-model",
+        deployment=ModelDeployment.LOCAL,
+        content=private_response_content,
+        thinking=None,
+        finish_reason="stop",
+        created_at=datetime.now(UTC),
+        usage=ModelUsage(input_tokens=10, output_tokens=20),
+        timing=ModelTiming(total_ms=30),
+        estimated_cost_usd=Decimal("0"),
+    )
+
+    diagnostic = _structured_failure_message(
+        ValueError(
+            "initial continuity findings cannot contain re-check analysis: ['premature_recheck']"
+        ),
+        response,
+    )
+
+    assert "$:ValueError:initial continuity findings cannot contain re-check analysis" in diagnostic
+    assert "premature_recheck" in diagnostic
+    assert private_response_content not in diagnostic
+
+
+@pytest.mark.parametrize(
+    ("deployment", "error_code", "expects_guidance"),
+    (
+        (ModelDeployment.LOCAL, "schema_validation_failed", True),
+        (ModelDeployment.LOCAL, "continuity_recheck_stagnated", True),
+        (ModelDeployment.LOCAL, "provider_timeout", False),
+        (ModelDeployment.CLOUD, "schema_validation_failed", False),
+    ),
+)
+def test_schema_repair_guidance_is_limited_to_local_structured_failures(
+    deployment: ModelDeployment,
+    error_code: str,
+    expects_guidance: bool,
+) -> None:
+    guidance = _local_schema_repair_guidance(
+        operation=_Operation.CONTINUITY,
+        deployment=deployment,
+        previous_failure={
+            "error_code": error_code,
+            "validation_issues": [
+                {
+                    "location": "findings.0",
+                    "type": "value_error",
+                    "message": "repair assessment is required",
+                }
+            ],
+        },
+    )
+
+    assert (guidance is not None) is expects_guidance
+    if guidance is not None:
+        assert guidance["mode"] == "repair_only"
+        assert guidance["focus_locations"] == ["findings.0"]
+        assert "recheck_disposition" in str(guidance["operation_rules"])
 
 
 @pytest.mark.parametrize(
@@ -834,7 +906,9 @@ async def test_hybrid_continuity_stagnation_retry_uses_cloud_and_records_fallbac
 
     assert execution.status is RunStatus.SUCCEEDED
     assert len(gateway.escalated_retry_payloads) == 1
-    retry_context = gateway.escalated_retry_payloads[0]["retry_context"]
+    escalated_payload = gateway.escalated_retry_payloads[0]
+    assert "local_schema_repair" not in escalated_payload
+    retry_context = escalated_payload["retry_context"]
     assert isinstance(retry_context, dict)
     assert retry_context["error_code"] == "continuity_recheck_stagnated"
     with session_factory() as session:
@@ -1106,6 +1180,14 @@ async def test_repeated_missing_continuity_resolution_fails_after_bounded_retry(
     repair_context = gateway.repair_contexts[0]
     assert "requires a resolution" in str(repair_context["message"])
     assert "recommended_resolution" in str(repair_context["required_correction"])
+    validation_issues = repair_context["validation_issues"]
+    assert isinstance(validation_issues, list)
+    assert validation_issues[0]["location"] == "findings.0"
+    assert "requires a resolution" in str(validation_issues[0]["message"])
+    assert len(gateway.local_schema_repairs) == 1
+    local_schema_repair = gateway.local_schema_repairs[0]
+    assert local_schema_repair["focus_locations"] == ["findings.0"]
+    assert "recheck_disposition" in str(local_schema_repair["operation_rules"])
     with session_factory() as session:
         production_run = session.scalar(
             select(WorkflowRun).where(
@@ -1133,6 +1215,9 @@ async def test_repeated_missing_continuity_resolution_fails_after_bounded_retry(
             "requires a resolution" in (invocation.error_message or "")
             for invocation in invocations
         )
+        persisted_issues = invocations[0].request_settings["structured_failure"]["issues"]
+        assert persisted_issues[0]["location"] == "findings.0"
+        assert "requires a resolution" in persisted_issues[0]["message"]
 
 
 @pytest.mark.parametrize(
@@ -1232,6 +1317,10 @@ async def test_repeated_story_bible_invariant_failure_is_actionable_and_bounded(
     assert len(gateway.repair_contexts) == 1
     repair_message = str(gateway.repair_contexts[0]["message"])
     assert expected_detail in repair_message
+    assert len(gateway.local_schema_repairs) == 1
+    story_bible_rules = str(gateway.local_schema_repairs[0]["operation_rules"])
+    assert "canonical IDs" in story_bible_rules
+    assert "invented alias" in story_bible_rules
     with session_factory() as session:
         production_run = session.scalar(
             select(WorkflowRun).where(
@@ -1390,7 +1479,7 @@ async def test_approved_blueprint_runs_durable_production_and_replays(
             "story_bible_maintainer",
         }
     ]
-    assert all(request.invocation.prompt_template_version == "8" for request in production_requests)
+    assert all(request.invocation.prompt_template_version == "9" for request in production_requests)
     assert all(request.response_schema is not None for request in gateway.requests)
     with session_factory() as session:
         production_run = session.get(WorkflowRun, execution.workflow_run_id)

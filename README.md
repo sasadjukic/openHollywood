@@ -194,6 +194,18 @@ and cross-document lineage are independently reverified. The formal
 Local/Cloud/Hybrid campaign and actual blind human reviews remain pending, so
 Step 19 is not yet marked complete.
 
+The first Local v8 canary batch completed two of five production-runnable cases.
+Its failed invocations exposed that ordinary application validation messages
+were being reduced to `$:ValueError`, leaving the bounded Local retry without
+actionable field guidance. Scene-production prompt contract v9 now persists a
+redacted, bounded diagnostic envelope with field location, validation type, and
+message while retaining only the failed provider response's hash, length, finish
+reason, and usage metadata. Local structured-output retries receive a concise
+operation-specific repair packet focused on those locations, including paired
+continuity re-check fields and canonical Story Bible IDs. Cloud retries do not
+receive Local guidance, and the existing Hybrid-only continuity-stagnation
+escalation remains unchanged and drops the Local packet when routed to Cloud.
+
 Benchmark word-count ranges are advisory creative targets. New outputs persist a
 non-gating adherence measurement with the target, actual count, status, and word
 deviation. Automatic completion reflects a finished, non-truncated document,

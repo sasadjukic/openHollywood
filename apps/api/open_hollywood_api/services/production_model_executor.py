@@ -84,6 +84,7 @@ class _Operation(StrEnum):
 
 
 _MAX_SAFE_STRUCTURED_FAILURE_DETAIL_CHARS = 500
+_MAX_SAFE_STRUCTURED_FAILURE_ISSUES = 12
 _CONTINUITY_RECHECK_STAGNATION_ERROR_CODE = "continuity_recheck_stagnated"
 _CONTINUITY_FINDING_RESOLUTION_REQUIREMENT = (
     "Every finding with severity 'error' or 'blocking' must include a non-empty, "
@@ -113,10 +114,58 @@ _CONTINUITY_RECHECK_REQUIREMENT = (
     "replace prior guidance with contradictory guidance unless exact Scene Plan or Story "
     "Bible evidence proves the prior repair invalid."
 )
+_LOCAL_SCHEMA_REPAIR_COMMON_RULES = (
+    "Return the complete replacement JSON object, not a patch or explanation.",
+    "Correct every validation issue at its exact focus location before changing any "
+    "unrelated creative content.",
+    "Use exact enum literals and canonical IDs copied from input_artifacts; never turn "
+    "labels, prose descriptions, null-like text, or newly invented names into IDs.",
+    "When an optional field is not applicable, use the schema default shape (null, an "
+    "empty array, or omission as permitted by the supplied schema) instead of placeholder text.",
+)
+_LOCAL_SCHEMA_REPAIR_OPERATION_RULES: Mapping[_Operation, tuple[str, ...]] = {
+    _Operation.WRITE: (
+        "Keep prose and title as non-empty strings, is_complete=true, and preserve the "
+        "assigned scene and revision identity.",
+    ),
+    _Operation.CRITIQUE: (
+        "Keep score values numeric, use only declared verdict and severity literals, and "
+        "never combine a passing verdict with a blocking issue.",
+    ),
+    _Operation.CONTINUITY: (
+        "For an initial check, leave recheck_disposition and repair_assessment null and "
+        "revised_evidence empty on every finding.",
+        "For a re-check, an unresolved prior or newly exposed error/blocking finding must "
+        "supply recheck_disposition, repair_assessment, and non-empty revised_evidence "
+        "together; info and warning findings must not use those fields.",
+        "Every error or blocking finding needs a concrete recommended_resolution. Return "
+        "an empty findings array when no defect remains.",
+    ),
+    _Operation.STORY_BIBLE_UPDATE: (
+        "Character, relationship, location, scene, fact, and thread references must use "
+        "only canonical IDs present in input_artifacts or valid new IDs declared in this "
+        "same update where the schema permits them.",
+        "Omit an entity-state update when no matching canonical entity ID exists; never "
+        "substitute a display name, location description, or invented alias.",
+        "knowledge_fact_ids may reference only facts in the source Story Bible or facts "
+        "declared in established_facts in this same response.",
+    ),
+}
 
 
-class ContinuityRecheckStagnationError(ValueError):
+class _StructuredOutputContractError(ValueError):
+    """Application validation failure with an explicit output-field location."""
+
+    def __init__(self, location: str, message: str) -> None:
+        super().__init__(message)
+        self.location = location
+
+
+class ContinuityRecheckStagnationError(_StructuredOutputContractError):
     """A continuity re-check copied an unresolved judgment without new analysis."""
+
+    def __init__(self, message: str) -> None:
+        super().__init__("findings", message)
 
 
 _OUTPUT_MODELS: Mapping[_Operation, type[BaseModel]] = {
@@ -332,6 +381,7 @@ class ProfileRoutedProductionExecutor(SceneProductionExecutor):
             raise
         except (ValueError, json.JSONDecodeError, StoryBibleInvariantError) as error:
             diagnostic = _structured_failure_message(error, response)
+            validation_issues = _structured_failure_issues(error)
             error_code = (
                 _CONTINUITY_RECHECK_STAGNATION_ERROR_CODE
                 if isinstance(error, ContinuityRecheckStagnationError)
@@ -344,6 +394,7 @@ class ProfileRoutedProductionExecutor(SceneProductionExecutor):
                 diagnostic,
                 False,
                 response,
+                validation_issues,
             )
             raise RetryableSceneProductionError(
                 "production specialist returned invalid structured output"
@@ -612,8 +663,17 @@ class ProfileRoutedProductionExecutor(SceneProductionExecutor):
         message: str,
         schema_valid: bool | None,
         response: ModelResponse | None = None,
+        validation_issues: tuple[dict[str, str], ...] = (),
     ) -> None:
-        safe_message = active_secret_guard().redact_text(message)[:2_000]
+        guard = active_secret_guard()
+        safe_message = guard.redact_text(message)[:2_000]
+        safe_validation_issues = tuple(
+            {
+                key: guard.redact_text(value)[:_MAX_SAFE_STRUCTURED_FAILURE_DETAIL_CHARS]
+                for key, value in issue.items()
+            }
+            for issue in validation_issues[:_MAX_SAFE_STRUCTURED_FAILURE_ISSUES]
+        )
         with self._session_factory.begin() as session:
             invocation = session.get(AgentInvocation, invocation_id)
             if invocation is None:
@@ -629,6 +689,14 @@ class ProfileRoutedProductionExecutor(SceneProductionExecutor):
             invocation.completed_at = datetime.now(UTC)
             invocation.error_code = code
             invocation.error_message = safe_message
+            if safe_validation_issues:
+                invocation.request_settings = {
+                    **invocation.request_settings,
+                    "structured_failure": {
+                        "schema_version": "1",
+                        "issues": list(safe_validation_issues),
+                    },
+                }
 
     def _load_story_bible_pair(
         self,
@@ -685,40 +753,72 @@ def _retry_context(
     if not failures:
         return 1, None
     latest = failures[-1]
-    return len(failures) + 1, {
+    context: dict[str, object] = {
         "error_code": latest.error_code or "unknown",
         "message": latest.error_message or "No structural diagnostic was recorded.",
         "provider_finish_reason": latest.request_settings.get("provider_finish_reason"),
         "provider_response_length": latest.request_settings.get("provider_response_content_length"),
     }
+    structured_failure = latest.request_settings.get("structured_failure")
+    if isinstance(structured_failure, dict):
+        issues = structured_failure.get("issues")
+        if isinstance(issues, list) and all(isinstance(issue, dict) for issue in issues):
+            context["validation_issues"] = [dict(issue) for issue in issues]
+    return len(failures) + 1, context
 
 
 def _structured_failure_message(
     error: ValueError | StoryBibleInvariantError,
     response: ModelResponse,
 ) -> str:
-    locations: list[str] = []
-    if isinstance(error, ValidationError):
-        for item in error.errors(
-            include_url=False,
-            include_context=False,
-            include_input=False,
-        )[:12]:
-            location = ".".join(str(value) for value in item["loc"]) or "$"
-            locations.append(f"{location}:{item['type']}:{item['msg']}")
-    elif isinstance(error, (StoryBibleInvariantError, ContinuityRecheckStagnationError)):
-        detail = _safe_structured_failure_detail(str(error))
-        locations.append(
-            f"$:{type(error).__name__}:{detail}"
-            if detail is not None
-            else f"$:{type(error).__name__}"
+    locations = [
+        ":".join(
+            value
+            for value in (
+                issue["location"],
+                issue["type"],
+                issue.get("message", ""),
+            )
+            if value
         )
-    else:
-        locations.append(f"$:{type(error).__name__}")
+        for issue in _structured_failure_issues(error)
+    ]
     return (
         "Structured output validation failed "
         f"(provider_finish_reason={response.finish_reason}): {', '.join(locations)}."
     )
+
+
+def _structured_failure_issues(
+    error: ValueError | StoryBibleInvariantError,
+) -> tuple[dict[str, str], ...]:
+    """Return bounded diagnostics without retaining model response content or inputs."""
+    if isinstance(error, ValidationError):
+        issues: list[dict[str, str]] = []
+        for item in error.errors(
+            include_url=False,
+            include_context=False,
+            include_input=False,
+        )[:_MAX_SAFE_STRUCTURED_FAILURE_ISSUES]:
+            location = ".".join(str(value) for value in item["loc"]) or "$"
+            issue = {
+                "location": location,
+                "type": str(item["type"]),
+            }
+            detail = _safe_structured_failure_detail(str(item["msg"]))
+            if detail is not None:
+                issue["message"] = detail
+            issues.append(issue)
+        return tuple(issues)
+
+    detail = _safe_structured_failure_detail(str(error))
+    issue = {
+        "location": (error.location if isinstance(error, _StructuredOutputContractError) else "$"),
+        "type": type(error).__name__,
+    }
+    if detail is not None:
+        issue["message"] = detail
+    return (issue,)
 
 
 def _safe_structured_failure_detail(message: str) -> str | None:
@@ -793,17 +893,65 @@ def _select_production_model(
     return cloud, (fallback,)
 
 
+def _local_schema_repair_guidance(
+    *,
+    operation: _Operation,
+    deployment: ModelDeployment,
+    previous_failure: Mapping[str, object] | None,
+) -> dict[str, object] | None:
+    """Build a concise repair-only packet for a failed Local structured call."""
+    if (
+        deployment is not ModelDeployment.LOCAL
+        or previous_failure is None
+        or previous_failure.get("error_code")
+        not in {"schema_validation_failed", _CONTINUITY_RECHECK_STAGNATION_ERROR_CODE}
+    ):
+        return None
+
+    focus_locations: list[str] = []
+    validation_issues = previous_failure.get("validation_issues")
+    if isinstance(validation_issues, list):
+        for issue in validation_issues:
+            if not isinstance(issue, dict):
+                continue
+            location = issue.get("location")
+            if isinstance(location, str) and location not in focus_locations:
+                focus_locations.append(location)
+    if not focus_locations:
+        focus_locations.append("$")
+
+    return {
+        "policy_version": "1",
+        "mode": "repair_only",
+        "focus_locations": focus_locations,
+        "common_rules": list(_LOCAL_SCHEMA_REPAIR_COMMON_RULES),
+        "operation_rules": list(_LOCAL_SCHEMA_REPAIR_OPERATION_RULES[operation]),
+    }
+
+
 def _messages(
     operation: _Operation,
     execution: _Execution,
     schema: dict[str, Any],
 ) -> tuple[ModelMessage, ...]:
+    local_schema_repair = _local_schema_repair_guidance(
+        operation=operation,
+        deployment=execution.selection.deployment,
+        previous_failure=execution.previous_failure,
+    )
     system = (
         "You are a registered Open Hollywood scene-production specialist. "
         f"{_INSTRUCTIONS[operation]} Return only one JSON value conforming exactly "
         "to the supplied schema. Do not include Markdown, commentary, hidden reasoning, "
         "or undeclared fields. If retry_context is present, correct every reported "
         "structural error without changing the assignment or inventing new lineage."
+        + (
+            " This is a Local structured-output repair attempt. Follow "
+            "local_schema_repair exactly, prioritize its focus locations, and return the "
+            "entire corrected object once."
+            if local_schema_repair is not None
+            else ""
+        )
     )
     payload: dict[str, object] = {
         "assignment": {
@@ -851,6 +999,8 @@ def _messages(
                 requirements.append(_CONTINUITY_RECHECK_REQUIREMENT)
             retry_context["required_correction"] = " ".join(requirements)
         payload["retry_context"] = retry_context
+    if local_schema_repair is not None:
+        payload["local_schema_repair"] = local_schema_repair
     user = json.dumps(
         payload,
         ensure_ascii=False,
@@ -1211,9 +1361,10 @@ def _validate_continuity_recheck_analysis(
             )
         )
         if unexpected_ids:
-            raise ValueError(
+            raise _StructuredOutputContractError(
+                "findings",
                 "initial continuity findings cannot contain re-check analysis: "
-                f"{list(unexpected_ids)}"
+                f"{list(unexpected_ids)}",
             )
         return
     invalid_ids = _invalid_continuity_recheck_finding_ids(findings, prior_report)
