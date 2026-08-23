@@ -181,7 +181,8 @@ repairs. Scene-production prompt contract v8 scopes benchmark requirements
 deterministically for continuity: non-final scenes receive only opaque IDs for
 story-wide requirements deferred until the ending, while the final scene
 receives their exact frozen text as due-now gates. Scene Plan requirements
-remain current-scene obligations throughout. Continuity re-checks express an
+remain current-scene obligations except when a non-final plan repeats an exact
+story-wide benchmark requirement that is still deferred. Continuity re-checks express an
 unresolved or newly exposed blocker through typed disposition, repair-assessment,
 and revised-evidence fields instead of being judged by textual difference alone;
 the Local profile remains fail-closed and the existing audited Hybrid-only
@@ -217,6 +218,23 @@ instructions; the re-check schema exposes them with the existing verification
 contract. The selected variant is identical in the prompt and Local provider
 grammar and is persisted for replay diagnostics. Canonical artifact validation,
 Cloud behavior, bounded repair, and Hybrid-only escalation remain unchanged.
+
+The first Local v10 canary batch again completed one of five
+production-runnable cases; its success produced 3,455 words within target and
+passed every automated hard gate. Two failures omitted
+`recommended_resolution` from blocking findings after repair, while two reached
+the revision limit after continuity re-checks cited non-exact evidence or copied
+stale assessments despite changed drafts. Prompt contract v11 now gives initial
+and re-check continuity findings severity-discriminated schemas: error/blocking
+branches require a concrete resolution, advisory branches do not, and the
+application-owned `blocks_approval` field is unavailable to the model. Re-check
+blocking branches also require their three audit fields together. Application
+validation binds every revised-evidence excerpt to the exact current draft,
+rejects copied assessments when evidence changes, and requires an explicit
+explanation when evidence is unchanged. Exact story-wide benchmark requirements
+copied into non-final Scene Plans are deferred and redacted from the continuity
+prompt view. Canonical artifacts, retry limits, Cloud behavior, and Hybrid-only
+escalation remain unchanged.
 
 Benchmark word-count ranges are advisory creative targets. New outputs persist a
 non-gating adherence measurement with the target, actual count, status, and word

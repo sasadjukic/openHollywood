@@ -96,20 +96,23 @@ _CONTINUITY_RECHECK_ONLY_FIELDS = frozenset(
     {"recheck_disposition", "repair_assessment", "revised_evidence"}
 )
 _CONTINUITY_FINDING_RESOLUTION_REQUIREMENT = (
-    "Every finding with severity 'error' or 'blocking' must include a non-empty, "
-    "concrete recommended_resolution. The application derives blocks_approval=true "
-    "for both severities. Findings with severity 'info' or 'warning' may use null only "
+    "The blocking-finding schema requires every finding with severity 'error' or "
+    "'blocking' to include a non-empty, concrete recommended_resolution. The application "
+    "derives blocks_approval=true for both severities; never add that application-owned "
+    "field. Advisory 'info' or 'warning' findings may omit recommended_resolution only "
     "when no repair is needed."
 )
 _CONTINUITY_REQUIREMENT_SCOPE = (
-    "Use benchmark_constraint_applicability as the sole authority for benchmark gates in "
-    "this continuity call. Only due_now entries may produce an error or blocking finding. "
-    "Deferred story-wide requirements must not block the current scene. Treat the exact "
-    "Scene Plan's required_elements, continuity_requirements, purpose, turning_point, "
-    "outcome, and exit_state as current-scene obligations. A character may temporarily "
-    "consider a forbidden final explanation; it becomes a violation only if the completed "
-    "story adopts it as the actual resolution. Never rewrite a planned intermediate scene "
-    "to perform the ending's work early."
+    "Use benchmark_constraint_applicability and scene_plan_requirement_applicability as "
+    "the sole authorities for requirement gates in this continuity call. Only their "
+    "due_now entries may produce an error or blocking finding. Deferred story-wide "
+    "requirements, including exact duplicates removed from a non-final Scene Plan view, "
+    "must not block the current scene. Treat the Scene Plan's continuity_requirements, "
+    "purpose, turning_point, outcome, exit_state, and non-deferred required_elements as "
+    "current-scene obligations. A character may temporarily consider a forbidden final "
+    "explanation; it becomes a violation only if the completed story adopts it as the "
+    "actual resolution. Never rewrite a planned intermediate scene to perform the ending's "
+    "work early."
 )
 _CONTINUITY_RECHECK_REQUIREMENT = (
     "When a previous Continuity Report is supplied, audit every prior error or blocking "
@@ -120,8 +123,13 @@ _CONTINUITY_RECHECK_REQUIREMENT = (
     "the offending passage unchanged, but repair_assessment must explain that fact. For a new "
     "blocking defect caused or exposed by the revision, set "
     "recheck_disposition='newly_exposed' and explain why it was not actionable before. Do not "
-    "replace prior guidance with contradictory guidance unless exact Scene Plan or Story "
-    "Bible evidence proves the prior repair invalid."
+    "downgrade an unresolved prior blocker to an advisory finding. Every revised_evidence "
+    "item must be an exact excerpt from the supplied revised draft. "
+    "When the cited evidence changes, write a fresh repair_assessment instead of copying "
+    "the previous judgment. Reuse unchanged evidence only when repair_assessment explicitly "
+    "explains that the offending passage was left unchanged. Do not replace prior guidance "
+    "with contradictory guidance unless exact Scene Plan or Story Bible evidence proves "
+    "the prior repair invalid."
 )
 _LOCAL_SCHEMA_REPAIR_COMMON_RULES = (
     "Return the complete replacement JSON object, not a patch or explanation.",
@@ -902,24 +910,97 @@ def _output_schema(
     properties = finding_schema.get("properties")
     if not isinstance(properties, dict):
         raise SceneProductionError("continuity finding schema is missing properties")
+    report_properties = schema.get("properties")
+    if not isinstance(report_properties, dict):
+        raise SceneProductionError("continuity report schema is missing properties")
+    findings_schema = report_properties.get("findings")
+    if not isinstance(findings_schema, dict):
+        raise SceneProductionError("continuity report schema is missing findings")
 
-    if continuity_schema_variant is _ContinuitySchemaVariant.INITIAL_CHECK:
-        for field_name in _CONTINUITY_RECHECK_ONLY_FIELDS:
-            properties.pop(field_name, None)
-        required = finding_schema.get("required")
-        if isinstance(required, list):
-            finding_schema["required"] = [
-                field_name
-                for field_name in required
-                if field_name not in _CONTINUITY_RECHECK_ONLY_FIELDS
-            ]
+    is_recheck = continuity_schema_variant is _ContinuitySchemaVariant.RECHECK
+    phase_name = "Recheck" if is_recheck else "Initial"
+    blocking_name = f"{phase_name}BlockingContinuityFinding"
+    advisory_name = f"{phase_name}AdvisoryContinuityFinding"
+    definitions[blocking_name] = _continuity_finding_branch_schema(
+        finding_schema,
+        title=blocking_name,
+        severities=("error", "blocking"),
+        require_resolution=True,
+        require_recheck_analysis=is_recheck,
+    )
+    definitions[advisory_name] = _continuity_finding_branch_schema(
+        finding_schema,
+        title=advisory_name,
+        severities=("info", "warning"),
+        require_resolution=False,
+        require_recheck_analysis=False,
+    )
+    findings_schema["items"] = {
+        "anyOf": [
+            {"$ref": f"#/$defs/{blocking_name}"},
+            {"$ref": f"#/$defs/{advisory_name}"},
+        ]
+    }
+    definitions.pop("ContinuityFinding", None)
+    definitions.pop("ContinuitySeverity", None)
+    if not is_recheck:
         definitions.pop("ContinuityRecheckDisposition", None)
-        schema["title"] = "InitialContinuityReport"
-        finding_schema["title"] = "InitialContinuityFinding"
-    else:
-        schema["title"] = "ContinuityRecheckReport"
-        finding_schema["title"] = "ContinuityRecheckFinding"
+    schema["title"] = f"{phase_name}ContinuityReport"
     return schema
+
+
+def _continuity_finding_branch_schema(
+    canonical_schema: Mapping[str, Any],
+    *,
+    title: str,
+    severities: tuple[str, str],
+    require_resolution: bool,
+    require_recheck_analysis: bool,
+) -> dict[str, Any]:
+    """Create one unambiguous model-facing continuity-finding branch."""
+    branch = deepcopy(dict(canonical_schema))
+    properties = branch.get("properties")
+    required = branch.get("required")
+    if not isinstance(properties, dict) or not isinstance(required, list):
+        raise SceneProductionError("continuity finding branch schema is invalid")
+
+    properties.pop("blocks_approval", None)
+    properties["severity"] = {
+        "type": "string",
+        "enum": list(severities),
+        "title": "Severity",
+    }
+    for field_name in _CONTINUITY_RECHECK_ONLY_FIELDS:
+        properties.pop(field_name, None)
+    branch["required"] = [
+        field_name
+        for field_name in required
+        if field_name != "blocks_approval" and field_name not in _CONTINUITY_RECHECK_ONLY_FIELDS
+    ]
+
+    if require_resolution:
+        properties["recommended_resolution"] = {
+            "type": "string",
+            "minLength": 1,
+            "title": "Recommended Resolution",
+        }
+        branch["required"].append("recommended_resolution")
+    if require_recheck_analysis:
+        properties["recheck_disposition"] = {"$ref": "#/$defs/ContinuityRecheckDisposition"}
+        properties["repair_assessment"] = {
+            "type": "string",
+            "minLength": 1,
+            "title": "Repair Assessment",
+        }
+        properties["revised_evidence"] = {
+            "type": "array",
+            "items": {"type": "string", "minLength": 1},
+            "minItems": 1,
+            "title": "Revised Evidence",
+        }
+        branch["required"].extend(sorted(_CONTINUITY_RECHECK_ONLY_FIELDS))
+    branch["title"] = title
+    return branch
 
 
 def _select_production_model(
@@ -1063,12 +1144,24 @@ def _messages(
     if operation is _Operation.CONTINUITY:
         if continuity_schema_variant is None:
             raise ValueError("continuity messages require a schema variant")
+        scene_plan = _continuity_scene_plan(execution)
+        scene_plan_applicability = _scene_plan_requirement_applicability(
+            execution.constraints,
+            scene_plan,
+            unit_number=execution.unit_number,
+            unit_count=execution.unit_count,
+        )
+        payload["input_artifacts"] = _continuity_prompt_inputs(
+            execution.inputs,
+            scene_plan_applicability,
+        )
         payload["output_schema_variant"] = continuity_schema_variant.value
         payload["benchmark_constraint_applicability"] = _benchmark_constraint_applicability(
             execution.constraints,
             unit_number=execution.unit_number,
             unit_count=execution.unit_count,
         )
+        payload["scene_plan_requirement_applicability"] = scene_plan_applicability
         output_requirements = {
             "continuity_finding_resolution": (_CONTINUITY_FINDING_RESOLUTION_REQUIREMENT),
             "requirement_scope": _CONTINUITY_REQUIREMENT_SCOPE,
@@ -1157,6 +1250,94 @@ def _benchmark_constraint_applicability(
             "considers and later rejects it."
         ),
     }
+
+
+def _scene_plan_requirement_applicability(
+    constraints: Mapping[str, object],
+    scene_plan: Mapping[str, object],
+    *,
+    unit_number: int,
+    unit_count: int,
+) -> dict[str, object]:
+    """Keep duplicated story-wide requirements deferred in non-final Scene Plans."""
+    if unit_number < 1 or unit_count < 1 or unit_number > unit_count:
+        raise SceneProductionError("continuity assignment has invalid scene bounds")
+    required_elements = scene_plan.get("required_elements")
+    if not isinstance(required_elements, list) or any(
+        not isinstance(value, str) for value in required_elements
+    ):
+        raise SceneProductionError("Scene Plan required_elements must be a list of text values")
+    benchmark_required = constraints.get("required_elements")
+    if not isinstance(benchmark_required, list) or any(
+        not isinstance(value, str) for value in benchmark_required
+    ):
+        raise SceneProductionError("benchmark required_elements must be a list of text values")
+
+    benchmark_ids = {
+        text: f"required_element_{index}" for index, text in enumerate(benchmark_required, start=1)
+    }
+    is_final_scene = unit_number == unit_count
+    due_now: list[dict[str, object]] = []
+    deferred: list[dict[str, object]] = []
+    for index, text in enumerate(required_elements, start=1):
+        entry_id = f"scene_plan_required_element_{index}"
+        benchmark_id = benchmark_ids.get(text)
+        if not is_final_scene and benchmark_id is not None:
+            deferred.append(
+                {
+                    "id": entry_id,
+                    "matched_benchmark_requirement_id": benchmark_id,
+                }
+            )
+        else:
+            due_now.append({"id": entry_id, "text": text})
+    return {
+        "policy_version": "1",
+        "current_scene_number": unit_number,
+        "final_scene_number": unit_count,
+        "is_final_scene": is_final_scene,
+        "due_now": due_now,
+        "deferred_until_final_scene": deferred,
+        "deferred_text_intentionally_omitted": bool(deferred),
+    }
+
+
+def _continuity_scene_plan(execution: _Execution) -> dict[str, Any]:
+    plans = tuple(
+        item.get("content")
+        for item in execution.inputs
+        if item.get("artifact_kind") == ArtifactKind.SCENE_PLAN.value
+    )
+    if len(plans) != 1 or not isinstance(plans[0], dict):
+        raise SceneProductionError("continuity call requires one valid Scene Plan input")
+    return plans[0]
+
+
+def _continuity_prompt_inputs(
+    inputs: tuple[dict[str, Any], ...],
+    scene_plan_applicability: Mapping[str, object],
+) -> tuple[dict[str, Any], ...]:
+    """Compile a prompt view that cannot expose deferred Scene Plan requirement text."""
+    due_now = scene_plan_applicability.get("due_now")
+    if not isinstance(due_now, list):
+        raise SceneProductionError("Scene Plan requirement applicability is invalid")
+    due_text = {
+        entry["text"]
+        for entry in due_now
+        if isinstance(entry, dict) and isinstance(entry.get("text"), str)
+    }
+    prompt_inputs = deepcopy(inputs)
+    for item in prompt_inputs:
+        if item.get("artifact_kind") != ArtifactKind.SCENE_PLAN.value:
+            continue
+        content = item.get("content")
+        if not isinstance(content, dict):
+            raise SceneProductionError("continuity Scene Plan prompt input is invalid")
+        required_elements = content.get("required_elements")
+        if not isinstance(required_elements, list):
+            raise SceneProductionError("continuity Scene Plan requirements are invalid")
+        content["required_elements"] = [value for value in required_elements if value in due_text]
+    return prompt_inputs
 
 
 def _validate_output(
@@ -1465,13 +1646,18 @@ def _validate_continuity_recheck_analysis(
                 f"{list(unexpected_ids)}",
             )
         return
-    invalid_ids = _invalid_continuity_recheck_finding_ids(findings, prior_report)
+    invalid_ids = _invalid_continuity_recheck_finding_ids(
+        findings,
+        prior_report,
+        revised_draft_prose=_current_scene_draft_prose(execution),
+    )
     if invalid_ids:
         raise ContinuityRecheckStagnationError(
-            "continuity re-check findings lack explicit revised-draft analysis: "
+            "continuity re-check findings lack fresh, exact revised-draft analysis: "
             f"{list(invalid_ids)}; set recheck_disposition to still_blocking for preserved "
             "IDs or newly_exposed for new IDs, and supply repair_assessment plus exact "
-            "revised_evidence"
+            "revised_evidence excerpts; when evidence changes, reassess it instead of "
+            "copying the prior judgment"
         )
 
 
@@ -1494,6 +1680,8 @@ def _prior_continuity_report(execution: _Execution) -> dict[str, Any] | None:
 def _invalid_continuity_recheck_finding_ids(
     findings: list[object],
     prior_report: Mapping[str, object],
+    *,
+    revised_draft_prose: str | None = None,
 ) -> tuple[str, ...]:
     prior_findings = prior_report.get("findings")
     if not isinstance(prior_findings, list):
@@ -1520,16 +1708,72 @@ def _invalid_continuity_recheck_finding_ids(
             else ContinuityRecheckDisposition.NEWLY_EXPOSED.value
         )
         revised_evidence = finding.get("revised_evidence")
-        if (
+        repair_assessment = finding.get("repair_assessment")
+        structurally_invalid = (
             finding.get("recheck_disposition") != expected_disposition
-            or not isinstance(finding.get("repair_assessment"), str)
-            or not cast(str, finding["repair_assessment"]).strip()
+            or not isinstance(repair_assessment, str)
+            or not repair_assessment.strip()
             or not isinstance(revised_evidence, list)
             or not revised_evidence
             or any(not isinstance(item, str) or not item.strip() for item in revised_evidence)
+        )
+        if structurally_invalid:
+            invalid.append(finding_id)
+            continue
+        exact_evidence = cast(list[str], revised_evidence)
+        if revised_draft_prose is not None and any(
+            excerpt not in revised_draft_prose for excerpt in exact_evidence
+        ):
+            invalid.append(finding_id)
+            continue
+
+        prior_finding = prior_by_id.get(finding_id)
+        if prior_finding is None:
+            continue
+        prior_revised_evidence = prior_finding.get("revised_evidence")
+        comparison_evidence = (
+            prior_revised_evidence
+            if isinstance(prior_revised_evidence, list) and prior_revised_evidence
+            else prior_finding.get("evidence")
+        )
+        prior_assessment = prior_finding.get("repair_assessment")
+        if exact_evidence == comparison_evidence:
+            if not _assessment_explains_unchanged(cast(str, repair_assessment)):
+                invalid.append(finding_id)
+        elif (
+            isinstance(prior_assessment, str)
+            and cast(str, repair_assessment).strip() == prior_assessment.strip()
         ):
             invalid.append(finding_id)
     return tuple(invalid)
+
+
+def _current_scene_draft_prose(execution: _Execution) -> str:
+    drafts = tuple(
+        content
+        for item in execution.inputs
+        if item.get("artifact_kind") == ArtifactKind.SCENE_DRAFT.value
+        and isinstance((content := item.get("content")), dict)
+        and content.get("scene_id") == execution.unit_id
+        and content.get("revision_number") == execution.revision_number
+    )
+    if len(drafts) != 1 or not isinstance(drafts[0].get("prose"), str):
+        raise SceneProductionError("continuity call requires one exact current scene draft")
+    return cast(str, drafts[0]["prose"])
+
+
+def _assessment_explains_unchanged(assessment: str) -> bool:
+    normalized = " ".join(assessment.casefold().split())
+    return any(
+        marker in normalized
+        for marker in (
+            "unchanged",
+            "not changed",
+            "did not change",
+            "still contains",
+            "still says",
+        )
+    ) or (("left" in normalized or "leaves" in normalized) and "in place" in normalized)
 
 
 def _materialize_continuity_finding(
@@ -1543,7 +1787,7 @@ def _materialize_continuity_finding(
     related_scene_ids = finding.get("related_scene_ids")
     model_scene_ids = related_scene_ids if isinstance(related_scene_ids, list) else []
     materialized = {
-        **finding,
+        **{key: value for key, value in finding.items() if key != "blocks_approval"},
         "related_scene_ids": list(dict.fromkeys((*model_scene_ids, scene_id))),
     }
     if finding.get("severity") in {"error", "blocking"}:

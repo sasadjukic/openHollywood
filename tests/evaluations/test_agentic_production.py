@@ -42,12 +42,14 @@ from open_hollywood_api.services.production_model_executor import (
     BenchmarkProductionExecutor,
     ContinuityRecheckStagnationError,
     _benchmark_constraint_applicability,
+    _continuity_prompt_inputs,
     _ContinuitySchemaVariant,
     _invalid_continuity_recheck_finding_ids,
     _local_schema_repair_guidance,
     _materialize_continuity_finding,
     _Operation,
     _output_schema,
+    _scene_plan_requirement_applicability,
     _select_production_model,
     _structured_failure_message,
 )
@@ -402,6 +404,16 @@ class ContinuityRevisionFeedbackGateway(ProductionFixtureGateway):
                 self.continuity_recheck_prompts.append(prompt)
                 self.continuity_recheck_reports.extend(reports)
                 self.continuity_recheck_contracts.append(recheck)
+                current_draft = next(
+                    item["content"]
+                    for item in payload["input_artifacts"]
+                    if item["artifact_kind"] == ArtifactKind.SCENE_DRAFT.value
+                    and item["content"]["scene_id"] == payload["assignment"]["unit_id"]
+                    and item["content"]["revision_number"] == revision_number
+                )
+                revised_evidence = [current_draft["prose"]]
+            else:
+                revised_evidence = None
 
         response = await super().generate(request)
         if role != "continuity_supervisor":
@@ -421,7 +433,7 @@ class ContinuityRevisionFeedbackGateway(ProductionFixtureGateway):
                 resolution=None,
                 is_recheck=True,
                 summary="Mara still holds the brass key after crossing the east door.",
-                evidence=["The revised draft says Mara pockets the key after crossing."],
+                evidence=revised_evidence,
             )
         return response
 
@@ -562,6 +574,17 @@ def test_continuity_routing_flag_is_derived_from_blocking_severity() -> None:
     assert finding["blocks_approval"] is True
     assert finding["related_scene_ids"] == ["model_invented_scene", "scene_1"]
 
+    advisory = _materialize_continuity_finding(
+        {
+            "severity": "warning",
+            "blocks_approval": True,
+            "related_scene_ids": [],
+        },
+        "scene_1",
+    )
+    assert isinstance(advisory, dict)
+    assert "blocks_approval" not in advisory
+
 
 def test_new_continuity_finding_cannot_inherit_another_findings_resolution() -> None:
     finding = _materialize_continuity_finding(
@@ -609,6 +632,83 @@ def test_continuity_recheck_requires_structured_analysis_not_rewording() -> None
     assert _invalid_continuity_recheck_finding_ids([], prior_report) == ()
 
 
+def test_continuity_recheck_evidence_must_be_exact_and_fresh() -> None:
+    original = {
+        "id": "stalled_blocker",
+        "severity": "blocking",
+        "category": "fact",
+        "summary": "The transition lacks a causal bridge.",
+        "evidence": ["The original draft jumps directly to ambition."],
+        "recommended_resolution": "Connect failure directly to the need for control.",
+        "recheck_disposition": "still_blocking",
+        "repair_assessment": "The writer changed the transition but left the gap unresolved.",
+        "revised_evidence": ["The revised draft still jumps directly to ambition."],
+    }
+    prior_report: dict[str, object] = {"findings": [original]}
+    copied_assessment = {
+        **original,
+        "revised_evidence": ["The revised draft now names the failed system."],
+    }
+
+    assert _invalid_continuity_recheck_finding_ids(
+        [copied_assessment],
+        prior_report,
+        revised_draft_prose="The revised draft now names the failed system.",
+    ) == ("stalled_blocker",)
+
+    fresh_assessment = {
+        **copied_assessment,
+        "repair_assessment": (
+            "The new system reference is present, but its effect on the decision is absent."
+        ),
+    }
+    assert (
+        _invalid_continuity_recheck_finding_ids(
+            [fresh_assessment],
+            prior_report,
+            revised_draft_prose="The revised draft now names the failed system.",
+        )
+        == ()
+    )
+    assert _invalid_continuity_recheck_finding_ids(
+        [fresh_assessment],
+        prior_report,
+        revised_draft_prose="This draft contains no quoted evidence.",
+    ) == ("stalled_blocker",)
+
+
+def test_unchanged_recheck_evidence_requires_an_explicit_explanation() -> None:
+    prior_finding = {
+        "id": "unchanged_blocker",
+        "severity": "blocking",
+        "category": "fact",
+        "summary": "The key remains in the wrong location.",
+        "evidence": ["Mara pockets the brass key."],
+        "recommended_resolution": "Have Mara return the key.",
+    }
+    finding = {
+        **prior_finding,
+        "recheck_disposition": "still_blocking",
+        "repair_assessment": "The conflict remains unresolved.",
+        "revised_evidence": ["Mara pockets the brass key."],
+    }
+    assert _invalid_continuity_recheck_finding_ids(
+        [finding],
+        {"findings": [prior_finding]},
+        revised_draft_prose="Mara pockets the brass key.",
+    ) == ("unchanged_blocker",)
+
+    finding["repair_assessment"] = "The writer left the conflicting key action in place."
+    assert (
+        _invalid_continuity_recheck_finding_ids(
+            [finding],
+            {"findings": [prior_finding]},
+            revised_draft_prose="Mara pockets the brass key.",
+        )
+        == ()
+    )
+
+
 def test_benchmark_constraint_text_is_deferred_until_final_scene() -> None:
     constraints: dict[str, object] = {
         "required_elements": ["Resolve the card's origin."],
@@ -649,6 +749,91 @@ def test_benchmark_constraint_text_is_deferred_until_final_scene() -> None:
             "kind": "forbidden_shortcut",
             "text": "Do not explain the card as a prank.",
         },
+    ]
+
+
+def test_duplicate_story_requirement_stays_deferred_in_non_final_scene_plan() -> None:
+    constraints: dict[str, object] = {
+        "required_elements": ["The stroller remains central to the plot."],
+    }
+    scene_plan: dict[str, object] = {
+        "required_elements": [
+            "The stroller remains central to the plot.",
+            "Elara begins a concrete facade survey.",
+        ]
+    }
+
+    non_final = _scene_plan_requirement_applicability(
+        constraints,
+        scene_plan,
+        unit_number=1,
+        unit_count=5,
+    )
+
+    assert non_final["due_now"] == [
+        {
+            "id": "scene_plan_required_element_2",
+            "text": "Elara begins a concrete facade survey.",
+        }
+    ]
+    assert non_final["deferred_until_final_scene"] == [
+        {
+            "id": "scene_plan_required_element_1",
+            "matched_benchmark_requirement_id": "required_element_1",
+        }
+    ]
+    assert "stroller" not in json.dumps(non_final).lower()
+
+    final = _scene_plan_requirement_applicability(
+        constraints,
+        scene_plan,
+        unit_number=5,
+        unit_count=5,
+    )
+    final_due_now = final["due_now"]
+    assert isinstance(final_due_now, list)
+    assert [item["text"] for item in final_due_now if isinstance(item, dict)] == scene_plan[
+        "required_elements"
+    ]
+
+
+def test_deferred_duplicate_story_requirement_is_redacted_from_prompt_inputs() -> None:
+    constraints: dict[str, object] = {
+        "required_elements": ["The stroller remains central to the plot."],
+    }
+    scene_plan_content: dict[str, object] = {
+        "required_elements": [
+            "The stroller remains central to the plot.",
+            "Elara begins a concrete facade survey.",
+        ]
+    }
+    scene_plan_input: dict[str, object] = {
+        "artifact_kind": ArtifactKind.SCENE_PLAN.value,
+        "content": scene_plan_content,
+    }
+    other_input: dict[str, object] = {
+        "artifact_kind": ArtifactKind.SCENE_DRAFT.value,
+        "content": {"prose": "Current draft."},
+    }
+    applicability = _scene_plan_requirement_applicability(
+        constraints,
+        scene_plan_content,
+        unit_number=1,
+        unit_count=5,
+    )
+
+    prompt_inputs = _continuity_prompt_inputs(
+        (scene_plan_input, other_input),
+        applicability,
+    )
+
+    prompt_plan = next(
+        item for item in prompt_inputs if item["artifact_kind"] == ArtifactKind.SCENE_PLAN.value
+    )
+    assert prompt_plan["content"]["required_elements"] == ["Elara begins a concrete facade survey."]
+    assert scene_plan_content["required_elements"] == [
+        "The stroller remains central to the plot.",
+        "Elara begins a concrete facade survey.",
     ]
 
 
@@ -749,15 +934,41 @@ def test_initial_continuity_schema_omits_every_recheck_only_field() -> None:
         continuity_schema_variant=_ContinuitySchemaVariant.INITIAL_CHECK,
     )
     definitions = schema["$defs"]
-    properties = definitions["ContinuityFinding"]["properties"]
+    blocking = definitions["InitialBlockingContinuityFinding"]
+    advisory = definitions["InitialAdvisoryContinuityFinding"]
+    blocking_properties = blocking["properties"]
+    advisory_properties = advisory["properties"]
 
     assert schema["title"] == "InitialContinuityReport"
     assert "ContinuityRecheckDisposition" not in definitions
+    assert "ContinuityFinding" not in definitions
+    assert schema["properties"]["findings"]["items"] == {
+        "anyOf": [
+            {"$ref": "#/$defs/InitialBlockingContinuityFinding"},
+            {"$ref": "#/$defs/InitialAdvisoryContinuityFinding"},
+        ]
+    }
+    assert blocking_properties["severity"]["enum"] == ["error", "blocking"]
+    assert "recommended_resolution" in blocking["required"]
+    assert blocking_properties["recommended_resolution"] == {
+        "type": "string",
+        "minLength": 1,
+        "title": "Recommended Resolution",
+    }
+    assert advisory_properties["severity"]["enum"] == ["info", "warning"]
+    assert "recommended_resolution" not in advisory["required"]
+    assert "blocks_approval" not in blocking_properties
+    assert "blocks_approval" not in advisory_properties
     assert {
         "recheck_disposition",
         "repair_assessment",
         "revised_evidence",
-    }.isdisjoint(properties)
+    }.isdisjoint(blocking_properties)
+    assert {
+        "recheck_disposition",
+        "repair_assessment",
+        "revised_evidence",
+    }.isdisjoint(advisory_properties)
 
     canonical_definitions = ContinuityReport.model_json_schema()["$defs"]
     canonical_properties = canonical_definitions["ContinuityFinding"]["properties"]
@@ -771,15 +982,30 @@ def test_continuity_recheck_schema_exposes_recheck_analysis_fields() -> None:
         continuity_schema_variant=_ContinuitySchemaVariant.RECHECK,
     )
     definitions = schema["$defs"]
-    properties = definitions["ContinuityFinding"]["properties"]
+    blocking = definitions["RecheckBlockingContinuityFinding"]
+    advisory = definitions["RecheckAdvisoryContinuityFinding"]
+    blocking_properties = blocking["properties"]
+    advisory_properties = advisory["properties"]
 
-    assert schema["title"] == "ContinuityRecheckReport"
+    assert schema["title"] == "RecheckContinuityReport"
     assert "ContinuityRecheckDisposition" in definitions
+    assert {
+        "recommended_resolution",
+        "recheck_disposition",
+        "repair_assessment",
+        "revised_evidence",
+    } <= set(blocking["required"])
+    assert blocking_properties["revised_evidence"]["minItems"] == 1
+    assert blocking_properties["recheck_disposition"] == {
+        "$ref": "#/$defs/ContinuityRecheckDisposition"
+    }
     assert {
         "recheck_disposition",
         "repair_assessment",
         "revised_evidence",
-    } <= properties.keys()
+    }.isdisjoint(advisory_properties)
+    assert "blocks_approval" not in blocking_properties
+    assert "blocks_approval" not in advisory_properties
 
 
 @pytest.mark.parametrize(
@@ -954,6 +1180,17 @@ async def test_hybrid_continuity_stagnation_retry_uses_cloud_and_records_fallbac
     retry_context = escalated_payload["retry_context"]
     assert isinstance(retry_context, dict)
     assert retry_context["error_code"] == "continuity_recheck_stagnated"
+    escalated_request = next(
+        request
+        for request in gateway.requests
+        if request.invocation.specialist_role == "continuity_supervisor"
+        and request.model_identifier == "cloud-fixture"
+    )
+    assert escalated_request.response_schema is None
+    assert escalated_payload["output_schema_variant"] == "recheck"
+    escalated_requirements = escalated_payload["output_requirements"]
+    assert isinstance(escalated_requirements, dict)
+    assert "recheck_analysis" in escalated_requirements
     with session_factory() as session:
         production_run = session.get(WorkflowRun, execution.workflow_run_id)
         assert production_run is not None
@@ -1124,37 +1361,60 @@ async def test_same_continuity_finding_inherits_resolution_across_recheck(
         assert request.response_schema is not None
         payload = json.loads(request.messages[-1].content)
         schema = cast(dict[str, Any], request.response_schema)
-        properties = cast(dict[str, Any], schema["$defs"]["ContinuityFinding"]["properties"])
+        definitions = cast(dict[str, Any], schema["$defs"])
+        blocking = cast(dict[str, Any], definitions["InitialBlockingContinuityFinding"])
+        advisory = cast(dict[str, Any], definitions["InitialAdvisoryContinuityFinding"])
+        blocking_properties = cast(dict[str, Any], blocking["properties"])
+        advisory_properties = cast(dict[str, Any], advisory["properties"])
         assert payload["output_schema_variant"] == "initial_check"
         assert "recheck_analysis" not in payload["output_requirements"]
         assert "continuity_recheck" not in payload
+        assert "recommended_resolution" in blocking["required"]
+        assert "blocks_approval" not in blocking_properties
+        assert "blocks_approval" not in advisory_properties
         assert {
             "recheck_disposition",
             "repair_assessment",
             "revised_evidence",
-        }.isdisjoint(properties)
+        }.isdisjoint(blocking_properties)
     for request in recheck_requests:
         assert request.response_schema is not None
         payload = json.loads(request.messages[-1].content)
         schema = cast(dict[str, Any], request.response_schema)
-        properties = cast(dict[str, Any], schema["$defs"]["ContinuityFinding"]["properties"])
+        definitions = cast(dict[str, Any], schema["$defs"])
+        blocking = cast(dict[str, Any], definitions["RecheckBlockingContinuityFinding"])
+        advisory = cast(dict[str, Any], definitions["RecheckAdvisoryContinuityFinding"])
+        blocking_properties = cast(dict[str, Any], blocking["properties"])
+        advisory_properties = cast(dict[str, Any], advisory["properties"])
         assert payload["output_schema_variant"] == "recheck"
         assert "recheck_analysis" in payload["output_requirements"]
+        assert {
+            "recommended_resolution",
+            "recheck_disposition",
+            "repair_assessment",
+            "revised_evidence",
+        } <= set(blocking["required"])
+        assert "blocks_approval" not in blocking_properties
         assert {
             "recheck_disposition",
             "repair_assessment",
             "revised_evidence",
-        } <= properties.keys()
+        }.isdisjoint(advisory_properties)
 
     recheck_payload = json.loads(gateway.continuity_recheck_prompts[0])
     output_requirements = recheck_payload["output_requirements"]
-    assert "sole authority" in output_requirements["requirement_scope"]
+    assert "sole authorit" in output_requirements["requirement_scope"]
     assert "recheck_disposition='still_blocking'" in output_requirements["recheck_analysis"]
     applicability = recheck_payload["benchmark_constraint_applicability"]
     assert applicability["is_final_scene"] is False
     assert applicability["due_now"] == []
     assert all("text" not in item for item in applicability["deferred_until_final_scene"])
     assert "frozen_benchmark_constraints" not in recheck_payload
+    scene_plan_applicability = recheck_payload["scene_plan_requirement_applicability"]
+    assert scene_plan_applicability["is_final_scene"] is False
+    assert all(
+        "text" not in item for item in scene_plan_applicability["deferred_until_final_scene"]
+    )
 
 
 @pytest.mark.parametrize(
@@ -1578,7 +1838,7 @@ async def test_approved_blueprint_runs_durable_production_and_replays(
         }
     ]
     assert all(
-        request.invocation.prompt_template_version == "10" for request in production_requests
+        request.invocation.prompt_template_version == "11" for request in production_requests
     )
     assert all(request.response_schema is not None for request in gateway.requests)
     with session_factory() as session:

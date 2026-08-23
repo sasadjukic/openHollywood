@@ -244,8 +244,31 @@ routing, and Hybrid-only escalation are unchanged. The v9 canary remains
 immutable diagnostic evidence; another batch requires a new plan pinned to
 prompt v10. Evidence:
 `docs/benchmark_reports/step-19-local-v9-canary-2026-08-20.md`.
+The fresh v10 canary plan has canonical digest
+`f985ae1b5976836952451a3011126c796e6e65773339f3b5b933bbfe5c24ee53`.
+Its first Local batch completed one of five production-runnable cases;
+OH-V01-004 produced 3,455 words within target and passed every automated hard
+gate, while OH-V01-006 retained its terminal Blueprint failure. The v9
+initial-check regression did not recur. OH-V01-002 and OH-V01-005 instead
+exhausted repair after blocking findings omitted `recommended_resolution`;
+OH-V01-001 and OH-V01-003 reached the revision limit after continuity re-checks
+used non-exact evidence or copied stale assessments despite materially changed
+drafts. Prompt contract v11 now uses severity-discriminated finding branches:
+error/blocking branches require a non-empty resolution and the model cannot emit
+the application-owned `blocks_approval` field, while advisory branches may omit
+the resolution. Re-check blocker branches additionally require disposition,
+assessment, and revised evidence together. Boundary validation proves every
+revised-evidence item is an exact current-draft excerpt, rejects a copied prior
+assessment when evidence changes, and requires an explicit explanation for
+unchanged evidence. Exact story-wide benchmark requirements duplicated into a
+non-final Scene Plan are deferred and removed from the continuity prompt view;
+other Scene Plan requirements remain immediate. Canonical persisted artifacts,
+bounded repair, Cloud routing, and Hybrid-only escalation are unchanged. The
+v10 canary remains immutable diagnostic evidence; another batch requires a new
+plan pinned to prompt v11. Evidence:
+`docs/benchmark_reports/step-19-local-v10-canary-2026-08-23.md`.
 Ruff and formatting pass over 133 files, strict mypy passes over 133 source
-files, all 212 pytest tests pass, frontend formatting/lint/type checking pass,
+files, all 216 pytest tests pass, frontend formatting/lint/type checking pass,
 all 10 Vitest tests pass, and the production build succeeds.
 
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
