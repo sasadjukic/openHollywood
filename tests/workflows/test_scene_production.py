@@ -14,6 +14,7 @@ from open_hollywood_engine.artifacts import (
     ArtifactKind,
     ContinuityCategory,
     ContinuityFinding,
+    ContinuityFindingBasis,
     ContinuityReport,
     ContinuitySeverity,
     Critique,
@@ -174,7 +175,9 @@ class FakeProductionExecutor(SceneProductionExecutor):
                     severity=ContinuitySeverity.BLOCKING,
                     category=ContinuityCategory.FACT,
                     summary="The candidate contradicts established story truth.",
-                    evidence=("Exact bible version.", "Exact candidate draft version."),
+                    evidence=("Secret prose",),
+                    basis=ContinuityFindingBasis.CONTRADICTION,
+                    canonical_source_refs=("alice",),
                     related_scene_ids=(task.unit.unit_id,),
                     recommended_resolution="Revise the candidate scene.",
                     blocks_approval=True,
@@ -391,7 +394,9 @@ async def test_production_loop_sequences_units_dialogue_and_bounded_revision() -
     ]
     assert executor.writing_tasks[1].accepted_units == (result.accepted_units[0].artifact,)
     assert executor.writing_tasks[-1].previous_critique is not None
-    assert len(executor.continuity_tasks) == 3
+    assert executor.writing_tasks[-1].previous_continuity is not None
+    assert len(executor.continuity_tasks) == 5
+    assert [task.revision_number for task in executor.continuity_tasks] == [0, 0, 1, 0, 1]
     assert len(executor.story_bible_tasks) == 3
     assert result.final_story_bible == result.accepted_units[-1].story_bible_artifact
     assert (

@@ -14,6 +14,8 @@ from open_hollywood_engine.artifacts import (
     Character,
     ContinuityCategory,
     ContinuityFinding,
+    ContinuityFindingBasis,
+    ContinuityRecheckDisposition,
     ContinuitySeverity,
     CreativeBrief,
     Critique,
@@ -412,6 +414,89 @@ def test_continuity_finding_aligns_severity_routing_and_resolution() -> None:
 
     content["recommended_resolution"] = "Preserve the established dryness in Scene 2."
     assert ContinuityFinding.model_validate(content).blocks_approval is True
+
+
+def test_continuity_finding_bases_have_distinct_evidence_contracts() -> None:
+    common: dict[str, object] = {
+        "id": "ending_requirement",
+        "severity": ContinuitySeverity.BLOCKING,
+        "category": ContinuityCategory.CONSTRAINT,
+        "summary": "The ending does not satisfy its exact requirement.",
+        "related_scene_ids": ("scene_3",),
+        "recommended_resolution": "Revise the ending to satisfy the requirement.",
+        "blocks_approval": True,
+    }
+    with pytest.raises(ValidationError, match="cannot fabricate draft evidence"):
+        ContinuityFinding.model_validate(
+            {
+                **common,
+                "basis": ContinuityFindingBasis.MISSING_REQUIREMENT,
+                "requirement_id": "required_element_1",
+                "coverage_assessment": "The required action never occurs.",
+                "evidence": ("The requirement says the action must occur.",),
+            }
+        )
+    missing = ContinuityFinding.model_validate(
+        {
+            **common,
+            "basis": ContinuityFindingBasis.MISSING_REQUIREMENT,
+            "requirement_id": "required_element_1",
+            "coverage_assessment": "The required action never occurs.",
+            "recheck_disposition": ContinuityRecheckDisposition.STILL_BLOCKING,
+            "repair_assessment": "The revised draft still omits the required action.",
+        }
+    )
+    assert missing.evidence == ()
+    assert missing.revised_evidence == ()
+
+    with pytest.raises(ValidationError, match="exact draft evidence"):
+        ContinuityFinding.model_validate(
+            {
+                **common,
+                "basis": ContinuityFindingBasis.FORBIDDEN_SHORTCUT_VIOLATION,
+                "requirement_id": "forbidden_shortcut_1",
+            }
+        )
+    forbidden = ContinuityFinding.model_validate(
+        {
+            **common,
+            "basis": ContinuityFindingBasis.FORBIDDEN_SHORTCUT_VIOLATION,
+            "requirement_id": "forbidden_shortcut_1",
+            "evidence": ("Mara admits the card was only a prank.",),
+        }
+    )
+    assert forbidden.requirement_id == "forbidden_shortcut_1"
+
+
+def test_world_rule_finding_cannot_block_an_explicitly_authorized_condition() -> None:
+    content: dict[str, object] = {
+        "id": "stroller_condition",
+        "severity": ContinuitySeverity.BLOCKING,
+        "category": ContinuityCategory.WORLD_RULE,
+        "summary": "The stroller remains pristine while its surroundings decay.",
+        "evidence": ("Its blue fabric was immaculate.",),
+        "basis": ContinuityFindingBasis.CONTRADICTION,
+        "canonical_source_refs": ("stroller_anchor",),
+        "world_rule_ids": ("decay_as_narrative", "stroller_anchor"),
+        "companion_rule_assessment": (
+            "The companion stroller_anchor rule explicitly permits pristine fabric."
+        ),
+        "condition_explicitly_authorized": True,
+        "related_scene_ids": ("scene_1",),
+        "recommended_resolution": "Weather the stroller.",
+        "blocks_approval": True,
+    }
+    with pytest.raises(ValidationError, match="explicitly authorized"):
+        ContinuityFinding.model_validate(content)
+
+    content["condition_explicitly_authorized"] = False
+    content["companion_rule_assessment"] = (
+        "No companion rule or exception authorizes pristine fabric in this context."
+    )
+    assert ContinuityFinding.model_validate(content).world_rule_ids == (
+        "decay_as_narrative",
+        "stroller_anchor",
+    )
 
 
 def test_registry_covers_catalog_and_validates_raw_model_json() -> None:

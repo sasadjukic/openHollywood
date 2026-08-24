@@ -323,9 +323,14 @@ class AgenticBenchmarkCaseExecutor:
         except BenchmarkCaseExecutionError:
             raise
         except Exception as error:
+            persisted_cause = self._persisted_production_failure_cause(prepared.workflow_run_id)
             raise BenchmarkCaseExecutionError(
                 "agentic_production_failed",
-                "The persisted agentic scene-production run failed.",
+                persisted_cause
+                or (
+                    "The persisted agentic scene-production run failed before a safe "
+                    "cause was recorded."
+                ),
             ) from error
         if execution.result is None or execution.status is not RunStatus.SUCCEEDED:
             raise BenchmarkCaseExecutionError(
@@ -338,6 +343,28 @@ class AgenticBenchmarkCaseExecutor:
             prepared.workflow_run_id,
             execution.result,
         )
+
+    def _persisted_production_failure_cause(
+        self,
+        blueprint_run_id: UUID,
+    ) -> str | None:
+        """Read the redacted durable cause written by the production boundary."""
+        production_run_id = uuid5(
+            blueprint_run_id,
+            "agentic-scene-production-workflow",
+        )
+        with self._session_factory() as session:
+            run = session.get(WorkflowRun, production_run_id)
+            if (
+                run is None
+                or run.parent_workflow_run_id != blueprint_run_id
+                or run.status is not RunStatus.FAILED
+                or not isinstance(run.error_message, str)
+                or not run.error_message.strip()
+            ):
+                return None
+            node = run.current_node or "unknown production node"
+            return f"Scene production failed at {node}: {run.error_message.strip()}"
 
     def _assemble_output(
         self,

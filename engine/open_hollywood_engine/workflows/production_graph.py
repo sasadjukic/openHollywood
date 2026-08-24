@@ -123,6 +123,7 @@ class ProductionGraphState(DialogueGraphState, total=False):
     current_story_bible_update_artifact: DialogueArtifactReferenceState | None
     current_dialogue_runs: int
     current_acceptance_reason: str | None
+    critique_requires_revision: bool
     revision_scheduled: bool
     draft_artifacts: list[DialogueArtifactReferenceState]
     critique_artifacts: list[DialogueArtifactReferenceState]
@@ -166,6 +167,7 @@ def initial_production_state(production: SceneProductionInput) -> ProductionGrap
         "current_revision_number": 0,
         "current_dialogue_runs": 0,
         "current_acceptance_reason": None,
+        "critique_requires_revision": False,
         "pending_continuity_artifact": None,
         "revision_scheduled": False,
         "draft_artifacts": [],
@@ -212,7 +214,7 @@ def build_scene_production_graph(
     checkpointer: BaseCheckpointSaver[Any] | None = None,
     observer: SceneProductionWorkflowObserver | None = None,
 ) -> ProductionCompiledGraph:
-    """Compile the fixed writer → dialogue → critic → bounded-revision loop."""
+    """Compile the fixed writer → critic + continuity → bounded-revision loop."""
     lifecycle = observer or NullSceneProductionWorkflowObserver()
     builder = StateGraph(ProductionGraphState)
     builder.add_node(
@@ -266,13 +268,9 @@ def build_scene_production_graph(
         ProductionNode.DIALOGUE_INTEGRATION.value,
         ProductionNode.CRITIQUE.value,
     )
-    builder.add_conditional_edges(
+    builder.add_edge(
         ProductionNode.CRITIQUE.value,
-        _route_after_critique,
-        {
-            "revise": ProductionNode.DRAFT.value,
-            "continuity": ProductionNode.CONTINUITY.value,
-        },
+        ProductionNode.CONTINUITY.value,
     )
     builder.add_conditional_edges(
         ProductionNode.CONTINUITY.value,
@@ -468,24 +466,14 @@ def _critique_node(
         critique_state = _artifact_to_state(result.artifact)
         update: dict[str, Any] = {
             "current_critique_artifact": critique_state,
-            "current_acceptance_reason": (
-                UnitAcceptanceReason.PASSED_RUBRIC.value
-                if result.critique.verdict is CritiqueVerdict.PASS
-                else UnitAcceptanceReason.REVISION_LIMIT_REACHED.value
-            ),
+            "current_acceptance_reason": None,
+            "critique_requires_revision": (result.critique.verdict is not CritiqueVerdict.PASS),
             "revision_scheduled": False,
             "critique_artifacts": [
                 *state.get("critique_artifacts", []),
                 critique_state,
             ],
         }
-        if (
-            result.critique.verdict is not CritiqueVerdict.PASS
-            and revision_number < production.maximum_revision_cycles
-        ):
-            update["current_revision_number"] = revision_number + 1
-            update["current_acceptance_reason"] = None
-            update["revision_scheduled"] = True
         return update
 
     return critique
@@ -524,6 +512,8 @@ def _continuity_node(
             (result.artifact,),
         )
         report_state = _artifact_to_state(result.artifact)
+        critique_requires_revision = state.get("critique_requires_revision") is True
+        has_blockers = result.report.has_blocking_findings
         update: dict[str, Any] = {
             "current_continuity_artifact": report_state,
             "pending_continuity_artifact": None,
@@ -533,14 +523,22 @@ def _continuity_node(
                 report_state,
             ],
         }
-        if result.report.has_blocking_findings:
-            if revision_number >= production.maximum_revision_cycles:
-                raise SceneProductionStateError(
-                    "blocking continuity findings remain at the revision limit"
-                )
+        if has_blockers and revision_number >= production.maximum_revision_cycles:
+            raise SceneProductionStateError(
+                "blocking continuity findings remain at the revision limit"
+            )
+        if (has_blockers or critique_requires_revision) and (
+            revision_number < production.maximum_revision_cycles
+        ):
             update["current_revision_number"] = revision_number + 1
             update["current_acceptance_reason"] = None
             update["revision_scheduled"] = True
+        else:
+            update["current_acceptance_reason"] = (
+                UnitAcceptanceReason.REVISION_LIMIT_REACHED.value
+                if critique_requires_revision
+                else UnitAcceptanceReason.PASSED_RUBRIC.value
+            )
         return update
 
     return continuity
@@ -652,6 +650,7 @@ def _accept_node(
             "current_story_bible_update_artifact": None,
             "current_dialogue_runs": 0,
             "current_acceptance_reason": None,
+            "critique_requires_revision": False,
             "revision_scheduled": False,
             "production_complete": next_index == len(production.units),
         }
@@ -663,10 +662,6 @@ def _route_after_draft(state: ProductionGraphState) -> str:
     production = _production_from_state(state)
     unit = _current_unit(state, production)
     return "dialogue" if unit.dialogue_pass is not None else "critique"
-
-
-def _route_after_critique(state: ProductionGraphState) -> str:
-    return "revise" if state.get("revision_scheduled") is True else "continuity"
 
 
 def _route_after_continuity(state: ProductionGraphState) -> str:

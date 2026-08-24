@@ -26,8 +26,8 @@ from open_hollywood_engine.workflows.dialogue_contracts import (
 )
 
 SCENE_PRODUCTION_WORKFLOW_NAME = "scene_production"
-SCENE_PRODUCTION_GRAPH_VERSION = "2"
-SCENE_PRODUCTION_PROMPT_TEMPLATE_VERSION = "11"
+SCENE_PRODUCTION_GRAPH_VERSION = "3"
+SCENE_PRODUCTION_PROMPT_TEMPLATE_VERSION = "12"
 DEFAULT_PRODUCTION_NODE_TIMEOUT_SECONDS = 900
 DEFAULT_MAX_REVISION_CYCLES = 2
 MAX_REVISION_CYCLES = 5
@@ -272,7 +272,7 @@ class SceneProductionInput:
         attempts = 1 + self.maximum_revision_cycles
         total = 0
         for unit in self.units:
-            per_attempt = 3  # writer, critic, and worst-case continuity
+            per_attempt = 3  # writer, critic, and continuity on every candidate
             if unit.dialogue_pass is not None:
                 per_attempt += unit.dialogue_pass.max_graph_steps + 1
             total += attempts * per_attempt + 2  # bible update and deterministic acceptance

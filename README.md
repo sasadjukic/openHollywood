@@ -236,6 +236,21 @@ copied into non-final Scene Plans are deferred and redacted from the continuity
 prompt view. Canonical artifacts, retry limits, Cloud behavior, and Hybrid-only
 escalation remain unchanged.
 
+The first Local v11 canary batch completed two of five production-runnable
+cases; both successes passed all automated hard gates. Its failures showed that
+one finding shape still allowed missing requirements and absent forbidden
+shortcuts to masquerade as contradictions, that world-rule checks could ignore
+explicit companion-rule authorization, and that critic-only revisions could
+consume the revision allowance before continuity ran. Prompt contract v12 now
+uses separate contradiction, missing-requirement, and forbidden-shortcut
+branches with basis-specific source and evidence fields. Exact draft evidence
+is validated during initial checks and re-checks. World-rule blockers must cite
+canonical rule IDs, assess companion rules and exceptions, and cannot block a
+condition declared explicitly authorized. Production graph v3 evaluates critic
+and continuity for every candidate, consolidates their feedback, and increments
+the revision counter once. Benchmark failures now retain the redacted persisted
+Production node and cause instead of a generic wrapper.
+
 Benchmark word-count ranges are advisory creative targets. New outputs persist a
 non-gating adherence measurement with the target, actual count, status, and word
 deviation. Automatic completion reflects a finished, non-truncated document,

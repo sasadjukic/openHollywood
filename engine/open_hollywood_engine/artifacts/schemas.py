@@ -125,6 +125,14 @@ class ContinuityRecheckDisposition(StrEnum):
     NEWLY_EXPOSED = "newly_exposed"
 
 
+class ContinuityFindingBasis(StrEnum):
+    """Evidence contract used to justify one blocking continuity finding."""
+
+    CONTRADICTION = "contradiction"
+    MISSING_REQUIREMENT = "missing_requirement"
+    FORBIDDEN_SHORTCUT_VIOLATION = "forbidden_shortcut_violation"
+
+
 class StoryThreadKind(StrEnum):
     """Canonical unresolved-thread types maintained during production."""
 
@@ -369,7 +377,14 @@ class ContinuityFinding(ArtifactSchema):
     severity: ContinuitySeverity
     category: ContinuityCategory
     summary: NonEmptyText
-    evidence: Annotated[tuple[NonEmptyText, ...], Field(min_length=1)]
+    evidence: tuple[NonEmptyText, ...] = ()
+    basis: ContinuityFindingBasis | None = None
+    canonical_source_refs: tuple[ReferenceId, ...] = ()
+    requirement_id: ReferenceId | None = None
+    coverage_assessment: NonEmptyText | None = None
+    world_rule_ids: tuple[ReferenceId, ...] = ()
+    companion_rule_assessment: NonEmptyText | None = None
+    condition_explicitly_authorized: StrictBool | None = None
     related_character_ids: tuple[ReferenceId, ...] = ()
     related_location_ids: tuple[ReferenceId, ...] = ()
     related_beat_ids: tuple[ReferenceId, ...] = ()
@@ -387,13 +402,54 @@ class ContinuityFinding(ArtifactSchema):
             raise ValueError("a blocking finding must block approval")
         if self.blocks_approval and self.recommended_resolution is None:
             raise ValueError("a finding that blocks approval requires a resolution")
+        if self.basis is ContinuityFindingBasis.CONTRADICTION:
+            if not self.evidence or not self.canonical_source_refs:
+                raise ValueError(
+                    "a contradiction requires exact draft evidence and a canonical source"
+                )
+            if self.requirement_id is not None or self.coverage_assessment is not None:
+                raise ValueError("a contradiction cannot use missing-requirement fields")
+        elif self.basis is ContinuityFindingBasis.MISSING_REQUIREMENT:
+            if self.requirement_id is None or self.coverage_assessment is None:
+                raise ValueError(
+                    "a missing requirement requires its exact ID and coverage assessment"
+                )
+            if self.evidence:
+                raise ValueError("a missing requirement cannot fabricate draft evidence")
+        elif self.basis is ContinuityFindingBasis.FORBIDDEN_SHORTCUT_VIOLATION:
+            if self.requirement_id is None or not self.evidence:
+                raise ValueError(
+                    "a forbidden-shortcut violation requires its ID and exact draft evidence"
+                )
+            if self.coverage_assessment is not None:
+                raise ValueError("a forbidden-shortcut violation cannot use a coverage assessment")
+        if self.category is ContinuityCategory.WORLD_RULE and self.basis is not None:
+            if (
+                not self.world_rule_ids
+                or self.companion_rule_assessment is None
+                or self.condition_explicitly_authorized is None
+            ):
+                raise ValueError(
+                    "a world-rule finding requires exact rule IDs and companion-rule assessment"
+                )
+            if self.condition_explicitly_authorized:
+                raise ValueError("an explicitly authorized world condition cannot block")
+        elif (
+            self.world_rule_ids
+            or self.companion_rule_assessment is not None
+            or self.condition_explicitly_authorized is not None
+        ):
+            raise ValueError("world-rule analysis is only valid for world-rule findings")
         has_recheck_analysis = self.recheck_disposition is not None
         if has_recheck_analysis != (self.repair_assessment is not None):
             raise ValueError(
                 "continuity re-check disposition and repair assessment must be supplied together"
             )
-        if has_recheck_analysis != bool(self.revised_evidence):
-            raise ValueError("continuity re-check analysis requires exact revised-draft evidence")
+        requires_revised_evidence = (
+            has_recheck_analysis and self.basis is not ContinuityFindingBasis.MISSING_REQUIREMENT
+        )
+        if requires_revised_evidence != bool(self.revised_evidence):
+            raise ValueError("continuity re-check evidence must match the finding-basis contract")
         if has_recheck_analysis and self.severity not in {
             ContinuitySeverity.ERROR,
             ContinuitySeverity.BLOCKING,

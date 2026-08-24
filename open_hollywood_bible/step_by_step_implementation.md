@@ -267,8 +267,26 @@ bounded repair, Cloud routing, and Hybrid-only escalation are unchanged. The
 v10 canary remains immutable diagnostic evidence; another batch requires a new
 plan pinned to prompt v11. Evidence:
 `docs/benchmark_reports/step-19-local-v10-canary-2026-08-23.md`.
+The fresh v11 canary plan has canonical digest
+`a71a83a87092f7d095b96918b5dc8503f90508e45d524c5220ab7ccdc6400489`.
+Its first Local batch completed two of five production-runnable cases;
+OH-V01-003 produced 4,061 words and OH-V01-004 produced 2,992 words, with both
+passing every automated hard gate. OH-V01-006 retained its terminal Blueprint
+failure. The v11 schema split and resolution guarantee held, but the remaining
+Production failures exposed three contract/routing gaps: missing requirements
+and absent forbidden shortcuts could fabricate draft evidence; world-rule
+findings could ignore explicit companion-rule authorization; and critic-only
+revisions could consume the revision allowance before continuity ran. Prompt
+contract v12 separates the three blocking bases, validates exact evidence on
+initial calls and re-checks, binds requirement and canonical rule IDs, and
+prevents an explicitly authorized world condition from blocking. Production
+graph v3 runs critic and continuity on every candidate and schedules at most one
+revision after consolidating both results. Benchmark failures now surface the
+redacted persisted Production cause. The v11 canary remains immutable evidence;
+the next canary requires a new plan pinned to graph v3 and prompt v12. Evidence:
+`docs/benchmark_reports/step-19-local-v11-canary-2026-08-24.md`.
 Ruff and formatting pass over 133 files, strict mypy passes over 133 source
-files, all 216 pytest tests pass, frontend formatting/lint/type checking pass,
+files, all 219 pytest tests pass, frontend formatting/lint/type checking pass,
 all 10 Vitest tests pass, and the production build succeeds.
 
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
