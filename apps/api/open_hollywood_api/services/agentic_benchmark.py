@@ -36,6 +36,7 @@ from open_hollywood_api.persistence.models import (
     Artifact,
     ArtifactStatus,
     ArtifactVersion,
+    InvocationStatus,
     Project,
     RunStatus,
     WorkflowEvent,
@@ -348,7 +349,7 @@ class AgenticBenchmarkCaseExecutor:
         self,
         blueprint_run_id: UUID,
     ) -> str | None:
-        """Read the redacted durable cause written by the production boundary."""
+        """Read the most specific redacted durable cause written by production."""
         production_run_id = uuid5(
             blueprint_run_id,
             "agentic-scene-production-workflow",
@@ -359,12 +360,33 @@ class AgenticBenchmarkCaseExecutor:
                 run is None
                 or run.parent_workflow_run_id != blueprint_run_id
                 or run.status is not RunStatus.FAILED
-                or not isinstance(run.error_message, str)
-                or not run.error_message.strip()
             ):
                 return None
+            failed_invocation = session.scalar(
+                select(AgentInvocation)
+                .where(
+                    AgentInvocation.workflow_run_id == production_run_id,
+                    AgentInvocation.status == InvocationStatus.FAILED,
+                )
+                .order_by(
+                    AgentInvocation.completed_at.desc(),
+                    AgentInvocation.started_at.desc(),
+                    AgentInvocation.id.desc(),
+                )
+            )
+            detail = (
+                failed_invocation.error_message.strip()
+                if failed_invocation is not None
+                and isinstance(failed_invocation.error_message, str)
+                and failed_invocation.error_message.strip()
+                else run.error_message.strip()
+                if isinstance(run.error_message, str) and run.error_message.strip()
+                else None
+            )
+            if detail is None:
+                return None
             node = run.current_node or "unknown production node"
-            return f"Scene production failed at {node}: {run.error_message.strip()}"
+            return f"Scene production failed at {node}: {detail}"
 
     def _assemble_output(
         self,

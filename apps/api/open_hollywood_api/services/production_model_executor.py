@@ -132,10 +132,13 @@ _CONTINUITY_FINDING_BASIS_REQUIREMENT = (
     "evidence references into exact persisted excerpts."
 )
 _CONTINUITY_WORLD_RULE_REQUIREMENT = (
-    "For every world_rule blocker, copy every involved canonical World Rule ID into "
-    "world_rule_ids, evaluate companion rules and exceptions in companion_rule_assessment, "
-    "and set condition_explicitly_authorized accurately. A condition explicitly authorized "
-    "by any companion rule or exception cannot be reported as blocking."
+    "Choose the schema branch matching both the finding basis and category. For every "
+    "world_rule blocker, use its world-rule branch, copy every involved canonical World Rule "
+    "ID into world_rule_ids, evaluate companion rules and exceptions in "
+    "companion_rule_assessment, and set condition_explicitly_authorized=false only after that "
+    "evaluation proves the condition is not authorized. A condition explicitly authorized by "
+    "any companion rule or exception cannot be reported as blocking. For every non-world "
+    "blocker, use its non-world branch and omit all world-rule analysis fields."
 )
 _CONTINUITY_REQUIREMENT_SCOPE = (
     "Use benchmark_constraint_applicability and scene_plan_requirement_applicability as "
@@ -196,6 +199,9 @@ _LOCAL_SCHEMA_REPAIR_OPERATION_RULES: Mapping[_Operation, tuple[str, ...]] = {
         "evidence handles from candidate_draft.content.evidence_catalog and canonical source "
         "handles from canonical_source_catalog; never copy prose or requirement text into an "
         "ID field.",
+        "Choose the branch matching the finding category. World-rule branches require exact "
+        "world_rule_ids, a non-empty companion_rule_assessment, and "
+        "condition_explicitly_authorized=false. Non-world branches must omit those fields.",
     ),
     _Operation.STORY_BIBLE_UPDATE: (
         "Character, relationship, location, scene, fact, and thread references must use "
@@ -1018,19 +1024,7 @@ def _output_schema(
 
     is_recheck = continuity_schema_variant is _ContinuitySchemaVariant.RECHECK
     phase_name = "Recheck" if is_recheck else "Initial"
-    contradiction_name = f"{phase_name}ContradictionContinuityFinding"
-    missing_name = f"{phase_name}MissingRequirementContinuityFinding"
-    forbidden_name = f"{phase_name}ForbiddenShortcutContinuityFinding"
     advisory_name = f"{phase_name}AdvisoryContinuityFinding"
-    definitions[contradiction_name] = _continuity_finding_branch_schema(
-        finding_schema,
-        title=contradiction_name,
-        severities=("error", "blocking"),
-        basis=ContinuityFindingBasis.CONTRADICTION,
-        require_resolution=True,
-        require_recheck_analysis=is_recheck,
-        model_context=continuity_model_context,
-    )
     required_requirement_ids = tuple(
         requirement_id
         for requirement_id, kind in continuity_model_context.requirement_kinds.items()
@@ -1041,28 +1035,42 @@ def _output_schema(
         for requirement_id, kind in continuity_model_context.requirement_kinds.items()
         if kind == "forbidden_shortcut"
     )
-    if required_requirement_ids:
-        definitions[missing_name] = _continuity_finding_branch_schema(
-            finding_schema,
-            title=missing_name,
-            severities=("error", "blocking"),
-            basis=ContinuityFindingBasis.MISSING_REQUIREMENT,
-            require_resolution=True,
-            require_recheck_analysis=is_recheck,
-            model_context=continuity_model_context,
-            requirement_ids=required_requirement_ids,
-        )
-    if forbidden_requirement_ids:
-        definitions[forbidden_name] = _continuity_finding_branch_schema(
-            finding_schema,
-            title=forbidden_name,
-            severities=("error", "blocking"),
-            basis=ContinuityFindingBasis.FORBIDDEN_SHORTCUT_VIOLATION,
-            require_resolution=True,
-            require_recheck_analysis=is_recheck,
-            model_context=continuity_model_context,
-            requirement_ids=forbidden_requirement_ids,
-        )
+    basis_branches = (
+        ("Contradiction", ContinuityFindingBasis.CONTRADICTION, ()),
+        (
+            "MissingRequirement",
+            ContinuityFindingBasis.MISSING_REQUIREMENT,
+            required_requirement_ids,
+        ),
+        (
+            "ForbiddenShortcut",
+            ContinuityFindingBasis.FORBIDDEN_SHORTCUT_VIOLATION,
+            forbidden_requirement_ids,
+        ),
+    )
+    branch_names: list[str] = []
+    for basis_name, basis, requirement_ids in basis_branches:
+        if basis is not ContinuityFindingBasis.CONTRADICTION and not requirement_ids:
+            continue
+        for category_scope, is_world_rule in (
+            ("NonWorld", False),
+            ("WorldRule", True),
+        ):
+            if is_world_rule and not continuity_model_context.world_rule_ids:
+                continue
+            branch_name = f"{phase_name}{basis_name}{category_scope}ContinuityFinding"
+            definitions[branch_name] = _continuity_finding_branch_schema(
+                finding_schema,
+                title=branch_name,
+                severities=("error", "blocking"),
+                basis=basis,
+                require_resolution=True,
+                require_recheck_analysis=is_recheck,
+                model_context=continuity_model_context,
+                requirement_ids=requirement_ids,
+                is_world_rule=is_world_rule,
+            )
+            branch_names.append(branch_name)
     definitions[advisory_name] = _continuity_finding_branch_schema(
         finding_schema,
         title=advisory_name,
@@ -1072,11 +1080,6 @@ def _output_schema(
         require_recheck_analysis=False,
         model_context=continuity_model_context,
     )
-    branch_names = [contradiction_name]
-    if required_requirement_ids:
-        branch_names.append(missing_name)
-    if forbidden_requirement_ids:
-        branch_names.append(forbidden_name)
     branch_names.append(advisory_name)
     findings_schema["items"] = {
         "anyOf": [{"$ref": f"#/$defs/{branch_name}"} for branch_name in branch_names]
@@ -1100,6 +1103,7 @@ def _continuity_finding_branch_schema(
     require_recheck_analysis: bool,
     model_context: _ContinuityModelContext,
     requirement_ids: tuple[str, ...] = (),
+    is_world_rule: bool | None = None,
 ) -> dict[str, Any]:
     """Create one unambiguous model-facing continuity-finding branch."""
     branch = deepcopy(dict(canonical_schema))
@@ -1138,6 +1142,8 @@ def _continuity_finding_branch_schema(
     ]
 
     if basis is None:
+        if is_world_rule is not None:
+            raise SceneProductionError("advisory continuity branch cannot select a category scope")
         for field_name in (
             "world_rule_ids",
             "companion_rule_assessment",
@@ -1151,6 +1157,53 @@ def _continuity_finding_branch_schema(
             "title": "Basis",
         }
         branch["required"].append("basis")
+        if is_world_rule is None:
+            raise SceneProductionError("blocking continuity branch requires a category scope")
+        if is_world_rule:
+            properties["category"] = {
+                "type": "string",
+                "const": ContinuityCategory.WORLD_RULE.value,
+                "title": "Category",
+            }
+            properties["world_rule_ids"] = {
+                "type": "array",
+                "items": {"type": "string", "enum": list(model_context.world_rule_ids)},
+                "minItems": 1,
+                "title": "World Rule Ids",
+            }
+            properties["companion_rule_assessment"] = {
+                "type": "string",
+                "minLength": 1,
+                "title": "Companion Rule Assessment",
+            }
+            properties["condition_explicitly_authorized"] = {
+                "type": "boolean",
+                "const": False,
+                "title": "Condition Explicitly Authorized",
+            }
+            branch["required"].extend(
+                (
+                    "world_rule_ids",
+                    "companion_rule_assessment",
+                    "condition_explicitly_authorized",
+                )
+            )
+        else:
+            properties["category"] = {
+                "type": "string",
+                "enum": [
+                    category.value
+                    for category in ContinuityCategory
+                    if category is not ContinuityCategory.WORLD_RULE
+                ],
+                "title": "Category",
+            }
+            for field_name in (
+                "world_rule_ids",
+                "companion_rule_assessment",
+                "condition_explicitly_authorized",
+            ):
+                properties.pop(field_name, None)
         if basis is ContinuityFindingBasis.CONTRADICTION:
             evidence_field = (
                 "revised_draft_evidence_refs" if require_recheck_analysis else "draft_evidence_refs"
@@ -1210,13 +1263,6 @@ def _continuity_finding_branch_schema(
                 "title": "Requirement Id",
             }
             branch["required"].extend((evidence_field, "requirement_id"))
-
-        if model_context.world_rule_ids and "world_rule_ids" in properties:
-            properties["world_rule_ids"] = {
-                "type": "array",
-                "items": {"type": "string", "enum": list(model_context.world_rule_ids)},
-                "title": "World Rule Ids",
-            }
 
     if require_resolution:
         properties["recommended_resolution"] = {

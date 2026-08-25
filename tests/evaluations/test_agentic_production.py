@@ -1113,9 +1113,10 @@ def test_initial_continuity_schema_omits_every_recheck_only_field() -> None:
         continuity_model_context=context,
     )
     definitions = schema["$defs"]
-    contradiction = definitions["InitialContradictionContinuityFinding"]
-    missing = definitions["InitialMissingRequirementContinuityFinding"]
-    forbidden = definitions["InitialForbiddenShortcutContinuityFinding"]
+    contradiction = definitions["InitialContradictionNonWorldContinuityFinding"]
+    world_contradiction = definitions["InitialContradictionWorldRuleContinuityFinding"]
+    missing = definitions["InitialMissingRequirementNonWorldContinuityFinding"]
+    forbidden = definitions["InitialForbiddenShortcutNonWorldContinuityFinding"]
     advisory = definitions["InitialAdvisoryContinuityFinding"]
     blocking_properties = contradiction["properties"]
     advisory_properties = advisory["properties"]
@@ -1125,9 +1126,12 @@ def test_initial_continuity_schema_omits_every_recheck_only_field() -> None:
     assert "ContinuityFinding" not in definitions
     assert schema["properties"]["findings"]["items"] == {
         "anyOf": [
-            {"$ref": "#/$defs/InitialContradictionContinuityFinding"},
-            {"$ref": "#/$defs/InitialMissingRequirementContinuityFinding"},
-            {"$ref": "#/$defs/InitialForbiddenShortcutContinuityFinding"},
+            {"$ref": "#/$defs/InitialContradictionNonWorldContinuityFinding"},
+            {"$ref": "#/$defs/InitialContradictionWorldRuleContinuityFinding"},
+            {"$ref": "#/$defs/InitialMissingRequirementNonWorldContinuityFinding"},
+            {"$ref": "#/$defs/InitialMissingRequirementWorldRuleContinuityFinding"},
+            {"$ref": "#/$defs/InitialForbiddenShortcutNonWorldContinuityFinding"},
+            {"$ref": "#/$defs/InitialForbiddenShortcutWorldRuleContinuityFinding"},
             {"$ref": "#/$defs/InitialAdvisoryContinuityFinding"},
         ]
     }
@@ -1150,7 +1154,40 @@ def test_initial_continuity_schema_omits_every_recheck_only_field() -> None:
     assert {"requirement_id", "draft_evidence_refs"} <= set(forbidden["required"])
     assert missing["properties"]["requirement_id"]["enum"] == ["required_element_1"]
     assert forbidden["properties"]["requirement_id"]["enum"] == ["forbidden_shortcut_1"]
-    assert blocking_properties["world_rule_ids"]["items"]["enum"] == ["world_rule_1"]
+    assert blocking_properties["category"]["enum"] == [
+        category.value
+        for category in ContinuityCategory
+        if category is not ContinuityCategory.WORLD_RULE
+    ]
+    assert {
+        "world_rule_ids",
+        "companion_rule_assessment",
+        "condition_explicitly_authorized",
+    }.isdisjoint(blocking_properties)
+    world_properties = world_contradiction["properties"]
+    assert world_properties["category"]["const"] == "world_rule"
+    assert world_properties["world_rule_ids"]["items"]["enum"] == ["world_rule_1"]
+    assert world_properties["world_rule_ids"]["minItems"] == 1
+    assert world_properties["condition_explicitly_authorized"]["const"] is False
+    assert {
+        "world_rule_ids",
+        "companion_rule_assessment",
+        "condition_explicitly_authorized",
+    } <= set(world_contradiction["required"])
+    for basis_name in (
+        "Contradiction",
+        "MissingRequirement",
+        "ForbiddenShortcut",
+    ):
+        world = definitions[f"Initial{basis_name}WorldRuleContinuityFinding"]
+        non_world = definitions[f"Initial{basis_name}NonWorldContinuityFinding"]
+        assert world["properties"]["category"]["const"] == "world_rule"
+        assert "world_rule" not in non_world["properties"]["category"]["enum"]
+        assert {
+            "world_rule_ids",
+            "companion_rule_assessment",
+            "condition_explicitly_authorized",
+        }.isdisjoint(non_world["properties"])
     assert "blocks_approval" not in blocking_properties
     assert "blocks_approval" not in advisory_properties
     assert {
@@ -1188,8 +1225,9 @@ def test_continuity_recheck_schema_exposes_recheck_analysis_fields() -> None:
         continuity_model_context=context,
     )
     definitions = schema["$defs"]
-    blocking = definitions["RecheckContradictionContinuityFinding"]
-    missing = definitions["RecheckMissingRequirementContinuityFinding"]
+    blocking = definitions["RecheckContradictionNonWorldContinuityFinding"]
+    missing = definitions["RecheckMissingRequirementNonWorldContinuityFinding"]
+    world_missing = definitions["RecheckMissingRequirementWorldRuleContinuityFinding"]
     advisory = definitions["RecheckAdvisoryContinuityFinding"]
     blocking_properties = blocking["properties"]
     advisory_properties = advisory["properties"]
@@ -1208,6 +1246,14 @@ def test_continuity_recheck_schema_exposes_recheck_analysis_fields() -> None:
     ]
     assert "revised_evidence" not in missing["properties"]
     assert "coverage_assessment" in missing["required"]
+    assert "revised_draft_evidence_refs" not in world_missing["properties"]
+    assert {
+        "world_rule_ids",
+        "companion_rule_assessment",
+        "condition_explicitly_authorized",
+        "recheck_disposition",
+        "repair_assessment",
+    } <= set(world_missing["required"])
     assert blocking_properties["recheck_disposition"] == {
         "$ref": "#/$defs/ContinuityRecheckDisposition"
     }
@@ -1220,7 +1266,7 @@ def test_continuity_recheck_schema_exposes_recheck_analysis_fields() -> None:
     assert "blocks_approval" not in advisory_properties
 
 
-def test_v13_schema_omits_requirement_branches_when_nothing_is_due() -> None:
+def test_v14_schema_omits_requirement_branches_when_nothing_is_due() -> None:
     context = replace(_schema_test_continuity_context(), requirement_kinds={})
     schema = _output_schema(
         _Operation.CONTINUITY,
@@ -1229,11 +1275,12 @@ def test_v13_schema_omits_requirement_branches_when_nothing_is_due() -> None:
     )
     definitions = schema["$defs"]
 
-    assert "InitialMissingRequirementContinuityFinding" not in definitions
-    assert "InitialForbiddenShortcutContinuityFinding" not in definitions
+    assert not any("MissingRequirement" in name for name in definitions)
+    assert not any("ForbiddenShortcut" in name for name in definitions)
     assert schema["properties"]["findings"]["items"] == {
         "anyOf": [
-            {"$ref": "#/$defs/InitialContradictionContinuityFinding"},
+            {"$ref": "#/$defs/InitialContradictionNonWorldContinuityFinding"},
+            {"$ref": "#/$defs/InitialContradictionWorldRuleContinuityFinding"},
             {"$ref": "#/$defs/InitialAdvisoryContinuityFinding"},
         ]
     }
@@ -1593,7 +1640,10 @@ async def test_same_continuity_finding_inherits_resolution_across_recheck(
         payload = json.loads(request.messages[-1].content)
         schema = cast(dict[str, Any], request.response_schema)
         definitions = cast(dict[str, Any], schema["$defs"])
-        blocking = cast(dict[str, Any], definitions["InitialContradictionContinuityFinding"])
+        blocking = cast(
+            dict[str, Any],
+            definitions["InitialContradictionNonWorldContinuityFinding"],
+        )
         advisory = cast(dict[str, Any], definitions["InitialAdvisoryContinuityFinding"])
         blocking_properties = cast(dict[str, Any], blocking["properties"])
         advisory_properties = cast(dict[str, Any], advisory["properties"])
@@ -1645,7 +1695,10 @@ async def test_same_continuity_finding_inherits_resolution_across_recheck(
         payload = json.loads(request.messages[-1].content)
         schema = cast(dict[str, Any], request.response_schema)
         definitions = cast(dict[str, Any], schema["$defs"])
-        blocking = cast(dict[str, Any], definitions["RecheckContradictionContinuityFinding"])
+        blocking = cast(
+            dict[str, Any],
+            definitions["RecheckContradictionNonWorldContinuityFinding"],
+        )
         advisory = cast(dict[str, Any], definitions["RecheckAdvisoryContinuityFinding"])
         blocking_properties = cast(dict[str, Any], blocking["properties"])
         advisory_properties = cast(dict[str, Any], advisory["properties"])
@@ -1849,7 +1902,9 @@ async def test_repeated_missing_continuity_resolution_fails_after_bounded_retry(
     with pytest.raises(BenchmarkCaseExecutionError) as failure:
         await case_executor.execute(case, prompt)
     assert "Scene production failed at continuity:" in str(failure.value)
-    assert "production specialist returned invalid structured output" in str(failure.value)
+    assert "findings.0" in str(failure.value)
+    assert "requires a resolution" in str(failure.value)
+    assert "production specialist returned invalid structured output" not in str(failure.value)
     assert "The persisted agentic scene-production run failed." not in str(failure.value)
 
 

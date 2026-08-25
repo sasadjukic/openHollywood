@@ -303,6 +303,27 @@ resolves evidence handles into exact canonical artifact excerpts before existing
 artifact and routing validation. The v12 canary remains immutable diagnostic
 evidence; another batch requires a new plan pinned to graph v3 and prompt v13.
 Evidence: `docs/benchmark_reports/step-19-local-v12-canary-2026-08-25.md`.
+The fresh v13 canary plan has canonical digest
+`323c3a91850be72a4c09ef6911e39ccb59c0f27abfc3abf1441270a164c01a98`.
+Its first Local batch completed none of five production-runnable cases;
+OH-V01-006 retained its terminal Blueprint artifact-contract failure. Prompt
+v13 eliminated the v12 exact-evidence, canonical-source, requirement-ID, and
+truncated-JSON failures. The 13 remaining failed continuity calls instead
+exposed overlap in each blocking branch: six omitted a companion-rule
+assessment, three omitted or invented World Rule IDs, two misrepresented
+explicit authorization, one attached world-only fields to a non-world finding,
+and one re-check repeated a stale blocker. Prompt contract v14 retains
+production graph v3 and splits contradiction, missing-requirement, and
+forbidden-shortcut blockers into explicit world-rule and non-world branches for
+both initial checks and re-checks. World branches require enum-constrained rule
+IDs, a non-empty companion-rule assessment, and
+`condition_explicitly_authorized=false`; non-world branches omit all three
+world-analysis fields. Benchmark failure reporting now reads the terminal
+failed invocation's exact redacted diagnostic before falling back to the
+workflow error, so `report.json` records the actionable field-level cause. The
+v13 canary remains immutable diagnostic evidence; another batch requires a new
+plan pinned to graph v3 and prompt v14. Evidence:
+`docs/benchmark_reports/step-19-local-v13-canary-2026-08-25.md`.
 Ruff and formatting pass over 133 files, strict mypy passes over 133 source
 files, all 222 pytest tests pass, frontend formatting/lint/type checking pass,
 all 10 Vitest tests pass, and the production build succeeds.
