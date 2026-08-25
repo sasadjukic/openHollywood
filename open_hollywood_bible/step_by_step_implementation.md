@@ -285,8 +285,26 @@ revision after consolidating both results. Benchmark failures now surface the
 redacted persisted Production cause. The v11 canary remains immutable evidence;
 the next canary requires a new plan pinned to graph v3 and prompt v12. Evidence:
 `docs/benchmark_reports/step-19-local-v11-canary-2026-08-24.md`.
+The fresh v12 canary plan has canonical digest
+`b6e25db3c372676bb2973db6305aa360ddc06ee8c4c95189f273f570842be396`.
+Its first Local batch completed none of five production-runnable cases;
+OH-V01-006 retained its terminal Blueprint artifact-contract failure. All five
+Production failures stopped at continuity. Persisted invocation diagnostics
+showed ten exact-evidence failures, three canonical-source-reference failures,
+and two length-truncated JSON responses across 24 continuity attempts. Prompt
+contract v13 retains production graph v3 while replacing free-form evidence
+copying with deterministic candidate-draft evidence handles and replacing broad
+raw-ID provenance with bounded canonical claims carrying exact immutable source
+paths. The call-specific Local schema constrains evidence, canonical source,
+due requirement, and World Rule selections to exact enums; advisory findings
+cannot emit evidence, prior accepted drafts are explicitly context-only, and
+application-owned report lineage is absent from model output. The application
+resolves evidence handles into exact canonical artifact excerpts before existing
+artifact and routing validation. The v12 canary remains immutable diagnostic
+evidence; another batch requires a new plan pinned to graph v3 and prompt v13.
+Evidence: `docs/benchmark_reports/step-19-local-v12-canary-2026-08-25.md`.
 Ruff and formatting pass over 133 files, strict mypy passes over 133 source
-files, all 219 pytest tests pass, frontend formatting/lint/type checking pass,
+files, all 222 pytest tests pass, frontend formatting/lint/type checking pass,
 all 10 Vitest tests pass, and the production build succeeds.
 
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
