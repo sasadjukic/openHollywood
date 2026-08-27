@@ -11,6 +11,7 @@ from copy import deepcopy
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from enum import StrEnum
+from math import ceil
 from typing import Any, cast
 from uuid import UUID, uuid4
 
@@ -43,6 +44,7 @@ from open_hollywood_engine.models import (
     ModelResponse,
     ModelSelection,
     ModelSettings,
+    ModelUsage,
 )
 from open_hollywood_engine.workflows import (
     SCENE_PRODUCTION_GRAPH_VERSION,
@@ -100,6 +102,8 @@ _CONTINUITY_RECHECK_ONLY_FIELDS = frozenset(
 _CONTINUITY_MODEL_EVIDENCE_FIELDS = frozenset(
     {"draft_evidence_refs", "revised_draft_evidence_refs"}
 )
+_CONTINUITY_MODEL_RECHECK_EVIDENCE_STATE_FIELD = "recheck_evidence_state"
+_CONTINUITY_MODEL_DETAIL_FIELDS = frozenset({"basis_details", "category_details"})
 _CONTINUITY_APPLICATION_OWNED_REPORT_FIELDS = frozenset(
     {
         "story_bible_version_id",
@@ -121,7 +125,8 @@ _CONTINUITY_FINDING_RESOLUTION_REQUIREMENT = (
     "when no repair is needed."
 )
 _CONTINUITY_FINDING_BASIS_REQUIREMENT = (
-    "Every error or blocking finding must use exactly one basis. A contradiction must "
+    "Every error or blocking finding must use exactly one basis_details branch. A "
+    "contradiction must "
     "select draft_evidence_refs from candidate_draft.content.evidence_catalog and cite "
     "canonical_source_refs selected from canonical_source_catalog. A missing_requirement "
     "must cite one exact due-now "
@@ -132,13 +137,14 @@ _CONTINUITY_FINDING_BASIS_REQUIREMENT = (
     "evidence references into exact persisted excerpts."
 )
 _CONTINUITY_WORLD_RULE_REQUIREMENT = (
-    "Choose the schema branch matching both the finding basis and category. For every "
-    "world_rule blocker, use its world-rule branch, copy every involved canonical World Rule "
+    "Choose the category_details branch matching the finding category independently of its "
+    "basis_details branch. For every world_rule blocker, use the world-rule category branch, "
+    "copy every involved canonical World Rule "
     "ID into world_rule_ids, evaluate companion rules and exceptions in "
     "companion_rule_assessment, and set condition_explicitly_authorized=false only after that "
     "evaluation proves the condition is not authorized. A condition explicitly authorized by "
     "any companion rule or exception cannot be reported as blocking. For every non-world "
-    "blocker, use its non-world branch and omit all world-rule analysis fields."
+    "blocker, use the non-world category branch and omit all world-rule analysis fields."
 )
 _CONTINUITY_REQUIREMENT_SCOPE = (
     "Use benchmark_constraint_applicability and scene_plan_requirement_applicability as "
@@ -157,19 +163,19 @@ _CONTINUITY_RECHECK_REQUIREMENT = (
     "finding against the revised draft before reporting anything new. Omit a prior finding "
     "when resolved. For an unresolved prior finding, preserve its ID, set "
     "recheck_disposition='still_blocking', and supply repair_assessment plus "
-    "revised_draft_evidence_refs selected from the candidate draft. The same evidence "
-    "reference is allowed when the writer left "
-    "the offending passage unchanged, but repair_assessment must explain that fact. For a new "
+    "revised_draft_evidence_refs inside basis_details selected from the candidate draft. Set "
+    "recheck_evidence_state='unchanged' only when the exact offending excerpts are unchanged, "
+    "or 'changed' when the current excerpts differ. For a new "
     "blocking defect caused or exposed by the revision, set "
-    "recheck_disposition='newly_exposed' and explain why it was not actionable before. Do not "
+    "recheck_disposition='newly_exposed', set recheck_evidence_state='newly_exposed', and "
+    "explain why it was not actionable before. Do not "
     "downgrade an unresolved prior blocker to an advisory finding. Every revised_evidence "
     "reference is resolved by the application to an exact excerpt from the supplied revised "
     "draft. A re-checked "
     "missing_requirement instead supplies a fresh coverage_assessment and must omit "
     "revised_evidence because absent content has no excerpt. "
-    "When the cited evidence changes, write a fresh repair_assessment instead of copying "
-    "the previous judgment. Reuse unchanged evidence only when repair_assessment explicitly "
-    "explains that the offending passage was left unchanged. Do not replace prior guidance "
+    "When the cited evidence changes or remains unchanged, write a fresh repair_assessment "
+    "instead of copying the previous judgment. Do not replace prior guidance "
     "with contradictory guidance unless exact Scene Plan or Story Bible evidence proves "
     "the prior repair invalid."
 )
@@ -195,13 +201,18 @@ _LOCAL_SCHEMA_REPAIR_OPERATION_RULES: Mapping[_Operation, tuple[str, ...]] = {
     _Operation.CONTINUITY: (
         "Every error or blocking finding needs a concrete recommended_resolution. Return "
         "an empty findings array when no defect remains.",
-        "Match every blocking finding to its basis-specific evidence contract. Select draft "
+        "Match every blocking finding's basis_details object to its basis-specific evidence "
+        "contract. Select draft "
         "evidence handles from candidate_draft.content.evidence_catalog and canonical source "
         "handles from canonical_source_catalog; never copy prose or requirement text into an "
         "ID field.",
-        "Choose the branch matching the finding category. World-rule branches require exact "
+        "Choose the category_details branch matching the finding category. World-rule "
+        "branches require exact "
         "world_rule_ids, a non-empty companion_rule_assessment, and "
         "condition_explicitly_authorized=false. Non-world branches must omit those fields.",
+        "For a contradiction or forbidden-shortcut re-check, declare "
+        "recheck_evidence_state as changed, unchanged, or newly_exposed exactly as required by "
+        "the current excerpts and recheck_disposition.",
     ),
     _Operation.STORY_BIBLE_UPDATE: (
         "Character, relationship, location, scene, fact, and thread references must use "
@@ -421,6 +432,7 @@ class ProfileRoutedProductionExecutor(SceneProductionExecutor):
             execution,
             messages,
             continuity_schema_variant,
+            output_schema,
         )
         request = ModelRequest(
             model_identifier=execution.selection.model_identifier,
@@ -475,6 +487,7 @@ class ProfileRoutedProductionExecutor(SceneProductionExecutor):
                 error.code.value,
                 str(error),
                 None,
+                usage=error.usage,
             )
             if error.retryable:
                 raise RetryableSceneProductionError(str(error)) from error
@@ -662,6 +675,7 @@ class ProfileRoutedProductionExecutor(SceneProductionExecutor):
         execution: _Execution,
         messages: tuple[ModelMessage, ...],
         continuity_schema_variant: _ContinuitySchemaVariant | None,
+        output_schema: Mapping[str, Any],
     ) -> UUID:
         invocation_id = uuid4()
         with self._session_factory.begin() as session:
@@ -702,6 +716,14 @@ class ProfileRoutedProductionExecutor(SceneProductionExecutor):
                             "f",
                         ),
                     },
+                    "request_composition": _request_composition_metrics(
+                        messages,
+                        gateway_schema=(
+                            output_schema
+                            if execution.selection.deployment is ModelDeployment.LOCAL
+                            else None
+                        ),
+                    ),
                 },
                 prompt_sha256=_messages_sha256(messages),
                 prompt_text="\n\n".join(message.content for message in messages),
@@ -780,6 +802,7 @@ class ProfileRoutedProductionExecutor(SceneProductionExecutor):
         schema_valid: bool | None,
         response: ModelResponse | None = None,
         validation_issues: tuple[dict[str, str], ...] = (),
+        usage: ModelUsage | None = None,
     ) -> None:
         guard = active_secret_guard()
         safe_message = guard.redact_text(message)[:2_000]
@@ -802,6 +825,16 @@ class ProfileRoutedProductionExecutor(SceneProductionExecutor):
                 invocation.estimated_cost_usd = response.estimated_cost_usd
                 invocation.latency_ms = response.timing.total_ms
                 _apply_response_metadata(invocation, response)
+            elif usage is not None:
+                invocation.input_tokens = usage.input_tokens
+                invocation.output_tokens = usage.output_tokens
+                invocation.request_settings = {
+                    **invocation.request_settings,
+                    "provider_reported_usage": {
+                        "input_tokens": usage.input_tokens,
+                        "output_tokens": usage.output_tokens,
+                    },
+                }
             invocation.completed_at = datetime.now(UTC)
             invocation.error_code = code
             invocation.error_message = safe_message
@@ -1024,6 +1057,7 @@ def _output_schema(
 
     is_recheck = continuity_schema_variant is _ContinuitySchemaVariant.RECHECK
     phase_name = "Recheck" if is_recheck else "Initial"
+    blocking_name = f"{phase_name}BlockingContinuityFinding"
     advisory_name = f"{phase_name}AdvisoryContinuityFinding"
     required_requirement_ids = tuple(
         requirement_id
@@ -1036,53 +1070,50 @@ def _output_schema(
         if kind == "forbidden_shortcut"
     )
     basis_branches = (
-        ("Contradiction", ContinuityFindingBasis.CONTRADICTION, ()),
+        (ContinuityFindingBasis.CONTRADICTION, ()),
         (
-            "MissingRequirement",
             ContinuityFindingBasis.MISSING_REQUIREMENT,
             required_requirement_ids,
         ),
         (
-            "ForbiddenShortcut",
             ContinuityFindingBasis.FORBIDDEN_SHORTCUT_VIOLATION,
             forbidden_requirement_ids,
         ),
     )
-    branch_names: list[str] = []
-    for basis_name, basis, requirement_ids in basis_branches:
-        if basis is not ContinuityFindingBasis.CONTRADICTION and not requirement_ids:
-            continue
-        for category_scope, is_world_rule in (
-            ("NonWorld", False),
-            ("WorldRule", True),
-        ):
-            if is_world_rule and not continuity_model_context.world_rule_ids:
-                continue
-            branch_name = f"{phase_name}{basis_name}{category_scope}ContinuityFinding"
-            definitions[branch_name] = _continuity_finding_branch_schema(
-                finding_schema,
-                title=branch_name,
-                severities=("error", "blocking"),
-                basis=basis,
-                require_resolution=True,
-                require_recheck_analysis=is_recheck,
-                model_context=continuity_model_context,
-                requirement_ids=requirement_ids,
-                is_world_rule=is_world_rule,
-            )
-            branch_names.append(branch_name)
-    definitions[advisory_name] = _continuity_finding_branch_schema(
+    basis_detail_schemas = [
+        _continuity_basis_detail_schema(
+            basis=basis,
+            is_recheck=is_recheck,
+            model_context=continuity_model_context,
+            requirement_ids=requirement_ids,
+        )
+        for basis, requirement_ids in basis_branches
+        if basis is ContinuityFindingBasis.CONTRADICTION or requirement_ids
+    ]
+    category_detail_schemas = [
+        _continuity_non_world_category_detail_schema(),
+        *(
+            [_continuity_world_category_detail_schema(continuity_model_context)]
+            if continuity_model_context.world_rule_ids
+            else []
+        ),
+    ]
+    definitions[blocking_name] = _continuity_blocking_finding_schema(
+        finding_schema,
+        title=blocking_name,
+        basis_detail_schemas=basis_detail_schemas,
+        category_detail_schemas=category_detail_schemas,
+        require_recheck_analysis=is_recheck,
+    )
+    definitions[advisory_name] = _continuity_advisory_finding_schema(
         finding_schema,
         title=advisory_name,
-        severities=("info", "warning"),
-        basis=None,
-        require_resolution=False,
-        require_recheck_analysis=False,
-        model_context=continuity_model_context,
     )
-    branch_names.append(advisory_name)
     findings_schema["items"] = {
-        "anyOf": [{"$ref": f"#/$defs/{branch_name}"} for branch_name in branch_names]
+        "anyOf": [
+            {"$ref": f"#/$defs/{blocking_name}"},
+            {"$ref": f"#/$defs/{advisory_name}"},
+        ]
     }
     definitions.pop("ContinuityFinding", None)
     definitions.pop("ContinuityFindingBasis", None)
@@ -1093,184 +1124,66 @@ def _output_schema(
     return schema
 
 
-def _continuity_finding_branch_schema(
+def _continuity_blocking_finding_schema(
     canonical_schema: Mapping[str, Any],
     *,
     title: str,
-    severities: tuple[str, str],
-    basis: ContinuityFindingBasis | None,
-    require_resolution: bool,
+    basis_detail_schemas: list[dict[str, Any]],
+    category_detail_schemas: list[dict[str, Any]],
     require_recheck_analysis: bool,
-    model_context: _ContinuityModelContext,
-    requirement_ids: tuple[str, ...] = (),
-    is_world_rule: bool | None = None,
 ) -> dict[str, Any]:
-    """Create one unambiguous model-facing continuity-finding branch."""
+    """Compose basis and category dimensions without duplicating the finding object."""
     branch = deepcopy(dict(canonical_schema))
     properties = branch.get("properties")
     required = branch.get("required")
     if not isinstance(properties, dict) or not isinstance(required, list):
         raise SceneProductionError("continuity finding branch schema is invalid")
 
-    properties.pop("blocks_approval", None)
     properties["severity"] = {
         "type": "string",
-        "enum": list(severities),
+        "enum": ["error", "blocking"],
         "title": "Severity",
     }
-    basis_fields = {
-        "basis",
-        "canonical_source_refs",
-        "requirement_id",
-        "coverage_assessment",
-    }
-    for field_name in (
+    removed_fields = (
         _CONTINUITY_RECHECK_ONLY_FIELDS
         | _CONTINUITY_MODEL_EVIDENCE_FIELDS
-        | basis_fields
-        | {"evidence"}
-    ):
-        properties.pop(field_name, None)
-    branch["required"] = [
-        field_name
-        for field_name in required
-        if field_name != "blocks_approval"
-        and field_name not in _CONTINUITY_RECHECK_ONLY_FIELDS
-        and field_name not in _CONTINUITY_MODEL_EVIDENCE_FIELDS
-        and field_name not in basis_fields
-        and field_name != "evidence"
-    ]
-
-    if basis is None:
-        if is_world_rule is not None:
-            raise SceneProductionError("advisory continuity branch cannot select a category scope")
-        for field_name in (
+        | _CONTINUITY_MODEL_DETAIL_FIELDS
+        | {
+            "basis",
+            "blocks_approval",
+            "canonical_source_refs",
+            "category",
+            "condition_explicitly_authorized",
+            "coverage_assessment",
+            "evidence",
+            "requirement_id",
             "world_rule_ids",
             "companion_rule_assessment",
-            "condition_explicitly_authorized",
-        ):
-            properties.pop(field_name, None)
-    else:
-        properties["basis"] = {
-            "type": "string",
-            "const": basis.value,
-            "title": "Basis",
         }
-        branch["required"].append("basis")
-        if is_world_rule is None:
-            raise SceneProductionError("blocking continuity branch requires a category scope")
-        if is_world_rule:
-            properties["category"] = {
-                "type": "string",
-                "const": ContinuityCategory.WORLD_RULE.value,
-                "title": "Category",
-            }
-            properties["world_rule_ids"] = {
-                "type": "array",
-                "items": {"type": "string", "enum": list(model_context.world_rule_ids)},
-                "minItems": 1,
-                "title": "World Rule Ids",
-            }
-            properties["companion_rule_assessment"] = {
-                "type": "string",
-                "minLength": 1,
-                "title": "Companion Rule Assessment",
-            }
-            properties["condition_explicitly_authorized"] = {
-                "type": "boolean",
-                "const": False,
-                "title": "Condition Explicitly Authorized",
-            }
-            branch["required"].extend(
-                (
-                    "world_rule_ids",
-                    "companion_rule_assessment",
-                    "condition_explicitly_authorized",
-                )
-            )
-        else:
-            properties["category"] = {
-                "type": "string",
-                "enum": [
-                    category.value
-                    for category in ContinuityCategory
-                    if category is not ContinuityCategory.WORLD_RULE
-                ],
-                "title": "Category",
-            }
-            for field_name in (
-                "world_rule_ids",
-                "companion_rule_assessment",
-                "condition_explicitly_authorized",
-            ):
-                properties.pop(field_name, None)
-        if basis is ContinuityFindingBasis.CONTRADICTION:
-            evidence_field = (
-                "revised_draft_evidence_refs" if require_recheck_analysis else "draft_evidence_refs"
-            )
-            properties[evidence_field] = {
-                "type": "array",
-                "items": {"type": "string", "enum": list(model_context.evidence_refs)},
-                "minItems": 1,
-                "maxItems": _MAX_EVIDENCE_REFS_PER_FINDING,
-                "title": (
-                    "Revised Draft Evidence Refs"
-                    if require_recheck_analysis
-                    else "Draft Evidence Refs"
-                ),
-            }
-            properties["canonical_source_refs"] = {
-                "type": "array",
-                "items": {
-                    "type": "string",
-                    "enum": list(model_context.canonical_source_refs),
-                },
-                "minItems": 1,
-                "maxItems": _MAX_CANONICAL_SOURCE_REFS_PER_FINDING,
-                "title": "Canonical Source Refs",
-            }
-            branch["required"].extend((evidence_field, "canonical_source_refs"))
-        elif basis is ContinuityFindingBasis.MISSING_REQUIREMENT:
-            properties["requirement_id"] = {
-                "type": "string",
-                "enum": list(requirement_ids),
-                "title": "Requirement Id",
-            }
-            properties["coverage_assessment"] = {
-                "type": "string",
-                "minLength": 1,
-                "title": "Coverage Assessment",
-            }
-            branch["required"].extend(("requirement_id", "coverage_assessment"))
-        else:
-            evidence_field = (
-                "revised_draft_evidence_refs" if require_recheck_analysis else "draft_evidence_refs"
-            )
-            properties[evidence_field] = {
-                "type": "array",
-                "items": {"type": "string", "enum": list(model_context.evidence_refs)},
-                "minItems": 1,
-                "maxItems": _MAX_EVIDENCE_REFS_PER_FINDING,
-                "title": (
-                    "Revised Draft Evidence Refs"
-                    if require_recheck_analysis
-                    else "Draft Evidence Refs"
-                ),
-            }
-            properties["requirement_id"] = {
-                "type": "string",
-                "enum": list(requirement_ids),
-                "title": "Requirement Id",
-            }
-            branch["required"].extend((evidence_field, "requirement_id"))
-
-    if require_resolution:
-        properties["recommended_resolution"] = {
-            "type": "string",
-            "minLength": 1,
-            "title": "Recommended Resolution",
-        }
-        branch["required"].append("recommended_resolution")
+    )
+    for field_name in removed_fields:
+        properties.pop(field_name, None)
+    branch["required"] = [field_name for field_name in required if field_name not in removed_fields]
+    properties["recommended_resolution"] = {
+        "type": "string",
+        "minLength": 1,
+        "title": "Recommended Resolution",
+    }
+    properties["basis_details"] = {
+        "anyOf": basis_detail_schemas,
+        "title": "Basis Details",
+    }
+    properties["category_details"] = {
+        "anyOf": category_detail_schemas,
+        "title": "Category Details",
+    }
+    branch["required"].extend(
+        (
+            "recommended_resolution",
+            "basis_details",
+            "category_details",
+        )
+    )
     if require_recheck_analysis:
         properties["recheck_disposition"] = {"$ref": "#/$defs/ContinuityRecheckDisposition"}
         properties["repair_assessment"] = {
@@ -1281,6 +1194,177 @@ def _continuity_finding_branch_schema(
         branch["required"].extend(("recheck_disposition", "repair_assessment"))
     branch["title"] = title
     return branch
+
+
+def _continuity_advisory_finding_schema(
+    canonical_schema: Mapping[str, Any],
+    *,
+    title: str,
+) -> dict[str, Any]:
+    """Create the smaller non-blocking finding branch."""
+    branch = deepcopy(dict(canonical_schema))
+    properties = branch.get("properties")
+    required = branch.get("required")
+    if not isinstance(properties, dict) or not isinstance(required, list):
+        raise SceneProductionError("continuity advisory branch schema is invalid")
+    properties["severity"] = {
+        "type": "string",
+        "enum": ["info", "warning"],
+        "title": "Severity",
+    }
+    removed_fields = (
+        _CONTINUITY_RECHECK_ONLY_FIELDS
+        | _CONTINUITY_MODEL_EVIDENCE_FIELDS
+        | _CONTINUITY_MODEL_DETAIL_FIELDS
+        | {
+            "basis",
+            "blocks_approval",
+            "canonical_source_refs",
+            "condition_explicitly_authorized",
+            "coverage_assessment",
+            "evidence",
+            "requirement_id",
+            "world_rule_ids",
+            "companion_rule_assessment",
+        }
+    )
+    for field_name in removed_fields:
+        properties.pop(field_name, None)
+    branch["required"] = [field_name for field_name in required if field_name not in removed_fields]
+    branch["title"] = title
+    return branch
+
+
+def _continuity_basis_detail_schema(
+    *,
+    basis: ContinuityFindingBasis,
+    is_recheck: bool,
+    model_context: _ContinuityModelContext,
+    requirement_ids: tuple[str, ...],
+) -> dict[str, Any]:
+    """Create one compact, mutually exclusive blocking-basis detail object."""
+    properties: dict[str, Any] = {
+        "basis": {
+            "type": "string",
+            "const": basis.value,
+            "title": "Basis",
+        }
+    }
+    required = ["basis"]
+    if basis is ContinuityFindingBasis.MISSING_REQUIREMENT:
+        properties["requirement_id"] = {
+            "type": "string",
+            "enum": list(requirement_ids),
+            "title": "Requirement Id",
+        }
+        properties["coverage_assessment"] = {
+            "type": "string",
+            "minLength": 1,
+            "title": "Coverage Assessment",
+        }
+        required.extend(("requirement_id", "coverage_assessment"))
+    else:
+        evidence_field = "revised_draft_evidence_refs" if is_recheck else "draft_evidence_refs"
+        properties[evidence_field] = {
+            "type": "array",
+            "items": {"type": "string", "enum": list(model_context.evidence_refs)},
+            "minItems": 1,
+            "maxItems": _MAX_EVIDENCE_REFS_PER_FINDING,
+            "title": ("Revised Draft Evidence Refs" if is_recheck else "Draft Evidence Refs"),
+        }
+        required.append(evidence_field)
+        if is_recheck:
+            properties[_CONTINUITY_MODEL_RECHECK_EVIDENCE_STATE_FIELD] = {
+                "type": "string",
+                "enum": ["changed", "unchanged", "newly_exposed"],
+                "title": "Recheck Evidence State",
+            }
+            required.append(_CONTINUITY_MODEL_RECHECK_EVIDENCE_STATE_FIELD)
+        if basis is ContinuityFindingBasis.CONTRADICTION:
+            properties["canonical_source_refs"] = {
+                "type": "array",
+                "items": {
+                    "type": "string",
+                    "enum": list(model_context.canonical_source_refs),
+                },
+                "minItems": 1,
+                "maxItems": _MAX_CANONICAL_SOURCE_REFS_PER_FINDING,
+                "title": "Canonical Source Refs",
+            }
+            required.append("canonical_source_refs")
+        else:
+            properties["requirement_id"] = {
+                "type": "string",
+                "enum": list(requirement_ids),
+                "title": "Requirement Id",
+            }
+            required.append("requirement_id")
+    return {
+        "type": "object",
+        "properties": properties,
+        "required": required,
+        "additionalProperties": False,
+        "title": f"{basis.value.replace('_', ' ').title()} Details",
+    }
+
+
+def _continuity_non_world_category_detail_schema() -> dict[str, Any]:
+    return {
+        "type": "object",
+        "properties": {
+            "category": {
+                "type": "string",
+                "enum": [
+                    category.value
+                    for category in ContinuityCategory
+                    if category is not ContinuityCategory.WORLD_RULE
+                ],
+                "title": "Category",
+            }
+        },
+        "required": ["category"],
+        "additionalProperties": False,
+        "title": "Non World Category Details",
+    }
+
+
+def _continuity_world_category_detail_schema(
+    model_context: _ContinuityModelContext,
+) -> dict[str, Any]:
+    return {
+        "type": "object",
+        "properties": {
+            "category": {
+                "type": "string",
+                "const": ContinuityCategory.WORLD_RULE.value,
+                "title": "Category",
+            },
+            "world_rule_ids": {
+                "type": "array",
+                "items": {"type": "string", "enum": list(model_context.world_rule_ids)},
+                "minItems": 1,
+                "title": "World Rule Ids",
+            },
+            "companion_rule_assessment": {
+                "type": "string",
+                "minLength": 1,
+                "title": "Companion Rule Assessment",
+            },
+            "condition_explicitly_authorized": {
+                "type": "boolean",
+                "const": False,
+                "title": "Condition Explicitly Authorized",
+            },
+        },
+        "required": [
+            "category",
+            "world_rule_ids",
+            "companion_rule_assessment",
+            "condition_explicitly_authorized",
+        ],
+        "additionalProperties": False,
+        "title": "World Rule Category Details",
+    }
 
 
 def _select_production_model(
@@ -1365,7 +1449,7 @@ def _local_schema_repair_guidance(
                 "This is a re-check. An unresolved prior or newly exposed error/blocking "
                 "finding must supply recheck_disposition and repair_assessment. Contradiction "
                 "and forbidden-shortcut bases also require non-empty "
-                "revised_draft_evidence_refs selected from the candidate draft; a "
+                "basis_details.revised_draft_evidence_refs selected from the candidate draft; a "
                 "missing-requirement basis requires fresh coverage_assessment and must omit "
                 "draft evidence references. Info and warning findings must not use re-check "
                 "fields.",
@@ -1423,8 +1507,11 @@ def _messages(
             "revision_number": execution.revision_number,
         },
         "input_artifacts": execution.inputs,
-        "output_schema": schema,
     }
+    if execution.selection.deployment is ModelDeployment.LOCAL:
+        payload["output_schema_delivery"] = "enforced_by_local_gateway"
+    else:
+        payload["output_schema"] = schema
     if operation is _Operation.CONTINUITY:
         if continuity_schema_variant is None:
             raise ValueError("continuity messages require a schema variant")
@@ -1997,7 +2084,16 @@ def _materialize_output_data(
             ]
             _validate_continuity_finding_contract(materialized_findings, execution)
             _validate_continuity_recheck_analysis(materialized_findings, execution)
-            materialized["findings"] = materialized_findings
+            materialized["findings"] = [
+                {
+                    key: value
+                    for key, value in finding.items()
+                    if key != _CONTINUITY_MODEL_RECHECK_EVIDENCE_STATE_FIELD
+                }
+                if isinstance(finding, dict)
+                else finding
+                for finding in materialized_findings
+            ]
         return materialized
 
     update_task = cast(StoryBibleUpdateTask, task)
@@ -2347,6 +2443,7 @@ def _validate_continuity_recheck_analysis(
                     finding.get("recheck_disposition") is not None,
                     finding.get("repair_assessment") is not None,
                     bool(finding.get("revised_evidence")),
+                    finding.get(_CONTINUITY_MODEL_RECHECK_EVIDENCE_STATE_FIELD) is not None,
                 )
             )
         )
@@ -2367,8 +2464,8 @@ def _validate_continuity_recheck_analysis(
             "continuity re-check findings lack fresh, exact revised-draft analysis: "
             f"{list(invalid_ids)}; set recheck_disposition to still_blocking for preserved "
             "IDs or newly_exposed for new IDs, and supply repair_assessment plus exact "
-            "revised_evidence excerpts; when evidence changes, reassess it instead of "
-            "copying the prior judgment"
+            "revised_evidence excerpts with the matching recheck_evidence_state; reassess "
+            "the current evidence instead of copying the prior judgment"
         )
 
 
@@ -2420,6 +2517,7 @@ def _invalid_continuity_recheck_finding_ids(
         )
         revised_evidence = finding.get("revised_evidence")
         repair_assessment = finding.get("repair_assessment")
+        evidence_state = finding.get(_CONTINUITY_MODEL_RECHECK_EVIDENCE_STATE_FIELD)
         is_missing_requirement = (
             finding.get("basis") == ContinuityFindingBasis.MISSING_REQUIREMENT.value
         )
@@ -2438,7 +2536,8 @@ def _invalid_continuity_recheck_finding_ids(
             or (
                 not is_missing_requirement
                 and (
-                    not isinstance(revised_evidence, list)
+                    evidence_state not in {"changed", "unchanged", "newly_exposed"}
+                    or not isinstance(revised_evidence, list)
                     or not revised_evidence
                     or any(
                         not isinstance(item, str) or not item.strip() for item in revised_evidence
@@ -2450,6 +2549,9 @@ def _invalid_continuity_recheck_finding_ids(
             invalid.append(finding_id)
             continue
         if is_missing_requirement:
+            if evidence_state is not None:
+                invalid.append(finding_id)
+                continue
             prior_finding = prior_by_id.get(finding_id)
             if prior_finding is not None and (
                 finding.get("coverage_assessment") == prior_finding.get("coverage_assessment")
@@ -2466,6 +2568,8 @@ def _invalid_continuity_recheck_finding_ids(
 
         prior_finding = prior_by_id.get(finding_id)
         if prior_finding is None:
+            if evidence_state != "newly_exposed":
+                invalid.append(finding_id)
             continue
         prior_revised_evidence = prior_finding.get("revised_evidence")
         comparison_evidence = (
@@ -2474,10 +2578,10 @@ def _invalid_continuity_recheck_finding_ids(
             else prior_finding.get("evidence")
         )
         prior_assessment = prior_finding.get("repair_assessment")
-        if exact_evidence == comparison_evidence:
-            if not _assessment_explains_unchanged(cast(str, repair_assessment)):
-                invalid.append(finding_id)
-        elif (
+        expected_evidence_state = (
+            "unchanged" if exact_evidence == comparison_evidence else "changed"
+        )
+        if evidence_state != expected_evidence_state or (
             isinstance(prior_assessment, str)
             and cast(str, repair_assessment).strip() == prior_assessment.strip()
         ):
@@ -2499,20 +2603,6 @@ def _current_scene_draft_prose(execution: _Execution) -> str:
     return cast(str, drafts[0]["prose"])
 
 
-def _assessment_explains_unchanged(assessment: str) -> bool:
-    normalized = " ".join(assessment.casefold().split())
-    return any(
-        marker in normalized
-        for marker in (
-            "unchanged",
-            "not changed",
-            "did not change",
-            "still contains",
-            "still says",
-        )
-    ) or (("left" in normalized or "leaves" in normalized) and "in place" in normalized)
-
-
 def _materialize_continuity_evidence(
     finding: object,
     model_context: _ContinuityModelContext,
@@ -2520,6 +2610,7 @@ def _materialize_continuity_evidence(
     """Resolve model-selected evidence handles into exact canonical artifact excerpts."""
     if not isinstance(finding, dict):
         return finding
+    finding = _flatten_continuity_model_finding(finding)
     materialized = {
         key: value for key, value in finding.items() if key not in _CONTINUITY_MODEL_EVIDENCE_FIELDS
     }
@@ -2560,6 +2651,30 @@ def _materialize_continuity_evidence(
     if model_context.previous_continuity_report is not None:
         materialized["revised_evidence"] = excerpts
     return materialized
+
+
+def _flatten_continuity_model_finding(finding: Mapping[str, object]) -> dict[str, object]:
+    """Flatten compact model-only basis/category detail objects for canonical validation."""
+    basis_details = finding.get("basis_details")
+    category_details = finding.get("category_details")
+    if basis_details is None and category_details is None:
+        return dict(finding)
+    if not isinstance(basis_details, dict) or not isinstance(category_details, dict):
+        raise _StructuredOutputContractError(
+            "findings",
+            "blocking findings require both basis_details and category_details objects",
+        )
+    root = {
+        key: value for key, value in finding.items() if key not in _CONTINUITY_MODEL_DETAIL_FIELDS
+    }
+    duplicate_fields = (set(root) & set(basis_details)) | (set(root) & set(category_details))
+    duplicate_fields |= set(basis_details) & set(category_details)
+    if duplicate_fields:
+        raise _StructuredOutputContractError(
+            "findings",
+            f"compact continuity details duplicate fields: {sorted(duplicate_fields)}",
+        )
+    return {**root, **basis_details, **category_details}
 
 
 def _materialize_continuity_finding(
@@ -2866,6 +2981,87 @@ def _messages_sha256(messages: tuple[ModelMessage, ...]) -> str:
     return hashlib.sha256(
         json.dumps(value, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
     ).hexdigest()
+
+
+def _request_composition_metrics(
+    messages: tuple[ModelMessage, ...],
+    *,
+    gateway_schema: Mapping[str, Any] | None,
+) -> dict[str, object]:
+    """Record content-free size diagnostics for each provider-input contribution."""
+    user_message = next(
+        (message.content for message in messages if message.role is MessageRole.USER),
+        None,
+    )
+    if user_message is None:
+        raise SceneProductionError("production request has no user message")
+    user_payload = json.loads(user_message)
+    if not isinstance(user_payload, dict):
+        raise SceneProductionError("production user message must contain a JSON object")
+
+    artifact_keys = {
+        "accepted_prior_drafts",
+        "candidate_draft",
+        "canonical_source_catalog",
+        "input_artifacts",
+        "previous_continuity_report",
+    }
+    retry_keys = {"local_schema_repair", "retry_context"}
+    inline_schema = user_payload.pop("output_schema", None)
+    artifact_context = {
+        key: user_payload.pop(key) for key in tuple(user_payload) if key in artifact_keys
+    }
+    retry_context = {key: user_payload.pop(key) for key in tuple(user_payload) if key in retry_keys}
+    system_instructions = "\n".join(
+        message.content for message in messages if message.role is MessageRole.SYSTEM
+    )
+    components = {
+        "system_instructions": _content_metric(system_instructions),
+        "artifact_context": _content_metric(artifact_context),
+        "control_context": _content_metric(user_payload),
+        "retry_repair_context": _content_metric(retry_context),
+        "inline_schema": _content_metric(inline_schema),
+        "gateway_schema": _content_metric(gateway_schema),
+        "serialized_messages": _content_metric(
+            [{"role": message.role.value, "content": message.content} for message in messages]
+        ),
+    }
+    estimated_provider_bytes = sum(
+        cast(int, component["utf8_bytes"])
+        for name, component in components.items()
+        if name
+        in {
+            "system_instructions",
+            "artifact_context",
+            "control_context",
+            "retry_repair_context",
+            "inline_schema",
+            "gateway_schema",
+        }
+    )
+    return {
+        "schema_version": "1",
+        "token_estimate_method": "ceil(utf8_bytes/4); diagnostic only",
+        "estimated_provider_input_tokens": ceil(estimated_provider_bytes / 4),
+        "components": components,
+    }
+
+
+def _content_metric(value: object) -> dict[str, object]:
+    serialized = (
+        ""
+        if value is None
+        else value
+        if isinstance(value, str)
+        else json.dumps(value, ensure_ascii=False, separators=(",", ":"), sort_keys=True)
+    )
+    encoded = serialized.encode("utf-8")
+    return {
+        "characters": len(serialized),
+        "utf8_bytes": len(encoded),
+        "estimated_tokens": ceil(len(encoded) / 4),
+        "sha256": hashlib.sha256(encoded).hexdigest(),
+    }
 
 
 def _mapping_input(value: Mapping[str, Any], key: str) -> Mapping[str, object]:

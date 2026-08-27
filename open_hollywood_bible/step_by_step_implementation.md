@@ -324,8 +324,45 @@ workflow error, so `report.json` records the actionable field-level cause. The
 v13 canary remains immutable diagnostic evidence; another batch requires a new
 plan pinned to graph v3 and prompt v14. Evidence:
 `docs/benchmark_reports/step-19-local-v13-canary-2026-08-25.md`.
+The fresh v14 canary plan has canonical digest
+`61a3c33ae850c1bb9b7f030b896d362ceb8d2411770acc3354cde0357461b2ac`.
+Its first Local batch completed none of five production-runnable cases, while
+OH-V01-006 retained its terminal Blueprint artifact-contract failure. Prompt
+v14 eliminated all v13 missing/invalid World Rule ID, missing companion-rule
+assessment, invalid authorization-state, and non-world/world-field crossover
+failures. OH-V01-001 stopped after repeated continuity re-check stagnation;
+OH-V01-002 recovered one such structured failure but ultimately retained a
+blocker at the revision limit. OH-V01-003, OH-V01-004, and OH-V01-005 accepted
+two, one, and one scenes respectively before later continuity inputs exceeded
+the unchanged 20,000-token per-call ceiling. A representative v14 initial
+schema is 70.2% larger than v13 and the corresponding re-check schema is 70.6%
+larger, so compacting the cross-product contract is the leading response rather
+than immediately widening the budget. Exact report diagnostics worked for
+terminal failed invocations, but OH-V01-002 exposed a precedence defect: its
+recovered failed invocation masked the later specific workflow terminal cause.
+The database passed integrity checking and retained no running workflow or
+invocation. Evidence:
+`docs/benchmark_reports/step-19-local-v14-canary-2026-08-26.md`.
+Prompt contract v15 retains graph v3 and implements the v14 evidence response.
+It composes one shared blocking-finding object with independent nested
+basis/category detail unions instead of six duplicated full objects. The
+representative initial schema falls from 14,270 to 5,792 UTF-8 bytes (59.4%)
+and the re-check schema from 15,733 to 6,543 bytes (58.4%), with no `allOf`
+dependency because the Local model did not reliably enforce that keyword.
+Local user messages no longer duplicate the schema already sent through
+Ollama's enforced format channel; Cloud and Hybrid cloud calls retain the
+inline schema contract. Invocation telemetry now separates content-free size,
+digest, and estimated-token contributions for system instructions, artifacts,
+control data, retry/repair context, inline schema, and gateway schema, and
+persists provider usage on over-budget failures with exact observed-versus-limit
+diagnostics. Re-check evidence carries an explicit changed/unchanged/newly
+exposed state that is checked against prior exact evidence and stripped before
+canonical artifact persistence. Finally, report cause selection gives a
+specific terminal workflow error precedence over a recovered failed
+invocation, using invocation detail only for absent or generic workflow
+wrappers. A new canary must use a fresh plan pinned to graph v3 and prompt v15.
 Ruff and formatting pass over 133 files, strict mypy passes over 133 source
-files, all 222 pytest tests pass, frontend formatting/lint/type checking pass,
+files, all 224 pytest tests pass, frontend formatting/lint/type checking pass,
 all 10 Vitest tests pass, and the production build succeeds.
 
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.

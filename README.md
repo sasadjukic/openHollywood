@@ -278,6 +278,33 @@ those fields. Benchmark `report.json` failures now prefer the terminal failed
 invocation's exact redacted field-level diagnostic, falling back to the durable
 workflow cause only when no model invocation caused the failure.
 
+The first Local v14 canary batch again completed none of its five
+production-runnable cases, while OH-V01-006 retained its terminal Blueprint
+failure. The explicit world-rule/non-world branches eliminated every v13
+world-field shape failure. Two stories instead stopped on continuity re-check
+stagnation, and three advanced far enough to exceed the unchanged 20,000-token
+continuity input ceiling after accepting four scenes between them. A
+representative all-bases v14 continuity schema is about 70% larger than v13,
+making schema compaction the first follow-up before changing the production
+budget. The run also exposed one reporting-precedence edge case: a recovered
+failed invocation can mask a later, specific workflow-level terminal cause in
+`report.json`.
+
+Prompt contract v15 retains production graph v3 while removing the v14 schema
+cross-product. Blocking findings now carry one shared object plus independent
+`basis_details` and `category_details` unions; this preserves all six semantic
+combinations while reducing representative initial and re-check schemas by
+59.4% and 58.4%, respectively. Local calls receive that schema only through
+Ollama's enforced `format` channel instead of duplicating it in the user
+message. Every invocation records content-free byte, hash, and diagnostic token
+estimates for system, artifact, control, retry/repair, inline-schema, and
+gateway-schema contributions, while provider-reported usage is retained even
+when it exceeds budget. Re-check contradiction and forbidden-shortcut details
+must declare whether exact evidence is `changed`, `unchanged`, or
+`newly_exposed`; the application verifies the declaration against the prior
+report. Benchmark failure reporting now prefers a specific terminal workflow
+cause over any earlier failed invocation that a retry subsequently recovered.
+
 Benchmark word-count ranges are advisory creative targets. New outputs persist a
 non-gating adherence measurement with the target, actual count, status, and word
 deviation. Automatic completion reflects a finished, non-truncated document,

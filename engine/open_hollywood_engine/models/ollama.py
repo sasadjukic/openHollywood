@@ -235,14 +235,20 @@ class OllamaGateway:
         if response.usage.input_tokens > request.budget.max_input_tokens:
             raise ModelGatewayError(
                 ModelGatewayErrorCode.BUDGET_EXCEEDED,
-                "provider-reported input token usage exceeded the call budget",
+                "provider-reported input token usage "
+                f"({response.usage.input_tokens}) exceeded the call budget "
+                f"({request.budget.max_input_tokens})",
                 retryable=False,
+                usage=response.usage,
             )
         if response.usage.output_tokens > request.budget.max_output_tokens:
             raise ModelGatewayError(
                 ModelGatewayErrorCode.BUDGET_EXCEEDED,
-                "provider-reported output token usage exceeded the call budget",
+                "provider-reported output token usage "
+                f"({response.usage.output_tokens}) exceeded the call budget "
+                f"({request.budget.max_output_tokens})",
                 retryable=False,
+                usage=response.usage,
             )
         return response
 

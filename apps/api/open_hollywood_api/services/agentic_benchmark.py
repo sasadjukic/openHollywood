@@ -67,6 +67,21 @@ AGENTIC_BENCHMARK_BLUEPRINT_BUDGET = RunBudget(
 )
 
 
+def _preferred_production_failure_detail(
+    *,
+    workflow_detail: str | None,
+    invocation_detail: str | None,
+) -> str | None:
+    """Prefer the terminal graph cause over a recovered invocation failure."""
+    generic_workflow_details = {
+        "production specialist returned invalid structured output",
+        "The persisted agentic scene-production run failed.",
+    }
+    if workflow_detail is not None and workflow_detail not in generic_workflow_details:
+        return workflow_detail
+    return invocation_detail or workflow_detail
+
+
 @dataclass(frozen=True, slots=True)
 class AgenticBlueprintPreparation:
     """One benchmark case paused at or completed past Blueprint governance."""
@@ -374,14 +389,21 @@ class AgenticBenchmarkCaseExecutor:
                     AgentInvocation.id.desc(),
                 )
             )
-            detail = (
+            workflow_detail = (
+                run.error_message.strip()
+                if isinstance(run.error_message, str) and run.error_message.strip()
+                else None
+            )
+            invocation_detail = (
                 failed_invocation.error_message.strip()
                 if failed_invocation is not None
                 and isinstance(failed_invocation.error_message, str)
                 and failed_invocation.error_message.strip()
-                else run.error_message.strip()
-                if isinstance(run.error_message, str) and run.error_message.strip()
                 else None
+            )
+            detail = _preferred_production_failure_detail(
+                workflow_detail=workflow_detail,
+                invocation_detail=invocation_detail,
             )
             if detail is None:
                 return None

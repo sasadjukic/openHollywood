@@ -22,6 +22,7 @@ from open_hollywood_api.persistence.models import (
 from open_hollywood_api.services.agentic_benchmark import (
     AgenticBenchmarkBlueprintService,
     AgenticBenchmarkCaseExecutor,
+    _preferred_production_failure_detail,
 )
 from open_hollywood_api.services.blueprint_model_executor import (
     BenchmarkBlueprintNodeExecutor,
@@ -404,11 +405,13 @@ class OneProductionRepairGateway(ProductionFixtureGateway):
                 {
                     "id": "model_finding_without_resolution",
                     "severity": "error",
-                    "category": "fact",
                     "summary": "The candidate conflicts with an established fact.",
-                    "draft_evidence_refs": [evidence_ref],
-                    "basis": "contradiction",
-                    "canonical_source_refs": [source_ref],
+                    "basis_details": {
+                        "basis": "contradiction",
+                        "draft_evidence_refs": [evidence_ref],
+                        "canonical_source_refs": [source_ref],
+                    },
+                    "category_details": {"category": "fact"},
                     "related_scene_ids": ["model_invented_scene"],
                     "recommended_resolution": None,
                     "blocks_approval": False,
@@ -510,22 +513,29 @@ class ContinuityRevisionFeedbackGateway(ProductionFixtureGateway):
         finding: dict[str, object] = {
             "id": "east_door_key_continuity",
             "severity": "blocking",
-            "category": "fact",
             "summary": summary,
-            "basis": "contradiction",
-            "canonical_source_refs": [source_ref],
+            "basis_details": {
+                "basis": "contradiction",
+                "canonical_source_refs": [source_ref],
+            },
+            "category_details": {"category": "fact"},
             "related_scene_ids": ["model_invented_scene"],
             "recommended_resolution": resolution,
             "blocks_approval": False,
         }
         if is_recheck:
+            cast(dict[str, object], finding["basis_details"]).update(
+                revised_draft_evidence_refs=selected_evidence_refs,
+                recheck_evidence_state="unchanged",
+            )
             finding.update(
                 recheck_disposition="still_blocking",
                 repair_assessment=("The revision leaves the conflicting key action in place."),
-                revised_draft_evidence_refs=selected_evidence_refs,
             )
         else:
-            finding["draft_evidence_refs"] = selected_evidence_refs
+            cast(dict[str, object], finding["basis_details"])["draft_evidence_refs"] = (
+                selected_evidence_refs
+            )
         content["findings"] = [finding]
         return replace(response, content=json.dumps(content))
 
@@ -569,22 +579,29 @@ class HybridStagnationEscalationGateway(ProductionFixtureGateway):
         finding: dict[str, object] = {
             "id": "east_door_key_continuity",
             "severity": "blocking",
-            "category": "fact",
             "summary": "Mara changes doors without returning the established key.",
-            "basis": "contradiction",
-            "canonical_source_refs": [source_ref],
+            "basis_details": {
+                "basis": "contradiction",
+                "canonical_source_refs": [source_ref],
+            },
+            "category_details": {"category": "fact"},
             "related_scene_ids": ["model_invented_scene"],
             "recommended_resolution": self.recommended_resolution,
             "blocks_approval": False,
         }
         if payload.get("output_schema_variant") == "recheck":
+            cast(dict[str, object], finding["basis_details"]).update(
+                revised_draft_evidence_refs=[evidence_ref],
+                recheck_evidence_state="changed",
+            )
             finding.update(
                 recheck_disposition="still_blocking",
                 repair_assessment="The conflict remains unresolved.",
-                revised_draft_evidence_refs=[evidence_ref],
             )
         else:
-            finding["draft_evidence_refs"] = [evidence_ref]
+            cast(dict[str, object], finding["basis_details"])["draft_evidence_refs"] = [
+                evidence_ref
+            ]
         content["findings"] = [finding]
         return replace(response, content=json.dumps(content))
 
@@ -741,6 +758,7 @@ def test_continuity_recheck_requires_structured_analysis_not_rewording() -> None
         "recheck_disposition": "still_blocking",
         "repair_assessment": "The writer left the quoted transition unchanged.",
         "revised_evidence": ["The original draft jumps directly to ambition."],
+        "recheck_evidence_state": "unchanged",
     }
     assert _invalid_continuity_recheck_finding_ids([assessed_finding], prior_report) == ()
     assert _invalid_continuity_recheck_finding_ids([], prior_report) == ()
@@ -825,6 +843,7 @@ def test_continuity_recheck_evidence_must_be_exact_and_fresh() -> None:
     copied_assessment = {
         **original,
         "revised_evidence": ["The revised draft now names the failed system."],
+        "recheck_evidence_state": "changed",
     }
 
     assert _invalid_continuity_recheck_finding_ids(
@@ -854,7 +873,7 @@ def test_continuity_recheck_evidence_must_be_exact_and_fresh() -> None:
     ) == ("stalled_blocker",)
 
 
-def test_unchanged_recheck_evidence_requires_an_explicit_explanation() -> None:
+def test_unchanged_recheck_evidence_requires_matching_structural_state() -> None:
     prior_finding = {
         "id": "unchanged_blocker",
         "severity": "blocking",
@@ -868,6 +887,7 @@ def test_unchanged_recheck_evidence_requires_an_explicit_explanation() -> None:
         "recheck_disposition": "still_blocking",
         "repair_assessment": "The conflict remains unresolved.",
         "revised_evidence": ["Mara pockets the brass key."],
+        "recheck_evidence_state": "changed",
     }
     assert _invalid_continuity_recheck_finding_ids(
         [finding],
@@ -875,7 +895,7 @@ def test_unchanged_recheck_evidence_requires_an_explicit_explanation() -> None:
         revised_draft_prose="Mara pockets the brass key.",
     ) == ("unchanged_blocker",)
 
-    finding["repair_assessment"] = "The writer left the conflicting key action in place."
+    finding["recheck_evidence_state"] = "unchanged"
     assert (
         _invalid_continuity_recheck_finding_ids(
             [finding],
@@ -1113,30 +1133,29 @@ def test_initial_continuity_schema_omits_every_recheck_only_field() -> None:
         continuity_model_context=context,
     )
     definitions = schema["$defs"]
-    contradiction = definitions["InitialContradictionNonWorldContinuityFinding"]
-    world_contradiction = definitions["InitialContradictionWorldRuleContinuityFinding"]
-    missing = definitions["InitialMissingRequirementNonWorldContinuityFinding"]
-    forbidden = definitions["InitialForbiddenShortcutNonWorldContinuityFinding"]
+    blocking = definitions["InitialBlockingContinuityFinding"]
     advisory = definitions["InitialAdvisoryContinuityFinding"]
-    blocking_properties = contradiction["properties"]
+    blocking_properties = blocking["properties"]
     advisory_properties = advisory["properties"]
+    basis_branches = blocking_properties["basis_details"]["anyOf"]
+    category_branches = blocking_properties["category_details"]["anyOf"]
+    contradiction = basis_branches[0]
+    missing = basis_branches[1]
+    forbidden = basis_branches[2]
+    non_world = category_branches[0]
+    world = category_branches[1]
 
     assert schema["title"] == "InitialContinuityReport"
     assert "ContinuityRecheckDisposition" not in definitions
     assert "ContinuityFinding" not in definitions
     assert schema["properties"]["findings"]["items"] == {
         "anyOf": [
-            {"$ref": "#/$defs/InitialContradictionNonWorldContinuityFinding"},
-            {"$ref": "#/$defs/InitialContradictionWorldRuleContinuityFinding"},
-            {"$ref": "#/$defs/InitialMissingRequirementNonWorldContinuityFinding"},
-            {"$ref": "#/$defs/InitialMissingRequirementWorldRuleContinuityFinding"},
-            {"$ref": "#/$defs/InitialForbiddenShortcutNonWorldContinuityFinding"},
-            {"$ref": "#/$defs/InitialForbiddenShortcutWorldRuleContinuityFinding"},
+            {"$ref": "#/$defs/InitialBlockingContinuityFinding"},
             {"$ref": "#/$defs/InitialAdvisoryContinuityFinding"},
         ]
     }
     assert blocking_properties["severity"]["enum"] == ["error", "blocking"]
-    assert "recommended_resolution" in contradiction["required"]
+    assert "recommended_resolution" in blocking["required"]
     assert blocking_properties["recommended_resolution"] == {
         "type": "string",
         "minLength": 1,
@@ -1145,8 +1164,10 @@ def test_initial_continuity_schema_omits_every_recheck_only_field() -> None:
     assert advisory_properties["severity"]["enum"] == ["info", "warning"]
     assert "recommended_resolution" not in advisory["required"]
     assert {"draft_evidence_refs", "canonical_source_refs"} <= set(contradiction["required"])
-    assert blocking_properties["draft_evidence_refs"]["items"]["enum"] == ["draft_evidence_0001"]
-    assert blocking_properties["canonical_source_refs"]["items"]["enum"] == [
+    assert contradiction["properties"]["draft_evidence_refs"]["items"]["enum"] == [
+        "draft_evidence_0001"
+    ]
+    assert contradiction["properties"]["canonical_source_refs"]["items"]["enum"] == [
         "canonical_source_0001"
     ]
     assert "evidence" not in missing["properties"]
@@ -1154,7 +1175,7 @@ def test_initial_continuity_schema_omits_every_recheck_only_field() -> None:
     assert {"requirement_id", "draft_evidence_refs"} <= set(forbidden["required"])
     assert missing["properties"]["requirement_id"]["enum"] == ["required_element_1"]
     assert forbidden["properties"]["requirement_id"]["enum"] == ["forbidden_shortcut_1"]
-    assert blocking_properties["category"]["enum"] == [
+    assert non_world["properties"]["category"]["enum"] == [
         category.value
         for category in ContinuityCategory
         if category is not ContinuityCategory.WORLD_RULE
@@ -1164,7 +1185,7 @@ def test_initial_continuity_schema_omits_every_recheck_only_field() -> None:
         "companion_rule_assessment",
         "condition_explicitly_authorized",
     }.isdisjoint(blocking_properties)
-    world_properties = world_contradiction["properties"]
+    world_properties = world["properties"]
     assert world_properties["category"]["const"] == "world_rule"
     assert world_properties["world_rule_ids"]["items"]["enum"] == ["world_rule_1"]
     assert world_properties["world_rule_ids"]["minItems"] == 1
@@ -1173,21 +1194,8 @@ def test_initial_continuity_schema_omits_every_recheck_only_field() -> None:
         "world_rule_ids",
         "companion_rule_assessment",
         "condition_explicitly_authorized",
-    } <= set(world_contradiction["required"])
-    for basis_name in (
-        "Contradiction",
-        "MissingRequirement",
-        "ForbiddenShortcut",
-    ):
-        world = definitions[f"Initial{basis_name}WorldRuleContinuityFinding"]
-        non_world = definitions[f"Initial{basis_name}NonWorldContinuityFinding"]
-        assert world["properties"]["category"]["const"] == "world_rule"
-        assert "world_rule" not in non_world["properties"]["category"]["enum"]
-        assert {
-            "world_rule_ids",
-            "companion_rule_assessment",
-            "condition_explicitly_authorized",
-        }.isdisjoint(non_world["properties"])
+    } <= set(world["required"])
+    assert "world_rule" not in non_world["properties"]["category"]["enum"]
     assert "blocks_approval" not in blocking_properties
     assert "blocks_approval" not in advisory_properties
     assert {
@@ -1225,12 +1233,14 @@ def test_continuity_recheck_schema_exposes_recheck_analysis_fields() -> None:
         continuity_model_context=context,
     )
     definitions = schema["$defs"]
-    blocking = definitions["RecheckContradictionNonWorldContinuityFinding"]
-    missing = definitions["RecheckMissingRequirementNonWorldContinuityFinding"]
-    world_missing = definitions["RecheckMissingRequirementWorldRuleContinuityFinding"]
+    blocking = definitions["RecheckBlockingContinuityFinding"]
     advisory = definitions["RecheckAdvisoryContinuityFinding"]
     blocking_properties = blocking["properties"]
     advisory_properties = advisory["properties"]
+    basis_branches = blocking_properties["basis_details"]["anyOf"]
+    contradiction = basis_branches[0]
+    missing = basis_branches[1]
+    world = blocking_properties["category_details"]["anyOf"][1]
 
     assert schema["title"] == "RecheckContinuityReport"
     assert "ContinuityRecheckDisposition" in definitions
@@ -1238,22 +1248,24 @@ def test_continuity_recheck_schema_exposes_recheck_analysis_fields() -> None:
         "recommended_resolution",
         "recheck_disposition",
         "repair_assessment",
-        "revised_draft_evidence_refs",
     } <= set(blocking["required"])
-    assert blocking_properties["revised_draft_evidence_refs"]["minItems"] == 1
-    assert blocking_properties["revised_draft_evidence_refs"]["items"]["enum"] == [
+    assert contradiction["properties"]["revised_draft_evidence_refs"]["minItems"] == 1
+    assert contradiction["properties"]["revised_draft_evidence_refs"]["items"]["enum"] == [
         "draft_evidence_0001"
+    ]
+    assert contradiction["properties"]["recheck_evidence_state"]["enum"] == [
+        "changed",
+        "unchanged",
+        "newly_exposed",
     ]
     assert "revised_evidence" not in missing["properties"]
     assert "coverage_assessment" in missing["required"]
-    assert "revised_draft_evidence_refs" not in world_missing["properties"]
+    assert "revised_draft_evidence_refs" not in missing["properties"]
     assert {
         "world_rule_ids",
         "companion_rule_assessment",
         "condition_explicitly_authorized",
-        "recheck_disposition",
-        "repair_assessment",
-    } <= set(world_missing["required"])
+    } <= set(world["required"])
     assert blocking_properties["recheck_disposition"] == {
         "$ref": "#/$defs/ContinuityRecheckDisposition"
     }
@@ -1266,7 +1278,7 @@ def test_continuity_recheck_schema_exposes_recheck_analysis_fields() -> None:
     assert "blocks_approval" not in advisory_properties
 
 
-def test_v14_schema_omits_requirement_branches_when_nothing_is_due() -> None:
+def test_v15_schema_omits_requirement_basis_details_when_nothing_is_due() -> None:
     context = replace(_schema_test_continuity_context(), requirement_kinds={})
     schema = _output_schema(
         _Operation.CONTINUITY,
@@ -1275,15 +1287,46 @@ def test_v14_schema_omits_requirement_branches_when_nothing_is_due() -> None:
     )
     definitions = schema["$defs"]
 
-    assert not any("MissingRequirement" in name for name in definitions)
-    assert not any("ForbiddenShortcut" in name for name in definitions)
+    blocking = definitions["InitialBlockingContinuityFinding"]
+    basis_branches = blocking["properties"]["basis_details"]["anyOf"]
+    assert [branch["properties"]["basis"]["const"] for branch in basis_branches] == [
+        "contradiction"
+    ]
     assert schema["properties"]["findings"]["items"] == {
         "anyOf": [
-            {"$ref": "#/$defs/InitialContradictionNonWorldContinuityFinding"},
-            {"$ref": "#/$defs/InitialContradictionWorldRuleContinuityFinding"},
+            {"$ref": "#/$defs/InitialBlockingContinuityFinding"},
             {"$ref": "#/$defs/InitialAdvisoryContinuityFinding"},
         ]
     }
+
+
+def test_v15_recheck_schema_stays_compact_without_unsupported_all_of() -> None:
+    schema = _output_schema(
+        _Operation.CONTINUITY,
+        continuity_schema_variant=_ContinuitySchemaVariant.RECHECK,
+        continuity_model_context=_schema_test_continuity_context(recheck=True),
+    )
+    serialized = json.dumps(schema, ensure_ascii=False, separators=(",", ":"))
+
+    assert len(serialized.encode("utf-8")) < 8_000
+    assert '"allOf"' not in serialized
+
+
+def test_terminal_workflow_cause_outranks_a_recovered_invocation_failure() -> None:
+    assert (
+        _preferred_production_failure_detail(
+            workflow_detail="Scene revision limit reached after consolidated review.",
+            invocation_detail="production specialist returned invalid structured output",
+        )
+        == "Scene revision limit reached after consolidated review."
+    )
+    assert (
+        _preferred_production_failure_detail(
+            workflow_detail="production specialist returned invalid structured output",
+            invocation_detail="findings.0.basis_details was invalid",
+        )
+        == "findings.0.basis_details was invalid"
+    )
 
 
 @pytest.mark.parametrize(
@@ -1465,6 +1508,7 @@ async def test_hybrid_continuity_stagnation_retry_uses_cloud_and_records_fallbac
         and request.model_identifier == "cloud-fixture"
     )
     assert escalated_request.response_schema is None
+    assert "output_schema" in escalated_payload
     assert escalated_payload["output_schema_variant"] == "recheck"
     escalated_requirements = escalated_payload["output_requirements"]
     assert isinstance(escalated_requirements, dict)
@@ -1488,11 +1532,17 @@ async def test_hybrid_continuity_stagnation_retry_uses_cloud_and_records_fallbac
         escalated = next(invocation for invocation in invocations if invocation.fallback_history)
         assert failed.model_identifier == "local-fixture"
         assert failed.request_settings["deployment"] == "local"
+        failed_composition = failed.request_settings["request_composition"]["components"]
+        assert failed_composition["inline_schema"]["utf8_bytes"] == 0
+        assert failed_composition["gateway_schema"]["utf8_bytes"] > 0
         assert escalated.status is InvocationStatus.SUCCEEDED
         assert escalated.model_identifier == "cloud-fixture"
         assert escalated.request_settings["deployment"] == "cloud"
         assert escalated.request_settings["schema_enforced"] is False
         assert escalated.request_settings["fallback_applied"] is True
+        escalated_composition = escalated.request_settings["request_composition"]["components"]
+        assert escalated_composition["inline_schema"]["utf8_bytes"] > 0
+        assert escalated_composition["gateway_schema"]["utf8_bytes"] == 0
         assert escalated.retry_count == 1
         assert (
             escalated.request_settings["task_fingerprint"]
@@ -1642,12 +1692,14 @@ async def test_same_continuity_finding_inherits_resolution_across_recheck(
         definitions = cast(dict[str, Any], schema["$defs"])
         blocking = cast(
             dict[str, Any],
-            definitions["InitialContradictionNonWorldContinuityFinding"],
+            definitions["InitialBlockingContinuityFinding"],
         )
         advisory = cast(dict[str, Any], definitions["InitialAdvisoryContinuityFinding"])
         blocking_properties = cast(dict[str, Any], blocking["properties"])
         advisory_properties = cast(dict[str, Any], advisory["properties"])
         assert payload["output_schema_variant"] == "initial_check"
+        assert payload["output_schema_delivery"] == "enforced_by_local_gateway"
+        assert "output_schema" not in payload
         assert "input_artifacts" not in payload
         assert payload["candidate_draft"]["continuity_role"] == (
             "candidate_draft_and_only_valid_evidence_source"
@@ -1677,7 +1729,8 @@ async def test_same_continuity_finding_inherits_resolution_across_recheck(
         assert any(
             entry["artifact_kind"] == ArtifactKind.STORY_BLUEPRINT.value for entry in source_catalog
         )
-        assert blocking_properties["canonical_source_refs"]["items"]["enum"] == [
+        contradiction_details = blocking_properties["basis_details"]["anyOf"][0]
+        assert contradiction_details["properties"]["canonical_source_refs"]["items"]["enum"] == [
             entry["reference_id"] for entry in source_catalog
         ]
         assert "recheck_analysis" not in payload["output_requirements"]
@@ -1697,19 +1750,25 @@ async def test_same_continuity_finding_inherits_resolution_across_recheck(
         definitions = cast(dict[str, Any], schema["$defs"])
         blocking = cast(
             dict[str, Any],
-            definitions["RecheckContradictionNonWorldContinuityFinding"],
+            definitions["RecheckBlockingContinuityFinding"],
         )
         advisory = cast(dict[str, Any], definitions["RecheckAdvisoryContinuityFinding"])
         blocking_properties = cast(dict[str, Any], blocking["properties"])
         advisory_properties = cast(dict[str, Any], advisory["properties"])
         assert payload["output_schema_variant"] == "recheck"
+        assert payload["output_schema_delivery"] == "enforced_by_local_gateway"
+        assert "output_schema" not in payload
         assert "recheck_analysis" in payload["output_requirements"]
         assert {
             "recommended_resolution",
             "recheck_disposition",
             "repair_assessment",
-            "revised_draft_evidence_refs",
         } <= set(blocking["required"])
+        contradiction_details = blocking_properties["basis_details"]["anyOf"][0]
+        assert {
+            "revised_draft_evidence_refs",
+            "recheck_evidence_state",
+        } <= set(contradiction_details["required"])
         assert "blocks_approval" not in blocking_properties
         assert {
             "recheck_disposition",

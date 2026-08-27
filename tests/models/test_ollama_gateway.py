@@ -392,6 +392,12 @@ async def test_provider_reported_usage_cannot_silently_exceed_budget() -> None:
             await gateway.generate(_request())
 
     assert error.value.code is ModelGatewayErrorCode.BUDGET_EXCEEDED
+    assert (
+        str(error.value)
+        == "provider-reported input token usage (101) exceeded the call budget (100)"
+    )
+    assert error.value.usage is not None
+    assert error.value.usage.input_tokens == 101
 
 
 async def test_incomplete_non_streaming_response_is_rejected() -> None:

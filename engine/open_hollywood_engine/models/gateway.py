@@ -10,6 +10,7 @@ from open_hollywood_engine.models.contracts import (
     ModelDescriptor,
     ModelRequest,
     ModelResponse,
+    ModelUsage,
 )
 
 
@@ -36,10 +37,12 @@ class ModelGatewayError(RuntimeError):
         message: str,
         *,
         retryable: bool,
+        usage: ModelUsage | None = None,
     ) -> None:
         super().__init__(message)
         self.code = code
         self.retryable = retryable
+        self.usage = usage
 
 
 class ModelGateway(Protocol):
