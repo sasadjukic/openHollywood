@@ -305,6 +305,22 @@ must declare whether exact evidence is `changed`, `unchanged`, or
 report. Benchmark failure reporting now prefers a specific terminal workflow
 cause over any earlier failed invocation that a retry subsequently recovered.
 
+The first Local v15 canary still completed no cases, but it narrowed the failure
+surface: the v14 world-branch shape failures did not recur, 45 of 58 production
+invocations succeeded, and four scenes were accepted before terminal continuity
+failures. Prompt contract v16 retains production graph v3 and separates an
+exhaustive Scene Plan requirement audit from affirmative contradictions. Every
+due obligation has a stable ID and must be classified exactly once as covered or
+missing; the application derives canonical missing-finding identity, category,
+lineage, and routing state. Re-check evidence change is now application-owned,
+so an unchanged exact blocker follows the existing revision path while a copied
+assessment is rejected only after evidence actually changes. Canonical claims
+are grouped, only the immediately prior accepted scene ending is supplied, and
+the critic's overall score is the deterministic mean of bounded rubric scores.
+Safe persisted diagnostics retain focused reason codes for invalid evidence,
+requirement-basis misuse, copied changed-evidence assessments, and invalid
+re-check disposition.
+
 Benchmark word-count ranges are advisory creative targets. New outputs persist a
 non-gating adherence measurement with the target, actual count, status, and word
 deviation. Automatic completion reflects a finished, non-truncated document,

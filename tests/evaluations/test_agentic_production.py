@@ -51,6 +51,7 @@ from open_hollywood_api.services.production_model_executor import (
     _local_schema_repair_guidance,
     _materialize_continuity_evidence,
     _materialize_continuity_finding,
+    _materialize_requirement_audit,
     _Operation,
     _output_schema,
     _scene_plan_requirement_applicability,
@@ -240,6 +241,7 @@ class ProductionFixtureGateway(BlueprintFixtureGateway):
         elif role == "scene_critic":
             content["target_artifact_key"] = "model_invented_draft"
             content["target_artifact_version_id"] = invented_version_id
+            content["overall_score"] = 999
         elif role == "continuity_supervisor":
             content.update(
                 story_bible_version_id=invented_version_id,
@@ -248,6 +250,14 @@ class ProductionFixtureGateway(BlueprintFixtureGateway):
                 scene_id="model_invented_scene",
                 scene_number=999,
             )
+            scene_due = payload["scene_plan_requirement_applicability"]["due_now"]
+            benchmark_due = payload["benchmark_constraint_applicability"]["due_now"]
+            content["covered_requirement_ids"] = [
+                entry["id"]
+                for entry in [*scene_due, *benchmark_due]
+                if entry.get("kind") != "forbidden_shortcut"
+            ]
+            content["missing_requirements"] = []
         elif role == "story_bible_maintainer":
             content["source_story_bible_version_id"] = invented_version_id
             content["continuity_report_version_id"] = invented_version_id
@@ -358,6 +368,7 @@ def _schema_test_continuity_context(*, recheck: bool = False) -> _ContinuityMode
             "required_element_1": "required_element",
             "forbidden_shortcut_1": "forbidden_shortcut",
         },
+        requirement_categories={"required_element_1": "constraint"},
         world_rule_ids=("world_rule_1",),
     )
 
@@ -526,7 +537,6 @@ class ContinuityRevisionFeedbackGateway(ProductionFixtureGateway):
         if is_recheck:
             cast(dict[str, object], finding["basis_details"]).update(
                 revised_draft_evidence_refs=selected_evidence_refs,
-                recheck_evidence_state="unchanged",
             )
             finding.update(
                 recheck_disposition="still_blocking",
@@ -592,7 +602,6 @@ class HybridStagnationEscalationGateway(ProductionFixtureGateway):
         if payload.get("output_schema_variant") == "recheck":
             cast(dict[str, object], finding["basis_details"]).update(
                 revised_draft_evidence_refs=[evidence_ref],
-                recheck_evidence_state="changed",
             )
             finding.update(
                 recheck_disposition="still_blocking",
@@ -717,6 +726,57 @@ def test_v13_unknown_evidence_handle_fails_with_catalog_guidance() -> None:
         )
 
 
+def test_v16_requirement_audit_materializes_stable_missing_finding() -> None:
+    context = _schema_test_continuity_context()
+    findings = _materialize_requirement_audit(
+        {
+            "covered_requirement_ids": [],
+            "missing_requirements": [
+                {
+                    "requirement_id": "required_element_1",
+                    "severity": "blocking",
+                    "summary": "The brass key obligation is absent.",
+                    "coverage_assessment": "No draft passage performs the required key action.",
+                    "recommended_resolution": "Add the required brass key action.",
+                }
+            ],
+        },
+        context,
+    )
+
+    assert findings == [
+        {
+            "requirement_id": "required_element_1",
+            "severity": "blocking",
+            "summary": "The brass key obligation is absent.",
+            "coverage_assessment": "No draft passage performs the required key action.",
+            "recommended_resolution": "Add the required brass key action.",
+            "id": "missing_required_element_1",
+            "category": "constraint",
+            "basis": "missing_requirement",
+            "evidence": [],
+            "canonical_source_refs": [],
+            "world_rule_ids": [],
+            "related_character_ids": [],
+            "related_location_ids": [],
+            "related_beat_ids": [],
+            "related_scene_ids": [],
+        }
+    ]
+    with pytest.raises(ValueError, match="partition every due requirement exactly once"):
+        _materialize_requirement_audit(
+            {
+                "covered_requirement_ids": ["required_element_1"],
+                "missing_requirements": [
+                    {
+                        "requirement_id": "required_element_1",
+                    }
+                ],
+            },
+            context,
+        )
+
+
 def test_new_continuity_finding_cannot_inherit_another_findings_resolution() -> None:
     finding = _materialize_continuity_finding(
         {
@@ -758,7 +818,6 @@ def test_continuity_recheck_requires_structured_analysis_not_rewording() -> None
         "recheck_disposition": "still_blocking",
         "repair_assessment": "The writer left the quoted transition unchanged.",
         "revised_evidence": ["The original draft jumps directly to ambition."],
-        "recheck_evidence_state": "unchanged",
     }
     assert _invalid_continuity_recheck_finding_ids([assessed_finding], prior_report) == ()
     assert _invalid_continuity_recheck_finding_ids([], prior_report) == ()
@@ -797,6 +856,12 @@ def test_initial_continuity_evidence_is_bound_to_the_current_draft() -> None:
                     "required_elements": [],
                     "outcome": "Mara must return the brass key.",
                 },
+            },
+            {
+                "artifact_kind": ArtifactKind.STORY_BIBLE.value,
+                "artifact_key": "story_bible",
+                "artifact_version_id": str(uuid4()),
+                "content": {"prohibited_contradictions": ["Mara must return the brass key."]},
             },
         ),
         constraints={"required_elements": [], "forbidden_shortcuts": []},
@@ -843,7 +908,6 @@ def test_continuity_recheck_evidence_must_be_exact_and_fresh() -> None:
     copied_assessment = {
         **original,
         "revised_evidence": ["The revised draft now names the failed system."],
-        "recheck_evidence_state": "changed",
     }
 
     assert _invalid_continuity_recheck_finding_ids(
@@ -873,7 +937,7 @@ def test_continuity_recheck_evidence_must_be_exact_and_fresh() -> None:
     ) == ("stalled_blocker",)
 
 
-def test_unchanged_recheck_evidence_requires_matching_structural_state() -> None:
+def test_unchanged_recheck_evidence_allows_an_accurate_repeated_assessment() -> None:
     prior_finding = {
         "id": "unchanged_blocker",
         "severity": "blocking",
@@ -887,15 +951,7 @@ def test_unchanged_recheck_evidence_requires_matching_structural_state() -> None
         "recheck_disposition": "still_blocking",
         "repair_assessment": "The conflict remains unresolved.",
         "revised_evidence": ["Mara pockets the brass key."],
-        "recheck_evidence_state": "changed",
     }
-    assert _invalid_continuity_recheck_finding_ids(
-        [finding],
-        {"findings": [prior_finding]},
-        revised_draft_prose="Mara pockets the brass key.",
-    ) == ("unchanged_blocker",)
-
-    finding["recheck_evidence_state"] = "unchanged"
     assert (
         _invalid_continuity_recheck_finding_ids(
             [finding],
@@ -970,6 +1026,9 @@ def test_duplicate_story_requirement_stays_deferred_in_non_final_scene_plan() ->
     assert non_final["due_now"] == [
         {
             "id": "scene_plan_required_element_2",
+            "kind": "required_element",
+            "category": "constraint",
+            "source_field": "required_elements",
             "text": "Elara begins a concrete facade survey.",
         }
     ]
@@ -1140,8 +1199,8 @@ def test_initial_continuity_schema_omits_every_recheck_only_field() -> None:
     basis_branches = blocking_properties["basis_details"]["anyOf"]
     category_branches = blocking_properties["category_details"]["anyOf"]
     contradiction = basis_branches[0]
-    missing = basis_branches[1]
-    forbidden = basis_branches[2]
+    forbidden = basis_branches[1]
+    missing = schema["properties"]["missing_requirements"]["items"]
     non_world = category_branches[0]
     world = category_branches[1]
 
@@ -1225,6 +1284,17 @@ def test_initial_continuity_schema_omits_every_recheck_only_field() -> None:
     assert "recheck_disposition" in canonical_properties
 
 
+def test_v16_critic_schema_makes_overall_score_application_owned() -> None:
+    schema = _output_schema(
+        _Operation.CRITIQUE,
+        continuity_schema_variant=None,
+    )
+
+    assert "overall_score" not in schema["properties"]
+    assert "overall_score" not in schema["required"]
+    assert "overall_score" in Critique.model_json_schema()["required"]
+
+
 def test_continuity_recheck_schema_exposes_recheck_analysis_fields() -> None:
     context = _schema_test_continuity_context(recheck=True)
     schema = _output_schema(
@@ -1239,7 +1309,7 @@ def test_continuity_recheck_schema_exposes_recheck_analysis_fields() -> None:
     advisory_properties = advisory["properties"]
     basis_branches = blocking_properties["basis_details"]["anyOf"]
     contradiction = basis_branches[0]
-    missing = basis_branches[1]
+    missing = schema["properties"]["missing_requirements"]["items"]
     world = blocking_properties["category_details"]["anyOf"][1]
 
     assert schema["title"] == "RecheckContinuityReport"
@@ -1253,11 +1323,7 @@ def test_continuity_recheck_schema_exposes_recheck_analysis_fields() -> None:
     assert contradiction["properties"]["revised_draft_evidence_refs"]["items"]["enum"] == [
         "draft_evidence_0001"
     ]
-    assert contradiction["properties"]["recheck_evidence_state"]["enum"] == [
-        "changed",
-        "unchanged",
-        "newly_exposed",
-    ]
+    assert "recheck_evidence_state" not in contradiction["properties"]
     assert "revised_evidence" not in missing["properties"]
     assert "coverage_assessment" in missing["required"]
     assert "revised_draft_evidence_refs" not in missing["properties"]
@@ -1278,8 +1344,12 @@ def test_continuity_recheck_schema_exposes_recheck_analysis_fields() -> None:
     assert "blocks_approval" not in advisory_properties
 
 
-def test_v15_schema_omits_requirement_basis_details_when_nothing_is_due() -> None:
-    context = replace(_schema_test_continuity_context(), requirement_kinds={})
+def test_v16_schema_uses_empty_requirement_audit_when_nothing_is_due() -> None:
+    context = replace(
+        _schema_test_continuity_context(),
+        requirement_kinds={},
+        requirement_categories={},
+    )
     schema = _output_schema(
         _Operation.CONTINUITY,
         continuity_schema_variant=_ContinuitySchemaVariant.INITIAL_CHECK,
@@ -1290,8 +1360,10 @@ def test_v15_schema_omits_requirement_basis_details_when_nothing_is_due() -> Non
     blocking = definitions["InitialBlockingContinuityFinding"]
     basis_branches = blocking["properties"]["basis_details"]["anyOf"]
     assert [branch["properties"]["basis"]["const"] for branch in basis_branches] == [
-        "contradiction"
+        "contradiction",
     ]
+    assert schema["properties"]["covered_requirement_ids"]["items"]["enum"] == []
+    assert schema["properties"]["missing_requirements"]["maxItems"] == 0
     assert schema["properties"]["findings"]["items"] == {
         "anyOf": [
             {"$ref": "#/$defs/InitialBlockingContinuityFinding"},
@@ -1417,7 +1489,7 @@ def test_hybrid_does_not_escalate_unrelated_continuity_validation_failure() -> N
 
 
 @pytest.mark.anyio
-async def test_hybrid_continuity_stagnation_retry_uses_cloud_and_records_fallback(
+async def test_hybrid_unchanged_continuity_blocker_routes_without_false_fallback(
     migrated_database_path: Path,
     database_engine: Engine,
 ) -> None:
@@ -1495,24 +1567,7 @@ async def test_hybrid_continuity_stagnation_retry_uses_cloud_and_records_fallbac
         )
 
     assert execution.status is RunStatus.SUCCEEDED
-    assert len(gateway.escalated_retry_payloads) == 1
-    escalated_payload = gateway.escalated_retry_payloads[0]
-    assert "local_schema_repair" not in escalated_payload
-    retry_context = escalated_payload["retry_context"]
-    assert isinstance(retry_context, dict)
-    assert retry_context["error_code"] == "continuity_recheck_stagnated"
-    escalated_request = next(
-        request
-        for request in gateway.requests
-        if request.invocation.specialist_role == "continuity_supervisor"
-        and request.model_identifier == "cloud-fixture"
-    )
-    assert escalated_request.response_schema is None
-    assert "output_schema" in escalated_payload
-    assert escalated_payload["output_schema_variant"] == "recheck"
-    escalated_requirements = escalated_payload["output_requirements"]
-    assert isinstance(escalated_requirements, dict)
-    assert "recheck_analysis" in escalated_requirements
+    assert gateway.escalated_retry_payloads == []
     with session_factory() as session:
         production_run = session.get(WorkflowRun, execution.workflow_run_id)
         assert production_run is not None
@@ -1524,42 +1579,12 @@ async def test_hybrid_continuity_stagnation_retry_uses_cloud_and_records_fallbac
             )
             .order_by(AgentInvocation.started_at, AgentInvocation.id)
         ).all()
-        failed = next(
-            invocation
-            for invocation in invocations
-            if invocation.error_code == "continuity_recheck_stagnated"
+        assert invocations
+        assert all(invocation.model_identifier == "local-fixture" for invocation in invocations)
+        assert all(not invocation.fallback_history for invocation in invocations)
+        assert all(
+            invocation.error_code != "continuity_recheck_stagnated" for invocation in invocations
         )
-        escalated = next(invocation for invocation in invocations if invocation.fallback_history)
-        assert failed.model_identifier == "local-fixture"
-        assert failed.request_settings["deployment"] == "local"
-        failed_composition = failed.request_settings["request_composition"]["components"]
-        assert failed_composition["inline_schema"]["utf8_bytes"] == 0
-        assert failed_composition["gateway_schema"]["utf8_bytes"] > 0
-        assert escalated.status is InvocationStatus.SUCCEEDED
-        assert escalated.model_identifier == "cloud-fixture"
-        assert escalated.request_settings["deployment"] == "cloud"
-        assert escalated.request_settings["schema_enforced"] is False
-        assert escalated.request_settings["fallback_applied"] is True
-        escalated_composition = escalated.request_settings["request_composition"]["components"]
-        assert escalated_composition["inline_schema"]["utf8_bytes"] > 0
-        assert escalated_composition["gateway_schema"]["utf8_bytes"] == 0
-        assert escalated.retry_count == 1
-        assert (
-            escalated.request_settings["task_fingerprint"]
-            == failed.request_settings["task_fingerprint"]
-        )
-        assert escalated.fallback_history == [
-            {
-                "reason": "continuity_recheck_stagnated",
-                "attempt_number": 2,
-                "from_provider": "ollama",
-                "from_model_identifier": "local-fixture",
-                "from_deployment": "local",
-                "to_provider": "ollama",
-                "to_model_identifier": "cloud-fixture",
-                "to_deployment": "cloud",
-            }
-        ]
 
 
 @pytest.mark.anyio
@@ -1660,7 +1685,10 @@ async def test_same_continuity_finding_inherits_resolution_across_recheck(
     assert all(
         gateway.recommended_resolution in prompt for prompt in gateway.continuity_recheck_prompts
     )
-    assert gateway.continuity_recheck_reports == gateway.writer_revision_reports
+    assert [report["findings"] for report in gateway.continuity_recheck_reports] == [
+        report["findings"] for report in gateway.writer_revision_reports
+    ]
+    assert all(set(report) == {"findings"} for report in gateway.continuity_recheck_reports)
     for recheck_contract in gateway.continuity_recheck_contracts:
         assert "previous_report_version_id" in recheck_contract
         assert "audit every prior error or blocking finding" in str(
@@ -1709,7 +1737,12 @@ async def test_same_continuity_finding_inherits_resolution_across_recheck(
         assert "accepted_prior_drafts" in payload
         assert "canonical_source_catalog" in payload
         assert all(
-            item["continuity_role"] == "accepted_prior_draft_context_not_valid_evidence"
+            item["continuity_role"] == "immediately_prior_accepted_scene_ending_not_valid_evidence"
+            for item in payload["accepted_prior_drafts"]
+        )
+        assert len(payload["accepted_prior_drafts"]) <= 1
+        assert all(
+            "prose" not in item["content"] and "ending_excerpt" in item["content"]
             for item in payload["accepted_prior_drafts"]
         )
         source_catalog = payload["canonical_source_catalog"]
@@ -1728,6 +1761,23 @@ async def test_same_continuity_finding_inherits_resolution_across_recheck(
         )
         assert any(
             entry["artifact_kind"] == ArtifactKind.STORY_BLUEPRINT.value for entry in source_catalog
+        )
+        assert not any(
+            entry["artifact_kind"] == ArtifactKind.SCENE_PLAN.value
+            and entry["source_path"].split(".")[-1]
+            in {
+                "entry_state",
+                "time_context",
+                "purpose",
+                "goal",
+                "conflict",
+                "turning_point",
+                "outcome",
+                "exit_state",
+                "continuity_requirements",
+                "required_elements",
+            }
+            for entry in source_catalog
         )
         contradiction_details = blocking_properties["basis_details"]["anyOf"][0]
         assert contradiction_details["properties"]["canonical_source_refs"]["items"]["enum"] == [
@@ -1765,10 +1815,8 @@ async def test_same_continuity_finding_inherits_resolution_across_recheck(
             "repair_assessment",
         } <= set(blocking["required"])
         contradiction_details = blocking_properties["basis_details"]["anyOf"][0]
-        assert {
-            "revised_draft_evidence_refs",
-            "recheck_evidence_state",
-        } <= set(contradiction_details["required"])
+        assert "revised_draft_evidence_refs" in contradiction_details["required"]
+        assert "recheck_evidence_state" not in contradiction_details["properties"]
         assert "blocks_approval" not in blocking_properties
         assert {
             "recheck_disposition",
