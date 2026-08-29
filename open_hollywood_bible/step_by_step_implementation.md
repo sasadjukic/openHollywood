@@ -389,6 +389,31 @@ Ruff and formatting pass over 133 files, strict mypy passes over 133 source
 files, all 226 pytest tests pass, frontend formatting/lint/type checking pass,
 all 10 Vitest tests pass, and the production build succeeds. No v16 canary was
 started as part of this implementation change.
+The first Local v16 canary then completed no cases, while OH-V01-006 retained its
+Blueprint failure. The five production-runnable cases nevertheless reached
+their final scenes and accepted 18 scenes, with 91 of 103 production calls and
+21 of 33 continuity calls succeeding. No critic or input-budget failure
+occurred, and the largest continuity input was 12,558 tokens. Terminal causes
+were limited to incomplete model-authored coverage partitions, invalid
+model-authored re-check dispositions, one application validator that rejected a
+valid missing Scene Plan scalar obligation, and one changed-evidence assessment
+heuristic. Evidence:
+`docs/benchmark_reports/step-19-local-v16-canary-2026-08-29.md`.
+Prompt contract v17 retains graph v3 and the 20,000-token ceiling. The
+application now supplies one deduplicated due requirement catalog plus a
+separate forbidden-shortcut catalog. Every due required ID is a schema-required
+property of `requirement_coverage`, eliminating structurally valid omissions;
+missing entries materialize canonical findings for benchmark and Scene Plan IDs
+alike. Contradiction categories are nested in their basis and exclude
+`constraint`, while forbidden category is application-owned. Re-check blockers
+may reference an exact prior ID, but canonical identity and disposition are
+derived by the application. Copied assessment after changed evidence is
+non-terminal content-free advisory telemetry while exact draft evidence remains
+mandatory. Regression coverage exercises the five v16 terminal patterns. Ruff
+and formatting pass over 133 files, strict mypy passes over 133 source files,
+all 230 pytest tests pass, frontend formatting/lint/type checking pass, all 10
+Vitest tests pass, and the production build succeeds. No v17 canary was started
+as part of this implementation change.
 
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 

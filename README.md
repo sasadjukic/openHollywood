@@ -317,6 +317,22 @@ so an unchanged exact blocker follows the existing revision path while a copied
 assessment is rejected only after evidence actually changes. Canonical claims
 are grouped, only the immediately prior accepted scene ending is supplied, and
 the critic's overall score is the deterministic mean of bounded rubric scores.
+
+The first Local v16 canary also completed no cases, but every production-runnable
+story reached its final scene and accepted 18 scenes, up from four under v15.
+Successful production calls rose to 91 of 103, continuity calls to 21 of 33,
+critic failures fell to zero, and the largest continuity input remained below
+the unchanged 20,000-token ceiling. Terminal failures were isolated to omitted
+IDs in parallel coverage arrays, model-authored re-check disposition, one
+application validator that rejected a valid Scene Plan scalar requirement, and
+one copied-assessment heuristic. Prompt contract v17 retains production graph v3
+and replaces those boundaries with one application-deduplicated due requirement
+catalog and a schema-required `requirement_coverage` object keyed by exact IDs.
+The application now owns missing-finding identity and category for every due ID,
+as well as blocker identity and re-check disposition. Contradictions cannot use
+the `constraint` category, forbidden shortcuts remain a separate catalog, and a
+copied assessment after changed exact evidence is persisted as advisory telemetry
+instead of invalidating the output.
 Safe persisted diagnostics retain focused reason codes for invalid evidence,
 requirement-basis misuse, copied changed-evidence assessments, and invalid
 re-check disposition.

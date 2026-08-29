@@ -43,7 +43,10 @@ from open_hollywood_api.services.production_model_executor import (
     BenchmarkProductionExecutor,
     ContinuityRecheckStagnationError,
     _benchmark_constraint_applicability,
+    _continuity_model_context,
     _continuity_prompt_inputs,
+    _continuity_recheck_observations,
+    _continuity_requirement_catalogs,
     _ContinuityModelContext,
     _ContinuitySchemaVariant,
     _Execution,
@@ -51,6 +54,7 @@ from open_hollywood_api.services.production_model_executor import (
     _local_schema_repair_guidance,
     _materialize_continuity_evidence,
     _materialize_continuity_finding,
+    _materialize_continuity_identity,
     _materialize_requirement_audit,
     _Operation,
     _output_schema,
@@ -250,14 +254,13 @@ class ProductionFixtureGateway(BlueprintFixtureGateway):
                 scene_id="model_invented_scene",
                 scene_number=999,
             )
-            scene_due = payload["scene_plan_requirement_applicability"]["due_now"]
-            benchmark_due = payload["benchmark_constraint_applicability"]["due_now"]
-            content["covered_requirement_ids"] = [
-                entry["id"]
-                for entry in [*scene_due, *benchmark_due]
-                if entry.get("kind") != "forbidden_shortcut"
-            ]
-            content["missing_requirements"] = []
+            content["requirement_coverage"] = {
+                entry["id"]: {
+                    "status": "covered",
+                    "coverage_assessment": "The candidate performs this exact obligation.",
+                }
+                for entry in payload["requirement_coverage_catalog"]
+            }
         elif role == "story_bible_maintainer":
             content["source_story_bible_version_id"] = invented_version_id
             content["continuity_report_version_id"] = invented_version_id
@@ -364,12 +367,92 @@ def _schema_test_continuity_context(*, recheck: bool = False) -> _ContinuityMode
                 "claim": "Mara returns the brass key.",
             },
         ),
+        requirement_catalog=(
+            {
+                "id": "required_element_1",
+                "kind": "required_element",
+                "category": "constraint",
+                "text": "Mara returns the brass key.",
+            },
+        ),
+        forbidden_shortcut_catalog=(
+            {
+                "id": "forbidden_shortcut_1",
+                "kind": "forbidden_shortcut",
+                "text": "The key vanishes by magic.",
+            },
+        ),
         requirement_kinds={
             "required_element_1": "required_element",
             "forbidden_shortcut_1": "forbidden_shortcut",
         },
         requirement_categories={"required_element_1": "constraint"},
         world_rule_ids=("world_rule_1",),
+    )
+
+
+def _v17_catalog_test_execution(
+    *,
+    required_elements: list[str] | None = None,
+    forbidden_shortcuts: list[str] | None = None,
+    scene_plan: dict[str, object] | None = None,
+) -> _Execution:
+    plan = {
+        "id": "scene_1",
+        "required_elements": required_elements or [],
+        **(scene_plan or {}),
+    }
+    return _Execution(
+        workflow_run_id=uuid4(),
+        project_id=uuid4(),
+        profile_id=uuid4(),
+        configuration_sha256="a" * 64,
+        selection=ModelSelection(
+            provider="ollama",
+            model_identifier="local-fixture",
+            deployment=ModelDeployment.LOCAL,
+        ),
+        specialist_role="continuity_supervisor",
+        input_version_ids=(),
+        inputs=(
+            {
+                "artifact_kind": ArtifactKind.SCENE_PLAN.value,
+                "artifact_key": "scene_1_plan",
+                "artifact_version_id": str(uuid4()),
+                "content": plan,
+            },
+            {
+                "artifact_kind": ArtifactKind.SCENE_DRAFT.value,
+                "artifact_key": "scene_1_draft",
+                "artifact_version_id": str(uuid4()),
+                "content": {
+                    "scene_id": "scene_1",
+                    "scene_number": 1,
+                    "revision_number": 0,
+                    "prose": "Mara pockets the brass key.",
+                },
+            },
+            {
+                "artifact_kind": ArtifactKind.STORY_BIBLE.value,
+                "artifact_key": "story_bible",
+                "artifact_version_id": str(uuid4()),
+                "content": {"prohibited_contradictions": []},
+            },
+        ),
+        constraints={
+            "required_elements": required_elements or [],
+            "forbidden_shortcuts": forbidden_shortcuts or [],
+        },
+        call_budget=ModelCallBudget(max_input_tokens=20_000, max_output_tokens=2_000),
+        seed=1,
+        task_fingerprint="fingerprint",
+        unit_id="scene_1",
+        unit_number=1,
+        unit_count=1,
+        revision_number=0,
+        attempt_number=1,
+        previous_failure=None,
+        fallback_history=(),
     )
 
 
@@ -399,9 +482,20 @@ class OneProductionRepairGateway(ProductionFixtureGateway):
         output_requirements = payload.get("output_requirements")
         if isinstance(output_requirements, dict):
             self.output_requirements.append(output_requirements)
-        applicability = payload.get("benchmark_constraint_applicability")
-        if isinstance(applicability, dict):
-            self.constraint_applicabilities.append(applicability)
+        required_catalog = payload.get("requirement_coverage_catalog")
+        forbidden_catalog = payload.get("forbidden_shortcut_catalog")
+        assignment = payload.get("assignment")
+        if (
+            isinstance(required_catalog, list)
+            and isinstance(forbidden_catalog, list)
+            and isinstance(assignment, dict)
+        ):
+            self.constraint_applicabilities.append(
+                {
+                    "is_final_scene": assignment["unit_number"] == assignment["unit_count"],
+                    "due_now": [*required_catalog, *forbidden_catalog],
+                }
+            )
         retry_context = payload.get("retry_context")
         if isinstance(retry_context, dict):
             self.repair_contexts.append(retry_context)
@@ -414,15 +508,14 @@ class OneProductionRepairGateway(ProductionFixtureGateway):
             evidence_ref, source_ref = _v13_contradiction_inputs(payload)
             content["findings"] = [
                 {
-                    "id": "model_finding_without_resolution",
                     "severity": "error",
                     "summary": "The candidate conflicts with an established fact.",
                     "basis_details": {
                         "basis": "contradiction",
                         "draft_evidence_refs": [evidence_ref],
                         "canonical_source_refs": [source_ref],
+                        "category_details": {"category": "fact"},
                     },
-                    "category_details": {"category": "fact"},
                     "related_scene_ids": ["model_invented_scene"],
                     "recommended_resolution": None,
                     "blocks_approval": False,
@@ -522,14 +615,13 @@ class ContinuityRevisionFeedbackGateway(ProductionFixtureGateway):
         content = json.loads(response.content)
         selected_evidence_refs = evidence_refs or ["draft_evidence_0001"]
         finding: dict[str, object] = {
-            "id": "east_door_key_continuity",
             "severity": "blocking",
             "summary": summary,
             "basis_details": {
                 "basis": "contradiction",
                 "canonical_source_refs": [source_ref],
+                "category_details": {"category": "fact"},
             },
-            "category_details": {"category": "fact"},
             "related_scene_ids": ["model_invented_scene"],
             "recommended_resolution": resolution,
             "blocks_approval": False,
@@ -539,7 +631,7 @@ class ContinuityRevisionFeedbackGateway(ProductionFixtureGateway):
                 revised_draft_evidence_refs=selected_evidence_refs,
             )
             finding.update(
-                recheck_disposition="still_blocking",
+                prior_finding_id="continuity_finding_001",
                 repair_assessment=("The revision leaves the conflicting key action in place."),
             )
         else:
@@ -587,14 +679,13 @@ class HybridStagnationEscalationGateway(ProductionFixtureGateway):
         content = json.loads(response.content)
         evidence_ref, source_ref = _v13_contradiction_inputs(payload)
         finding: dict[str, object] = {
-            "id": "east_door_key_continuity",
             "severity": "blocking",
             "summary": "Mara changes doors without returning the established key.",
             "basis_details": {
                 "basis": "contradiction",
                 "canonical_source_refs": [source_ref],
+                "category_details": {"category": "fact"},
             },
-            "category_details": {"category": "fact"},
             "related_scene_ids": ["model_invented_scene"],
             "recommended_resolution": self.recommended_resolution,
             "blocks_approval": False,
@@ -604,7 +695,7 @@ class HybridStagnationEscalationGateway(ProductionFixtureGateway):
                 revised_draft_evidence_refs=[evidence_ref],
             )
             finding.update(
-                recheck_disposition="still_blocking",
+                prior_finding_id="continuity_finding_001",
                 repair_assessment="The conflict remains unresolved.",
             )
         else:
@@ -726,20 +817,19 @@ def test_v13_unknown_evidence_handle_fails_with_catalog_guidance() -> None:
         )
 
 
-def test_v16_requirement_audit_materializes_stable_missing_finding() -> None:
+def test_v17_keyed_requirement_coverage_materializes_stable_missing_finding() -> None:
     context = _schema_test_continuity_context()
     findings = _materialize_requirement_audit(
         {
-            "covered_requirement_ids": [],
-            "missing_requirements": [
-                {
-                    "requirement_id": "required_element_1",
+            "requirement_coverage": {
+                "required_element_1": {
+                    "status": "missing",
                     "severity": "blocking",
                     "summary": "The brass key obligation is absent.",
                     "coverage_assessment": "No draft passage performs the required key action.",
                     "recommended_resolution": "Add the required brass key action.",
                 }
-            ],
+            },
         },
         context,
     )
@@ -763,18 +853,100 @@ def test_v16_requirement_audit_materializes_stable_missing_finding() -> None:
             "related_scene_ids": [],
         }
     ]
-    with pytest.raises(ValueError, match="partition every due requirement exactly once"):
+    with pytest.raises(ValueError, match="include every exact due requirement key"):
         _materialize_requirement_audit(
             {
-                "covered_requirement_ids": ["required_element_1"],
-                "missing_requirements": [
-                    {
-                        "requirement_id": "required_element_1",
-                    }
-                ],
+                "requirement_coverage": {},
             },
             context,
         )
+
+
+def test_v17_unified_catalog_deduplicates_final_scene_requirement_text() -> None:
+    execution = _v17_catalog_test_execution(
+        required_elements=["Mara returns the brass key."],
+        forbidden_shortcuts=["The key vanishes by magic."],
+    )
+
+    required, forbidden = _continuity_requirement_catalogs(execution)
+
+    assert [entry["id"] for entry in required] == ["required_element_1"]
+    assert required[0]["source_fields"] == [
+        "benchmark.required_elements",
+        "scene_plan.required_elements",
+    ]
+    assert [entry["id"] for entry in forbidden] == ["forbidden_shortcut_1"]
+
+
+def test_v17_scene_plan_scalar_missing_requirement_is_contract_valid() -> None:
+    execution = _v17_catalog_test_execution(scene_plan={"outcome": "Mara returns the brass key."})
+    context = _continuity_model_context(execution)
+    findings = _materialize_requirement_audit(
+        {
+            "requirement_coverage": {
+                "scene_plan_outcome": {
+                    "status": "missing",
+                    "severity": "blocking",
+                    "summary": "The planned outcome is absent.",
+                    "coverage_assessment": "The draft never returns the key.",
+                    "recommended_resolution": "Have Mara return the brass key.",
+                }
+            }
+        },
+        context,
+    )
+
+    _validate_continuity_finding_contract(cast(list[object], findings), execution)
+    assert findings[0]["requirement_id"] == "scene_plan_outcome"
+    assert findings[0]["category"] == "fact"
+
+
+def test_v17_recheck_identity_and_disposition_are_application_owned() -> None:
+    prior_id = "prior_fact_blocker"
+    context = replace(
+        _schema_test_continuity_context(recheck=True),
+        previous_continuity_report={
+            "artifact_key": "continuity_scene_1",
+            "artifact_kind": ArtifactKind.CONTINUITY_REPORT.value,
+            "artifact_version_id": str(uuid4()),
+            "content": {
+                "findings": [
+                    {
+                        "id": prior_id,
+                        "severity": "blocking",
+                        "basis": "contradiction",
+                    }
+                ]
+            },
+        },
+    )
+
+    unresolved = _materialize_continuity_identity(
+        {
+            "id": "model_invented_id",
+            "severity": "blocking",
+            "prior_finding_id": prior_id,
+            "repair_assessment": "The contradiction remains.",
+        },
+        context,
+        index=0,
+    )
+    newly_exposed = _materialize_continuity_identity(
+        {
+            "severity": "blocking",
+            "repair_assessment": "This blocker is newly exposed.",
+        },
+        context,
+        index=1,
+    )
+
+    assert isinstance(unresolved, dict)
+    assert isinstance(newly_exposed, dict)
+    assert unresolved["id"] == prior_id
+    assert unresolved["recheck_disposition"] == "still_blocking"
+    assert "prior_finding_id" not in unresolved
+    assert newly_exposed["id"] == "continuity_new_002"
+    assert newly_exposed["recheck_disposition"] == "newly_exposed"
 
 
 def test_new_continuity_finding_cannot_inherit_another_findings_resolution() -> None:
@@ -892,7 +1064,7 @@ def test_initial_continuity_evidence_is_bound_to_the_current_draft() -> None:
     _validate_continuity_finding_contract([finding], execution)
 
 
-def test_continuity_recheck_evidence_must_be_exact_and_fresh() -> None:
+def test_v17_copied_recheck_assessment_is_advisory_but_evidence_stays_exact() -> None:
     original = {
         "id": "stalled_blocker",
         "severity": "blocking",
@@ -910,11 +1082,14 @@ def test_continuity_recheck_evidence_must_be_exact_and_fresh() -> None:
         "revised_evidence": ["The revised draft now names the failed system."],
     }
 
-    assert _invalid_continuity_recheck_finding_ids(
-        [copied_assessment],
-        prior_report,
-        revised_draft_prose="The revised draft now names the failed system.",
-    ) == ("stalled_blocker",)
+    assert (
+        _invalid_continuity_recheck_finding_ids(
+            [copied_assessment],
+            prior_report,
+            revised_draft_prose="The revised draft now names the failed system.",
+        )
+        == ()
+    )
 
     fresh_assessment = {
         **copied_assessment,
@@ -935,6 +1110,73 @@ def test_continuity_recheck_evidence_must_be_exact_and_fresh() -> None:
         prior_report,
         revised_draft_prose="This draft contains no quoted evidence.",
     ) == ("stalled_blocker",)
+
+
+def test_v17_copied_recheck_assessment_emits_content_free_advisory_telemetry() -> None:
+    finding_id = "stalled_blocker"
+    prior = {
+        "id": finding_id,
+        "severity": "blocking",
+        "category": "fact",
+        "basis": "contradiction",
+        "summary": "The transition lacks a causal bridge.",
+        "evidence": ["The original transition."],
+        "canonical_source_refs": ["canonical_source_0001"],
+        "recommended_resolution": "Connect failure to the decision.",
+        "blocks_approval": True,
+        "recheck_disposition": "still_blocking",
+        "repair_assessment": "The causal bridge remains absent.",
+        "revised_evidence": ["The first revised transition."],
+        "related_scene_ids": ["scene_1"],
+    }
+    execution = _v17_catalog_test_execution()
+    execution = replace(
+        execution,
+        inputs=(
+            *execution.inputs,
+            {
+                "artifact_kind": ArtifactKind.CONTINUITY_REPORT.value,
+                "artifact_key": "continuity_scene_1",
+                "artifact_version_id": str(uuid4()),
+                "content": {"findings": [prior]},
+            },
+        ),
+    )
+    report = ContinuityReport(
+        story_bible_version_id=uuid4(),
+        scene_version_id=uuid4(),
+        scene_plan_version_id=uuid4(),
+        scene_id="scene_1",
+        scene_number=1,
+        checked_categories=tuple(ContinuityCategory),
+        findings=(
+            ContinuityFinding.model_validate(
+                {
+                    "id": finding_id,
+                    "severity": "blocking",
+                    "category": "fact",
+                    "basis": "contradiction",
+                    "summary": "The transition still lacks a causal bridge.",
+                    "evidence": ["The second revised transition."],
+                    "canonical_source_refs": ["canonical_source_0001"],
+                    "recommended_resolution": "Connect failure to the decision.",
+                    "blocks_approval": True,
+                    "recheck_disposition": "still_blocking",
+                    "repair_assessment": "The causal bridge remains absent.",
+                    "revised_evidence": ["The second revised transition."],
+                    "related_scene_ids": ["scene_1"],
+                }
+            ),
+        ),
+    )
+
+    assert _continuity_recheck_observations(report, execution) == (
+        {
+            "finding_id": finding_id,
+            "type": "copied_assessment_after_changed_evidence",
+            "disposition": "advisory",
+        },
+    )
 
 
 def test_unchanged_recheck_evidence_allows_an_accurate_repeated_assessment() -> None:
@@ -1197,10 +1439,12 @@ def test_initial_continuity_schema_omits_every_recheck_only_field() -> None:
     blocking_properties = blocking["properties"]
     advisory_properties = advisory["properties"]
     basis_branches = blocking_properties["basis_details"]["anyOf"]
-    category_branches = blocking_properties["category_details"]["anyOf"]
     contradiction = basis_branches[0]
     forbidden = basis_branches[1]
-    missing = schema["properties"]["missing_requirements"]["items"]
+    category_branches = contradiction["properties"]["category_details"]["anyOf"]
+    coverage = schema["properties"]["requirement_coverage"]
+    coverage_entry = definitions["InitialRequirementCoverageEntry"]
+    missing = coverage_entry["anyOf"][1]
     non_world = category_branches[0]
     world = category_branches[1]
 
@@ -1230,15 +1474,17 @@ def test_initial_continuity_schema_omits_every_recheck_only_field() -> None:
         "canonical_source_0001"
     ]
     assert "evidence" not in missing["properties"]
-    assert {"requirement_id", "coverage_assessment"} <= set(missing["required"])
+    assert {"status", "coverage_assessment"} <= set(missing["required"])
     assert {"requirement_id", "draft_evidence_refs"} <= set(forbidden["required"])
-    assert missing["properties"]["requirement_id"]["enum"] == ["required_element_1"]
     assert forbidden["properties"]["requirement_id"]["enum"] == ["forbidden_shortcut_1"]
     assert non_world["properties"]["category"]["enum"] == [
         category.value
         for category in ContinuityCategory
-        if category is not ContinuityCategory.WORLD_RULE
+        if category not in {ContinuityCategory.WORLD_RULE, ContinuityCategory.CONSTRAINT}
     ]
+    assert coverage["required"] == ["required_element_1"]
+    assert set(coverage["properties"]) == {"required_element_1"}
+    assert coverage["additionalProperties"] is False
     assert {
         "world_rule_ids",
         "companion_rule_assessment",
@@ -1255,6 +1501,11 @@ def test_initial_continuity_schema_omits_every_recheck_only_field() -> None:
         "condition_explicitly_authorized",
     } <= set(world["required"])
     assert "world_rule" not in non_world["properties"]["category"]["enum"]
+    assert "constraint" not in non_world["properties"]["category"]["enum"]
+    assert "category_details" not in blocking_properties
+    assert "category_details" not in forbidden["properties"]
+    assert "id" not in blocking_properties
+    assert "id" not in advisory_properties
     assert "blocks_approval" not in blocking_properties
     assert "blocks_approval" not in advisory_properties
     assert {
@@ -1309,16 +1560,17 @@ def test_continuity_recheck_schema_exposes_recheck_analysis_fields() -> None:
     advisory_properties = advisory["properties"]
     basis_branches = blocking_properties["basis_details"]["anyOf"]
     contradiction = basis_branches[0]
-    missing = schema["properties"]["missing_requirements"]["items"]
-    world = blocking_properties["category_details"]["anyOf"][1]
+    missing = definitions["RecheckRequirementCoverageEntry"]["anyOf"][1]
+    world = contradiction["properties"]["category_details"]["anyOf"][1]
 
     assert schema["title"] == "RecheckContinuityReport"
-    assert "ContinuityRecheckDisposition" in definitions
+    assert "ContinuityRecheckDisposition" not in definitions
     assert {
         "recommended_resolution",
-        "recheck_disposition",
         "repair_assessment",
     } <= set(blocking["required"])
+    assert "prior_finding_id" in blocking_properties
+    assert blocking_properties["prior_finding_id"]["enum"] == []
     assert contradiction["properties"]["revised_draft_evidence_refs"]["minItems"] == 1
     assert contradiction["properties"]["revised_draft_evidence_refs"]["items"]["enum"] == [
         "draft_evidence_0001"
@@ -1332,9 +1584,7 @@ def test_continuity_recheck_schema_exposes_recheck_analysis_fields() -> None:
         "companion_rule_assessment",
         "condition_explicitly_authorized",
     } <= set(world["required"])
-    assert blocking_properties["recheck_disposition"] == {
-        "$ref": "#/$defs/ContinuityRecheckDisposition"
-    }
+    assert "recheck_disposition" not in blocking_properties
     assert {
         "recheck_disposition",
         "repair_assessment",
@@ -1344,9 +1594,11 @@ def test_continuity_recheck_schema_exposes_recheck_analysis_fields() -> None:
     assert "blocks_approval" not in advisory_properties
 
 
-def test_v16_schema_uses_empty_requirement_audit_when_nothing_is_due() -> None:
+def test_v17_schema_uses_empty_keyed_coverage_when_nothing_is_due() -> None:
     context = replace(
         _schema_test_continuity_context(),
+        requirement_catalog=(),
+        forbidden_shortcut_catalog=(),
         requirement_kinds={},
         requirement_categories={},
     )
@@ -1362,8 +1614,10 @@ def test_v16_schema_uses_empty_requirement_audit_when_nothing_is_due() -> None:
     assert [branch["properties"]["basis"]["const"] for branch in basis_branches] == [
         "contradiction",
     ]
-    assert schema["properties"]["covered_requirement_ids"]["items"]["enum"] == []
-    assert schema["properties"]["missing_requirements"]["maxItems"] == 0
+    coverage = schema["properties"]["requirement_coverage"]
+    assert coverage["properties"] == {}
+    assert coverage["required"] == []
+    assert coverage["additionalProperties"] is False
     assert schema["properties"]["findings"]["items"] == {
         "anyOf": [
             {"$ref": "#/$defs/InitialBlockingContinuityFinding"},
@@ -1736,6 +1990,10 @@ async def test_same_continuity_finding_inherits_resolution_across_recheck(
         assert "prose" not in payload["candidate_draft"]["content"]
         assert "accepted_prior_drafts" in payload
         assert "canonical_source_catalog" in payload
+        assert "requirement_coverage_catalog" in payload
+        assert "forbidden_shortcut_catalog" in payload
+        assert "benchmark_constraint_applicability" not in payload
+        assert "scene_plan_requirement_applicability" not in payload
         assert all(
             item["continuity_role"] == "immediately_prior_accepted_scene_ending_not_valid_evidence"
             for item in payload["accepted_prior_drafts"]
@@ -1811,9 +2069,9 @@ async def test_same_continuity_finding_inherits_resolution_across_recheck(
         assert "recheck_analysis" in payload["output_requirements"]
         assert {
             "recommended_resolution",
-            "recheck_disposition",
             "repair_assessment",
         } <= set(blocking["required"])
+        assert "prior_finding_id" in blocking_properties
         contradiction_details = blocking_properties["basis_details"]["anyOf"][0]
         assert "revised_draft_evidence_refs" in contradiction_details["required"]
         assert "recheck_evidence_state" not in contradiction_details["properties"]
@@ -1827,17 +2085,11 @@ async def test_same_continuity_finding_inherits_resolution_across_recheck(
     recheck_payload = json.loads(gateway.continuity_recheck_prompts[0])
     output_requirements = recheck_payload["output_requirements"]
     assert "sole authorit" in output_requirements["requirement_scope"]
-    assert "recheck_disposition='still_blocking'" in output_requirements["recheck_analysis"]
-    applicability = recheck_payload["benchmark_constraint_applicability"]
-    assert applicability["is_final_scene"] is False
-    assert applicability["due_now"] == []
-    assert all("text" not in item for item in applicability["deferred_until_final_scene"])
+    assert "prior_finding_id" in output_requirements["recheck_analysis"]
+    assert "application owns" in output_requirements["recheck_analysis"]
     assert "frozen_benchmark_constraints" not in recheck_payload
-    scene_plan_applicability = recheck_payload["scene_plan_requirement_applicability"]
-    assert scene_plan_applicability["is_final_scene"] is False
-    assert all(
-        "text" not in item for item in scene_plan_applicability["deferred_until_final_scene"]
-    )
+    assert "benchmark_constraint_applicability" not in recheck_payload
+    assert "scene_plan_requirement_applicability" not in recheck_payload
 
 
 @pytest.mark.parametrize(
@@ -2253,12 +2505,22 @@ async def test_approved_blueprint_runs_durable_production_and_replays(
         item for item in gateway.constraint_applicabilities if item["is_final_scene"]
     ]
     assert non_final_applicabilities
-    assert all(item["due_now"] == [] for item in non_final_applicabilities)
+    assert all(
+        all(
+            entry.get("source") != "benchmark"
+            for entry in cast(list[dict[str, object]], item["due_now"])
+        )
+        for item in non_final_applicabilities
+    )
     assert len(final_applicabilities) == 1
     final_due_now = final_applicabilities[0]["due_now"]
     assert isinstance(final_due_now, list)
     assert all(isinstance(item, dict) for item in final_due_now)
-    final_constraint_text = {item["text"] for item in final_due_now if isinstance(item, dict)}
+    final_constraint_text = {
+        item["text"]
+        for item in final_due_now
+        if isinstance(item, dict) and item.get("source") == "benchmark"
+    }
     assert final_constraint_text == {
         *prompt.required_elements,
         *prompt.forbidden_shortcuts,
