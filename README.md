@@ -337,6 +337,20 @@ Safe persisted diagnostics retain focused reason codes for invalid evidence,
 requirement-basis misuse, copied changed-evidence assessments, and invalid
 re-check disposition.
 
+The first Local v17 canary completed two of five production-runnable cases,
+with 81 of 87 production invocations and 22 of 26 continuity calls succeeding.
+The v16 coverage-partition failures disappeared. One remaining structured
+failure came from application-generated positional finding IDs colliding across
+consecutive re-checks; two stories reached the revision limit after continuity
+misread a pursued Scene Plan goal as a required outcome or promoted intentional
+dramatic/pacing choices to World Rule blockers. Prompt contract v18 retains
+production graph v3 and replaces re-check finding references with an exhaustive
+keyed prior audit plus separate new findings and revision-scoped IDs. Requirement
+catalog policy v2 declares fulfillment semantics and companion requirements,
+including goal-as-pursuit. World Rule blockers require exact rule-source
+provenance, an explicit violation kind, and a direct conflict assessment, while
+duplicate missing-requirement contradictions are rejected.
+
 Benchmark word-count ranges are advisory creative targets. New outputs persist a
 non-gating adherence measurement with the target, actual count, status, and word
 deviation. Automatic completion reflects a finished, non-truncated document,

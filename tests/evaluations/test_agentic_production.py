@@ -44,6 +44,7 @@ from open_hollywood_api.services.production_model_executor import (
     ContinuityRecheckStagnationError,
     _benchmark_constraint_applicability,
     _continuity_model_context,
+    _continuity_model_findings,
     _continuity_prompt_inputs,
     _continuity_recheck_observations,
     _continuity_requirement_catalogs,
@@ -62,6 +63,7 @@ from open_hollywood_api.services.production_model_executor import (
     _select_production_model,
     _structured_failure_message,
     _validate_continuity_finding_contract,
+    _validate_requirement_basis_exclusivity,
 )
 from open_hollywood_api.services.production_workflow import (
     BenchmarkSceneProductionService,
@@ -261,6 +263,28 @@ class ProductionFixtureGateway(BlueprintFixtureGateway):
                 }
                 for entry in payload["requirement_coverage_catalog"]
             }
+            if payload.get("output_schema_variant") == "recheck":
+                previous = payload.get("previous_continuity_report")
+                previous_content = previous.get("content") if isinstance(previous, dict) else None
+                raw_previous_findings = (
+                    previous_content.get("findings") if isinstance(previous_content, dict) else None
+                )
+                previous_findings = (
+                    raw_previous_findings if isinstance(raw_previous_findings, list) else []
+                )
+                content.pop("findings", None)
+                content["prior_finding_rechecks"] = {
+                    finding["id"]: {
+                        "status": "resolved",
+                        "resolution_assessment": "The revised draft resolves this blocker.",
+                    }
+                    for finding in previous_findings
+                    if isinstance(finding, dict)
+                    and finding.get("severity") in {"error", "blocking"}
+                    and finding.get("basis") != "missing_requirement"
+                    and isinstance(finding.get("id"), str)
+                }
+                content["new_findings"] = []
         elif role == "story_bible_maintainer":
             content["source_story_bible_version_id"] = invented_version_id
             content["continuity_report_version_id"] = invented_version_id
@@ -631,14 +655,21 @@ class ContinuityRevisionFeedbackGateway(ProductionFixtureGateway):
                 revised_draft_evidence_refs=selected_evidence_refs,
             )
             finding.update(
-                prior_finding_id="continuity_finding_001",
                 repair_assessment=("The revision leaves the conflicting key action in place."),
             )
+            content.pop("findings", None)
+            content["prior_finding_rechecks"] = {
+                "continuity_finding_001": {
+                    "status": "still_blocking",
+                    "finding": finding,
+                }
+            }
+            content["new_findings"] = []
         else:
             cast(dict[str, object], finding["basis_details"])["draft_evidence_refs"] = (
                 selected_evidence_refs
             )
-        content["findings"] = [finding]
+            content["findings"] = [finding]
         return replace(response, content=json.dumps(content))
 
 
@@ -695,14 +726,21 @@ class HybridStagnationEscalationGateway(ProductionFixtureGateway):
                 revised_draft_evidence_refs=[evidence_ref],
             )
             finding.update(
-                prior_finding_id="continuity_finding_001",
                 repair_assessment="The conflict remains unresolved.",
             )
+            content.pop("findings", None)
+            content["prior_finding_rechecks"] = {
+                "continuity_finding_001": {
+                    "status": "still_blocking",
+                    "finding": finding,
+                }
+            }
+            content["new_findings"] = []
         else:
             cast(dict[str, object], finding["basis_details"])["draft_evidence_refs"] = [
                 evidence_ref
             ]
-        content["findings"] = [finding]
+            content["findings"] = [finding]
         return replace(response, content=json.dumps(content))
 
 
@@ -901,7 +939,7 @@ def test_v17_scene_plan_scalar_missing_requirement_is_contract_valid() -> None:
     assert findings[0]["category"] == "fact"
 
 
-def test_v17_recheck_identity_and_disposition_are_application_owned() -> None:
+def test_v18_recheck_identity_and_disposition_are_application_owned() -> None:
     prior_id = "prior_fact_blocker"
     context = replace(
         _schema_test_continuity_context(recheck=True),
@@ -938,6 +976,7 @@ def test_v17_recheck_identity_and_disposition_are_application_owned() -> None:
         },
         context,
         index=1,
+        revision_number=2,
     )
 
     assert isinstance(unresolved, dict)
@@ -945,8 +984,93 @@ def test_v17_recheck_identity_and_disposition_are_application_owned() -> None:
     assert unresolved["id"] == prior_id
     assert unresolved["recheck_disposition"] == "still_blocking"
     assert "prior_finding_id" not in unresolved
-    assert newly_exposed["id"] == "continuity_new_002"
+    assert newly_exposed["id"] == "continuity_new_r02_002"
     assert newly_exposed["recheck_disposition"] == "newly_exposed"
+
+
+def test_v18_consecutive_rechecks_keep_prior_identity_and_scope_new_ids() -> None:
+    prior_id = "continuity_new_r01_001"
+    context = replace(
+        _schema_test_continuity_context(recheck=True),
+        previous_continuity_report={
+            "artifact_key": "continuity_scene_1",
+            "artifact_kind": ArtifactKind.CONTINUITY_REPORT.value,
+            "artifact_version_id": str(uuid4()),
+            "content": {
+                "findings": [
+                    {
+                        "id": prior_id,
+                        "severity": "blocking",
+                        "basis": "contradiction",
+                    }
+                ]
+            },
+        },
+    )
+    model_findings = _continuity_model_findings(
+        {
+            "prior_finding_rechecks": {
+                prior_id: {
+                    "status": "still_blocking",
+                    "finding": {
+                        "severity": "blocking",
+                        "repair_assessment": "The exact contradiction remains.",
+                    },
+                }
+            },
+            "new_findings": [
+                {
+                    "severity": "error",
+                    "repair_assessment": "This separate contradiction first appears now.",
+                }
+            ],
+        },
+        context,
+    )
+
+    assert isinstance(model_findings, list)
+    materialized = [
+        _materialize_continuity_identity(
+            finding,
+            context,
+            index=index,
+            revision_number=2,
+        )
+        for index, finding in enumerate(model_findings)
+    ]
+    assert [cast(dict[str, object], finding)["id"] for finding in materialized] == [
+        prior_id,
+        "continuity_new_r02_002",
+    ]
+    assert [
+        cast(dict[str, object], finding)["recheck_disposition"] for finding in materialized
+    ] == ["still_blocking", "newly_exposed"]
+
+
+def test_v18_recheck_requires_every_prior_key_once() -> None:
+    context = replace(
+        _schema_test_continuity_context(recheck=True),
+        previous_continuity_report={
+            "artifact_key": "continuity_scene_1",
+            "artifact_kind": ArtifactKind.CONTINUITY_REPORT.value,
+            "artifact_version_id": str(uuid4()),
+            "content": {
+                "findings": [
+                    {
+                        "id": "prior_fact_blocker",
+                        "severity": "blocking",
+                        "basis": "contradiction",
+                    }
+                ]
+            },
+        },
+    )
+
+    with pytest.raises(ValueError, match="include every exact prior model finding key"):
+        _continuity_model_findings(
+            {"prior_finding_rechecks": {}, "new_findings": []},
+            context,
+        )
 
 
 def test_new_continuity_finding_cannot_inherit_another_findings_resolution() -> None:
@@ -1061,6 +1185,89 @@ def test_initial_continuity_evidence_is_bound_to_the_current_draft() -> None:
         _validate_continuity_finding_contract([finding], execution)
 
     finding["evidence"] = ["Mara locks the east door and pockets the brass key."]
+    _validate_continuity_finding_contract([finding], execution)
+
+
+def test_v18_missing_requirement_cannot_be_duplicated_as_contradiction() -> None:
+    resolution = "Establish late evening with a visible clock."
+    findings: list[object] = [
+        {
+            "id": "continuity_finding_001",
+            "severity": "error",
+            "basis": "contradiction",
+            "summary": "Missing Time Context",
+            "recommended_resolution": resolution,
+        },
+        {
+            "id": "missing_scene_plan_time_context",
+            "severity": "error",
+            "basis": "missing_requirement",
+            "summary": "The planned time context is absent.",
+            "recommended_resolution": resolution,
+        },
+    ]
+
+    with pytest.raises(ValueError, match="cannot be duplicated"):
+        _validate_requirement_basis_exclusivity(findings)
+
+
+def test_v18_world_rule_blocker_must_cite_its_exact_rule_source() -> None:
+    base = _v17_catalog_test_execution()
+    execution = replace(
+        base,
+        inputs=(
+            *base.inputs,
+            {
+                "artifact_kind": ArtifactKind.WORLD_RULE.value,
+                "artifact_key": "world_rule_evidence_weighting",
+                "artifact_version_id": str(uuid4()),
+                "content": {
+                    "id": "evidence_weighting",
+                    "statement": "Physical evidence has neutral weight.",
+                    "exceptions": [],
+                },
+            },
+            {
+                "artifact_kind": ArtifactKind.LOCATION.value,
+                "artifact_key": "location_study",
+                "artifact_version_id": str(uuid4()),
+                "content": {
+                    "id": "the_study",
+                    "description": "A shadowed room full of ambiguous objects.",
+                },
+            },
+        ),
+    )
+    context = _continuity_model_context(execution)
+    rule_ref = next(
+        entry["reference_id"]
+        for entry in context.canonical_source_catalog
+        if entry.get("canonical_id") == "evidence_weighting"
+    )
+    location_ref = next(
+        entry["reference_id"]
+        for entry in context.canonical_source_catalog
+        if entry.get("canonical_id") == "the_study"
+    )
+    finding: dict[str, object] = {
+        "id": "continuity_finding_001",
+        "severity": "blocking",
+        "category": "world_rule",
+        "basis": "contradiction",
+        "summary": "The draft assigns objective weight to the evidence.",
+        "evidence": ["Mara pockets the brass key."],
+        "canonical_source_refs": [location_ref],
+        "world_rule_ids": ["evidence_weighting"],
+        "violation_kind": "required_condition_breach",
+        "rule_conflict_assessment": "The draft and rule make incompatible claims.",
+        "companion_rule_assessment": "No exception authorizes objective evidence weight.",
+        "condition_explicitly_authorized": False,
+    }
+
+    with pytest.raises(ValueError, match="exact canonical source"):
+        _validate_continuity_finding_contract([finding], execution)
+
+    finding["canonical_source_refs"] = [rule_ref]
     _validate_continuity_finding_contract([finding], execution)
 
 
@@ -1238,11 +1445,15 @@ def test_benchmark_constraint_text_is_deferred_until_final_scene() -> None:
             "id": "required_element_1",
             "kind": "required_element",
             "text": "Resolve the card's origin.",
+            "satisfaction_mode": "include",
+            "companion_requirement_ids": [],
         },
         {
             "id": "forbidden_shortcut_1",
             "kind": "forbidden_shortcut",
             "text": "Do not explain the card as a prank.",
+            "satisfaction_mode": "reject_as_final_resolution",
+            "companion_requirement_ids": [],
         },
     ]
 
@@ -1272,6 +1483,8 @@ def test_duplicate_story_requirement_stays_deferred_in_non_final_scene_plan() ->
             "category": "constraint",
             "source_field": "required_elements",
             "text": "Elara begins a concrete facade survey.",
+            "satisfaction_mode": "include",
+            "companion_requirement_ids": [],
         }
     ]
     assert non_final["deferred_until_final_scene"] == [
@@ -1292,6 +1505,33 @@ def test_duplicate_story_requirement_stays_deferred_in_non_final_scene_plan() ->
     assert isinstance(final_due_now, list)
     assert [item["text"] for item in final_due_now if isinstance(item, dict)] == scene_plan[
         "required_elements"
+    ]
+
+
+def test_v18_scene_plan_goal_is_pursuit_and_is_evaluated_with_outcome() -> None:
+    applicability = _scene_plan_requirement_applicability(
+        {"required_elements": []},
+        {
+            "required_elements": [],
+            "goal": "Find one objective item that settles the argument.",
+            "conflict": "Every item supports incompatible interpretations.",
+            "turning_point": "The siblings reject each other's reasoning.",
+            "outcome": "The disagreement becomes personal.",
+            "exit_state": "They exhaust the evidence without resolution.",
+        },
+        unit_number=2,
+        unit_count=4,
+    )
+    due = {entry["id"]: entry for entry in cast(list[dict[str, object]], applicability["due_now"])}
+
+    assert due["scene_plan_goal"]["satisfaction_mode"] == "pursue"
+    assert due["scene_plan_outcome"]["satisfaction_mode"] == "achieve"
+    assert due["scene_plan_exit_state"]["satisfaction_mode"] == "establish"
+    assert due["scene_plan_goal"]["companion_requirement_ids"] == [
+        "scene_plan_conflict",
+        "scene_plan_turning_point",
+        "scene_plan_outcome",
+        "scene_plan_exit_state",
     ]
 
 
@@ -1487,6 +1727,8 @@ def test_initial_continuity_schema_omits_every_recheck_only_field() -> None:
     assert coverage["additionalProperties"] is False
     assert {
         "world_rule_ids",
+        "violation_kind",
+        "rule_conflict_assessment",
         "companion_rule_assessment",
         "condition_explicitly_authorized",
     }.isdisjoint(blocking_properties)
@@ -1497,6 +1739,8 @@ def test_initial_continuity_schema_omits_every_recheck_only_field() -> None:
     assert world_properties["condition_explicitly_authorized"]["const"] is False
     assert {
         "world_rule_ids",
+        "violation_kind",
+        "rule_conflict_assessment",
         "companion_rule_assessment",
         "condition_explicitly_authorized",
     } <= set(world["required"])
@@ -1569,8 +1813,23 @@ def test_continuity_recheck_schema_exposes_recheck_analysis_fields() -> None:
         "recommended_resolution",
         "repair_assessment",
     } <= set(blocking["required"])
-    assert "prior_finding_id" in blocking_properties
-    assert blocking_properties["prior_finding_id"]["enum"] == []
+    assert "prior_finding_id" not in blocking_properties
+    assert "status" not in blocking_properties
+    assert "findings" not in schema["properties"]
+    assert "findings" not in schema["required"]
+    assert schema["properties"]["prior_finding_rechecks"] == {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": False,
+        "title": "Prior Finding Rechecks",
+    }
+    assert schema["properties"]["new_findings"]["items"] == {
+        "anyOf": [
+            {"$ref": "#/$defs/RecheckBlockingContinuityFinding"},
+            {"$ref": "#/$defs/RecheckAdvisoryContinuityFinding"},
+        ]
+    }
     assert contradiction["properties"]["revised_draft_evidence_refs"]["minItems"] == 1
     assert contradiction["properties"]["revised_draft_evidence_refs"]["items"]["enum"] == [
         "draft_evidence_0001"
@@ -1581,6 +1840,8 @@ def test_continuity_recheck_schema_exposes_recheck_analysis_fields() -> None:
     assert "revised_draft_evidence_refs" not in missing["properties"]
     assert {
         "world_rule_ids",
+        "violation_kind",
+        "rule_conflict_assessment",
         "companion_rule_assessment",
         "condition_explicitly_authorized",
     } <= set(world["required"])
@@ -1592,6 +1853,36 @@ def test_continuity_recheck_schema_exposes_recheck_analysis_fields() -> None:
     }.isdisjoint(advisory_properties)
     assert "blocks_approval" not in blocking_properties
     assert "blocks_approval" not in advisory_properties
+
+
+def test_v18_recheck_schema_requires_each_exact_prior_finding_key() -> None:
+    context = replace(
+        _schema_test_continuity_context(recheck=True),
+        previous_continuity_report={
+            "artifact_key": "continuity_scene_1",
+            "artifact_kind": ArtifactKind.CONTINUITY_REPORT.value,
+            "artifact_version_id": str(uuid4()),
+            "content": {
+                "findings": [
+                    {
+                        "id": "continuity_new_r01_001",
+                        "severity": "blocking",
+                        "basis": "contradiction",
+                    }
+                ]
+            },
+        },
+    )
+    schema = _output_schema(
+        _Operation.CONTINUITY,
+        continuity_schema_variant=_ContinuitySchemaVariant.RECHECK,
+        continuity_model_context=context,
+    )
+    prior = schema["properties"]["prior_finding_rechecks"]
+
+    assert prior["required"] == ["continuity_new_r01_001"]
+    assert set(prior["properties"]) == {"continuity_new_r01_001"}
+    assert prior["additionalProperties"] is False
 
 
 def test_v17_schema_uses_empty_keyed_coverage_when_nothing_is_due() -> None:
@@ -2071,7 +2362,11 @@ async def test_same_continuity_finding_inherits_resolution_across_recheck(
             "recommended_resolution",
             "repair_assessment",
         } <= set(blocking["required"])
-        assert "prior_finding_id" in blocking_properties
+        assert "prior_finding_id" not in blocking_properties
+        assert "status" not in blocking_properties
+        assert "findings" not in schema["properties"]
+        assert "prior_finding_rechecks" in schema["properties"]
+        assert "new_findings" in schema["properties"]
         contradiction_details = blocking_properties["basis_details"]["anyOf"][0]
         assert "revised_draft_evidence_refs" in contradiction_details["required"]
         assert "recheck_evidence_state" not in contradiction_details["properties"]
@@ -2085,7 +2380,8 @@ async def test_same_continuity_finding_inherits_resolution_across_recheck(
     recheck_payload = json.loads(gateway.continuity_recheck_prompts[0])
     output_requirements = recheck_payload["output_requirements"]
     assert "sole authorit" in output_requirements["requirement_scope"]
-    assert "prior_finding_id" in output_requirements["recheck_analysis"]
+    assert "prior_finding_rechecks" in output_requirements["recheck_analysis"]
+    assert "new_findings" in output_requirements["recheck_analysis"]
     assert "application owns" in output_requirements["recheck_analysis"]
     assert "frozen_benchmark_constraints" not in recheck_payload
     assert "benchmark_constraint_applicability" not in recheck_payload
