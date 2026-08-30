@@ -104,6 +104,8 @@ _CONTINUITY_MODEL_EVIDENCE_FIELDS = frozenset(
 )
 _CONTINUITY_MODEL_DETAIL_FIELDS = frozenset({"basis_details", "category_details"})
 _CONTINUITY_MODEL_REQUIREMENT_AUDIT_FIELDS = frozenset({"requirement_coverage"})
+_CONTINUITY_MODEL_RECHECK_REPORT_FIELDS = frozenset({"prior_finding_rechecks", "new_findings"})
+_CONTINUITY_MODEL_CERTIFICATION_FIELDS = frozenset({"violation_kind", "rule_conflict_assessment"})
 _CONTINUITY_APPLICATION_OWNED_REPORT_FIELDS = frozenset(
     {
         "story_bible_version_id",
@@ -154,8 +156,13 @@ _CONTINUITY_FINDING_BASIS_REQUIREMENT = (
 _CONTINUITY_REQUIREMENT_AUDIT_REQUIREMENT = (
     "Audit every entry in requirement_coverage_catalog exactly once by completing the "
     "schema-required property with that exact ID under requirement_coverage. Use status "
-    "'covered' only when the candidate draft performs the obligation; otherwise use "
+    "'covered' only when the candidate draft satisfies the entry's exact satisfaction_mode; "
+    "otherwise use "
     "'missing' with severity, summary, coverage_assessment, and recommended_resolution. "
+    "Evaluate companion_requirement_ids together before deciding. A Scene Plan goal with "
+    "satisfaction_mode='pursue' is covered when the character meaningfully pursues or attempts "
+    "it; achievement is required only by an outcome, turning point, exit state, or other entry "
+    "whose own satisfaction_mode requires that result. "
     "A missing entry must not quote or fabricate draft evidence. The application derives "
     "its finding ID, category, lineage, and blocking state."
 )
@@ -166,7 +173,13 @@ _CONTINUITY_WORLD_RULE_REQUIREMENT = (
     "ID into world_rule_ids, evaluate companion rules and exceptions in "
     "companion_rule_assessment, and set condition_explicitly_authorized=false only after that "
     "evaluation proves the condition is not authorized. A condition explicitly authorized by "
-    "any companion rule or exception cannot be reported as blocking. For every non-world "
+    "any companion rule, exception, Scene Plan turning point, outcome, or exit state cannot be "
+    "reported as blocking. Select violation_kind only when the exact draft action breaches an "
+    "explicit prohibition or fails an explicitly required condition, and explain in "
+    "rule_conflict_assessment why the draft proposition and cited rule proposition cannot both "
+    "be true. Pacing, abruptness, emphasis, atmosphere variation, emotional effectiveness, and "
+    "dramatic framing belong to critique and cannot be continuity blockers by themselves. For "
+    "every non-world "
     "blocker, use the non-world category branch and omit all world-rule analysis fields."
 )
 _CONTINUITY_REQUIREMENT_SCOPE = (
@@ -174,6 +187,8 @@ _CONTINUITY_REQUIREMENT_SCOPE = (
     "authorities for requirement gates in this continuity call. The application has already "
     "deduplicated overlapping benchmark and Scene Plan obligations. Every required entry "
     "must be handled only by requirement_coverage, never as a contradiction. A contradiction "
+    "must be logically independent of requirement coverage and cannot repeat a missing "
+    "requirement's summary or recommended repair. "
     "category can never be 'constraint'. Deferred story-wide requirements are intentionally "
     "absent and must not block the current scene. A character may temporarily consider a "
     "forbidden final "
@@ -183,13 +198,15 @@ _CONTINUITY_REQUIREMENT_SCOPE = (
 )
 _CONTINUITY_RECHECK_REQUIREMENT = (
     "When a previous Continuity Report is supplied, audit every prior error or blocking "
-    "finding against the revised draft before reporting anything new. Omit a prior finding "
-    "when resolved. For an unresolved contradiction or forbidden-shortcut finding, copy its "
-    "exact ID into prior_finding_id and supply repair_assessment plus "
-    "revised_draft_evidence_refs inside basis_details selected from the candidate draft. The "
-    "application owns the canonical finding ID and derives recheck_disposition. For a new "
-    "blocking defect caused or exposed by the revision, omit prior_finding_id and explain in "
-    "repair_assessment why it was not actionable before. Do not "
+    "finding against the revised draft before reporting anything new. Complete every exact "
+    "schema-required key in prior_finding_rechecks once. Mark it resolved with a concrete "
+    "resolution_assessment, or mark it still_blocking and provide the complete revised finding "
+    "under that keyed entry with repair_assessment plus revised_draft_evidence_refs inside "
+    "basis_details. Put only genuinely new defects or advisories in new_findings. Prior IDs are "
+    "application-owned and "
+    "are unavailable there. The application owns canonical finding IDs and derives "
+    "recheck_disposition. A new blocking defect must explain in repair_assessment why it was "
+    "not actionable before. Do not "
     "downgrade an unresolved prior blocker to an advisory finding. Every revised_evidence "
     "reference is resolved by the application to an exact excerpt from the supplied revised "
     "draft. A re-checked "
@@ -231,7 +248,8 @@ _LOCAL_SCHEMA_REPAIR_OPERATION_RULES: Mapping[_Operation, tuple[str, ...]] = {
         "ID field.",
         "A contradiction nests category_details inside basis_details. World-rule branches "
         "require exact "
-        "world_rule_ids, a non-empty companion_rule_assessment, and "
+        "world_rule_ids, violation_kind, rule_conflict_assessment, a non-empty "
+        "companion_rule_assessment, and "
         "condition_explicitly_authorized=false. Non-world branches must omit those fields.",
         "Complete every schema-required requirement_coverage property. Do not use a "
         "contradiction or category='constraint' for an omitted requirement.",
@@ -1153,8 +1171,6 @@ def _output_schema(
         for field_name in report_required
         if field_name not in _CONTINUITY_APPLICATION_OWNED_REPORT_FIELDS
     ]
-    findings_schema["maxItems"] = _MAX_CONTINUITY_FINDINGS
-
     is_recheck = continuity_schema_variant is _ContinuitySchemaVariant.RECHECK
     phase_name = "Recheck" if is_recheck else "Initial"
     blocking_name = f"{phase_name}BlockingContinuityFinding"
@@ -1209,18 +1225,44 @@ def _output_schema(
         title=blocking_name,
         basis_detail_schemas=basis_detail_schemas,
         require_recheck_analysis=is_recheck,
-        prior_finding_ids=continuity_model_context.prior_model_finding_ids,
     )
     definitions[advisory_name] = _continuity_advisory_finding_schema(
         finding_schema,
         title=advisory_name,
     )
-    findings_schema["items"] = {
+    model_finding_items = {
         "anyOf": [
             {"$ref": f"#/$defs/{blocking_name}"},
             {"$ref": f"#/$defs/{advisory_name}"},
         ]
     }
+    if is_recheck:
+        report_properties.pop("findings", None)
+        schema["required"] = [field for field in schema["required"] if field != "findings"]
+        prior_definition_name = "PriorFindingRecheckEntry"
+        definitions[prior_definition_name] = _continuity_prior_recheck_entry_schema(
+            blocking_definition_name=blocking_name
+        )
+        prior_ids = continuity_model_context.prior_model_finding_ids
+        report_properties["prior_finding_rechecks"] = {
+            "type": "object",
+            "properties": {
+                finding_id: {"$ref": f"#/$defs/{prior_definition_name}"} for finding_id in prior_ids
+            },
+            "required": list(prior_ids),
+            "additionalProperties": False,
+            "title": "Prior Finding Rechecks",
+        }
+        report_properties["new_findings"] = {
+            "type": "array",
+            "items": model_finding_items,
+            "maxItems": _MAX_CONTINUITY_FINDINGS,
+            "title": "New Findings",
+        }
+        schema["required"].extend(("prior_finding_rechecks", "new_findings"))
+    else:
+        findings_schema["maxItems"] = _MAX_CONTINUITY_FINDINGS
+        findings_schema["items"] = model_finding_items
     coverage_definition_name = f"{phase_name}RequirementCoverageEntry"
     definitions[coverage_definition_name] = _continuity_requirement_coverage_entry_schema(
         is_recheck=is_recheck
@@ -1304,7 +1346,6 @@ def _continuity_blocking_finding_schema(
     title: str,
     basis_detail_schemas: list[dict[str, Any]],
     require_recheck_analysis: bool,
-    prior_finding_ids: tuple[str, ...],
 ) -> dict[str, Any]:
     """Compose basis and category dimensions without duplicating the finding object."""
     branch = deepcopy(dict(canonical_schema))
@@ -1355,11 +1396,6 @@ def _continuity_blocking_finding_schema(
         )
     )
     if require_recheck_analysis:
-        properties["prior_finding_id"] = {
-            "type": "string",
-            "enum": list(prior_finding_ids),
-            "title": "Prior Finding Id",
-        }
         properties["repair_assessment"] = {
             "type": "string",
             "minLength": 1,
@@ -1368,6 +1404,48 @@ def _continuity_blocking_finding_schema(
         branch["required"].append("repair_assessment")
     branch["title"] = title
     return branch
+
+
+def _continuity_prior_recheck_entry_schema(
+    *,
+    blocking_definition_name: str,
+) -> dict[str, Any]:
+    """Require one explicit resolved/still-blocking decision per prior finding ID."""
+    resolved = {
+        "type": "object",
+        "properties": {
+            "status": {"type": "string", "const": "resolved", "title": "Status"},
+            "resolution_assessment": {
+                "type": "string",
+                "minLength": 1,
+                "title": "Resolution Assessment",
+            },
+        },
+        "required": ["status", "resolution_assessment"],
+        "additionalProperties": False,
+        "title": "Resolved Prior Finding",
+    }
+    still_blocking = {
+        "type": "object",
+        "properties": {
+            "status": {
+                "type": "string",
+                "const": "still_blocking",
+                "title": "Status",
+            },
+            "finding": {
+                "$ref": f"#/$defs/{blocking_definition_name}",
+                "title": "Finding",
+            },
+        },
+        "required": ["status", "finding"],
+        "additionalProperties": False,
+        "title": "Still Blocking Prior Finding",
+    }
+    return {
+        "anyOf": [resolved, still_blocking],
+        "title": "Prior Finding Recheck Entry",
+    }
 
 
 def _continuity_advisory_finding_schema(
@@ -1503,6 +1581,16 @@ def _continuity_world_category_detail_schema(
                 "minItems": 1,
                 "title": "World Rule Ids",
             },
+            "violation_kind": {
+                "type": "string",
+                "enum": ["explicit_prohibition_breach", "required_condition_breach"],
+                "title": "Violation Kind",
+            },
+            "rule_conflict_assessment": {
+                "type": "string",
+                "minLength": 1,
+                "title": "Rule Conflict Assessment",
+            },
             "companion_rule_assessment": {
                 "type": "string",
                 "minLength": 1,
@@ -1517,6 +1605,8 @@ def _continuity_world_category_detail_schema(
         "required": [
             "category",
             "world_rule_ids",
+            "violation_kind",
+            "rule_conflict_assessment",
             "companion_rule_assessment",
             "condition_explicitly_authorized",
         ],
@@ -1604,11 +1694,12 @@ def _local_schema_repair_guidance(
         elif continuity_schema_variant is _ContinuitySchemaVariant.RECHECK:
             operation_rules.insert(
                 0,
-                "This is a re-check. An unresolved prior or newly exposed error/blocking "
-                "finding must supply repair_assessment. An unresolved prior contradiction or "
-                "forbidden-shortcut finding must copy its exact prior ID into "
-                "prior_finding_id; a new blocker must omit it. Contradiction "
-                "and forbidden-shortcut bases also require non-empty "
+                "This is a re-check. Complete every exact key in prior_finding_rechecks with "
+                "status resolved or still_blocking. A still-blocking entry places the complete "
+                "revised finding under its finding property. That finding and every newly "
+                "exposed error/blocking entry in new_findings must supply repair_assessment. "
+                "Prior IDs are object keys owned by the application and cannot appear in "
+                "new_findings. Contradiction and forbidden-shortcut bases also require non-empty "
                 "basis_details.revised_draft_evidence_refs selected from the candidate draft; a "
                 "missing requirement uses requirement_coverage with fresh coverage_assessment "
                 "and must omit draft evidence references. Info and warning findings must not "
@@ -1745,7 +1836,7 @@ def _benchmark_constraint_applicability(
     if unit_number < 1 or unit_count < 1 or unit_number > unit_count:
         raise SceneProductionError("continuity assignment has invalid scene bounds")
 
-    entries: list[dict[str, str]] = []
+    entries: list[dict[str, object]] = []
     for kind, key in (
         ("required_element", "required_elements"),
         ("forbidden_shortcut", "forbidden_shortcuts"),
@@ -1758,13 +1849,17 @@ def _benchmark_constraint_applicability(
                 "id": f"{kind}_{index}",
                 "kind": kind,
                 "text": value,
+                "satisfaction_mode": (
+                    "include" if kind == "required_element" else "reject_as_final_resolution"
+                ),
+                "companion_requirement_ids": [],
             }
             for index, value in enumerate(values, start=1)
         )
 
     is_final_scene = unit_number == unit_count
     return {
-        "policy_version": "1",
+        "policy_version": "2",
         "current_scene_number": unit_number,
         "final_scene_number": unit_count,
         "is_final_scene": is_final_scene,
@@ -1811,16 +1906,31 @@ def _scene_plan_requirement_applicability(
     due_now: list[dict[str, object]] = []
     deferred: list[dict[str, object]] = []
     scalar_obligations = (
-        ("entry_state", "fact"),
-        ("time_context", "timeline"),
-        ("purpose", "constraint"),
-        ("goal", "character"),
-        ("conflict", "fact"),
-        ("turning_point", "setup_payoff"),
-        ("outcome", "fact"),
-        ("exit_state", "fact"),
+        ("entry_state", "fact", "establish"),
+        ("time_context", "timeline", "establish"),
+        ("purpose", "constraint", "advance"),
+        ("goal", "character", "pursue"),
+        ("conflict", "fact", "dramatize"),
+        ("turning_point", "setup_payoff", "occur"),
+        ("outcome", "fact", "achieve"),
+        ("exit_state", "fact", "establish"),
     )
-    for field_name, category in scalar_obligations:
+    present_scalar_fields = {
+        field_name
+        for field_name, _, _ in scalar_obligations
+        if isinstance(scene_plan.get(field_name), str) and cast(str, scene_plan[field_name]).strip()
+    }
+    companion_fields = {
+        "entry_state": ("goal", "conflict"),
+        "time_context": (),
+        "purpose": ("goal", "conflict", "turning_point", "outcome"),
+        "goal": ("conflict", "turning_point", "outcome", "exit_state"),
+        "conflict": ("goal", "turning_point", "outcome", "exit_state"),
+        "turning_point": ("goal", "conflict", "outcome", "exit_state"),
+        "outcome": ("goal", "conflict", "turning_point", "exit_state"),
+        "exit_state": ("goal", "turning_point", "outcome"),
+    }
+    for field_name, category, satisfaction_mode in scalar_obligations:
         text = scene_plan.get(field_name)
         if isinstance(text, str) and text.strip():
             due_now.append(
@@ -1830,6 +1940,12 @@ def _scene_plan_requirement_applicability(
                     "category": category,
                     "source_field": field_name,
                     "text": text,
+                    "satisfaction_mode": satisfaction_mode,
+                    "companion_requirement_ids": [
+                        f"scene_plan_{companion}"
+                        for companion in companion_fields[field_name]
+                        if companion in present_scalar_fields
+                    ],
                 }
             )
     continuity_requirements = scene_plan.get("continuity_requirements", [])
@@ -1846,6 +1962,8 @@ def _scene_plan_requirement_applicability(
             "category": "fact",
             "source_field": "continuity_requirements",
             "text": text,
+            "satisfaction_mode": "satisfy",
+            "companion_requirement_ids": [],
         }
         for index, text in enumerate(continuity_requirements, start=1)
     )
@@ -1867,10 +1985,12 @@ def _scene_plan_requirement_applicability(
                     "category": "constraint",
                     "source_field": "required_elements",
                     "text": text,
+                    "satisfaction_mode": "include",
+                    "companion_requirement_ids": [],
                 }
             )
     return {
-        "policy_version": "1",
+        "policy_version": "2",
         "current_scene_number": unit_number,
         "final_scene_number": unit_count,
         "is_final_scene": is_final_scene,
@@ -2538,14 +2658,21 @@ def _materialize_output_data(
             scene_number=continuity_task.unit.unit_number,
             checked_categories=[category.value for category in ContinuityCategory],
         )
-        findings = materialized.get("findings")
+        findings = _continuity_model_findings(materialized, model_context)
+        for field_name in _CONTINUITY_MODEL_RECHECK_REPORT_FIELDS:
+            materialized.pop(field_name, None)
         if isinstance(findings, list):
             prior_resolutions = _prior_continuity_resolutions(execution)
             evidence_findings = [
                 _materialize_continuity_evidence(finding, model_context) for finding in findings
             ]
             identified_findings = [
-                _materialize_continuity_identity(finding, model_context, index=index)
+                _materialize_continuity_identity(
+                    finding,
+                    model_context,
+                    index=index,
+                    revision_number=execution.revision_number,
+                )
                 for index, finding in enumerate(evidence_findings)
             ]
             all_findings = [*identified_findings, *missing_requirement_findings]
@@ -2559,8 +2686,11 @@ def _materialize_output_data(
                 for finding in all_findings
             ]
             _validate_continuity_finding_contract(materialized_findings, execution)
+            _validate_requirement_basis_exclusivity(materialized_findings)
             _validate_continuity_recheck_analysis(materialized_findings, execution)
-            materialized["findings"] = materialized_findings
+            materialized["findings"] = [
+                _strip_continuity_certification_fields(finding) for finding in materialized_findings
+            ]
         return materialized
 
     update_task = cast(StoryBibleUpdateTask, task)
@@ -2710,6 +2840,63 @@ def _materialize_requirement_coverage(
 _materialize_requirement_audit = _materialize_requirement_coverage
 
 
+def _continuity_model_findings(
+    output_data: Mapping[str, object],
+    model_context: _ContinuityModelContext,
+) -> list[object] | object:
+    """Convert the model-only v18 re-check partition into one canonical finding list."""
+    if model_context.previous_continuity_report is None:
+        return output_data.get("findings")
+    prior = output_data.get("prior_finding_rechecks")
+    new = output_data.get("new_findings")
+    expected_ids = model_context.prior_model_finding_ids
+    actual_ids = set(prior) if isinstance(prior, dict) else set()
+    if not isinstance(prior, dict) or actual_ids != set(expected_ids):
+        omitted = sorted(set(expected_ids) - actual_ids)
+        unexpected = sorted(actual_ids - set(expected_ids))
+        raise _StructuredOutputContractError(
+            "prior_finding_rechecks",
+            "prior finding audit must include every exact prior model finding key; "
+            f"omitted={omitted}, unexpected={unexpected}",
+            issue_type="prior_finding_partition_mismatch",
+        )
+    if not isinstance(new, list):
+        raise _StructuredOutputContractError(
+            "new_findings",
+            "new_findings must be an array",
+            issue_type="prior_finding_partition_mismatch",
+        )
+    materialized: list[object] = []
+    for finding_id in expected_ids:
+        entry = prior[finding_id]
+        if not isinstance(entry, dict) or entry.get("status") not in {
+            "resolved",
+            "still_blocking",
+        }:
+            raise _StructuredOutputContractError(
+                f"prior_finding_rechecks.{finding_id}",
+                "prior finding must declare status resolved or still_blocking",
+                issue_type="prior_finding_partition_mismatch",
+            )
+        if entry["status"] == "resolved":
+            continue
+        retained_finding = entry.get("finding")
+        if not isinstance(retained_finding, dict):
+            raise _StructuredOutputContractError(
+                f"prior_finding_rechecks.{finding_id}.finding",
+                "a still-blocking prior entry requires one complete revised finding",
+                issue_type="prior_finding_partition_mismatch",
+            )
+        materialized.append(
+            {
+                **retained_finding,
+                "prior_finding_id": finding_id,
+            }
+        )
+    materialized.extend(new)
+    return materialized
+
+
 def _source_story_bible(execution: _Execution) -> StoryBible:
     story_bibles = [
         item.get("content")
@@ -2810,6 +2997,11 @@ def _validate_continuity_finding_contract(
     draft_prose = _current_scene_draft_prose(execution)
     model_context = _continuity_model_context(execution)
     source_refs = set(model_context.canonical_source_refs)
+    canonical_sources_by_ref = {
+        cast(str, entry["reference_id"]): entry
+        for entry in model_context.canonical_source_catalog
+        if isinstance(entry.get("reference_id"), str)
+    }
     requirement_kinds = model_context.requirement_kinds
     world_rule_ids = _continuity_world_rule_ids(execution.inputs)
     for index, finding in enumerate(findings):
@@ -2913,6 +3105,44 @@ def _validate_continuity_finding_contract(
                     f"{location}.world_rule_ids",
                     "world-rule findings require exact canonical World Rule IDs",
                 )
+            references = finding.get("canonical_source_refs")
+            cited_sources = [
+                canonical_sources_by_ref[reference]
+                for reference in references or []
+                if isinstance(reference, str) and reference in canonical_sources_by_ref
+            ]
+            cited_source_rule_ids = {
+                source.get("canonical_id")
+                for source in cited_sources
+                if source.get("artifact_kind") == ArtifactKind.WORLD_RULE.value
+                or (
+                    isinstance(source.get("source_path"), str)
+                    and ".world_rules[" in cast(str, source["source_path"])
+                )
+            }
+            if not set(cited_rule_ids).issubset(cited_source_rule_ids):
+                raise _StructuredOutputContractError(
+                    f"{location}.canonical_source_refs",
+                    "world-rule blockers must cite the exact canonical source for every "
+                    "declared World Rule ID",
+                    issue_type="world_rule_source_mismatch",
+                )
+            if finding.get("violation_kind") not in {
+                "explicit_prohibition_breach",
+                "required_condition_breach",
+            }:
+                raise _StructuredOutputContractError(
+                    f"{location}.violation_kind",
+                    "world-rule blockers require an explicit rule-violation kind",
+                )
+            if (
+                not isinstance(finding.get("rule_conflict_assessment"), str)
+                or not cast(str, finding["rule_conflict_assessment"]).strip()
+            ):
+                raise _StructuredOutputContractError(
+                    f"{location}.rule_conflict_assessment",
+                    "world-rule blockers must explain the direct logical conflict",
+                )
             if not isinstance(finding.get("companion_rule_assessment"), str):
                 raise _StructuredOutputContractError(
                     f"{location}.companion_rule_assessment",
@@ -2923,6 +3153,46 @@ def _validate_continuity_finding_contract(
                     f"{location}.condition_explicitly_authorized",
                     "an explicitly authorized or unevaluated world condition cannot block",
                 )
+
+
+def _validate_requirement_basis_exclusivity(findings: list[object]) -> None:
+    """Reject one missing obligation duplicated as an affirmative contradiction."""
+
+    def normalized(value: object) -> str | None:
+        if not isinstance(value, str):
+            return None
+        result = " ".join(value.casefold().split()).strip(" .")
+        return result or None
+
+    missing_values: set[str] = set()
+    for finding in findings:
+        if not isinstance(finding, dict) or finding.get("basis") != (
+            ContinuityFindingBasis.MISSING_REQUIREMENT.value
+        ):
+            continue
+        for field in ("summary", "recommended_resolution"):
+            value = normalized(finding.get(field))
+            if value is not None:
+                missing_values.add(value)
+    if not missing_values:
+        return
+    for index, finding in enumerate(findings):
+        if not isinstance(finding, dict) or finding.get("basis") != (
+            ContinuityFindingBasis.CONTRADICTION.value
+        ):
+            continue
+        duplicates = [
+            field
+            for field in ("summary", "recommended_resolution")
+            if normalized(finding.get(field)) in missing_values
+        ]
+        if duplicates:
+            raise _StructuredOutputContractError(
+                f"findings.{index}.{duplicates[0]}",
+                "a due obligation already classified as missing cannot be duplicated as "
+                "an affirmative contradiction",
+                issue_type="missing_requirement_used_as_contradiction",
+            )
 
 
 def _continuity_due_requirement_kinds(execution: _Execution) -> dict[str, str]:
@@ -3288,6 +3558,7 @@ def _materialize_continuity_identity(
     model_context: _ContinuityModelContext,
     *,
     index: int,
+    revision_number: int = 0,
 ) -> object:
     """Derive canonical finding identity and re-check disposition in application code."""
     if not isinstance(finding, dict):
@@ -3311,10 +3582,21 @@ def _materialize_continuity_identity(
         materialized["recheck_disposition"] = ContinuityRecheckDisposition.STILL_BLOCKING.value
     else:
         prefix = "continuity_new" if is_blocking else "continuity_advisory"
-        materialized["id"] = f"{prefix}_{index + 1:03d}"
+        materialized["id"] = f"{prefix}_r{revision_number:02d}_{index + 1:03d}"
         if is_blocking:
             materialized["recheck_disposition"] = ContinuityRecheckDisposition.NEWLY_EXPOSED.value
     return materialized
+
+
+def _strip_continuity_certification_fields(finding: object) -> object:
+    """Remove model-only v18 certification fields before canonical artifact validation."""
+    if not isinstance(finding, dict):
+        return finding
+    return {
+        key: value
+        for key, value in finding.items()
+        if key not in _CONTINUITY_MODEL_CERTIFICATION_FIELDS
+    }
 
 
 def _validate_unique_continuity_finding_ids(findings: list[object]) -> None:

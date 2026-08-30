@@ -414,6 +414,32 @@ and formatting pass over 133 files, strict mypy passes over 133 source files,
 all 230 pytest tests pass, frontend formatting/lint/type checking pass, all 10
 Vitest tests pass, and the production build succeeds. No v17 canary was started
 as part of this implementation change.
+The first Local v17 canary subsequently completed OH-V01-002 and OH-V01-004,
+the first recent Local production completions. Across the five runnable cases,
+81 of 87 production calls and 22 of 26 continuity calls succeeded; every v16
+coverage-partition failure disappeared. OH-V01-001 exposed a deterministic
+collision between application-generated positional new-finding IDs across
+consecutive re-checks. OH-V01-003 and OH-V01-005 reached the revision limit
+after critic-passing revisions were blocked by continuity: one promoted pacing
+and an intended anomaly to World Rule violations, while the other treated a
+character goal as a guaranteed outcome despite an explicitly unresolved Scene
+Plan exit state. OH-V01-006 retained its Blueprint failure. Evidence:
+`docs/benchmark_reports/step-19-local-v17-canary-2026-08-30.md`.
+Prompt contract v18 retains production graph v3 and the bounded revision policy.
+Re-check output now contains an exhaustive object keyed by every exact prior
+non-requirement blocker plus a separate new-finding array; the application
+derives prior disposition and revision-scoped new IDs, eliminating positional
+collisions and duplicate prior references. Requirement catalog policy v2 adds
+per-entry satisfaction modes and companion IDs, distinguishing meaningful goal
+pursuit from outcome achievement. World Rule blockers require exact rule-source
+provenance, an explicit prohibition/required-condition violation kind, and a
+direct logical-conflict assessment; pacing and dramatic framing are routed away
+from continuity. Exact duplicate missing-requirement summaries or repairs cannot
+also block as contradictions. Regression coverage reproduces all three v17
+production terminal mechanisms. Ruff and formatting pass over 133 files, strict
+mypy passes over 133 source files, all 236 pytest tests pass, frontend formatting,
+lint, and type checking pass, all 10 Vitest tests pass, and the production build
+succeeds. No v18 canary was started as part of this implementation change.
 
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 
