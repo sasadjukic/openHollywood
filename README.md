@@ -351,6 +351,22 @@ including goal-as-pursuit. World Rule blockers require exact rule-source
 provenance, an explicit violation kind, and a direct conflict assessment, while
 duplicate missing-requirement contradictions are rejected.
 
+The first Local v18 canary completed three of five production-runnable cases,
+accepted 18 scenes, and produced no revision-limit failure. OH-V01-003 moved
+from a false World Rule revision-limit failure under v17 to a complete story,
+while OH-V01-002 and OH-V01-004 remained successful. Continuity structured-
+output reliability nevertheless fell to 18 of 25 calls: one World Rule ID/source
+copy mismatch occurred, and a missing/contradiction text-overlap validator fired
+six times across four runnable cases. Prompt contract v19 retains production
+graph v3, derives World Rule canonical provenance from enum-constrained rule IDs,
+and deterministically consolidates an exact repeated missing summary-and-repair
+pair while allowing independently evidenced contradictions that merely share
+general wording. Local repair packets now carry issue-specific structural
+directives and exact key sets without retaining failed story responses.
+Benchmark failures also preserve an ordered, redacted `failure_history` for
+every failed production invocation so an earlier attempt cannot disappear behind
+the terminal message.
+
 Benchmark word-count ranges are advisory creative targets. New outputs persist a
 non-gating adherence measurement with the target, actual count, status, and word
 deviation. Automatic completion reflects a finished, non-truncated document,

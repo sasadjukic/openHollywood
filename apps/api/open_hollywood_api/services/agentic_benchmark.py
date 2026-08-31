@@ -12,6 +12,7 @@ from open_hollywood_engine.artifacts import ArtifactKind
 from open_hollywood_engine.evaluations import (
     BenchmarkCase,
     BenchmarkCaseExecutionError,
+    BenchmarkFailureAttempt,
     BenchmarkOutput,
     BenchmarkPrompt,
     BenchmarkSystem,
@@ -80,6 +81,44 @@ def _preferred_production_failure_detail(
     if workflow_detail is not None and workflow_detail not in generic_workflow_details:
         return workflow_detail
     return invocation_detail or workflow_detail
+
+
+def _benchmark_failure_attempt(
+    invocation: AgentInvocation,
+    *,
+    workflow_node: str | None,
+) -> BenchmarkFailureAttempt:
+    """Project one persisted invocation into a safe report diagnostic."""
+    settings = invocation.request_settings
+    operation = settings.get("operation")
+    schema_variant = settings.get("output_schema_variant")
+    attempt_number = settings.get("attempt_number")
+    finish_reason = settings.get("provider_finish_reason")
+    return BenchmarkFailureAttempt(
+        invocation_id=invocation.id,
+        workflow_node=(
+            operation if isinstance(operation, str) and operation.strip() else workflow_node
+        ),
+        specialist_role=invocation.specialist_role,
+        operation=(operation if isinstance(operation, str) and operation.strip() else None),
+        schema_variant=(
+            schema_variant if isinstance(schema_variant, str) and schema_variant.strip() else None
+        ),
+        attempt_number=(
+            attempt_number
+            if isinstance(attempt_number, int)
+            and not isinstance(attempt_number, bool)
+            and attempt_number >= 1
+            else invocation.retry_count + 1
+        ),
+        error_code=invocation.error_code or "unknown_invocation_failure",
+        error_message=(
+            invocation.error_message or "No safe invocation failure detail was recorded."
+        )[:2_000],
+        provider_finish_reason=(
+            finish_reason if isinstance(finish_reason, str) and finish_reason.strip() else None
+        ),
+    )
 
 
 @dataclass(frozen=True, slots=True)
@@ -339,7 +378,9 @@ class AgenticBenchmarkCaseExecutor:
         except BenchmarkCaseExecutionError:
             raise
         except Exception as error:
-            persisted_cause = self._persisted_production_failure_cause(prepared.workflow_run_id)
+            persisted_cause, failure_history = self._persisted_production_failure(
+                prepared.workflow_run_id
+            )
             raise BenchmarkCaseExecutionError(
                 "agentic_production_failed",
                 persisted_cause
@@ -347,6 +388,7 @@ class AgenticBenchmarkCaseExecutor:
                     "The persisted agentic scene-production run failed before a safe "
                     "cause was recorded."
                 ),
+                failure_history=failure_history,
             ) from error
         if execution.result is None or execution.status is not RunStatus.SUCCEEDED:
             raise BenchmarkCaseExecutionError(
@@ -360,11 +402,11 @@ class AgenticBenchmarkCaseExecutor:
             execution.result,
         )
 
-    def _persisted_production_failure_cause(
+    def _persisted_production_failure(
         self,
         blueprint_run_id: UUID,
-    ) -> str | None:
-        """Read the most specific redacted durable cause written by production."""
+    ) -> tuple[str | None, tuple[BenchmarkFailureAttempt, ...]]:
+        """Read the terminal cause and every safe failed invocation in execution order."""
         production_run_id = uuid5(
             blueprint_run_id,
             "agentic-scene-production-workflow",
@@ -376,19 +418,25 @@ class AgenticBenchmarkCaseExecutor:
                 or run.parent_workflow_run_id != blueprint_run_id
                 or run.status is not RunStatus.FAILED
             ):
-                return None
-            failed_invocation = session.scalar(
-                select(AgentInvocation)
-                .where(
-                    AgentInvocation.workflow_run_id == production_run_id,
-                    AgentInvocation.status == InvocationStatus.FAILED,
-                )
-                .order_by(
-                    AgentInvocation.completed_at.desc(),
-                    AgentInvocation.started_at.desc(),
-                    AgentInvocation.id.desc(),
-                )
+                return None, ()
+            failed_invocations = tuple(
+                session.scalars(
+                    select(AgentInvocation)
+                    .where(
+                        AgentInvocation.workflow_run_id == production_run_id,
+                        AgentInvocation.status == InvocationStatus.FAILED,
+                    )
+                    .order_by(
+                        AgentInvocation.started_at,
+                        AgentInvocation.id,
+                    )
+                ).all()
             )
+            failure_history = tuple(
+                _benchmark_failure_attempt(invocation, workflow_node=run.current_node)
+                for invocation in failed_invocations
+            )
+            failed_invocation = failed_invocations[-1] if failed_invocations else None
             workflow_detail = (
                 run.error_message.strip()
                 if isinstance(run.error_message, str) and run.error_message.strip()
@@ -406,9 +454,9 @@ class AgenticBenchmarkCaseExecutor:
                 invocation_detail=invocation_detail,
             )
             if detail is None:
-                return None
+                return None, failure_history
             node = run.current_node or "unknown production node"
-            return f"Scene production failed at {node}: {detail}"
+            return f"Scene production failed at {node}: {detail}", failure_history
 
     def _assemble_output(
         self,

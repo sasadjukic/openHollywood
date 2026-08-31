@@ -143,8 +143,10 @@ _CONTINUITY_FINDING_RESOLUTION_REQUIREMENT = (
 _CONTINUITY_FINDING_BASIS_REQUIREMENT = (
     "Every error or blocking finding must use exactly one basis_details branch. A "
     "contradiction must "
-    "select draft_evidence_refs from candidate_draft.content.evidence_catalog and cite "
-    "canonical_source_refs selected from canonical_source_catalog. Contradiction means an "
+    "select draft_evidence_refs from candidate_draft.content.evidence_catalog. A non-world "
+    "contradiction must also cite canonical_source_refs selected from "
+    "canonical_source_catalog. A World Rule contradiction selects only exact world_rule_ids; "
+    "the application derives their canonical source references. Contradiction means an "
     "affirmative current-draft statement or action that conflicts with canon; never use it "
     "for absent, weak, implicit, or incomplete requirement coverage, and its category_details "
     "must be nested inside basis_details. A "
@@ -169,8 +171,9 @@ _CONTINUITY_REQUIREMENT_AUDIT_REQUIREMENT = (
 _CONTINUITY_WORLD_RULE_REQUIREMENT = (
     "For every world_rule contradiction, use the world-rule category_details branch nested "
     "inside basis_details, "
-    "copy every involved canonical World Rule "
-    "ID into world_rule_ids, evaluate companion rules and exceptions in "
+    "copy every involved canonical World Rule ID into world_rule_ids and omit redundant "
+    "canonical_source_refs because the application derives exact rule provenance. Evaluate "
+    "companion rules and exceptions in "
     "companion_rule_assessment, and set condition_explicitly_authorized=false only after that "
     "evaluation proves the condition is not authorized. A condition explicitly authorized by "
     "any companion rule, exception, Scene Plan turning point, outcome, or exit state cannot be "
@@ -187,8 +190,10 @@ _CONTINUITY_REQUIREMENT_SCOPE = (
     "authorities for requirement gates in this continuity call. The application has already "
     "deduplicated overlapping benchmark and Scene Plan obligations. Every required entry "
     "must be handled only by requirement_coverage, never as a contradiction. A contradiction "
-    "must be logically independent of requirement coverage and cannot repeat a missing "
-    "requirement's summary or recommended repair. "
+    "must be logically independent of requirement coverage. The application consolidates an "
+    "exact repeated missing summary-and-repair pair into the keyed missing blocker; sharing "
+    "only general repair wording does not invalidate an otherwise evidence-backed "
+    "contradiction. "
     "category can never be 'constraint'. Deferred story-wide requirements are intentionally "
     "absent and must not block the current scene. A character may temporarily consider a "
     "forbidden final "
@@ -243,14 +248,16 @@ _LOCAL_SCHEMA_REPAIR_OPERATION_RULES: Mapping[_Operation, tuple[str, ...]] = {
         "an empty findings array when no defect remains.",
         "Match every blocking finding's basis_details object to its basis-specific evidence "
         "contract. Select draft "
-        "evidence handles from candidate_draft.content.evidence_catalog and canonical source "
-        "handles from canonical_source_catalog; never copy prose or requirement text into an "
-        "ID field.",
+        "evidence handles from candidate_draft.content.evidence_catalog. Non-world "
+        "contradictions also select canonical source handles from canonical_source_catalog; "
+        "World Rule contradictions select world_rule_ids and omit canonical_source_refs. "
+        "Never copy prose or requirement text into an ID field.",
         "A contradiction nests category_details inside basis_details. World-rule branches "
         "require exact "
         "world_rule_ids, violation_kind, rule_conflict_assessment, a non-empty "
         "companion_rule_assessment, and "
-        "condition_explicitly_authorized=false. Non-world branches must omit those fields.",
+        "condition_explicitly_authorized=false; the application derives their exact canonical "
+        "source references. Non-world branches must omit those World Rule fields.",
         "Complete every schema-required requirement_coverage property. Do not use a "
         "contradiction or category='constraint' for an omitted requirement.",
     ),
@@ -330,6 +337,21 @@ class _ContinuityModelContext:
             for entry in self.canonical_source_catalog
             if isinstance(entry.get("reference_id"), str)
         )
+
+    @property
+    def world_rule_source_refs(self) -> Mapping[str, str]:
+        """Map each exact World Rule ID to one deterministic canonical source handle."""
+        references: dict[str, str] = {}
+        for entry in self.canonical_source_catalog:
+            canonical_id = entry.get("canonical_id")
+            reference_id = entry.get("reference_id")
+            source_path = entry.get("source_path")
+            is_world_rule = entry.get("artifact_kind") == ArtifactKind.WORLD_RULE.value or (
+                isinstance(source_path, str) and ".world_rules[" in source_path
+            )
+            if is_world_rule and isinstance(canonical_id, str) and isinstance(reference_id, str):
+                references.setdefault(canonical_id, reference_id)
+        return references
 
     @property
     def prior_blocking_finding_ids(self) -> tuple[str, ...]:
@@ -1183,43 +1205,45 @@ def _output_schema(
         for requirement_id, kind in continuity_model_context.requirement_kinds.items()
         if kind == "forbidden_shortcut"
     )
-    basis_branches = (
-        *(
-            ((ContinuityFindingBasis.CONTRADICTION, ()),)
-            if continuity_model_context.canonical_source_refs
-            else ()
-        ),
-        (
-            ContinuityFindingBasis.FORBIDDEN_SHORTCUT_VIOLATION,
-            forbidden_requirement_ids,
-        ),
-    )
-    basis_detail_schemas = [
-        _continuity_basis_detail_schema(
-            basis=basis,
+    basis_detail_schemas: list[dict[str, Any]] = []
+    if continuity_model_context.canonical_source_refs:
+        non_world_contradiction = _continuity_basis_detail_schema(
+            basis=ContinuityFindingBasis.CONTRADICTION,
             is_recheck=is_recheck,
             model_context=continuity_model_context,
-            requirement_ids=requirement_ids,
+            requirement_ids=(),
+            include_canonical_source_refs=True,
         )
-        for basis, requirement_ids in basis_branches
-        if basis is ContinuityFindingBasis.CONTRADICTION or requirement_ids
-    ]
-    contradiction_category_schemas = [
-        _continuity_non_world_category_detail_schema(exclude_constraint=True),
-        *(
-            [_continuity_world_category_detail_schema(continuity_model_context)]
-            if continuity_model_context.world_rule_ids
-            else []
-        ),
-    ]
-    for branch in basis_detail_schemas:
-        basis = branch.get("properties", {}).get("basis", {}).get("const")
-        if basis == ContinuityFindingBasis.CONTRADICTION.value:
-            branch["properties"]["category_details"] = {
-                "anyOf": contradiction_category_schemas,
-                "title": "Contradiction Category Details",
-            }
-            branch["required"].append("category_details")
+        non_world_contradiction["properties"]["category_details"] = (
+            _continuity_non_world_category_detail_schema(exclude_constraint=True)
+        )
+        non_world_contradiction["required"].append("category_details")
+        non_world_contradiction["title"] = "Non World Contradiction Details"
+        basis_detail_schemas.append(non_world_contradiction)
+    if continuity_model_context.world_rule_ids:
+        world_rule_contradiction = _continuity_basis_detail_schema(
+            basis=ContinuityFindingBasis.CONTRADICTION,
+            is_recheck=is_recheck,
+            model_context=continuity_model_context,
+            requirement_ids=(),
+            include_canonical_source_refs=False,
+        )
+        world_rule_contradiction["properties"]["category_details"] = (
+            _continuity_world_category_detail_schema(continuity_model_context)
+        )
+        world_rule_contradiction["required"].append("category_details")
+        world_rule_contradiction["title"] = "World Rule Contradiction Details"
+        basis_detail_schemas.append(world_rule_contradiction)
+    if forbidden_requirement_ids:
+        basis_detail_schemas.append(
+            _continuity_basis_detail_schema(
+                basis=ContinuityFindingBasis.FORBIDDEN_SHORTCUT_VIOLATION,
+                is_recheck=is_recheck,
+                model_context=continuity_model_context,
+                requirement_ids=forbidden_requirement_ids,
+                include_canonical_source_refs=False,
+            )
+        )
     definitions[blocking_name] = _continuity_blocking_finding_schema(
         finding_schema,
         title=blocking_name,
@@ -1494,6 +1518,7 @@ def _continuity_basis_detail_schema(
     is_recheck: bool,
     model_context: _ContinuityModelContext,
     requirement_ids: tuple[str, ...],
+    include_canonical_source_refs: bool,
 ) -> dict[str, Any]:
     """Create one compact, mutually exclusive blocking-basis detail object."""
     properties: dict[str, Any] = {
@@ -1513,7 +1538,7 @@ def _continuity_basis_detail_schema(
         "title": ("Revised Draft Evidence Refs" if is_recheck else "Draft Evidence Refs"),
     }
     required.append(evidence_field)
-    if basis is ContinuityFindingBasis.CONTRADICTION:
+    if basis is ContinuityFindingBasis.CONTRADICTION and include_canonical_source_refs:
         properties["canonical_source_refs"] = {
             "type": "array",
             "items": {
@@ -1555,12 +1580,10 @@ def _continuity_non_world_category_detail_schema(
                     if category is not ContinuityCategory.WORLD_RULE
                     and (not exclude_constraint or category is not ContinuityCategory.CONSTRAINT)
                 ],
-                "title": "Category",
             }
         },
         "required": ["category"],
         "additionalProperties": False,
-        "title": "Non World Category Details",
     }
 
 
@@ -1573,33 +1596,27 @@ def _continuity_world_category_detail_schema(
             "category": {
                 "type": "string",
                 "const": ContinuityCategory.WORLD_RULE.value,
-                "title": "Category",
             },
             "world_rule_ids": {
                 "type": "array",
                 "items": {"type": "string", "enum": list(model_context.world_rule_ids)},
                 "minItems": 1,
-                "title": "World Rule Ids",
             },
             "violation_kind": {
                 "type": "string",
                 "enum": ["explicit_prohibition_breach", "required_condition_breach"],
-                "title": "Violation Kind",
             },
             "rule_conflict_assessment": {
                 "type": "string",
                 "minLength": 1,
-                "title": "Rule Conflict Assessment",
             },
             "companion_rule_assessment": {
                 "type": "string",
                 "minLength": 1,
-                "title": "Companion Rule Assessment",
             },
             "condition_explicitly_authorized": {
                 "type": "boolean",
                 "const": False,
-                "title": "Condition Explicitly Authorized",
             },
         },
         "required": [
@@ -1611,7 +1628,6 @@ def _continuity_world_category_detail_schema(
             "condition_explicitly_authorized",
         ],
         "additionalProperties": False,
-        "title": "World Rule Category Details",
     }
 
 
@@ -1660,6 +1676,7 @@ def _local_schema_repair_guidance(
     deployment: ModelDeployment,
     previous_failure: Mapping[str, object] | None,
     continuity_schema_variant: _ContinuitySchemaVariant | None = None,
+    continuity_model_context: _ContinuityModelContext | None = None,
 ) -> dict[str, object] | None:
     """Build a concise repair-only packet for a failed Local structured call."""
     if (
@@ -1708,10 +1725,61 @@ def _local_schema_repair_guidance(
         else:
             raise ValueError("continuity repair guidance requires a schema variant")
 
+    directives: list[dict[str, object]] = []
+    if isinstance(validation_issues, list):
+        for issue in validation_issues:
+            if not isinstance(issue, dict):
+                continue
+            location = issue.get("location")
+            issue_type = issue.get("type")
+            if not isinstance(location, str) or not isinstance(issue_type, str):
+                continue
+            directive: dict[str, object] = {
+                "location": location,
+                "issue_type": issue_type,
+                "action": "replace the value at this exact location with the schema-valid form",
+            }
+            if issue_type == "missing_requirement_used_as_contradiction":
+                directive["action"] = (
+                    "remove the redundant contradiction and represent an omitted obligation "
+                    "only in its keyed requirement_coverage entry"
+                )
+            elif issue_type == "requirement_partition_mismatch":
+                directive["action"] = (
+                    "return every exact requirement_coverage key once and no other keys"
+                )
+                if continuity_model_context is not None:
+                    directive["required_requirement_ids"] = list(
+                        continuity_model_context.requirement_categories
+                    )
+            elif issue_type == "prior_finding_partition_mismatch":
+                directive["action"] = (
+                    "return every exact prior_finding_rechecks key once and no other keys"
+                )
+                if continuity_model_context is not None:
+                    directive["required_prior_finding_ids"] = list(
+                        continuity_model_context.prior_model_finding_ids
+                    )
+            elif issue_type in {
+                "invalid_world_rule_id",
+                "world_rule_source_mismatch",
+                "world_rule_source_provenance_invalid",
+            }:
+                directive["action"] = (
+                    "select only world_rule_ids from the supplied enum and omit "
+                    "canonical_source_refs because the application derives them"
+                )
+                if continuity_model_context is not None:
+                    directive["valid_world_rule_ids"] = list(
+                        continuity_model_context.world_rule_ids
+                    )
+            directives.append(directive)
+
     guidance: dict[str, object] = {
-        "policy_version": "1",
+        "policy_version": "2",
         "mode": "repair_only",
         "focus_locations": focus_locations,
+        "directives": directives,
         "common_rules": list(_LOCAL_SCHEMA_REPAIR_COMMON_RULES),
         "operation_rules": operation_rules,
     }
@@ -1733,6 +1801,7 @@ def _messages(
         deployment=execution.selection.deployment,
         previous_failure=execution.previous_failure,
         continuity_schema_variant=continuity_schema_variant,
+        continuity_model_context=continuity_model_context,
     )
     system = (
         "You are a registered Open Hollywood scene-production specialist. "
@@ -2675,7 +2744,9 @@ def _materialize_output_data(
                 )
                 for index, finding in enumerate(evidence_findings)
             ]
-            all_findings = [*identified_findings, *missing_requirement_findings]
+            all_findings = _consolidate_requirement_basis(
+                [*identified_findings, *missing_requirement_findings]
+            )
             _validate_unique_continuity_finding_ids(all_findings)
             materialized_findings = [
                 _materialize_continuity_finding(
@@ -2686,7 +2757,6 @@ def _materialize_output_data(
                 for finding in all_findings
             ]
             _validate_continuity_finding_contract(materialized_findings, execution)
-            _validate_requirement_basis_exclusivity(materialized_findings)
             _validate_continuity_recheck_analysis(materialized_findings, execution)
             materialized["findings"] = [
                 _strip_continuity_certification_fields(finding) for finding in materialized_findings
@@ -2997,11 +3067,6 @@ def _validate_continuity_finding_contract(
     draft_prose = _current_scene_draft_prose(execution)
     model_context = _continuity_model_context(execution)
     source_refs = set(model_context.canonical_source_refs)
-    canonical_sources_by_ref = {
-        cast(str, entry["reference_id"]): entry
-        for entry in model_context.canonical_source_catalog
-        if isinstance(entry.get("reference_id"), str)
-    }
     requirement_kinds = model_context.requirement_kinds
     world_rule_ids = _continuity_world_rule_ids(execution.inputs)
     for index, finding in enumerate(findings):
@@ -3105,27 +3170,16 @@ def _validate_continuity_finding_contract(
                     f"{location}.world_rule_ids",
                     "world-rule findings require exact canonical World Rule IDs",
                 )
-            references = finding.get("canonical_source_refs")
-            cited_sources = [
-                canonical_sources_by_ref[reference]
-                for reference in references or []
-                if isinstance(reference, str) and reference in canonical_sources_by_ref
+            expected_references = [
+                model_context.world_rule_source_refs[rule_id]
+                for rule_id in cited_rule_ids
+                if rule_id in model_context.world_rule_source_refs
             ]
-            cited_source_rule_ids = {
-                source.get("canonical_id")
-                for source in cited_sources
-                if source.get("artifact_kind") == ArtifactKind.WORLD_RULE.value
-                or (
-                    isinstance(source.get("source_path"), str)
-                    and ".world_rules[" in cast(str, source["source_path"])
-                )
-            }
-            if not set(cited_rule_ids).issubset(cited_source_rule_ids):
+            if finding.get("canonical_source_refs") != list(dict.fromkeys(expected_references)):
                 raise _StructuredOutputContractError(
                     f"{location}.canonical_source_refs",
-                    "world-rule blockers must cite the exact canonical source for every "
-                    "declared World Rule ID",
-                    issue_type="world_rule_source_mismatch",
+                    "application-derived World Rule provenance is incomplete",
+                    issue_type="world_rule_source_provenance_invalid",
                 )
             if finding.get("violation_kind") not in {
                 "explicit_prohibition_breach",
@@ -3155,8 +3209,8 @@ def _validate_continuity_finding_contract(
                 )
 
 
-def _validate_requirement_basis_exclusivity(findings: list[object]) -> None:
-    """Reject one missing obligation duplicated as an affirmative contradiction."""
+def _consolidate_requirement_basis(findings: list[object]) -> list[object]:
+    """Keep one keyed missing blocker when a contradiction repeats its exact issue pair."""
 
     def normalized(value: object) -> str | None:
         if not isinstance(value, str):
@@ -3164,35 +3218,31 @@ def _validate_requirement_basis_exclusivity(findings: list[object]) -> None:
         result = " ".join(value.casefold().split()).strip(" .")
         return result or None
 
-    missing_values: set[str] = set()
+    missing_pairs: set[tuple[str, str]] = set()
     for finding in findings:
         if not isinstance(finding, dict) or finding.get("basis") != (
             ContinuityFindingBasis.MISSING_REQUIREMENT.value
         ):
             continue
-        for field in ("summary", "recommended_resolution"):
-            value = normalized(finding.get(field))
-            if value is not None:
-                missing_values.add(value)
-    if not missing_values:
-        return
-    for index, finding in enumerate(findings):
-        if not isinstance(finding, dict) or finding.get("basis") != (
+        summary = normalized(finding.get("summary"))
+        resolution = normalized(finding.get("recommended_resolution"))
+        if summary is not None and resolution is not None:
+            missing_pairs.add((summary, resolution))
+    if not missing_pairs:
+        return findings
+    consolidated: list[object] = []
+    for finding in findings:
+        if isinstance(finding, dict) and finding.get("basis") == (
             ContinuityFindingBasis.CONTRADICTION.value
         ):
-            continue
-        duplicates = [
-            field
-            for field in ("summary", "recommended_resolution")
-            if normalized(finding.get(field)) in missing_values
-        ]
-        if duplicates:
-            raise _StructuredOutputContractError(
-                f"findings.{index}.{duplicates[0]}",
-                "a due obligation already classified as missing cannot be duplicated as "
-                "an affirmative contradiction",
-                issue_type="missing_requirement_used_as_contradiction",
+            pair = (
+                normalized(finding.get("summary")),
+                normalized(finding.get("recommended_resolution")),
             )
+            if pair in missing_pairs:
+                continue
+        consolidated.append(finding)
+    return consolidated
 
 
 def _continuity_due_requirement_kinds(execution: _Execution) -> dict[str, str]:
@@ -3467,6 +3517,7 @@ def _materialize_continuity_evidence(
     if not isinstance(finding, dict):
         return finding
     finding = _flatten_continuity_model_finding(finding)
+    finding = _materialize_world_rule_source_refs(finding, model_context)
     materialized = {
         key: value for key, value in finding.items() if key not in _CONTINUITY_MODEL_EVIDENCE_FIELDS
     }
@@ -3506,6 +3557,37 @@ def _materialize_continuity_evidence(
     materialized["evidence"] = excerpts
     if model_context.previous_continuity_report is not None:
         materialized["revised_evidence"] = excerpts
+    return materialized
+
+
+def _materialize_world_rule_source_refs(
+    finding: dict[str, object],
+    model_context: _ContinuityModelContext,
+) -> dict[str, object]:
+    """Derive exact World Rule provenance from model-selected canonical rule IDs."""
+    if not (
+        finding.get("basis") == ContinuityFindingBasis.CONTRADICTION.value
+        and finding.get("category") == ContinuityCategory.WORLD_RULE.value
+    ):
+        return finding
+    rule_ids = finding.get("world_rule_ids")
+    if (
+        not isinstance(rule_ids, list)
+        or not rule_ids
+        or any(
+            not isinstance(rule_id, str) or rule_id not in model_context.world_rule_source_refs
+            for rule_id in rule_ids
+        )
+    ):
+        raise _StructuredOutputContractError(
+            "world_rule_ids",
+            "World Rule contradictions require IDs with deterministic canonical provenance",
+            issue_type="invalid_world_rule_id",
+        )
+    materialized = dict(finding)
+    materialized["canonical_source_refs"] = list(
+        dict.fromkeys(model_context.world_rule_source_refs[rule_id] for rule_id in rule_ids)
+    )
     return materialized
 
 

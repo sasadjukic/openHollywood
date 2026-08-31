@@ -327,6 +327,20 @@ class BenchmarkCaseStatus(StrEnum):
     FAILED = "failed"
 
 
+class BenchmarkFailureAttempt(EvaluationModel):
+    """One safe persisted model-attempt failure in terminal execution order."""
+
+    invocation_id: UUID
+    workflow_node: NonEmptyText | None = None
+    specialist_role: NonEmptyText
+    operation: NonEmptyText | None = None
+    schema_variant: NonEmptyText | None = None
+    attempt_number: int = Field(ge=1)
+    error_code: NonEmptyText
+    error_message: NonEmptyText
+    provider_finish_reason: NonEmptyText | None = None
+
+
 class BenchmarkOutput(EvaluationModel):
     """Complete candidate document plus exact durable lineage."""
 
@@ -372,11 +386,17 @@ class BenchmarkCaseResult(EvaluationModel):
     output: BenchmarkOutput | None = None
     error_code: NonEmptyText | None = None
     error_message: NonEmptyText | None = None
+    failure_history: tuple[BenchmarkFailureAttempt, ...] = ()
 
     @model_validator(mode="after")
     def validate_result(self) -> Self:
         if self.status is BenchmarkCaseStatus.SUCCEEDED:
-            if self.output is None or self.error_code is not None or self.error_message is not None:
+            if (
+                self.output is None
+                or self.error_code is not None
+                or self.error_message is not None
+                or self.failure_history
+            ):
                 raise ValueError("successful cases require only an output")
         elif self.output is not None or self.error_code is None:
             raise ValueError("failed cases require an error code and no output")
