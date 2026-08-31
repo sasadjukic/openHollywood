@@ -11,6 +11,7 @@ from open_hollywood_engine.evaluations.contracts import (
     BenchmarkCaseResult,
     BenchmarkCaseStatus,
     BenchmarkCorpus,
+    BenchmarkFailureAttempt,
     BenchmarkOutput,
     BenchmarkPlan,
     BenchmarkPrompt,
@@ -21,13 +22,20 @@ from open_hollywood_engine.evaluations.contracts import (
 class BenchmarkCaseExecutionError(RuntimeError):
     """Expected, persistable failure of one model-backed benchmark case."""
 
-    def __init__(self, code: str, message: str) -> None:
+    def __init__(
+        self,
+        code: str,
+        message: str,
+        *,
+        failure_history: tuple[BenchmarkFailureAttempt, ...] = (),
+    ) -> None:
         normalized_code = code.strip()
         normalized_message = message.strip()
         if not normalized_code or not normalized_message:
             raise ValueError("benchmark error code and message must not be empty")
         super().__init__(normalized_message)
         self.code = normalized_code
+        self.failure_history = failure_history
 
 
 class BenchmarkCaseExecutor(Protocol):
@@ -96,6 +104,7 @@ async def run_benchmark_plan(
                     status=BenchmarkCaseStatus.FAILED,
                     error_code=error.code,
                     error_message=str(error)[:2_000],
+                    failure_history=error.failure_history,
                 )
             )
         else:

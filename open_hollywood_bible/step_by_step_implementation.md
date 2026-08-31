@@ -440,6 +440,32 @@ production terminal mechanisms. Ruff and formatting pass over 133 files, strict
 mypy passes over 133 source files, all 236 pytest tests pass, frontend formatting,
 lint, and type checking pass, all 10 Vitest tests pass, and the production build
 succeeds. No v18 canary was started as part of this implementation change.
+The first Local v18 canary subsequently completed OH-V01-002, OH-V01-003, and
+OH-V01-004, raising production-runnable completion from two of five to three of
+five and accepted scenes from 13 to 18. It produced no revision-limit failure,
+and OH-V01-003 specifically validated the v18 semantic direction by completing
+after v17 had promoted intended pacing and World Rule behavior to blockers.
+Continuity structured-output success fell from 22 of 26 calls to 18 of 25,
+however. A text-overlap exclusivity validator fired six times across four cases;
+OH-V01-001 and OH-V01-005 terminated after Local repair, and OH-V01-005 first
+reported a separate World Rule ID/source mismatch. Its earlier attempt remained
+visible in SQLite but not in the final report. Evidence:
+`docs/benchmark_reports/step-19-local-v18-canary-2026-08-31.md`.
+Prompt contract v19 retains production graph v3. World Rule source provenance is
+now derived deterministically from model-selected canonical rule IDs. Exact
+duplicate missing summary-and-repair pairs consolidate into the keyed missing
+blocker, while one shared text field alone cannot invalidate an independently
+evidenced contradiction. Local repair policy v2 provides issue-specific actions
+and exact required key sets without retaining failed response content. Failed
+benchmark cases now serialize every safe persisted invocation failure in ordered
+`failure_history`, preserving earlier attempts alongside the concise terminal
+cause. Regression coverage reproduces the v18 terminal mechanisms and verifies
+the derived provenance, deterministic consolidation, compact Local grammar,
+focused repair packet, and resumable report serialization. No v19 canary was
+started as part of this implementation change. Ruff and formatting pass over
+133 files, strict mypy passes over 133 source files, all 238 pytest tests pass,
+frontend formatting, lint, and type checking pass, all 10 Vitest tests pass,
+and the production build succeeds.
 
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 

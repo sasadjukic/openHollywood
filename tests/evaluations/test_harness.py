@@ -36,6 +36,7 @@ from open_hollywood_engine.evaluations import (
     BenchmarkCaseExecutionError,
     BenchmarkCaseStatus,
     BenchmarkCorpus,
+    BenchmarkFailureAttempt,
     BenchmarkOutput,
     BenchmarkPlan,
     BenchmarkProfileSnapshot,
@@ -123,6 +124,19 @@ class FixtureExecutor:
             raise BenchmarkCaseExecutionError(
                 "fixture_failure",
                 "The fixture rejected this case.",
+                failure_history=(
+                    BenchmarkFailureAttempt(
+                        invocation_id=uuid5(case.case_id, "failed-invocation"),
+                        workflow_node="continuity",
+                        specialist_role="continuity_supervisor",
+                        operation="continuity",
+                        schema_variant="initial_check",
+                        attempt_number=1,
+                        error_code="schema_validation_failed",
+                        error_message="findings.0 used an invalid structured branch.",
+                        provider_finish_reason="stop",
+                    ),
+                ),
             )
         content = " ".join(("story",) * (self.word_count - 1) + (f"{case.case_id}.",))
         adherence = WordCountAdherence.measure(
@@ -438,6 +452,14 @@ async def test_harness_is_failure_isolated_and_resumable(
     assert len(first_report.results) == 48
     assert first_report.results[2].status is BenchmarkCaseStatus.FAILED
     assert first_report.results[2].error_code == "fixture_failure"
+    assert len(first_report.results[2].failure_history) == 1
+    attempt = first_report.results[2].failure_history[0]
+    assert attempt.specialist_role == "continuity_supervisor"
+    assert attempt.schema_variant == "initial_check"
+    serialized = json.loads(first_report.model_dump_json())
+    assert serialized["results"][2]["failure_history"][0]["error_message"] == (
+        "findings.0 used an invalid structured branch."
+    )
 
     resumed_executor = FixtureExecutor()
     resumed = await run_benchmark_plan(

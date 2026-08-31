@@ -43,6 +43,7 @@ from open_hollywood_api.services.production_model_executor import (
     BenchmarkProductionExecutor,
     ContinuityRecheckStagnationError,
     _benchmark_constraint_applicability,
+    _consolidate_requirement_basis,
     _continuity_model_context,
     _continuity_model_findings,
     _continuity_prompt_inputs,
@@ -63,7 +64,6 @@ from open_hollywood_api.services.production_model_executor import (
     _select_production_model,
     _structured_failure_message,
     _validate_continuity_finding_contract,
-    _validate_requirement_basis_exclusivity,
 )
 from open_hollywood_api.services.production_workflow import (
     BenchmarkSceneProductionService,
@@ -1188,7 +1188,7 @@ def test_initial_continuity_evidence_is_bound_to_the_current_draft() -> None:
     _validate_continuity_finding_contract([finding], execution)
 
 
-def test_v18_missing_requirement_cannot_be_duplicated_as_contradiction() -> None:
+def test_v19_shared_repair_text_does_not_invalidate_independent_contradiction() -> None:
     resolution = "Establish late evening with a visible clock."
     findings: list[object] = [
         {
@@ -1207,11 +1207,31 @@ def test_v18_missing_requirement_cannot_be_duplicated_as_contradiction() -> None
         },
     ]
 
-    with pytest.raises(ValueError, match="cannot be duplicated"):
-        _validate_requirement_basis_exclusivity(findings)
+    assert _consolidate_requirement_basis(findings) == findings
 
 
-def test_v18_world_rule_blocker_must_cite_its_exact_rule_source() -> None:
+def test_v19_exact_missing_pair_is_consolidated_into_keyed_requirement() -> None:
+    summary = "The planned time context is absent."
+    resolution = "Establish late evening with a visible clock."
+    contradiction = {
+        "id": "continuity_finding_001",
+        "severity": "error",
+        "basis": "contradiction",
+        "summary": summary,
+        "recommended_resolution": resolution,
+    }
+    missing = {
+        "id": "missing_scene_plan_time_context",
+        "severity": "error",
+        "basis": "missing_requirement",
+        "summary": summary,
+        "recommended_resolution": resolution,
+    }
+
+    assert _consolidate_requirement_basis([contradiction, missing]) == [missing]
+
+
+def test_v19_world_rule_source_is_derived_from_selected_rule_id() -> None:
     base = _v17_catalog_test_execution()
     execution = replace(
         base,
@@ -1244,30 +1264,29 @@ def test_v18_world_rule_blocker_must_cite_its_exact_rule_source() -> None:
         for entry in context.canonical_source_catalog
         if entry.get("canonical_id") == "evidence_weighting"
     )
-    location_ref = next(
-        entry["reference_id"]
-        for entry in context.canonical_source_catalog
-        if entry.get("canonical_id") == "the_study"
-    )
-    finding: dict[str, object] = {
-        "id": "continuity_finding_001",
+    model_finding: dict[str, object] = {
         "severity": "blocking",
-        "category": "world_rule",
-        "basis": "contradiction",
         "summary": "The draft assigns objective weight to the evidence.",
-        "evidence": ["Mara pockets the brass key."],
-        "canonical_source_refs": [location_ref],
-        "world_rule_ids": ["evidence_weighting"],
-        "violation_kind": "required_condition_breach",
-        "rule_conflict_assessment": "The draft and rule make incompatible claims.",
-        "companion_rule_assessment": "No exception authorizes objective evidence weight.",
-        "condition_explicitly_authorized": False,
+        "recommended_resolution": "Keep the evidence's significance subjective.",
+        "basis_details": {
+            "basis": "contradiction",
+            "draft_evidence_refs": [context.evidence_refs[0]],
+            "category_details": {
+                "category": "world_rule",
+                "world_rule_ids": ["evidence_weighting"],
+                "violation_kind": "required_condition_breach",
+                "rule_conflict_assessment": "The draft and rule make incompatible claims.",
+                "companion_rule_assessment": ("No exception authorizes objective evidence weight."),
+                "condition_explicitly_authorized": False,
+            },
+        },
     }
 
-    with pytest.raises(ValueError, match="exact canonical source"):
-        _validate_continuity_finding_contract([finding], execution)
+    finding = _materialize_continuity_evidence(model_finding, context)
 
-    finding["canonical_source_refs"] = [rule_ref]
+    assert isinstance(finding, dict)
+    assert "canonical_source_refs" not in cast(dict[str, object], model_finding["basis_details"])
+    assert finding["canonical_source_refs"] == [rule_ref]
     _validate_continuity_finding_contract([finding], execution)
 
 
@@ -1660,10 +1679,48 @@ def test_schema_repair_guidance_is_limited_to_local_structured_failures(
 
     assert (guidance is not None) is expects_guidance
     if guidance is not None:
+        assert guidance["policy_version"] == "2"
         assert guidance["mode"] == "repair_only"
         assert guidance["schema_variant"] == "initial_check"
         assert guidance["focus_locations"] == ["findings.0"]
+        assert guidance["directives"] == [
+            {
+                "location": "findings.0",
+                "issue_type": "value_error",
+                "action": ("replace the value at this exact location with the schema-valid form"),
+            }
+        ]
         assert "recheck_disposition" in str(guidance["operation_rules"])
+
+
+def test_v19_local_repair_names_exact_requirement_partition() -> None:
+    context = _schema_test_continuity_context()
+    guidance = _local_schema_repair_guidance(
+        operation=_Operation.CONTINUITY,
+        deployment=ModelDeployment.LOCAL,
+        previous_failure={
+            "error_code": "schema_validation_failed",
+            "validation_issues": [
+                {
+                    "location": "requirement_coverage",
+                    "type": "requirement_partition_mismatch",
+                    "message": "one exact key is missing",
+                }
+            ],
+        },
+        continuity_schema_variant=_ContinuitySchemaVariant.INITIAL_CHECK,
+        continuity_model_context=context,
+    )
+
+    assert guidance is not None
+    assert guidance["directives"] == [
+        {
+            "location": "requirement_coverage",
+            "issue_type": "requirement_partition_mismatch",
+            "action": "return every exact requirement_coverage key once and no other keys",
+            "required_requirement_ids": ["required_element_1"],
+        }
+    ]
 
 
 def test_initial_continuity_schema_omits_every_recheck_only_field() -> None:
@@ -1680,13 +1737,13 @@ def test_initial_continuity_schema_omits_every_recheck_only_field() -> None:
     advisory_properties = advisory["properties"]
     basis_branches = blocking_properties["basis_details"]["anyOf"]
     contradiction = basis_branches[0]
-    forbidden = basis_branches[1]
-    category_branches = contradiction["properties"]["category_details"]["anyOf"]
+    world_contradiction = basis_branches[1]
+    forbidden = basis_branches[2]
     coverage = schema["properties"]["requirement_coverage"]
     coverage_entry = definitions["InitialRequirementCoverageEntry"]
     missing = coverage_entry["anyOf"][1]
-    non_world = category_branches[0]
-    world = category_branches[1]
+    non_world = contradiction["properties"]["category_details"]
+    world = world_contradiction["properties"]["category_details"]
 
     assert schema["title"] == "InitialContinuityReport"
     assert "ContinuityRecheckDisposition" not in definitions
@@ -1713,6 +1770,7 @@ def test_initial_continuity_schema_omits_every_recheck_only_field() -> None:
     assert contradiction["properties"]["canonical_source_refs"]["items"]["enum"] == [
         "canonical_source_0001"
     ]
+    assert "canonical_source_refs" not in world_contradiction["properties"]
     assert "evidence" not in missing["properties"]
     assert {"status", "coverage_assessment"} <= set(missing["required"])
     assert {"requirement_id", "draft_evidence_refs"} <= set(forbidden["required"])
@@ -1804,8 +1862,9 @@ def test_continuity_recheck_schema_exposes_recheck_analysis_fields() -> None:
     advisory_properties = advisory["properties"]
     basis_branches = blocking_properties["basis_details"]["anyOf"]
     contradiction = basis_branches[0]
+    world_contradiction = basis_branches[1]
     missing = definitions["RecheckRequirementCoverageEntry"]["anyOf"][1]
-    world = contradiction["properties"]["category_details"]["anyOf"][1]
+    world = world_contradiction["properties"]["category_details"]
 
     assert schema["title"] == "RecheckContinuityReport"
     assert "ContinuityRecheckDisposition" not in definitions
@@ -1834,6 +1893,7 @@ def test_continuity_recheck_schema_exposes_recheck_analysis_fields() -> None:
     assert contradiction["properties"]["revised_draft_evidence_refs"]["items"]["enum"] == [
         "draft_evidence_0001"
     ]
+    assert "canonical_source_refs" not in world_contradiction["properties"]
     assert "recheck_evidence_state" not in contradiction["properties"]
     assert "revised_evidence" not in missing["properties"]
     assert "coverage_assessment" in missing["required"]
@@ -1903,6 +1963,7 @@ def test_v17_schema_uses_empty_keyed_coverage_when_nothing_is_due() -> None:
     blocking = definitions["InitialBlockingContinuityFinding"]
     basis_branches = blocking["properties"]["basis_details"]["anyOf"]
     assert [branch["properties"]["basis"]["const"] for branch in basis_branches] == [
+        "contradiction",
         "contradiction",
     ]
     coverage = schema["properties"]["requirement_coverage"]
@@ -2561,6 +2622,14 @@ async def test_repeated_missing_continuity_resolution_fails_after_bounded_retry(
     assert "requires a resolution" in str(failure.value)
     assert "production specialist returned invalid structured output" not in str(failure.value)
     assert "The persisted agentic scene-production run failed." not in str(failure.value)
+    assert len(failure.value.failure_history) == 4
+    assert all(
+        attempt.specialist_role == "continuity_supervisor"
+        and attempt.workflow_node == "continuity"
+        and attempt.schema_variant == "initial_check"
+        and "requires a resolution" in attempt.error_message
+        for attempt in failure.value.failure_history
+    )
 
 
 @pytest.mark.parametrize(
