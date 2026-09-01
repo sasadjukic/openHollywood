@@ -257,10 +257,7 @@ class ProductionFixtureGateway(BlueprintFixtureGateway):
                 scene_number=999,
             )
             content["requirement_coverage"] = {
-                entry["id"]: {
-                    "status": "covered",
-                    "coverage_assessment": "The candidate performs this exact obligation.",
-                }
+                entry["id"]: _positive_requirement_coverage(entry, payload)
                 for entry in payload["requirement_coverage_catalog"]
             }
             if payload.get("output_schema_variant") == "recheck":
@@ -277,6 +274,11 @@ class ProductionFixtureGateway(BlueprintFixtureGateway):
                     finding["id"]: {
                         "status": "resolved",
                         "resolution_assessment": "The revised draft resolves this blocker.",
+                        "revised_draft_evidence_refs": [
+                            payload["candidate_draft"]["content"]["evidence_catalog"][0][
+                                "evidence_ref"
+                            ]
+                        ],
                     }
                     for finding in previous_findings
                     if isinstance(finding, dict)
@@ -339,7 +341,30 @@ class FirstBlueprintFailureGateway(ProductionFixtureGateway):
         return response
 
 
-def _v13_contradiction_inputs(payload: dict[str, object]) -> tuple[str, str]:
+def _positive_requirement_coverage(
+    entry: dict[str, object], payload: dict[str, object]
+) -> dict[str, object]:
+    statuses = {
+        "advance": "advanced",
+        "achieve": "achieved",
+        "dramatize": "dramatized",
+        "establish": "established",
+        "include": "included",
+        "occur": "occurred",
+        "pursue": "attempted",
+        "satisfy": "satisfied",
+    }
+    candidate = cast(dict[str, object], payload["candidate_draft"])
+    content = cast(dict[str, object], candidate["content"])
+    evidence_catalog = cast(list[dict[str, str]], content["evidence_catalog"])
+    return {
+        "status": statuses[cast(str, entry["satisfaction_mode"])],
+        "coverage_assessment": "The candidate performs this exact obligation.",
+        "evidence_refs": [evidence_catalog[0]["evidence_ref"]],
+    }
+
+
+def _v13_contradiction_inputs(payload: dict[str, object]) -> tuple[str, str, str]:
     draft = payload["candidate_draft"]
     assert isinstance(draft, dict)
     content = draft["content"]
@@ -349,8 +374,21 @@ def _v13_contradiction_inputs(payload: dict[str, object]) -> tuple[str, str]:
     evidence = next(item for item in evidence_catalog if isinstance(item, dict))
     catalog = payload["canonical_source_catalog"]
     assert isinstance(catalog, list)
-    source = next(item for item in catalog if isinstance(item, dict))
-    return evidence["evidence_ref"], source["reference_id"]
+    source = next(
+        item
+        for item in catalog
+        if isinstance(item, dict)
+        and isinstance(item.get("claim_id"), str)
+        and "fact" in item.get("categories", [])
+    )
+    related_ids = source.get("related_ids")
+    assignment = cast(dict[str, object], payload["assignment"])
+    related_id = (
+        related_ids[0]
+        if isinstance(related_ids, list) and related_ids and isinstance(related_ids[0], str)
+        else cast(str, assignment["unit_id"])
+    )
+    return evidence["evidence_ref"], source["claim_id"], related_id
 
 
 def _schema_test_continuity_context(*, recheck: bool = False) -> _ContinuityModelContext:
@@ -389,6 +427,10 @@ def _schema_test_continuity_context(*, recheck: bool = False) -> _ContinuityMode
                 "artifact_version_id": str(uuid4()),
                 "source_path": "content.outcome",
                 "claim": "Mara returns the brass key.",
+                "claim_id": "canonical_claim_0001",
+                "categories": ["fact"],
+                "requirement_id": "required_element_1",
+                "related_ids": ["scene_1"],
             },
         ),
         requirement_catalog=(
@@ -397,6 +439,8 @@ def _schema_test_continuity_context(*, recheck: bool = False) -> _ContinuityMode
                 "kind": "required_element",
                 "category": "constraint",
                 "text": "Mara returns the brass key.",
+                "satisfaction_mode": "include",
+                "enforcement": "blocking",
             },
         ),
         forbidden_shortcut_catalog=(
@@ -411,6 +455,8 @@ def _schema_test_continuity_context(*, recheck: bool = False) -> _ContinuityMode
             "forbidden_shortcut_1": "forbidden_shortcut",
         },
         requirement_categories={"required_element_1": "constraint"},
+        requirement_satisfaction_modes={"required_element_1": "include"},
+        requirement_enforcement={"required_element_1": "blocking"},
         world_rule_ids=("world_rule_1",),
     )
 
@@ -420,6 +466,7 @@ def _v17_catalog_test_execution(
     required_elements: list[str] | None = None,
     forbidden_shortcuts: list[str] | None = None,
     scene_plan: dict[str, object] | None = None,
+    draft_prose: str = "Mara pockets the brass key.",
 ) -> _Execution:
     plan = {
         "id": "scene_1",
@@ -453,7 +500,7 @@ def _v17_catalog_test_execution(
                     "scene_id": "scene_1",
                     "scene_number": 1,
                     "revision_number": 0,
-                    "prose": "Mara pockets the brass key.",
+                    "prose": draft_prose,
                 },
             },
             {
@@ -529,7 +576,7 @@ class OneProductionRepairGateway(ProductionFixtureGateway):
         if not self.invalid_sent or self.repeat_invalid:
             self.invalid_sent = True
             content = json.loads(response.content)
-            evidence_ref, source_ref = _v13_contradiction_inputs(payload)
+            evidence_ref, claim_id, related_id = _v13_contradiction_inputs(payload)
             content["findings"] = [
                 {
                     "severity": "error",
@@ -537,10 +584,13 @@ class OneProductionRepairGateway(ProductionFixtureGateway):
                     "basis_details": {
                         "basis": "contradiction",
                         "draft_evidence_refs": [evidence_ref],
-                        "canonical_source_refs": [source_ref],
-                        "category_details": {"category": "fact"},
+                        "canonical_claim_ids": [claim_id],
+                        "category_details": {
+                            "category": "fact",
+                            "logical_conflict_assessment": "The propositions cannot both be true.",
+                        },
                     },
-                    "related_scene_ids": ["model_invented_scene"],
+                    "related_scene_ids": [related_id],
                     "recommended_resolution": None,
                     "blocks_approval": False,
                 }
@@ -587,7 +637,7 @@ class ContinuityRevisionFeedbackGateway(ProductionFixtureGateway):
             prompt = request.messages[-1].content
             payload = json.loads(prompt)
             revision_number = payload["assignment"]["revision_number"]
-            evidence_ref, source_ref = _v13_contradiction_inputs(payload)
+            evidence_ref, claim_id, related_id = _v13_contradiction_inputs(payload)
             if revision_number > 0:
                 previous_report = payload.get("previous_continuity_report")
                 assert isinstance(previous_report, dict)
@@ -611,7 +661,8 @@ class ContinuityRevisionFeedbackGateway(ProductionFixtureGateway):
                 response,
                 resolution=self.recommended_resolution,
                 is_recheck=False,
-                source_ref=source_ref,
+                claim_id=claim_id,
+                related_id=related_id,
                 evidence_refs=evidence_refs,
             )
         if revision_number == 1 and not self.missing_resolution_recheck_sent:
@@ -622,7 +673,8 @@ class ContinuityRevisionFeedbackGateway(ProductionFixtureGateway):
                 is_recheck=True,
                 summary="Mara still holds the brass key after crossing the east door.",
                 evidence_refs=evidence_refs,
-                source_ref=source_ref,
+                claim_id=claim_id,
+                related_id=related_id,
             )
         return response
 
@@ -632,7 +684,8 @@ class ContinuityRevisionFeedbackGateway(ProductionFixtureGateway):
         *,
         resolution: str | None,
         is_recheck: bool,
-        source_ref: str,
+        claim_id: str,
+        related_id: str,
         summary: str = "Mara changes doors without returning the established key.",
         evidence_refs: list[str] | None = None,
     ) -> ModelResponse:
@@ -643,10 +696,13 @@ class ContinuityRevisionFeedbackGateway(ProductionFixtureGateway):
             "summary": summary,
             "basis_details": {
                 "basis": "contradiction",
-                "canonical_source_refs": [source_ref],
-                "category_details": {"category": "fact"},
+                "canonical_claim_ids": [claim_id],
+                "category_details": {
+                    "category": "fact",
+                    "logical_conflict_assessment": "The propositions cannot both be true.",
+                },
             },
-            "related_scene_ids": ["model_invented_scene"],
+            "related_scene_ids": [related_id],
             "recommended_resolution": resolution,
             "blocks_approval": False,
         }
@@ -661,7 +717,8 @@ class ContinuityRevisionFeedbackGateway(ProductionFixtureGateway):
             content["prior_finding_rechecks"] = {
                 "continuity_finding_001": {
                     "status": "still_blocking",
-                    "finding": finding,
+                    "repair_assessment": finding["repair_assessment"],
+                    "revised_draft_evidence_refs": selected_evidence_refs,
                 }
             }
             content["new_findings"] = []
@@ -708,16 +765,19 @@ class HybridStagnationEscalationGateway(ProductionFixtureGateway):
         payload: dict[str, object],
     ) -> ModelResponse:
         content = json.loads(response.content)
-        evidence_ref, source_ref = _v13_contradiction_inputs(payload)
+        evidence_ref, claim_id, related_id = _v13_contradiction_inputs(payload)
         finding: dict[str, object] = {
             "severity": "blocking",
             "summary": "Mara changes doors without returning the established key.",
             "basis_details": {
                 "basis": "contradiction",
-                "canonical_source_refs": [source_ref],
-                "category_details": {"category": "fact"},
+                "canonical_claim_ids": [claim_id],
+                "category_details": {
+                    "category": "fact",
+                    "logical_conflict_assessment": "The propositions cannot both be true.",
+                },
             },
-            "related_scene_ids": ["model_invented_scene"],
+            "related_scene_ids": [related_id],
             "recommended_resolution": self.recommended_resolution,
             "blocks_approval": False,
         }
@@ -732,7 +792,8 @@ class HybridStagnationEscalationGateway(ProductionFixtureGateway):
             content["prior_finding_rechecks"] = {
                 "continuity_finding_001": {
                     "status": "still_blocking",
-                    "finding": finding,
+                    "repair_assessment": finding["repair_assessment"],
+                    "revised_draft_evidence_refs": [evidence_ref],
                 }
             }
             content["new_findings"] = []
@@ -820,6 +881,8 @@ def test_v13_evidence_handles_materialize_exact_candidate_excerpts() -> None:
         {
             "severity": "blocking",
             "basis": "contradiction",
+            "category": "fact",
+            "canonical_claim_ids": ["canonical_claim_0001"],
             "draft_evidence_refs": ["draft_evidence_0001"],
         },
         context,
@@ -849,6 +912,8 @@ def test_v13_unknown_evidence_handle_fails_with_catalog_guidance() -> None:
             {
                 "severity": "blocking",
                 "basis": "contradiction",
+                "category": "fact",
+                "canonical_claim_ids": ["canonical_claim_0001"],
                 "draft_evidence_refs": ["invented_evidence"],
             },
             _schema_test_continuity_context(),
@@ -861,8 +926,7 @@ def test_v17_keyed_requirement_coverage_materializes_stable_missing_finding() ->
         {
             "requirement_coverage": {
                 "required_element_1": {
-                    "status": "missing",
-                    "severity": "blocking",
+                    "status": "not_included",
                     "summary": "The brass key obligation is absent.",
                     "coverage_assessment": "No draft passage performs the required key action.",
                     "recommended_resolution": "Add the required brass key action.",
@@ -875,7 +939,7 @@ def test_v17_keyed_requirement_coverage_materializes_stable_missing_finding() ->
     assert findings == [
         {
             "requirement_id": "required_element_1",
-            "severity": "blocking",
+            "severity": "error",
             "summary": "The brass key obligation is absent.",
             "coverage_assessment": "No draft passage performs the required key action.",
             "recommended_resolution": "Add the required brass key action.",
@@ -923,8 +987,7 @@ def test_v17_scene_plan_scalar_missing_requirement_is_contract_valid() -> None:
         {
             "requirement_coverage": {
                 "scene_plan_outcome": {
-                    "status": "missing",
-                    "severity": "blocking",
+                    "status": "not_achieved",
                     "summary": "The planned outcome is absent.",
                     "coverage_assessment": "The draft never returns the key.",
                     "recommended_resolution": "Have Mara return the brass key.",
@@ -952,7 +1015,13 @@ def test_v18_recheck_identity_and_disposition_are_application_owned() -> None:
                     {
                         "id": prior_id,
                         "severity": "blocking",
+                        "category": "fact",
                         "basis": "contradiction",
+                        "summary": "The key action conflicts with canon.",
+                        "evidence": ["Mara pockets the brass key."],
+                        "canonical_source_refs": ["canonical_source_0001"],
+                        "recommended_resolution": "Have Mara return the brass key.",
+                        "related_scene_ids": ["scene_1"],
                     }
                 ]
             },
@@ -1001,7 +1070,13 @@ def test_v18_consecutive_rechecks_keep_prior_identity_and_scope_new_ids() -> Non
                     {
                         "id": prior_id,
                         "severity": "blocking",
+                        "category": "fact",
                         "basis": "contradiction",
+                        "summary": "The key action conflicts with canon.",
+                        "evidence": ["Mara pockets the brass key."],
+                        "canonical_source_refs": ["canonical_source_0001"],
+                        "recommended_resolution": "Have Mara return the brass key.",
+                        "related_scene_ids": ["scene_1"],
                     }
                 ]
             },
@@ -1012,10 +1087,8 @@ def test_v18_consecutive_rechecks_keep_prior_identity_and_scope_new_ids() -> Non
             "prior_finding_rechecks": {
                 prior_id: {
                     "status": "still_blocking",
-                    "finding": {
-                        "severity": "blocking",
-                        "repair_assessment": "The exact contradiction remains.",
-                    },
+                    "repair_assessment": "The exact contradiction remains.",
+                    "revised_draft_evidence_refs": ["draft_evidence_0001"],
                 }
             },
             "new_findings": [
@@ -1185,6 +1258,15 @@ def test_initial_continuity_evidence_is_bound_to_the_current_draft() -> None:
         _validate_continuity_finding_contract([finding], execution)
 
     finding["evidence"] = ["Mara locks the east door and pockets the brass key."]
+    context = _continuity_model_context(execution)
+    claim_id = next(
+        claim_id
+        for claim_id, categories in context.canonical_claim_categories.items()
+        if "fact" in categories
+    )
+    finding["canonical_claim_ids"] = [claim_id]
+    finding["canonical_source_refs"] = [context.canonical_claim_source_refs[claim_id]]
+    finding["logical_conflict_assessment"] = "The draft and canonical claim cannot both be true."
     _validate_continuity_finding_contract([finding], execution)
 
 
@@ -1229,6 +1311,178 @@ def test_v19_exact_missing_pair_is_consolidated_into_keyed_requirement() -> None
     }
 
     assert _consolidate_requirement_basis([contradiction, missing]) == [missing]
+
+
+def test_v20_requirement_lineage_consolidates_differently_worded_duplicate() -> None:
+    context = _schema_test_continuity_context()
+    contradiction = {
+        "id": "continuity_finding_001",
+        "severity": "error",
+        "basis": "contradiction",
+        "canonical_claim_ids": ["canonical_claim_0001"],
+        "summary": "Mara keeps the key in her pocket.",
+        "recommended_resolution": "Change the final action.",
+    }
+    missing = {
+        "id": "missing_required_element_1",
+        "severity": "error",
+        "basis": "missing_requirement",
+        "requirement_id": "required_element_1",
+        "summary": "The required return never happens.",
+        "recommended_resolution": "Have Mara visibly return the brass key.",
+    }
+
+    assert _consolidate_requirement_basis([contradiction, missing], context) == [missing]
+
+
+def test_v20_non_world_claim_provenance_category_and_lineage_are_application_checked() -> None:
+    execution = _v17_catalog_test_execution(scene_plan={"outcome": "Mara returns the brass key."})
+    context = _continuity_model_context(execution)
+    claim_id = next(
+        claim_id
+        for claim_id, requirement_id in context.canonical_claim_requirement_ids.items()
+        if requirement_id == "scene_plan_outcome"
+    )
+    source_ref = context.canonical_claim_source_refs[claim_id]
+    model_finding: dict[str, object] = {
+        "severity": "blocking",
+        "summary": "Mara keeps the key instead of returning it.",
+        "recommended_resolution": "Have Mara return the key.",
+        "related_scene_ids": ["scene_1"],
+        "basis_details": {
+            "basis": "contradiction",
+            "canonical_claim_ids": [claim_id],
+            "draft_evidence_refs": [context.evidence_refs[0]],
+            "category_details": {
+                "category": "fact",
+                "logical_conflict_assessment": (
+                    "Keeping the key and returning the same key cannot both be the outcome."
+                ),
+            },
+        },
+    }
+
+    finding = _materialize_continuity_evidence(model_finding, context)
+
+    assert isinstance(finding, dict)
+    assert finding["canonical_source_refs"] == [source_ref]
+    _validate_continuity_finding_contract([finding], execution)
+
+    wrong_category = {**finding, "category": "timeline"}
+    with pytest.raises(ValueError, match="do not support this continuity category"):
+        _validate_continuity_finding_contract([wrong_category], execution)
+
+    wrong_lineage = {**finding, "related_scene_ids": ["scene_99"]}
+    with pytest.raises(ValueError, match="exact entity or scene lineage"):
+        _validate_continuity_finding_contract([wrong_lineage], execution)
+
+
+def test_v20_scene_plan_titles_are_not_selectable_canonical_claims() -> None:
+    execution = _v17_catalog_test_execution(
+        scene_plan={
+            "title": "Debating the Artifacts",
+            "outcome": "Mara returns the brass key.",
+        }
+    )
+
+    catalog = _continuity_model_context(execution).canonical_source_catalog
+
+    assert not any(entry["source_path"] == "content.title" for entry in catalog)
+    assert any(entry["source_path"] == "content.outcome" for entry in catalog)
+
+
+def test_v20_pursue_uses_attempt_status_and_does_not_require_achievement() -> None:
+    context = replace(
+        _schema_test_continuity_context(),
+        requirement_catalog=(
+            {
+                "id": "scene_plan_goal",
+                "kind": "scene_plan_requirement",
+                "category": "character",
+                "text": "Mara tries to recover the key.",
+                "satisfaction_mode": "pursue",
+                "enforcement": "blocking",
+            },
+        ),
+        requirement_kinds={"scene_plan_goal": "scene_plan_requirement"},
+        requirement_categories={"scene_plan_goal": "character"},
+        requirement_satisfaction_modes={"scene_plan_goal": "pursue"},
+        requirement_enforcement={"scene_plan_goal": "blocking"},
+    )
+    schema = _output_schema(
+        _Operation.CONTINUITY,
+        continuity_schema_variant=_ContinuitySchemaVariant.INITIAL_CHECK,
+        continuity_model_context=context,
+    )
+    coverage = schema["$defs"]["InitialPursueBlockingCoverage"]["anyOf"]
+
+    assert coverage[0]["properties"]["status"]["const"] == "attempted"
+    assert coverage[1]["properties"]["status"]["const"] == "not_attempted"
+    assert "evidence_refs" in coverage[0]["required"]
+    assert (
+        _materialize_requirement_audit(
+            {
+                "requirement_coverage": {
+                    "scene_plan_goal": {
+                        "status": "attempted",
+                        "coverage_assessment": "Mara actively searches for the key.",
+                        "evidence_refs": ["draft_evidence_0001"],
+                    }
+                }
+            },
+            context,
+        )
+        == []
+    )
+
+
+@pytest.mark.parametrize("source_field", ("entry_state", "time_context"))
+def test_v20_entry_and_time_omissions_are_advisory(source_field: str) -> None:
+    execution = _v17_catalog_test_execution(
+        scene_plan={source_field: "Dusk settles over the long shadows."}
+    )
+    context = _continuity_model_context(execution)
+    requirement_id = f"scene_plan_{source_field}"
+    findings = _materialize_requirement_audit(
+        {
+            "requirement_coverage": {
+                requirement_id: {
+                    "status": "not_established",
+                    "summary": f"The {source_field} is not explicit.",
+                    "coverage_assessment": "The draft leaves it implicit.",
+                    "recommended_resolution": "Make the context explicit if useful.",
+                }
+            }
+        },
+        context,
+    )
+
+    assert findings[0]["severity"] == "warning"
+    assert findings[0]["basis"] is None
+    _validate_continuity_finding_contract(cast(list[object], findings), execution)
+
+
+def test_v20_exact_dusk_evidence_satisfies_time_context() -> None:
+    execution = _v17_catalog_test_execution(
+        scene_plan={"time_context": "Dusk settles over the long shadows."},
+        draft_prose="Dusk light stretches long shadows across the courtyard.",
+    )
+    context = _continuity_model_context(execution)
+
+    findings = _materialize_requirement_audit(
+        {
+            "requirement_coverage": {
+                "scene_plan_time_context": {
+                    "status": "established",
+                    "coverage_assessment": "The draft explicitly stages the scene at dusk.",
+                    "evidence_refs": [context.evidence_refs[0]],
+                }
+            }
+        },
+        context,
+    )
+
+    assert findings == []
 
 
 def test_v19_world_rule_source_is_derived_from_selected_rule_id() -> None:
@@ -1503,6 +1757,7 @@ def test_duplicate_story_requirement_stays_deferred_in_non_final_scene_plan() ->
             "source_field": "required_elements",
             "text": "Elara begins a concrete facade survey.",
             "satisfaction_mode": "include",
+            "enforcement": "blocking",
             "companion_requirement_ids": [],
         }
     ]
@@ -1679,7 +1934,7 @@ def test_schema_repair_guidance_is_limited_to_local_structured_failures(
 
     assert (guidance is not None) is expects_guidance
     if guidance is not None:
-        assert guidance["policy_version"] == "2"
+        assert guidance["policy_version"] == "3"
         assert guidance["mode"] == "repair_only"
         assert guidance["schema_variant"] == "initial_check"
         assert guidance["focus_locations"] == ["findings.0"]
@@ -1723,6 +1978,33 @@ def test_v19_local_repair_names_exact_requirement_partition() -> None:
     ]
 
 
+def test_v20_local_repair_names_typed_claim_category_and_lineage() -> None:
+    context = _schema_test_continuity_context()
+    guidance = _local_schema_repair_guidance(
+        operation=_Operation.CONTINUITY,
+        deployment=ModelDeployment.LOCAL,
+        previous_failure={
+            "error_code": "schema_validation_failed",
+            "validation_issues": [
+                {
+                    "location": "findings.0.canonical_claim_ids",
+                    "type": "non_world_claim_lineage_mismatch",
+                    "message": "claim lineage does not match",
+                }
+            ],
+        },
+        continuity_schema_variant=_ContinuitySchemaVariant.INITIAL_CHECK,
+        continuity_model_context=context,
+    )
+
+    assert guidance is not None
+    directive = cast(list[dict[str, object]], guidance["directives"])[0]
+    assert directive["valid_canonical_claim_ids"] == ["canonical_claim_0001"]
+    assert directive["claim_categories"] == {"canonical_claim_0001": ("fact",)}
+    assert directive["claim_related_ids"] == {"canonical_claim_0001": ("scene_1",)}
+    assert "application derives" in cast(str, directive["action"])
+
+
 def test_initial_continuity_schema_omits_every_recheck_only_field() -> None:
     context = _schema_test_continuity_context()
     schema = _output_schema(
@@ -1740,7 +2022,7 @@ def test_initial_continuity_schema_omits_every_recheck_only_field() -> None:
     world_contradiction = basis_branches[1]
     forbidden = basis_branches[2]
     coverage = schema["properties"]["requirement_coverage"]
-    coverage_entry = definitions["InitialRequirementCoverageEntry"]
+    coverage_entry = definitions["InitialIncludeBlockingCoverage"]
     missing = coverage_entry["anyOf"][1]
     non_world = contradiction["properties"]["category_details"]
     world = world_contradiction["properties"]["category_details"]
@@ -1763,12 +2045,12 @@ def test_initial_continuity_schema_omits_every_recheck_only_field() -> None:
     }
     assert advisory_properties["severity"]["enum"] == ["info", "warning"]
     assert "recommended_resolution" not in advisory["required"]
-    assert {"draft_evidence_refs", "canonical_source_refs"} <= set(contradiction["required"])
+    assert {"draft_evidence_refs", "canonical_claim_ids"} <= set(contradiction["required"])
     assert contradiction["properties"]["draft_evidence_refs"]["items"]["enum"] == [
         "draft_evidence_0001"
     ]
-    assert contradiction["properties"]["canonical_source_refs"]["items"]["enum"] == [
-        "canonical_source_0001"
+    assert contradiction["properties"]["canonical_claim_ids"]["items"]["enum"] == [
+        "canonical_claim_0001"
     ]
     assert "canonical_source_refs" not in world_contradiction["properties"]
     assert "evidence" not in missing["properties"]
@@ -1863,7 +2145,7 @@ def test_continuity_recheck_schema_exposes_recheck_analysis_fields() -> None:
     basis_branches = blocking_properties["basis_details"]["anyOf"]
     contradiction = basis_branches[0]
     world_contradiction = basis_branches[1]
-    missing = definitions["RecheckRequirementCoverageEntry"]["anyOf"][1]
+    missing = definitions["RecheckIncludeBlockingCoverage"]["anyOf"][1]
     world = world_contradiction["properties"]["category_details"]
 
     assert schema["title"] == "RecheckContinuityReport"
@@ -1943,6 +2225,18 @@ def test_v18_recheck_schema_requires_each_exact_prior_finding_key() -> None:
     assert prior["required"] == ["continuity_new_r01_001"]
     assert set(prior["properties"]) == {"continuity_new_r01_001"}
     assert prior["additionalProperties"] is False
+    recheck_entry = schema["$defs"]["PriorFindingRecheckEntry"]
+    assert all("finding" not in branch["properties"] for branch in recheck_entry["anyOf"])
+    assert recheck_entry["anyOf"][0]["required"] == [
+        "status",
+        "resolution_assessment",
+        "revised_draft_evidence_refs",
+    ]
+    assert recheck_entry["anyOf"][1]["required"] == [
+        "status",
+        "repair_assessment",
+        "revised_draft_evidence_refs",
+    ]
 
 
 def test_v17_schema_uses_empty_keyed_coverage_when_nothing_is_due() -> None:
@@ -1952,6 +2246,8 @@ def test_v17_schema_uses_empty_keyed_coverage_when_nothing_is_due() -> None:
         forbidden_shortcut_catalog=(),
         requirement_kinds={},
         requirement_categories={},
+        requirement_satisfaction_modes={},
+        requirement_enforcement={},
     )
     schema = _output_schema(
         _Operation.CONTINUITY,
@@ -2372,7 +2668,7 @@ async def test_same_continuity_finding_inherits_resolution_across_recheck(
         assert any(
             entry["artifact_kind"] == ArtifactKind.STORY_BLUEPRINT.value for entry in source_catalog
         )
-        assert not any(
+        assert any(
             entry["artifact_kind"] == ArtifactKind.SCENE_PLAN.value
             and entry["source_path"].split(".")[-1]
             in {
@@ -2390,8 +2686,8 @@ async def test_same_continuity_finding_inherits_resolution_across_recheck(
             for entry in source_catalog
         )
         contradiction_details = blocking_properties["basis_details"]["anyOf"][0]
-        assert contradiction_details["properties"]["canonical_source_refs"]["items"]["enum"] == [
-            entry["reference_id"] for entry in source_catalog
+        assert contradiction_details["properties"]["canonical_claim_ids"]["items"]["enum"] == [
+            entry["claim_id"] for entry in source_catalog if "claim_id" in entry
         ]
         assert "recheck_analysis" not in payload["output_requirements"]
         assert "continuity_recheck" not in payload

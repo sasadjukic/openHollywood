@@ -466,6 +466,33 @@ started as part of this implementation change. Ruff and formatting pass over
 133 files, strict mypy passes over 133 source files, all 238 pytest tests pass,
 frontend formatting, lint, and type checking pass, all 10 Vitest tests pass,
 and the production build succeeds.
+The first Local v19 canary subsequently completed OH-V01-002 and OH-V01-003,
+for two of five production-runnable cases and 15 accepted scenes. This was a
+completion regression from v18, although production-call reliability improved
+to 95 of 98 and continuity-call reliability improved to 26 of 29. OH-V01-001
+and OH-V01-004 reached the revision limit despite exact time-of-day evidence;
+their contradiction sources could resolve to unrelated timeline or Scene Plan
+title material. OH-V01-005 also showed that generic coverage statuses allowed a
+`pursue` goal to be evaluated as if achievement were required. The v19 ordered
+failure history correctly preserved failed-attempt diagnostics. Evidence:
+`docs/benchmark_reports/step-19-local-v19-canary-2026-09-01.md`.
+Prompt contract v20 retains production graph v3 and the existing revision
+limit. Non-world contradictions now select typed canonical claims whose source,
+category, entity/scene lineage, and optional requirement lineage are validated
+and materialized by the application; Scene Plan titles are not selectable
+claims. Requirement coverage uses satisfaction-mode-specific positive/negative
+statuses and exact positive draft evidence, with application-owned severity.
+Entry-state and time-context omissions are advisory unless an independent
+affirmative contradiction exists. Exact requirement lineage deterministically
+consolidates missing/contradiction duplicates regardless of paraphrase. Compact
+rechecks carry only resolution state, assessment, and current evidence while
+the application rehydrates persisted finding details. Local repair policy v3
+provides typed claim/category/lineage guidance. Regressions reproduce the v19
+time evidence, pursue semantics, irrelevant-title provenance, and revision
+grammar failures. Ruff and formatting pass over 125 files, strict mypy passes
+over 125 source files, all 246 pytest tests pass, frontend formatting, lint, and
+type checking pass, all 10 Vitest tests pass, and the production build succeeds.
+No v20 canary was started as part of this implementation change.
 
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 
