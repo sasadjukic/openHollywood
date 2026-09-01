@@ -367,6 +367,22 @@ Benchmark failures also preserve an ordered, redacted `failure_history` for
 every failed production invocation so an earlier attempt cannot disappear behind
 the terminal message.
 
+The first Local v19 canary completed two of five production-runnable cases and
+accepted 15 scenes, below v18's three completions and 18 scenes. Call reliability
+improved to 95 of 98 production calls and 26 of 29 continuity calls, and the new
+ordered failure history worked, but false semantic blockers remained. Explicit
+early-afternoon/long-shadow and dusk-light evidence still reached the revision
+limit, non-world contradictions could select unrelated canonical handles such
+as Scene Plan titles, and a `pursue` goal was evaluated as though achievement
+were required. Prompt contract v20 retains production graph v3 and replaces
+untyped non-world source selection with typed canonical claims carrying category,
+entity/scene, and requirement lineage. Requirement coverage now uses
+satisfaction-mode-specific status pairs and exact positive evidence, while
+entry-state and time-context omissions are advisory. Rechecks return compact
+decisions and current evidence; the application rehydrates the persisted finding.
+Local repair policy v3 exposes exact claim types and lineage without retaining
+failed response content.
+
 Benchmark word-count ranges are advisory creative targets. New outputs persist a
 non-gating adherence measurement with the target, actual count, status, and word
 deviation. Automatic completion reflects a finished, non-truncated document,
