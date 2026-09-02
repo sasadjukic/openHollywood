@@ -383,6 +383,18 @@ decisions and current evidence; the application rehydrates the persisted finding
 Local repair policy v3 exposes exact claim types and lineage without retaining
 failed response content.
 
+The first Local v20 canary completed none of the five production-runnable cases
+and accepted only two scenes. Its typed continuity schema roughly doubled the
+v19 initial-check and recheck grammar sizes, while duplicate Scene Plan claim
+and coverage representations allowed requirements to be recast as unrelated
+contradictions. Prompt contract v21 retains production graph v3 but makes keyed
+coverage the exclusive Scene Plan path, uses a shared `met`/`partial`/`absent`
+contract with exact evidence or an explicit negative search result, and keeps
+partial or qualitative coverage advisory. The application now owns continuity
+metadata and stable semantic identity; compact contradiction and World Rule
+catalogs plus focused Local repair policy v4 remove repeated grammar. Evidence:
+`docs/benchmark_reports/step-19-local-v20-canary-2026-09-02.md`.
+
 Benchmark word-count ranges are advisory creative targets. New outputs persist a
 non-gating adherence measurement with the target, actual count, status, and word
 deviation. Automatic completion reflects a finished, non-truncated document,

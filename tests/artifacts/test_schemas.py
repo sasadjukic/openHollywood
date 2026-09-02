@@ -449,6 +449,32 @@ def test_continuity_finding_bases_have_distinct_evidence_contracts() -> None:
     assert missing.evidence == ()
     assert missing.revised_evidence == ()
 
+    with pytest.raises(
+        ValidationError, match="partial coverage requires exact closest draft evidence"
+    ):
+        ContinuityFinding.model_validate(
+            {
+                **common,
+                "basis": ContinuityFindingBasis.MISSING_REQUIREMENT,
+                "requirement_id": "required_element_1",
+                "coverage_assessment": "The required action begins but is incomplete.",
+                "coverage_status": "partial",
+            }
+        )
+    partial = ContinuityFinding.model_validate(
+        {
+            **common,
+            "severity": ContinuitySeverity.WARNING,
+            "basis": ContinuityFindingBasis.MISSING_REQUIREMENT,
+            "requirement_id": "required_element_1",
+            "coverage_assessment": "The required action begins but is incomplete.",
+            "coverage_status": "partial",
+            "coverage_evidence": ("Mara reaches for the locked case.",),
+            "blocks_approval": False,
+        }
+    )
+    assert partial.coverage_evidence == ("Mara reaches for the locked case.",)
+
     with pytest.raises(ValidationError, match="exact draft evidence"):
         ContinuityFinding.model_validate(
             {

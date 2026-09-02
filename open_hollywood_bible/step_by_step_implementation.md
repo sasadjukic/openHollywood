@@ -493,6 +493,32 @@ grammar failures. Ruff and formatting pass over 125 files, strict mypy passes
 over 125 source files, all 246 pytest tests pass, frontend formatting, lint, and
 type checking pass, all 10 Vitest tests pass, and the production build succeeds.
 No v20 canary was started as part of this implementation change.
+The first Local v20 canary subsequently completed none of the five
+production-runnable cases and accepted only two scenes, regressing from v19's
+two completions and v18's three. Production-call reliability fell to 48 of 53
+and continuity-call reliability to 14 of 19. The v20 initial and recheck schema
+sizes roughly doubled relative to v19, Scene Plan requirements could be
+represented both as keyed coverage and selectable contradiction claims, and
+model-authored deterministic metadata produced category and lineage failures.
+Evidence: `docs/benchmark_reports/step-19-local-v20-canary-2026-09-02.md`.
+Prompt contract v21 retains production graph v3 and the bounded revision policy.
+Scene Plan obligations are now exclusive to an exhaustive keyed
+`met`/`partial`/`absent` coverage partition; exact draft evidence supports met
+and partial results, while absence records a negative search outcome without a
+fabricated excerpt. Partial and qualitative Scene Plan coverage is advisory,
+and only absent application-owned hard requirements block. Non-World-Rule
+contradictions select one compact semantic claim and World Rule findings use a
+separate compact rule catalog. The application derives category, provenance,
+lineage, and stable semantic finding IDs, then consolidates semantically
+repeated recheck findings regardless of wording. Local repair policy v4 sends
+only path-specific allowed keys or enums and a focused action. Regression
+coverage exercises exclusive requirement routing, application-owned metadata,
+shared coverage statuses, partial evidence, qualitative advisory policy,
+semantic duplicate suppression, and compact Local repair. No v21 canary was
+started as part of this implementation change. Ruff and formatting pass over
+133 files, strict mypy passes over 85 source files, all 252 pytest tests pass,
+frontend formatting, lint, and type checking pass, all 10 Vitest tests pass,
+and the production build succeeds.
 
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 
