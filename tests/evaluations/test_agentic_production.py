@@ -43,6 +43,7 @@ from open_hollywood_api.services.production_model_executor import (
     BenchmarkProductionExecutor,
     ContinuityRecheckStagnationError,
     _benchmark_constraint_applicability,
+    _consolidate_continuity_semantic_duplicates,
     _consolidate_requirement_basis,
     _continuity_model_context,
     _continuity_model_findings,
@@ -344,21 +345,12 @@ class FirstBlueprintFailureGateway(ProductionFixtureGateway):
 def _positive_requirement_coverage(
     entry: dict[str, object], payload: dict[str, object]
 ) -> dict[str, object]:
-    statuses = {
-        "advance": "advanced",
-        "achieve": "achieved",
-        "dramatize": "dramatized",
-        "establish": "established",
-        "include": "included",
-        "occur": "occurred",
-        "pursue": "attempted",
-        "satisfy": "satisfied",
-    }
+    del entry
     candidate = cast(dict[str, object], payload["candidate_draft"])
     content = cast(dict[str, object], candidate["content"])
     evidence_catalog = cast(list[dict[str, str]], content["evidence_catalog"])
     return {
-        "status": statuses[cast(str, entry["satisfaction_mode"])],
+        "status": "met",
         "coverage_assessment": "The candidate performs this exact obligation.",
         "evidence_refs": [evidence_catalog[0]["evidence_ref"]],
     }
@@ -372,23 +364,21 @@ def _v13_contradiction_inputs(payload: dict[str, object]) -> tuple[str, str, str
     evidence_catalog = content["evidence_catalog"]
     assert isinstance(evidence_catalog, list)
     evidence = next(item for item in evidence_catalog if isinstance(item, dict))
-    catalog = payload["canonical_source_catalog"]
+    catalog = payload["contradiction_claim_catalog"]
     assert isinstance(catalog, list)
     source = next(
         item
         for item in catalog
         if isinstance(item, dict)
-        and isinstance(item.get("claim_id"), str)
-        and "fact" in item.get("categories", [])
+        and isinstance(item.get("canonical_claim_id"), str)
+        and item.get("category") == "fact"
     )
-    related_ids = source.get("related_ids")
     assignment = cast(dict[str, object], payload["assignment"])
-    related_id = (
-        related_ids[0]
-        if isinstance(related_ids, list) and related_ids and isinstance(related_ids[0], str)
-        else cast(str, assignment["unit_id"])
+    return (
+        evidence["evidence_ref"],
+        source["canonical_claim_id"],
+        cast(str, assignment["unit_id"]),
     )
-    return evidence["evidence_ref"], source["claim_id"], related_id
 
 
 def _schema_test_continuity_context(*, recheck: bool = False) -> _ContinuityModelContext:
@@ -422,14 +412,13 @@ def _schema_test_continuity_context(*, recheck: bool = False) -> _ContinuityMode
         canonical_source_catalog=(
             {
                 "reference_id": "canonical_source_0001",
-                "artifact_kind": ArtifactKind.SCENE_PLAN.value,
-                "artifact_key": "scene_plan_scene_1",
+                "artifact_kind": ArtifactKind.STORY_BIBLE.value,
+                "artifact_key": "story_bible",
                 "artifact_version_id": str(uuid4()),
-                "source_path": "content.outcome",
-                "claim": "Mara returns the brass key.",
-                "claim_id": "canonical_claim_0001",
+                "source_path": "content.established_facts[0]",
+                "claim": "Mara has not returned the brass key.",
+                "claim_id": "story_bible_brass_key_established_facts",
                 "categories": ["fact"],
-                "requirement_id": "required_element_1",
                 "related_ids": ["scene_1"],
             },
         ),
@@ -507,7 +496,17 @@ def _v17_catalog_test_execution(
                 "artifact_kind": ArtifactKind.STORY_BIBLE.value,
                 "artifact_key": "story_bible",
                 "artifact_version_id": str(uuid4()),
-                "content": {"prohibited_contradictions": []},
+                "content": {
+                    "established_facts": [
+                        {
+                            "id": "brass_key_fact",
+                            "statement": "Mara has not returned the brass key.",
+                            "character_ids": [],
+                            "location_ids": [],
+                        }
+                    ],
+                    "prohibited_contradictions": [],
+                },
             },
         ),
         constraints={
@@ -540,7 +539,7 @@ class OneProductionRepairGateway(ProductionFixtureGateway):
         super().__init__(prompt_text, prompt)
         self.invalid_sent = False
         self.repeat_invalid = repeat_invalid
-        self.output_requirements: list[dict[str, object]] = []
+        self.continuity_contracts: list[dict[str, object]] = []
         self.constraint_applicabilities: list[dict[str, object]] = []
         self.repair_contexts: list[dict[str, object]] = []
         self.local_schema_repairs: list[dict[str, object]] = []
@@ -550,9 +549,9 @@ class OneProductionRepairGateway(ProductionFixtureGateway):
             return await super().generate(request)
         response = await super().generate(request)
         payload = json.loads(request.messages[-1].content)
-        output_requirements = payload.get("output_requirements")
-        if isinstance(output_requirements, dict):
-            self.output_requirements.append(output_requirements)
+        continuity_contract = payload.get("continuity_contract")
+        if isinstance(continuity_contract, dict):
+            self.continuity_contracts.append(continuity_contract)
         required_catalog = payload.get("requirement_coverage_catalog")
         forbidden_catalog = payload.get("forbidden_shortcut_catalog")
         assignment = payload.get("assignment")
@@ -585,10 +584,7 @@ class OneProductionRepairGateway(ProductionFixtureGateway):
                         "basis": "contradiction",
                         "draft_evidence_refs": [evidence_ref],
                         "canonical_claim_ids": [claim_id],
-                        "category_details": {
-                            "category": "fact",
-                            "logical_conflict_assessment": "The propositions cannot both be true.",
-                        },
+                        "logical_conflict_assessment": "The propositions cannot both be true.",
                     },
                     "related_scene_ids": [related_id],
                     "recommended_resolution": None,
@@ -642,6 +638,7 @@ class ContinuityRevisionFeedbackGateway(ProductionFixtureGateway):
                 previous_report = payload.get("previous_continuity_report")
                 assert isinstance(previous_report, dict)
                 reports = [previous_report["content"]]
+                prior_finding_id = cast(str, reports[0]["findings"][0]["id"])
                 recheck = payload.get("continuity_recheck")
                 assert isinstance(recheck, dict)
                 self.continuity_recheck_prompts.append(prompt)
@@ -675,6 +672,7 @@ class ContinuityRevisionFeedbackGateway(ProductionFixtureGateway):
                 evidence_refs=evidence_refs,
                 claim_id=claim_id,
                 related_id=related_id,
+                prior_finding_id=prior_finding_id,
             )
         return response
 
@@ -688,6 +686,7 @@ class ContinuityRevisionFeedbackGateway(ProductionFixtureGateway):
         related_id: str,
         summary: str = "Mara changes doors without returning the established key.",
         evidence_refs: list[str] | None = None,
+        prior_finding_id: str | None = None,
     ) -> ModelResponse:
         content = json.loads(response.content)
         selected_evidence_refs = evidence_refs or ["draft_evidence_0001"]
@@ -697,16 +696,14 @@ class ContinuityRevisionFeedbackGateway(ProductionFixtureGateway):
             "basis_details": {
                 "basis": "contradiction",
                 "canonical_claim_ids": [claim_id],
-                "category_details": {
-                    "category": "fact",
-                    "logical_conflict_assessment": "The propositions cannot both be true.",
-                },
+                "logical_conflict_assessment": "The propositions cannot both be true.",
             },
             "related_scene_ids": [related_id],
             "recommended_resolution": resolution,
             "blocks_approval": False,
         }
         if is_recheck:
+            assert prior_finding_id is not None
             cast(dict[str, object], finding["basis_details"]).update(
                 revised_draft_evidence_refs=selected_evidence_refs,
             )
@@ -715,7 +712,7 @@ class ContinuityRevisionFeedbackGateway(ProductionFixtureGateway):
             )
             content.pop("findings", None)
             content["prior_finding_rechecks"] = {
-                "continuity_finding_001": {
+                prior_finding_id: {
                     "status": "still_blocking",
                     "repair_assessment": finding["repair_assessment"],
                     "revised_draft_evidence_refs": selected_evidence_refs,
@@ -772,10 +769,7 @@ class HybridStagnationEscalationGateway(ProductionFixtureGateway):
             "basis_details": {
                 "basis": "contradiction",
                 "canonical_claim_ids": [claim_id],
-                "category_details": {
-                    "category": "fact",
-                    "logical_conflict_assessment": "The propositions cannot both be true.",
-                },
+                "logical_conflict_assessment": "The propositions cannot both be true.",
             },
             "related_scene_ids": [related_id],
             "recommended_resolution": self.recommended_resolution,
@@ -789,8 +783,12 @@ class HybridStagnationEscalationGateway(ProductionFixtureGateway):
                 repair_assessment="The conflict remains unresolved.",
             )
             content.pop("findings", None)
+            previous = cast(dict[str, object], payload["previous_continuity_report"])
+            previous_content = cast(dict[str, object], previous["content"])
+            previous_findings = cast(list[dict[str, object]], previous_content["findings"])
+            prior_finding_id = cast(str, previous_findings[0]["id"])
             content["prior_finding_rechecks"] = {
-                "continuity_finding_001": {
+                prior_finding_id: {
                     "status": "still_blocking",
                     "repair_assessment": finding["repair_assessment"],
                     "revised_draft_evidence_refs": [evidence_ref],
@@ -882,7 +880,7 @@ def test_v13_evidence_handles_materialize_exact_candidate_excerpts() -> None:
             "severity": "blocking",
             "basis": "contradiction",
             "category": "fact",
-            "canonical_claim_ids": ["canonical_claim_0001"],
+            "canonical_claim_ids": [context.canonical_claim_ids[0]],
             "draft_evidence_refs": ["draft_evidence_0001"],
         },
         context,
@@ -907,16 +905,17 @@ def test_v13_evidence_handles_materialize_exact_candidate_excerpts() -> None:
 
 
 def test_v13_unknown_evidence_handle_fails_with_catalog_guidance() -> None:
+    context = _schema_test_continuity_context()
     with pytest.raises(ValueError, match="candidate_draft.content.evidence_catalog"):
         _materialize_continuity_evidence(
             {
                 "severity": "blocking",
                 "basis": "contradiction",
                 "category": "fact",
-                "canonical_claim_ids": ["canonical_claim_0001"],
+                "canonical_claim_ids": [context.canonical_claim_ids[0]],
                 "draft_evidence_refs": ["invented_evidence"],
             },
-            _schema_test_continuity_context(),
+            context,
         )
 
 
@@ -926,10 +925,12 @@ def test_v17_keyed_requirement_coverage_materializes_stable_missing_finding() ->
         {
             "requirement_coverage": {
                 "required_element_1": {
-                    "status": "not_included",
+                    "status": "absent",
                     "summary": "The brass key obligation is absent.",
                     "coverage_assessment": "No draft passage performs the required key action.",
                     "recommended_resolution": "Add the required brass key action.",
+                    "evidence_refs": [],
+                    "evidence_search_result": "no_related_passage",
                 }
             },
         },
@@ -942,6 +943,8 @@ def test_v17_keyed_requirement_coverage_materializes_stable_missing_finding() ->
             "severity": "error",
             "summary": "The brass key obligation is absent.",
             "coverage_assessment": "No draft passage performs the required key action.",
+            "coverage_status": "absent",
+            "coverage_evidence": [],
             "recommended_resolution": "Add the required brass key action.",
             "id": "missing_required_element_1",
             "category": "constraint",
@@ -987,10 +990,12 @@ def test_v17_scene_plan_scalar_missing_requirement_is_contract_valid() -> None:
         {
             "requirement_coverage": {
                 "scene_plan_outcome": {
-                    "status": "not_achieved",
+                    "status": "absent",
                     "summary": "The planned outcome is absent.",
                     "coverage_assessment": "The draft never returns the key.",
                     "recommended_resolution": "Have Mara return the brass key.",
+                    "evidence_refs": [context.evidence_refs[0]],
+                    "evidence_search_result": "closest_passages_selected",
                 }
             }
         },
@@ -1313,52 +1318,32 @@ def test_v19_exact_missing_pair_is_consolidated_into_keyed_requirement() -> None
     assert _consolidate_requirement_basis([contradiction, missing]) == [missing]
 
 
-def test_v20_requirement_lineage_consolidates_differently_worded_duplicate() -> None:
+def test_v21_scene_plan_requirements_are_exclusive_to_keyed_coverage() -> None:
     context = _schema_test_continuity_context()
-    contradiction = {
-        "id": "continuity_finding_001",
-        "severity": "error",
-        "basis": "contradiction",
-        "canonical_claim_ids": ["canonical_claim_0001"],
-        "summary": "Mara keeps the key in her pocket.",
-        "recommended_resolution": "Change the final action.",
-    }
-    missing = {
-        "id": "missing_required_element_1",
-        "severity": "error",
-        "basis": "missing_requirement",
-        "requirement_id": "required_element_1",
-        "summary": "The required return never happens.",
-        "recommended_resolution": "Have Mara visibly return the brass key.",
-    }
-
-    assert _consolidate_requirement_basis([contradiction, missing], context) == [missing]
+    assert context.canonical_claim_requirement_ids == {}
+    assert all(
+        entry["artifact_kind"] != ArtifactKind.SCENE_PLAN.value
+        for entry in context.canonical_source_catalog
+    )
+    assert [entry["id"] for entry in context.requirement_catalog] == ["required_element_1"]
 
 
-def test_v20_non_world_claim_provenance_category_and_lineage_are_application_checked() -> None:
+def test_v21_non_world_claim_provenance_category_and_lineage_are_application_owned() -> None:
     execution = _v17_catalog_test_execution(scene_plan={"outcome": "Mara returns the brass key."})
     context = _continuity_model_context(execution)
-    claim_id = next(
-        claim_id
-        for claim_id, requirement_id in context.canonical_claim_requirement_ids.items()
-        if requirement_id == "scene_plan_outcome"
-    )
+    claim_id = context.canonical_claim_ids[0]
     source_ref = context.canonical_claim_source_refs[claim_id]
     model_finding: dict[str, object] = {
         "severity": "blocking",
         "summary": "Mara keeps the key instead of returning it.",
         "recommended_resolution": "Have Mara return the key.",
-        "related_scene_ids": ["scene_1"],
         "basis_details": {
             "basis": "contradiction",
             "canonical_claim_ids": [claim_id],
             "draft_evidence_refs": [context.evidence_refs[0]],
-            "category_details": {
-                "category": "fact",
-                "logical_conflict_assessment": (
-                    "Keeping the key and returning the same key cannot both be the outcome."
-                ),
-            },
+            "logical_conflict_assessment": (
+                "Keeping the key and the established key state cannot both be true."
+            ),
         },
     }
 
@@ -1366,18 +1351,24 @@ def test_v20_non_world_claim_provenance_category_and_lineage_are_application_che
 
     assert isinstance(finding, dict)
     assert finding["canonical_source_refs"] == [source_ref]
+    assert finding["category"] == "fact"
+    assert finding["related_scene_ids"] == []
     _validate_continuity_finding_contract([finding], execution)
 
-    wrong_category = {**finding, "category": "timeline"}
-    with pytest.raises(ValueError, match="do not support this continuity category"):
-        _validate_continuity_finding_contract([wrong_category], execution)
+    model_supplied_metadata = {
+        **model_finding,
+        "category": "timeline",
+        "canonical_source_refs": ["invented_source"],
+        "related_scene_ids": ["scene_99"],
+    }
+    rematerialized = _materialize_continuity_evidence(model_supplied_metadata, context)
+    assert isinstance(rematerialized, dict)
+    assert rematerialized["category"] == "fact"
+    assert rematerialized["canonical_source_refs"] == [source_ref]
+    assert rematerialized["related_scene_ids"] == []
 
-    wrong_lineage = {**finding, "related_scene_ids": ["scene_99"]}
-    with pytest.raises(ValueError, match="exact entity or scene lineage"):
-        _validate_continuity_finding_contract([wrong_lineage], execution)
 
-
-def test_v20_scene_plan_titles_are_not_selectable_canonical_claims() -> None:
+def test_v21_no_scene_plan_field_is_a_selectable_contradiction_claim() -> None:
     execution = _v17_catalog_test_execution(
         scene_plan={
             "title": "Debating the Artifacts",
@@ -1387,11 +1378,12 @@ def test_v20_scene_plan_titles_are_not_selectable_canonical_claims() -> None:
 
     catalog = _continuity_model_context(execution).canonical_source_catalog
 
-    assert not any(entry["source_path"] == "content.title" for entry in catalog)
-    assert any(entry["source_path"] == "content.outcome" for entry in catalog)
+    assert catalog
+    assert not any(entry["artifact_kind"] == ArtifactKind.SCENE_PLAN.value for entry in catalog)
+    assert all(not entry["claim_id"].startswith("canonical_claim_") for entry in catalog)
 
 
-def test_v20_pursue_uses_attempt_status_and_does_not_require_achievement() -> None:
+def test_v21_pursue_uses_shared_coverage_statuses_without_requiring_achievement() -> None:
     context = replace(
         _schema_test_continuity_context(),
         requirement_catalog=(
@@ -1414,17 +1406,20 @@ def test_v20_pursue_uses_attempt_status_and_does_not_require_achievement() -> No
         continuity_schema_variant=_ContinuitySchemaVariant.INITIAL_CHECK,
         continuity_model_context=context,
     )
-    coverage = schema["$defs"]["InitialPursueBlockingCoverage"]["anyOf"]
+    coverage = schema["$defs"]["RequirementCoverageEntry"]["anyOf"]
 
-    assert coverage[0]["properties"]["status"]["const"] == "attempted"
-    assert coverage[1]["properties"]["status"]["const"] == "not_attempted"
+    assert [branch["properties"]["status"]["const"] for branch in coverage] == [
+        "met",
+        "partial",
+        "absent",
+    ]
     assert "evidence_refs" in coverage[0]["required"]
     assert (
         _materialize_requirement_audit(
             {
                 "requirement_coverage": {
                     "scene_plan_goal": {
-                        "status": "attempted",
+                        "status": "met",
                         "coverage_assessment": "Mara actively searches for the key.",
                         "evidence_refs": ["draft_evidence_0001"],
                     }
@@ -1436,8 +1431,10 @@ def test_v20_pursue_uses_attempt_status_and_does_not_require_achievement() -> No
     )
 
 
-@pytest.mark.parametrize("source_field", ("entry_state", "time_context"))
-def test_v20_entry_and_time_omissions_are_advisory(source_field: str) -> None:
+@pytest.mark.parametrize(
+    "source_field", ("entry_state", "time_context", "purpose", "goal", "conflict", "exit_state")
+)
+def test_v21_scalar_scene_plan_gaps_are_advisory(source_field: str) -> None:
     execution = _v17_catalog_test_execution(
         scene_plan={source_field: "Dusk settles over the long shadows."}
     )
@@ -1447,10 +1444,12 @@ def test_v20_entry_and_time_omissions_are_advisory(source_field: str) -> None:
         {
             "requirement_coverage": {
                 requirement_id: {
-                    "status": "not_established",
+                    "status": "absent",
                     "summary": f"The {source_field} is not explicit.",
                     "coverage_assessment": "The draft leaves it implicit.",
                     "recommended_resolution": "Make the context explicit if useful.",
+                    "evidence_refs": [],
+                    "evidence_search_result": "no_related_passage",
                 }
             }
         },
@@ -1462,7 +1461,7 @@ def test_v20_entry_and_time_omissions_are_advisory(source_field: str) -> None:
     _validate_continuity_finding_contract(cast(list[object], findings), execution)
 
 
-def test_v20_exact_dusk_evidence_satisfies_time_context() -> None:
+def test_v21_exact_dusk_evidence_satisfies_time_context() -> None:
     execution = _v17_catalog_test_execution(
         scene_plan={"time_context": "Dusk settles over the long shadows."},
         draft_prose="Dusk light stretches long shadows across the courtyard.",
@@ -1473,7 +1472,7 @@ def test_v20_exact_dusk_evidence_satisfies_time_context() -> None:
         {
             "requirement_coverage": {
                 "scene_plan_time_context": {
-                    "status": "established",
+                    "status": "met",
                     "coverage_assessment": "The draft explicitly stages the scene at dusk.",
                     "evidence_refs": [context.evidence_refs[0]],
                 }
@@ -1483,6 +1482,73 @@ def test_v20_exact_dusk_evidence_satisfies_time_context() -> None:
     )
 
     assert findings == []
+
+
+def test_v21_partial_hard_requirement_is_auditable_advisory() -> None:
+    context = _schema_test_continuity_context()
+    findings = _materialize_requirement_audit(
+        {
+            "requirement_coverage": {
+                "required_element_1": {
+                    "status": "partial",
+                    "summary": "Mara handles the key but does not return it.",
+                    "coverage_assessment": "The closest passage shows the key in her hand.",
+                    "recommended_resolution": "Complete the return action.",
+                    "evidence_refs": [context.evidence_refs[0]],
+                }
+            }
+        },
+        context,
+    )
+
+    assert findings[0]["severity"] == "warning"
+    assert findings[0]["basis"] is None
+    assert findings[0]["coverage_status"] == "partial"
+    assert findings[0]["coverage_evidence"] == ["Mara pockets the brass key."]
+
+
+def test_v21_recheck_discards_semantically_duplicate_new_finding() -> None:
+    base = _schema_test_continuity_context(recheck=True)
+    claim_id = base.canonical_claim_ids[0]
+    source_ref = base.canonical_claim_source_refs[claim_id]
+    prior_id = "continuity_issue_existing"
+    context = replace(
+        base,
+        previous_continuity_report={
+            "artifact_key": "continuity_scene_1",
+            "artifact_kind": ArtifactKind.CONTINUITY_REPORT.value,
+            "artifact_version_id": str(uuid4()),
+            "content": {
+                "findings": [
+                    {
+                        "id": prior_id,
+                        "severity": "blocking",
+                        "basis": "contradiction",
+                        "category": "fact",
+                        "canonical_source_refs": [source_ref],
+                    }
+                ]
+            },
+        },
+    )
+    retained = {
+        "id": prior_id,
+        "severity": "blocking",
+        "basis": "contradiction",
+        "category": "fact",
+        "canonical_claim_ids": [claim_id],
+        "canonical_source_refs": [source_ref],
+        "recheck_disposition": "still_blocking",
+    }
+    duplicate_new = {
+        **retained,
+        "id": "continuity_issue_duplicate",
+        "recheck_disposition": "newly_exposed",
+    }
+
+    assert _consolidate_continuity_semantic_duplicates([retained, duplicate_new], context) == [
+        retained
+    ]
 
 
 def test_v19_world_rule_source_is_derived_from_selected_rule_id() -> None:
@@ -1526,7 +1592,6 @@ def test_v19_world_rule_source_is_derived_from_selected_rule_id() -> None:
             "basis": "contradiction",
             "draft_evidence_refs": [context.evidence_refs[0]],
             "category_details": {
-                "category": "world_rule",
                 "world_rule_ids": ["evidence_weighting"],
                 "violation_kind": "required_condition_breach",
                 "rule_conflict_assessment": "The draft and rule make incompatible claims.",
@@ -1934,7 +1999,7 @@ def test_schema_repair_guidance_is_limited_to_local_structured_failures(
 
     assert (guidance is not None) is expects_guidance
     if guidance is not None:
-        assert guidance["policy_version"] == "3"
+        assert guidance["policy_version"] == "4"
         assert guidance["mode"] == "repair_only"
         assert guidance["schema_variant"] == "initial_check"
         assert guidance["focus_locations"] == ["findings.0"]
@@ -1978,7 +2043,7 @@ def test_v19_local_repair_names_exact_requirement_partition() -> None:
     ]
 
 
-def test_v20_local_repair_names_typed_claim_category_and_lineage() -> None:
+def test_v21_local_repair_does_not_repeat_global_claim_maps() -> None:
     context = _schema_test_continuity_context()
     guidance = _local_schema_repair_guidance(
         operation=_Operation.CONTINUITY,
@@ -1999,10 +2064,9 @@ def test_v20_local_repair_names_typed_claim_category_and_lineage() -> None:
 
     assert guidance is not None
     directive = cast(list[dict[str, object]], guidance["directives"])[0]
-    assert directive["valid_canonical_claim_ids"] == ["canonical_claim_0001"]
-    assert directive["claim_categories"] == {"canonical_claim_0001": ("fact",)}
-    assert directive["claim_related_ids"] == {"canonical_claim_0001": ("scene_1",)}
-    assert "application derives" in cast(str, directive["action"])
+    assert set(directive) == {"location", "issue_type", "action"}
+    assert "exactly one self-describing" in cast(str, directive["action"])
+    assert "remove the finding" in cast(str, directive["action"])
 
 
 def test_initial_continuity_schema_omits_every_recheck_only_field() -> None:
@@ -2022,9 +2086,9 @@ def test_initial_continuity_schema_omits_every_recheck_only_field() -> None:
     world_contradiction = basis_branches[1]
     forbidden = basis_branches[2]
     coverage = schema["properties"]["requirement_coverage"]
-    coverage_entry = definitions["InitialIncludeBlockingCoverage"]
-    missing = coverage_entry["anyOf"][1]
-    non_world = contradiction["properties"]["category_details"]
+    coverage_entry = definitions["RequirementCoverageEntry"]
+    partial = coverage_entry["anyOf"][1]
+    missing = coverage_entry["anyOf"][2]
     world = world_contradiction["properties"]["category_details"]
 
     assert schema["title"] == "InitialContinuityReport"
@@ -2045,23 +2109,29 @@ def test_initial_continuity_schema_omits_every_recheck_only_field() -> None:
     }
     assert advisory_properties["severity"]["enum"] == ["info", "warning"]
     assert "recommended_resolution" not in advisory["required"]
-    assert {"draft_evidence_refs", "canonical_claim_ids"} <= set(contradiction["required"])
+    assert {
+        "draft_evidence_refs",
+        "canonical_claim_ids",
+        "logical_conflict_assessment",
+    } <= set(contradiction["required"])
     assert contradiction["properties"]["draft_evidence_refs"]["items"]["enum"] == [
         "draft_evidence_0001"
     ]
     assert contradiction["properties"]["canonical_claim_ids"]["items"]["enum"] == [
-        "canonical_claim_0001"
+        "story_bible_brass_key_established_facts"
     ]
+    assert contradiction["properties"]["canonical_claim_ids"]["maxItems"] == 1
     assert "canonical_source_refs" not in world_contradiction["properties"]
     assert "evidence" not in missing["properties"]
-    assert {"status", "coverage_assessment"} <= set(missing["required"])
+    assert {
+        "status",
+        "coverage_assessment",
+        "evidence_refs",
+        "evidence_search_result",
+    } <= set(missing["required"])
+    assert partial["properties"]["evidence_refs"]["minItems"] == 1
     assert {"requirement_id", "draft_evidence_refs"} <= set(forbidden["required"])
     assert forbidden["properties"]["requirement_id"]["enum"] == ["forbidden_shortcut_1"]
-    assert non_world["properties"]["category"]["enum"] == [
-        category.value
-        for category in ContinuityCategory
-        if category not in {ContinuityCategory.WORLD_RULE, ContinuityCategory.CONSTRAINT}
-    ]
     assert coverage["required"] == ["required_element_1"]
     assert set(coverage["properties"]) == {"required_element_1"}
     assert coverage["additionalProperties"] is False
@@ -2073,7 +2143,7 @@ def test_initial_continuity_schema_omits_every_recheck_only_field() -> None:
         "condition_explicitly_authorized",
     }.isdisjoint(blocking_properties)
     world_properties = world["properties"]
-    assert world_properties["category"]["const"] == "world_rule"
+    assert "category" not in world_properties
     assert world_properties["world_rule_ids"]["items"]["enum"] == ["world_rule_1"]
     assert world_properties["world_rule_ids"]["minItems"] == 1
     assert world_properties["condition_explicitly_authorized"]["const"] is False
@@ -2084,8 +2154,7 @@ def test_initial_continuity_schema_omits_every_recheck_only_field() -> None:
         "companion_rule_assessment",
         "condition_explicitly_authorized",
     } <= set(world["required"])
-    assert "world_rule" not in non_world["properties"]["category"]["enum"]
-    assert "constraint" not in non_world["properties"]["category"]["enum"]
+    assert "category_details" not in contradiction["properties"]
     assert "category_details" not in blocking_properties
     assert "category_details" not in forbidden["properties"]
     assert "id" not in blocking_properties
@@ -2145,7 +2214,7 @@ def test_continuity_recheck_schema_exposes_recheck_analysis_fields() -> None:
     basis_branches = blocking_properties["basis_details"]["anyOf"]
     contradiction = basis_branches[0]
     world_contradiction = basis_branches[1]
-    missing = definitions["RecheckIncludeBlockingCoverage"]["anyOf"][1]
+    missing = definitions["RequirementCoverageEntry"]["anyOf"][2]
     world = world_contradiction["properties"]["category_details"]
 
     assert schema["title"] == "RecheckContinuityReport"
@@ -2180,6 +2249,7 @@ def test_continuity_recheck_schema_exposes_recheck_analysis_fields() -> None:
     assert "revised_evidence" not in missing["properties"]
     assert "coverage_assessment" in missing["required"]
     assert "revised_draft_evidence_refs" not in missing["properties"]
+    assert "evidence_refs" in missing["required"]
     assert {
         "world_rule_ids",
         "violation_kind",
@@ -2592,11 +2662,7 @@ async def test_same_continuity_finding_inherits_resolution_across_recheck(
     ]
     assert all(set(report) == {"findings"} for report in gateway.continuity_recheck_reports)
     for recheck_contract in gateway.continuity_recheck_contracts:
-        assert "previous_report_version_id" in recheck_contract
-        assert "audit every prior error or blocking finding" in str(
-            recheck_contract["verification_contract"]
-        )
-        assert "contradictory guidance" in str(recheck_contract["verification_contract"])
+        assert set(recheck_contract) == {"previous_report_version_id"}
 
     continuity_requests = [
         request
@@ -2637,7 +2703,8 @@ async def test_same_continuity_finding_inherits_resolution_across_recheck(
         assert "evidence_catalog" in payload["candidate_draft"]["content"]
         assert "prose" not in payload["candidate_draft"]["content"]
         assert "accepted_prior_drafts" in payload
-        assert "canonical_source_catalog" in payload
+        assert "contradiction_claim_catalog" in payload
+        assert "world_rule_catalog" in payload
         assert "requirement_coverage_catalog" in payload
         assert "forbidden_shortcut_catalog" in payload
         assert "benchmark_constraint_applicability" not in payload
@@ -2651,45 +2718,25 @@ async def test_same_continuity_finding_inherits_resolution_across_recheck(
             "prose" not in item["content"] and "ending_excerpt" in item["content"]
             for item in payload["accepted_prior_drafts"]
         )
-        source_catalog = payload["canonical_source_catalog"]
+        source_catalog = payload["contradiction_claim_catalog"]
         assert source_catalog
         assert all(
             {
-                "reference_id",
-                "artifact_kind",
-                "artifact_key",
-                "artifact_version_id",
-                "source_path",
+                "canonical_claim_id",
+                "category",
                 "claim",
             }
             <= set(entry)
             for entry in source_catalog
         )
-        assert any(
-            entry["artifact_kind"] == ArtifactKind.STORY_BLUEPRINT.value for entry in source_catalog
-        )
-        assert any(
-            entry["artifact_kind"] == ArtifactKind.SCENE_PLAN.value
-            and entry["source_path"].split(".")[-1]
-            in {
-                "entry_state",
-                "time_context",
-                "purpose",
-                "goal",
-                "conflict",
-                "turning_point",
-                "outcome",
-                "exit_state",
-                "continuity_requirements",
-                "required_elements",
-            }
-            for entry in source_catalog
-        )
+        assert all("reference_id" not in entry for entry in source_catalog)
+        assert all("artifact_version_id" not in entry for entry in source_catalog)
         contradiction_details = blocking_properties["basis_details"]["anyOf"][0]
         assert contradiction_details["properties"]["canonical_claim_ids"]["items"]["enum"] == [
-            entry["claim_id"] for entry in source_catalog if "claim_id" in entry
+            entry["canonical_claim_id"] for entry in source_catalog
         ]
-        assert "recheck_analysis" not in payload["output_requirements"]
+        assert payload["continuity_contract"]["version"] == "21"
+        assert "output_requirements" not in payload
         assert "continuity_recheck" not in payload
         assert "recommended_resolution" in blocking["required"]
         assert "blocks_approval" not in blocking_properties
@@ -2714,7 +2761,12 @@ async def test_same_continuity_finding_inherits_resolution_across_recheck(
         assert payload["output_schema_variant"] == "recheck"
         assert payload["output_schema_delivery"] == "enforced_by_local_gateway"
         assert "output_schema" not in payload
-        assert "recheck_analysis" in payload["output_requirements"]
+        assert payload["continuity_contract"]["coverage_statuses"] == [
+            "met",
+            "partial",
+            "absent",
+        ]
+        assert "output_requirements" not in payload
         assert {
             "recommended_resolution",
             "repair_assessment",
@@ -2735,11 +2787,8 @@ async def test_same_continuity_finding_inherits_resolution_across_recheck(
         }.isdisjoint(advisory_properties)
 
     recheck_payload = json.loads(gateway.continuity_recheck_prompts[0])
-    output_requirements = recheck_payload["output_requirements"]
-    assert "sole authorit" in output_requirements["requirement_scope"]
-    assert "prior_finding_rechecks" in output_requirements["recheck_analysis"]
-    assert "new_findings" in output_requirements["recheck_analysis"]
-    assert "application owns" in output_requirements["recheck_analysis"]
+    assert recheck_payload["continuity_contract"]["version"] == "21"
+    assert "output_requirements" not in recheck_payload
     assert "frozen_benchmark_constraints" not in recheck_payload
     assert "benchmark_constraint_applicability" not in recheck_payload
     assert "scene_plan_requirement_applicability" not in recheck_payload
@@ -2857,15 +2906,12 @@ async def test_repeated_missing_continuity_resolution_fails_after_bounded_retry(
         ):
             await production_service.execute(prepared.workflow_run_id, blueprint)
 
-    assert len(gateway.output_requirements) == 2
-    assert all(
-        "recommended_resolution" in str(requirements)
-        for requirements in gateway.output_requirements
-    )
+    assert len(gateway.continuity_contracts) == 2
+    assert all(contract["version"] == "21" for contract in gateway.continuity_contracts)
     assert len(gateway.repair_contexts) == 1
     repair_context = gateway.repair_contexts[0]
     assert "requires a resolution" in str(repair_context["message"])
-    assert "recommended_resolution" in str(repair_context["required_correction"])
+    assert "required_correction" not in repair_context
     validation_issues = repair_context["validation_issues"]
     assert isinstance(validation_issues, list)
     assert validation_issues[0]["location"] == "findings.0"
@@ -3151,14 +3197,11 @@ async def test_approved_blueprint_runs_durable_production_and_replays(
     assert execution.result is not None
     assert len(execution.result.accepted_units) == 3
     assert len(gateway.requests) == request_count == 19
-    assert len(gateway.output_requirements) == 4
-    assert all(
-        "recommended_resolution" in str(requirements)
-        for requirements in gateway.output_requirements
-    )
+    assert len(gateway.continuity_contracts) == 4
+    assert all(contract["version"] == "21" for contract in gateway.continuity_contracts)
     assert len(gateway.repair_contexts) == 1
     assert "Structured output validation failed" in str(gateway.repair_contexts[0]["message"])
-    assert "recommended_resolution" in str(gateway.repair_contexts[0]["required_correction"])
+    assert "required_correction" not in gateway.repair_contexts[0]
     non_final_applicabilities = [
         item for item in gateway.constraint_applicabilities if not item["is_final_scene"]
     ]

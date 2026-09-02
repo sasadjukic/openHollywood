@@ -382,6 +382,8 @@ class ContinuityFinding(ArtifactSchema):
     canonical_source_refs: tuple[ReferenceId, ...] = ()
     requirement_id: ReferenceId | None = None
     coverage_assessment: NonEmptyText | None = None
+    coverage_status: NonEmptyText | None = None
+    coverage_evidence: tuple[NonEmptyText, ...] = ()
     world_rule_ids: tuple[ReferenceId, ...] = ()
     companion_rule_assessment: NonEmptyText | None = None
     condition_explicitly_authorized: StrictBool | None = None
@@ -423,6 +425,17 @@ class ContinuityFinding(ArtifactSchema):
                 )
             if self.coverage_assessment is not None:
                 raise ValueError("a forbidden-shortcut violation cannot use a coverage assessment")
+        if self.coverage_status is not None:
+            if self.coverage_status not in {"partial", "absent"}:
+                raise ValueError("coverage status must be partial or absent")
+            if self.requirement_id is None or self.coverage_assessment is None:
+                raise ValueError("coverage status requires its exact requirement ID and assessment")
+            if self.coverage_status == "partial" and not self.coverage_evidence:
+                raise ValueError("partial coverage requires exact closest draft evidence")
+            if self.basis not in {None, ContinuityFindingBasis.MISSING_REQUIREMENT}:
+                raise ValueError("coverage status is only valid for requirement coverage")
+        elif self.coverage_evidence:
+            raise ValueError("coverage evidence requires a coverage status")
         if self.category is ContinuityCategory.WORLD_RULE and self.basis is not None:
             if (
                 not self.world_rule_ids
