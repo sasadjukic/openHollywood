@@ -41,6 +41,8 @@ class ProjectSummary(WorkspaceModel):
     conversation_count: int
     artifact_count: int
     latest_workflow_run_id: UUID | None
+    latest_workflow_name: str | None
+    latest_workflow_node: str | None
     latest_workflow_status: str | None
 
     @classmethod
@@ -137,6 +139,7 @@ class WorkspaceRun(WorkspaceModel):
     updated_at: datetime
     error_code: str | None
     error_message: str | None
+    failure_detail: str | None
     budget: dict[str, int | str]
     usage: dict[str, int | str]
     retryable_nodes: list[str]

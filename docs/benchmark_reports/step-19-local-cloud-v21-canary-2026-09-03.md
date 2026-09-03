@@ -96,3 +96,78 @@ new semantic prompt experiment into the operational diagnosis.
 The next canary should remain v21/v3 and rerun the same Local and Cloud batch
 shape. It can then distinguish runtime recovery from model-semantic variance
 without adding another prompt-contract variable.
+
+## Manual Cloud follow-up
+
+Five prompt-v21/graph-v3 Cloud stories isolated a deterministic evidence-handle
+compatibility gap. `Pigeon Express` completed all six scenes; `The Seamstress`
+and `Unreleased` each accepted four scenes; `The Enchanted Academy` and
+`Alyssa` stopped on their first scene. Every terminal failure was in continuity,
+while every persisted writer and critic invocation succeeded structurally. The
+catalog exposed four-digit handles such as `draft_evidence_0021`, but the model
+repeatedly returned semantically corresponding three-digit forms such as
+`draft_evidence_021`. Manual exact-node retry worked, but could only repeat the
+same format mismatch.
+
+Prompt v21 and graph v3 remain unchanged. The runtime now canonicalizes a
+one-to-four-digit numeric evidence suffix only when its zero-padded four-digit
+handle exists in the current candidate-draft catalog. Unknown and out-of-range
+handles still fail exact validation. Workspace responses expose the latest safe
+specialist diagnostic separately from the persisted run error, and project
+summaries carry the latest workflow name and node. The client derives the
+selected story's sidebar state from the polled workspace and polls active
+project summaries, preventing stale Blueprint/Production and Running/terminal
+combinations. Sidebar labels now identify both workflow phase and node. The
+existing failed Cloud stories can therefore provide focused checkpoint-retry
+evidence before the clean Local/Cloud canary.
+
+## Manual checkpoint-retry and Local follow-up
+
+Exact-node retry subsequently completed all four previously failed Cloud
+stories: `Alyssa`, `The Enchanted Academy`, `The Seamstress`, and `Unreleased`.
+That result validates the evidence-handle compatibility fix and durable retry
+path against the persisted failures; it does not by itself establish Cloud
+production reliability on fresh stories.
+
+Two fresh Local stories, `The Chronophage` and `The Unblinking Bloom`, then
+failed with blocking continuity findings at the revision limit. Their model
+calls were structurally valid. The remaining problem was semantic authority:
+continuity promoted qualitative requests for a more explicit causal bridge or
+stronger physical dramatization into canonical contradictions. It could also
+select planned beats and open-ended Blueprint description as if they were
+already-established Story Bible facts, and duplicate a partially covered keyed
+requirement as a second blocker. These are contract-enforcement failures rather
+than evidence that the writer or critic could not produce usable prose.
+
+## Implemented v22 response on production graph v3
+
+Prompt contract v22 retains production graph v3, its writer/critic/continuity
+routing, and its bounded revision policy. The semantic boundary is narrowed as
+follows:
+
+1. The contradiction catalog excludes Scene Plans, beats, goals, traits,
+   atmosphere, sensory suggestions, and other non-exhaustive creative
+   description. Stable names, roles, knowledge, relationship history, location
+   constraints, Story Bible state, and World Rules remain eligible canon.
+2. A new non-World-Rule contradiction must certify one exact current-draft
+   assertion, the category-specific conflict kind, the conflicting attribute,
+   a direct logical-conflict assessment, and a corrective action that removes,
+   replaces, or corrects the existing assertion rather than requesting added
+   dramatization.
+3. Qualitative craft judgments and additive repair requests are downgraded
+   deterministically to advisory findings before they can consume a revision.
+   Genuine affirmative canon conflicts remain blocking.
+4. Keyed requirement coverage is the exclusive authority for the same
+   obligation, including advisory partial coverage, so a paraphrased duplicate
+   contradiction cannot promote it to a blocker.
+5. On re-check, a newly exposed non-world blocker must cite an assertion added
+   or changed by the revision. The exact preceding Scene Draft is added to the
+   persisted invocation lineage for this application-side comparison without
+   duplicating it in the model prompt.
+
+Regression coverage reproduces the `Chronophage` and `Unblinking Bloom`
+failure shapes while preserving a blocking path for a genuine direct canon
+conflict. Ruff lint and formatting pass across 134 files, strict mypy passes
+across 134 source files, all 268 pytest tests pass, frontend formatting, lint,
+and type checking pass, all 11 Vitest tests pass, and the production build
+succeeds. No canary was started as part of this implementation change.

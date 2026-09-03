@@ -737,6 +737,28 @@
             "title": "Id",
             "type": "string"
           },
+          "latest_workflow_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latest Workflow Name"
+          },
+          "latest_workflow_node": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latest Workflow Node"
+          },
           "latest_workflow_run_id": {
             "anyOf": [
               {
@@ -788,6 +810,8 @@
           "conversation_count",
           "artifact_count",
           "latest_workflow_run_id",
+          "latest_workflow_name",
+          "latest_workflow_node",
           "latest_workflow_status"
         ],
         "title": "ProjectSummary",
@@ -1624,6 +1648,17 @@
             ],
             "title": "Error Message"
           },
+          "failure_detail": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Failure Detail"
+          },
           "graph_version": {
             "title": "Graph Version",
             "type": "string"
@@ -1717,6 +1752,7 @@
           "updated_at",
           "error_code",
           "error_message",
+          "failure_detail",
           "budget",
           "usage",
           "retryable_nodes"

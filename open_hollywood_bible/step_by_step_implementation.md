@@ -556,6 +556,47 @@ invalid-value diagnostics, and the React retry control. Evidence:
 pass, strict mypy passes over 134 source files, all 257 pytest tests pass,
 frontend formatting, lint, and type checking pass, all 11 Vitest tests pass,
 and the production build succeeds.
+Five subsequent manual Cloud stories on prompt v21 and production graph v3
+confirmed that all terminal failures shared continuity evidence-handle
+validation rather than writer or critic failure. The catalog emitted
+four-digit handles such as `draft_evidence_0021`, while Gemma repeatedly
+shortened them to forms such as `draft_evidence_021`; exact-node retry correctly
+resumed the durable checkpoint but repeated the deterministic mismatch. The
+runtime now zero-pads one-to-four-digit numeric aliases only when the resulting
+canonical handle exists in the current catalog, retaining exact validation for
+unknown values. Workspace read models expose the latest safe specialist
+diagnostic, and project summaries include workflow phase and node. The React
+client derives the selected sidebar entry from its polled workspace, polls
+active project summaries, and labels statuses as Blueprint or Production so a
+terminal center state cannot remain paired with a stale sidebar state. Prompt
+v21 and graph v3 remain pinned. All 262 pytest tests pass, Ruff lint and format
+checks pass across 134 files, strict mypy passes across 134 source files, all 11
+Vitest tests pass, frontend formatting, lint, and type checking pass, and the
+production build succeeds. No canary was started as part of this runtime and UI
+hardening change.
+Manual exact-node retry then completed all four previously failed Cloud stories,
+validating the evidence-handle and durable-retry fixes against those persisted
+checkpoints. Two fresh Local stories, `The Chronophage` and `The Unblinking
+Bloom`, still reached the revision limit after structurally valid calls because
+continuity promoted qualitative causal/dramatization feedback into canonical
+contradictions and could treat planned or open-ended Blueprint material as
+established canon. Prompt contract v22 retains production graph v3 and the
+bounded revision policy while narrowing contradiction authority to stable
+canonical claims. New non-world blockers require an exact draft assertion, a
+category-specific conflict kind, the conflicting attribute, a direct logical
+conflict assessment, and a corrective rather than additive repair action.
+Qualitative/additive contradiction attempts are deterministically advisory;
+keyed requirement coverage owns duplicate obligation feedback, including
+partial coverage; and newly exposed re-check blockers must cite evidence added
+or changed by the revision. The exact preceding draft is attached to persisted
+invocation lineage for that application-side check without enlarging the model
+prompt. Regression coverage reproduces both Local failure shapes and preserves
+real direct-conflict blocking. Ruff lint and formatting pass across 134 files,
+strict mypy passes across 134 source files, all 268 pytest tests pass, frontend
+formatting, lint, and type checking pass, all 11 Vitest tests pass, and the
+production build succeeds. No canary was started as part of this prompt-v22
+hardening change. Evidence:
+`docs/benchmark_reports/step-19-local-cloud-v21-canary-2026-09-03.md`.
 
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 
