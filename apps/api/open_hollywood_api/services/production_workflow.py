@@ -23,7 +23,11 @@ from open_hollywood_engine.artifacts import (
     StoryBlueprint,
 )
 from open_hollywood_engine.evaluations import canonical_sha256
-from open_hollywood_engine.models import ModelCallBudget
+from open_hollywood_engine.models import (
+    ModelCallBudget,
+    ModelDeployment,
+    ModelProfileConfiguration,
+)
 from open_hollywood_engine.workflows import (
     PRODUCTION_NODE_DEFINITIONS,
     SCENE_PRODUCTION_GRAPH_VERSION,
@@ -42,6 +46,7 @@ from open_hollywood_engine.workflows import (
     ProductionNode,
     ProductionUnitInput,
     RunBudget,
+    RunControlCommand,
     SceneProductionExecutor,
     SceneProductionInput,
     SceneProductionResult,
@@ -63,6 +68,8 @@ from open_hollywood_api.persistence.models import (
 )
 from open_hollywood_api.persistence.secret_policy import active_secret_guard
 from open_hollywood_api.services.run_controls import (
+    RunControlError,
+    RunControlResult,
     RunControlStore,
     WorkflowPausedSignal,
     WorkflowStoppedSignal,
@@ -73,6 +80,8 @@ from open_hollywood_api.services.run_controls import (
 
 MAX_PRODUCTION_GRAPH_STEPS = 128
 AGENTIC_BENCHMARK_PRODUCTION_MAX_REVISION_CYCLES = 2
+LOCAL_PRODUCTION_INPUT_TOKEN_BUDGET = 20_000
+CLOUD_PRODUCTION_INPUT_TOKEN_BUDGET = 24_000
 
 
 @dataclass(frozen=True, slots=True)
@@ -263,10 +272,19 @@ class SceneProductionService:
     ) -> SceneProductionWorkflowExecution:
         """Create or resume production from one exact approved Blueprint."""
         graph, checkpointer = self._require_open()
-        production = await self.prepare(
-            blueprint_run_id,
-            approved_blueprint,
-        )
+        try:
+            production = await self.prepare(
+                blueprint_run_id,
+                approved_blueprint,
+            )
+        except Exception as error:
+            await asyncio.to_thread(
+                self._fail_handoff,
+                blueprint_run_id,
+                approved_blueprint,
+                error,
+            )
+            raise
         max_steps, status = self._run_configuration(production.workflow_run_id)
         if status is RunStatus.SUCCEEDED:
             return await self.inspect(production.workflow_run_id)
@@ -331,6 +349,33 @@ class SceneProductionService:
             approved_blueprint,
         )
 
+    async def queue_retry_from_node(
+        self,
+        workflow_run_id: UUID,
+        command: RunControlCommand,
+    ) -> RunControlResult:
+        """Requeue a failed production node from its durable checkpoint."""
+        result = self._run_controls.begin_retry(workflow_run_id, command)
+        if result.resulting_workflow_run_id is not None:
+            return result
+        try:
+            target = ProductionNode(command.target_node or "")
+            with self._session_factory() as session:
+                run = _require_run(session, workflow_run_id)
+                if (
+                    run.workflow_name != SCENE_PRODUCTION_WORKFLOW_NAME
+                    or run.graph_version != SCENE_PRODUCTION_GRAPH_VERSION
+                ):
+                    raise RunControlError("retry target is not a compatible scene-production run")
+                if run.current_node != target.value:
+                    raise RunControlError("production retry must start at the failed node")
+            return self._run_controls.complete_checkpoint_retry(command.id)
+        except Exception as error:
+            self._run_controls.fail_command(command.id, error)
+            if isinstance(error, RunControlError):
+                raise
+            raise RunControlError("retry target is not a registered production node") from error
+
     async def inspect(
         self,
         workflow_run_id: UUID,
@@ -392,6 +437,7 @@ class SceneProductionService:
                     title=plan.title,
                     content=plan,
                     summary="Materialized from the approved Story Blueprint.",
+                    source_blueprint_version_id=approved_blueprint.version_id,
                 )
                 for plan in blueprint.scene_plans
             )
@@ -418,6 +464,7 @@ class SceneProductionService:
                 title="Canonical Story Bible",
                 content=initial_bible,
                 summary="Initialized deterministically from the approved Story Blueprint.",
+                source_blueprint_version_id=approved_blueprint.version_id,
             )
             profile_id = _uuid_input(blueprint_run.input_state, "model_profile_id")
             configuration = dict(
@@ -426,6 +473,7 @@ class SceneProductionService:
                     "model_profile_configuration",
                 )
             )
+            profile_configuration = ModelProfileConfiguration.from_data(configuration)
             configuration_sha256 = _text_input(
                 blueprint_run.input_state,
                 "model_profile_configuration_sha256",
@@ -436,10 +484,33 @@ class SceneProductionService:
                 blueprint_run_id,
                 "agentic-scene-production-workflow",
             )
+            production_run = session.get(WorkflowRun, production_run_id)
+            frozen_budget = (
+                RunBudget.from_data(
+                    production_run.budget,
+                    default_max_graph_steps=MAX_PRODUCTION_GRAPH_STEPS,
+                )
+                if production_run is not None
+                else None
+            )
             call_budget = ModelCallBudget(
-                max_input_tokens=20_000,
-                max_output_tokens=8_000,
-                max_cost_usd=Decimal("0.20"),
+                max_input_tokens=(
+                    frozen_budget.per_call_input_tokens
+                    if frozen_budget is not None
+                    else (
+                        CLOUD_PRODUCTION_INPUT_TOKEN_BUDGET
+                        if profile_configuration.models[ModelDeployment.CLOUD] is not None
+                        else LOCAL_PRODUCTION_INPUT_TOKEN_BUDGET
+                    )
+                ),
+                max_output_tokens=(
+                    frozen_budget.per_call_output_tokens if frozen_budget is not None else 8_000
+                ),
+                max_cost_usd=(
+                    frozen_budget.per_call_cost_usd
+                    if frozen_budget is not None
+                    else Decimal("0.20")
+                ),
             )
             units = tuple(
                 ProductionUnitInput(
@@ -472,13 +543,18 @@ class SceneProductionService:
             )
             budget = RunBudget(
                 max_graph_steps=provisional.max_graph_steps,
-                max_model_calls=len(units) * 8,
-                max_input_tokens=len(units) * 8 * call_budget.max_input_tokens,
-                max_output_tokens=len(units) * 8 * call_budget.max_output_tokens,
+                max_model_calls=_maximum_production_model_calls(provisional),
+                max_input_tokens=(
+                    _maximum_production_model_calls(provisional) * call_budget.max_input_tokens
+                ),
+                max_output_tokens=(
+                    _maximum_production_model_calls(provisional) * call_budget.max_output_tokens
+                ),
                 max_cost_usd=(
                     self._cost_ceiling_usd
                     if self._cost_ceiling_usd is not None
-                    else Decimal(len(units) * 8) * call_budget.max_cost_usd
+                    else Decimal(_maximum_production_model_calls(provisional))
+                    * call_budget.max_cost_usd
                 ),
                 max_wall_clock_seconds=7_200,
                 per_call_input_tokens=call_budget.max_input_tokens,
@@ -506,11 +582,11 @@ class SceneProductionService:
                             f"Blueprint workflow input {optional_key!r} must be text"
                         )
                     expected_input[optional_key] = optional_value
-            production_run = session.get(WorkflowRun, production_run_id)
             if production_run is None:
                 production_run = WorkflowRun(
                     id=production_run_id,
                     project_id=blueprint_run.project_id,
+                    conversation_id=blueprint_run.conversation_id,
                     parent_workflow_run_id=blueprint_run_id,
                     workflow_name=SCENE_PRODUCTION_WORKFLOW_NAME,
                     graph_version=SCENE_PRODUCTION_GRAPH_VERSION,
@@ -531,6 +607,63 @@ class SceneProductionService:
                 )
             session.flush()
             return provisional
+
+    def _fail_handoff(
+        self,
+        blueprint_run_id: UUID,
+        approved_blueprint: ArtifactReference,
+        error: Exception,
+    ) -> None:
+        """Persist a terminal child so one bad handoff cannot starve the worker."""
+        safe_message = active_secret_guard().redact_text(str(error))[:2_000]
+        production_run_id = uuid5(
+            blueprint_run_id,
+            "agentic-scene-production-workflow",
+        )
+        with self._session_factory.begin() as session:
+            blueprint_run = _require_run(session, blueprint_run_id)
+            production_run = session.get(WorkflowRun, production_run_id)
+            if production_run is not None and production_run.status is RunStatus.SUCCEEDED:
+                return
+            if production_run is None:
+                production_run = WorkflowRun(
+                    id=production_run_id,
+                    project_id=blueprint_run.project_id,
+                    conversation_id=blueprint_run.conversation_id,
+                    parent_workflow_run_id=blueprint_run_id,
+                    workflow_name=SCENE_PRODUCTION_WORKFLOW_NAME,
+                    graph_version=SCENE_PRODUCTION_GRAPH_VERSION,
+                    status=RunStatus.FAILED,
+                    input_state={
+                        "blueprint_workflow_run_id": str(blueprint_run_id),
+                        "approved_blueprint_version_id": str(approved_blueprint.version_id),
+                        "execution_kind": blueprint_run.input_state.get(
+                            "execution_kind",
+                            "unknown",
+                        ),
+                    },
+                    budget=RunBudget(
+                        max_graph_steps=MAX_PRODUCTION_GRAPH_STEPS,
+                    ).to_data(),
+                )
+                session.add(production_run)
+            production_run.status = RunStatus.FAILED
+            finish_active_interval(production_run)
+            production_run.pause_reason = None
+            production_run.current_node = "handoff"
+            production_run.completed_at = datetime.now(UTC)
+            production_run.error_code = "production_handoff_failed"
+            production_run.error_message = safe_message
+            _add_event(
+                session,
+                production_run_id,
+                "workflow.failed",
+                {
+                    "error_code": "production_handoff_failed",
+                    "node": "handoff",
+                },
+                source="handoff",
+            )
 
     def _run_configuration(
         self,
@@ -646,9 +779,11 @@ def _materialize_schema_artifact(
     title: str,
     content: ScenePlan | StoryBible,
     summary: str,
+    source_blueprint_version_id: UUID,
 ) -> ArtifactReference:
     payload = content.model_dump(mode="json")
-    version_id = uuid5(project_id, f"{artifact_key}:version:1")
+    payload_sha256 = canonical_sha256(payload)
+    initial_version_id = uuid5(project_id, f"{artifact_key}:version:1")
     artifact = session.scalar(
         select(Artifact)
         .where(
@@ -666,12 +801,12 @@ def _materialize_schema_artifact(
             status=ArtifactStatus.APPROVED,
         )
         version = ArtifactVersion(
-            id=version_id,
+            id=initial_version_id,
             artifact=artifact,
             version_number=1,
             schema_version="1",
             content=payload,
-            content_sha256=canonical_sha256(payload),
+            content_sha256=payload_sha256,
             change_summary=summary,
         )
         session.add_all((artifact, version))
@@ -682,21 +817,50 @@ def _materialize_schema_artifact(
             f"deterministic handoff artifact {artifact_key!r} has conflicting lineage"
         )
     existing_version = next(
+        (
+            candidate
+            for candidate in artifact.versions
+            if candidate.content == payload and candidate.content_sha256 == payload_sha256
+        ),
+        None,
+    )
+    if existing_version is not None:
+        artifact.status = ArtifactStatus.APPROVED
+        return _reference(existing_version)
+    parent = max(artifact.versions, key=lambda candidate: candidate.version_number)
+    version_id = uuid5(
+        source_blueprint_version_id,
+        f"{artifact_key}:deterministic-handoff",
+    )
+    conflicting_version = next(
         (candidate for candidate in artifact.versions if candidate.id == version_id),
         None,
     )
-    if existing_version is None:
+    if conflicting_version is not None:
         raise SceneProductionWorkflowRunError(
-            f"deterministic handoff artifact {artifact_key!r} has no initial version"
+            f"deterministic handoff artifact {artifact_key!r} has conflicting lineage"
         )
-    if existing_version.content != payload or existing_version.content_sha256 != canonical_sha256(
-        payload
-    ):
-        raise SceneProductionWorkflowRunError(
-            f"deterministic handoff artifact {artifact_key!r} has conflicting content"
-        )
+    version = ArtifactVersion(
+        id=version_id,
+        artifact=artifact,
+        version_number=parent.version_number + 1,
+        parent_version_id=parent.id,
+        schema_version="1",
+        content=payload,
+        content_sha256=payload_sha256,
+        change_summary=summary,
+    )
+    artifact.title = title[:200]
     artifact.status = ArtifactStatus.APPROVED
-    return _reference(existing_version)
+    session.add(version)
+    session.flush()
+    return _reference(version)
+
+
+def _maximum_production_model_calls(production: SceneProductionInput) -> int:
+    """Reserve writer, critic, continuity, and Bible calls for every bounded attempt."""
+    attempts = 1 + production.maximum_revision_cycles
+    return len(production.units) * (attempts * 3 + 1)
 
 
 def _matching_character_reference(
@@ -718,9 +882,13 @@ def _matching_character_reference(
         raise SceneProductionWorkflowRunError(
             f"approved Blueprint character {character.id!r} has no specialist artifact"
         )
-    version = next(
-        (candidate for candidate in reversed(artifact.versions) if candidate.content == expected),
-        None,
+    matching_versions = [
+        candidate for candidate in artifact.versions if candidate.content == expected
+    ]
+    version = (
+        max(matching_versions, key=lambda candidate: candidate.version_number)
+        if matching_versions
+        else None
     )
     if version is None:
         raise SceneProductionWorkflowRunError(

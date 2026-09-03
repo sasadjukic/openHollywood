@@ -1316,6 +1316,12 @@ def _output_schema(
     phase_name = "Recheck" if is_recheck else "Initial"
     blocking_name = f"{phase_name}BlockingContinuityFinding"
     advisory_name = f"{phase_name}AdvisoryContinuityFinding"
+    evidence_reference_name = "DraftEvidenceReference"
+    definitions[evidence_reference_name] = {
+        "type": "string",
+        "enum": list(continuity_model_context.evidence_refs),
+        "title": "Draft Evidence Reference",
+    }
     required_requirement_ids = tuple(
         entry["id"] for entry in continuity_model_context.requirement_catalog
     )
@@ -1404,7 +1410,7 @@ def _output_schema(
         findings_schema["items"] = model_finding_items
     coverage_definition_name = "RequirementCoverageEntry"
     definitions[coverage_definition_name] = _continuity_requirement_coverage_entry_schema(
-        evidence_refs=continuity_model_context.evidence_refs,
+        evidence_reference_name=evidence_reference_name,
     )
     coverage_properties = {
         cast(str, entry["id"]): {"$ref": f"#/$defs/{coverage_definition_name}"}
@@ -1428,12 +1434,12 @@ def _output_schema(
 
 def _continuity_requirement_coverage_entry_schema(
     *,
-    evidence_refs: tuple[str, ...],
+    evidence_reference_name: str,
 ) -> dict[str, Any]:
     """Create one compact coverage grammar shared by every due requirement."""
     evidence = {
         "type": "array",
-        "items": {"type": "string", "enum": list(evidence_refs)},
+        "items": {"$ref": f"#/$defs/{evidence_reference_name}"},
         "maxItems": _MAX_EVIDENCE_REFS_PER_FINDING,
     }
     met = {
@@ -1560,7 +1566,7 @@ def _continuity_prior_recheck_entry_schema(
     """Require one compact decision while the application rehydrates prior finding data."""
     evidence = {
         "type": "array",
-        "items": {"type": "string", "enum": list(model_context.evidence_refs)},
+        "items": {"$ref": "#/$defs/DraftEvidenceReference"},
         "minItems": 1,
         "maxItems": _MAX_EVIDENCE_REFS_PER_FINDING,
     }
@@ -1659,7 +1665,7 @@ def _continuity_basis_detail_schema(
     evidence_field = "revised_draft_evidence_refs" if is_recheck else "draft_evidence_refs"
     properties[evidence_field] = {
         "type": "array",
-        "items": {"type": "string", "enum": list(model_context.evidence_refs)},
+        "items": {"$ref": "#/$defs/DraftEvidenceReference"},
         "minItems": 1,
         "maxItems": _MAX_EVIDENCE_REFS_PER_FINDING,
         "title": ("Revised Draft Evidence Refs" if is_recheck else "Draft Evidence Refs"),
@@ -3101,16 +3107,21 @@ def _materialize_requirement_coverage(
                 issue_type="requirement_partition_mismatch",
             )
         status = cast(str, raw["status"])
-        evidence_refs = raw.get("evidence_refs")
-        if not isinstance(evidence_refs, list) or any(
-            not isinstance(reference, str) or reference not in model_context.evidence_refs
-            for reference in evidence_refs
+        raw_evidence_refs = raw.get("evidence_refs")
+        if not isinstance(raw_evidence_refs, list) or any(
+            not isinstance(reference, str) for reference in raw_evidence_refs
         ):
             raise _StructuredOutputContractError(
                 f"requirement_coverage.{requirement_id}.evidence_refs",
                 "coverage evidence must use exact candidate-draft evidence references",
                 issue_type="requirement_coverage_evidence_invalid",
             )
+        evidence_refs = _normalize_continuity_evidence_refs(
+            raw_evidence_refs,
+            model_context,
+            location=f"requirement_coverage.{requirement_id}.evidence_refs",
+            issue_type="requirement_coverage_evidence_invalid",
+        )
         if status in {"met", "partial"} and not evidence_refs:
             raise _StructuredOutputContractError(
                 f"requirement_coverage.{requirement_id}.evidence_refs",
@@ -3134,7 +3145,7 @@ def _materialize_requirement_coverage(
         if status == "met":
             continue
         exact_coverage_evidence = _resolve_continuity_evidence_refs(
-            cast(list[str], evidence_refs),
+            evidence_refs,
             model_context,
             location=f"requirement_coverage.{requirement_id}.evidence_refs",
             allow_empty=status == "absent",
@@ -4008,14 +4019,59 @@ def _resolve_continuity_evidence_refs(
         and isinstance(entry.get("evidence_ref"), str)
         and isinstance(entry.get("exact_excerpt"), str)
     }
-    invalid = [reference for reference in references if reference not in by_reference]
+    normalized = _normalize_continuity_evidence_refs(
+        references,
+        model_context,
+        location=location,
+        issue_type=issue_type,
+    )
+    return list(dict.fromkeys(by_reference[reference] for reference in normalized))
+
+
+def _normalize_continuity_evidence_refs(
+    references: list[str],
+    model_context: _ContinuityModelContext,
+    *,
+    location: str,
+    issue_type: str | None,
+) -> list[str]:
+    """Accept canonical handles or an exact catalog excerpt, never fuzzy evidence."""
+    content = model_context.candidate_draft.get("content")
+    catalog = content.get("evidence_catalog") if isinstance(content, dict) else None
+    by_reference = {
+        entry["evidence_ref"]: entry["exact_excerpt"]
+        for entry in catalog or []
+        if isinstance(entry, dict)
+        and isinstance(entry.get("evidence_ref"), str)
+        and isinstance(entry.get("exact_excerpt"), str)
+    }
+    by_excerpt: dict[str, list[str]] = {}
+    for reference, excerpt in by_reference.items():
+        by_excerpt.setdefault(excerpt, []).append(reference)
+    normalized: list[str] = []
+    invalid: list[str] = []
+    for reference in references:
+        if reference in by_reference:
+            normalized.append(reference)
+            continue
+        excerpt_matches = by_excerpt.get(reference, [])
+        if len(excerpt_matches) == 1:
+            normalized.append(excerpt_matches[0])
+            continue
+        invalid.append(reference)
     if invalid:
+        safe_invalid = [
+            active_secret_guard().redact_text(value).replace("\n", " ")[:120]
+            for value in invalid[:5]
+        ]
         raise _StructuredOutputContractError(
             location,
-            "evidence references must be selected from candidate_draft.content.evidence_catalog",
+            "evidence references must be selected from "
+            "candidate_draft.content.evidence_catalog; "
+            f"rejected_values={safe_invalid}",
             issue_type=issue_type,
         )
-    return list(dict.fromkeys(by_reference[reference] for reference in references))
+    return list(dict.fromkeys(normalized))
 
 
 def _materialize_continuity_evidence(

@@ -149,7 +149,7 @@ continuity invariants after every accepted unit.** The fixed production graph no
 
 17. [x] **COMPLETED 2026-07-24 — Add run controls: stop, pause, resume,
 retry-from-node, and budgets.** Provider-neutral contracts define strict
-aggregate run budgets and typed idempotent commands. SQLite now persists each command, pause reason, source checkpoint, and resulting child run. Pause requests made during execution take effect before the next registered node; stop cancels the run and open invocations; resume continues from the durable checkpoint while keeping the Story Blueprint approval interrupt distinct. Retry-from-node is restricted to registered Story Blueprint specialist nodes, prunes obsolete outputs, preserves compatible exact artifact versions, and creates an immutable linked child lineage. Crash replay reuses that child and its checkpoint rather than duplicating work. Before every model-backed node, the runtime reserves model-call, input-token, output-token, and cost capacity and checks elapsed wall-clock time; exhaustion pauses with useful usage and limit events while preserving partial artifacts. FastAPI, the generated TypeScript SDK, and the workspace expose the same controls, current limits, and aggregate usage. Evidence:
+aggregate run budgets and typed idempotent commands. SQLite now persists each command, pause reason, source checkpoint, and resulting run. Pause requests made during execution take effect before the next registered node; stop cancels the run and open invocations; resume continues from the durable checkpoint while keeping the Story Blueprint approval interrupt distinct. Story Blueprint retry-from-node prunes obsolete outputs, preserves compatible exact artifact versions, and creates an immutable linked child lineage. Failed production specialists can retry only their exact current node from the same durable checkpoint, preserving completed-scene artifacts and invocation history. Crash replay reuses the resulting run and checkpoint rather than duplicating completed work. Before every model-backed node, the runtime reserves model-call, input-token, output-token, and cost capacity and checks elapsed wall-clock time; exhaustion pauses with useful usage and limit events while preserving partial artifacts. FastAPI, the generated TypeScript SDK, and the workspace expose the same controls, current limits, and aggregate usage. Evidence:
 `engine/open_hollywood_engine/workflows/run_controls.py`, `apps/api/open_hollywood_api/services/run_controls.py`, `apps/api/open_hollywood_api/routes/run_controls.py`, `migrations/versions/0005_workflow_run_controls.py`, generated contracts, workspace UI controls, and workflow/API/migration/React tests. Migration upgrade/downgrade and metadata parity, Ruff, mypy, 129 pytest tests, Prettier, ESLint, TypeScript, 5 Vitest tests, and the production build pass.
 
 18. [x] **COMPLETED 2026-07-24 — Implement Fountain/Markdown renderers and
@@ -518,6 +518,43 @@ semantic duplicate suppression, and compact Local repair. No v21 canary was
 started as part of this implementation change. Ruff and formatting pass over
 133 files, strict mypy passes over 85 source files, all 252 pytest tests pass,
 frontend formatting, lint, and type checking pass, all 10 Vitest tests pass,
+and the production build succeeds.
+The mixed v21 canary plan, digest
+`0a85c406fe24a19683f30b644826b5bfe5df7fd4670ede5d6bd366bc62cfe5e3`,
+then completed two of five Local production-runnable cases and one of four
+Cloud cases. Local OH-V01-003 reached all 40 reserved calls and paused before
+its Story Bible update; Local OH-V01-001 and OH-V01-002 retained different
+continuity blockers at the revision limit. Cloud OH-V01-002 and OH-V01-003
+failed exact requirement-coverage evidence selection after bounded repair, and
+Cloud OH-V01-004 reported 21,161 provider input tokens against the 20,000-token
+allowance. The known Local OH-V01-006 Blueprint failure remained outside
+production. Manual Cloud runs then exposed two product-runtime defects: a
+failed production node had no same-node retry control, and regenerating an
+approved Blueprint with stable Scene Plan IDs but changed content collided with
+the project-level deterministic version-one handoff artifact. Because the
+handoff failed before a child production row existed, the worker repeatedly
+selected the same approved Blueprint and starved a later approved story.
+Prompt contract v21 and production graph v3 remain pinned while the runtime is
+hardened. The aggregate budget now derives ten calls per scene from
+`3 * (1 + maximum_revision_cycles) + 1`; Cloud-capable profiles receive a
+bounded 24,000-token per-call input allowance. The inline continuity grammar
+shares one draft-evidence enum, exact excerpt values normalize only when they
+map unambiguously to a catalog handle, and invalid values appear in bounded,
+secret-redacted field diagnostics. Deterministic handoff artifacts append
+Blueprint-lineage versions, handoff errors persist a failed production child,
+and the UI distinguishes Blueprint from Production while allowing failed
+production to retry only its exact durable node. Regression coverage exercises
+the regenerated-Blueprint collision, idempotent version replay, terminal
+handoff state and worker de-duplication, production checkpoint retry, corrected
+call budget, compact evidence references, exact-excerpt normalization, bounded
+invalid-value diagnostics, and the React retry control. Evidence:
+`docs/benchmark_reports/step-19-local-cloud-v21-canary-2026-09-03.md`,
+`apps/api/open_hollywood_api/services/production_workflow.py`,
+`apps/api/open_hollywood_api/services/production_model_executor.py`,
+`apps/worker/open_hollywood_worker/runtime.py`, and
+`tests/api/test_production_workflow_hardening.py`. Ruff and Python formatting
+pass, strict mypy passes over 134 source files, all 257 pytest tests pass,
+frontend formatting, lint, and type checking pass, all 11 Vitest tests pass,
 and the production build succeeds.
 
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.

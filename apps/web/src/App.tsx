@@ -600,8 +600,10 @@ export function App() {
                       {humanize(activeRun?.status ?? "idle")}
                     </span>
                     <small>
-                      {activeRun?.current_node
-                        ? `At ${humanize(activeRun.current_node)}`
+                      {activeRun
+                        ? activeRun.current_node
+                          ? `${workflowPhase(activeRun)} at ${humanize(activeRun.current_node)}`
+                          : workflowPhase(activeRun)
                         : "Workspace ready"}
                     </small>
                   </div>
@@ -874,7 +876,8 @@ function RunAttemptSelector({
       >
         {runs.map((run, index) => (
           <option key={run.id} value={run.id}>
-            {runs.length - index} · {humanize(run.status)}
+            {runs.length - index} · {workflowPhase(run)} ·{" "}
+            {humanize(run.status)}
             {run.current_node ? ` at ${humanize(run.current_node)}` : ""}
           </option>
         ))}
@@ -940,7 +943,7 @@ function RunControls({
   const canPause = run.status === "pending" || run.status === "running";
   const canResume =
     run.status === "paused" && run.pause_reason !== "human_approval";
-  const canStop = !["cancelled", "succeeded"].includes(run.status);
+  const canStop = ["pending", "running", "paused"].includes(run.status);
   const canRetry =
     run.retryable_nodes.length > 0 &&
     ["paused", "failed", "cancelled", "succeeded"].includes(run.status);
@@ -1066,6 +1069,14 @@ function RunControls({
       {error && <p className="decision-error">{error}</p>}
     </section>
   );
+}
+
+function workflowPhase(run: WorkspaceRun): string {
+  return run.workflow_name === "scene_production"
+    ? "Production"
+    : run.workflow_name === "story_blueprint"
+      ? "Story Blueprint"
+      : humanize(run.workflow_name);
 }
 
 function numericValue(
