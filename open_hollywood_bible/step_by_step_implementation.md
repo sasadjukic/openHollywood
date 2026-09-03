@@ -596,7 +596,8 @@ strict mypy passes across 134 source files, all 268 pytest tests pass, frontend
 formatting, lint, and type checking pass, all 11 Vitest tests pass, and the
 production build succeeds. No canary was started as part of this prompt-v22
 hardening change. Evidence:
-`docs/benchmark_reports/step-19-local-cloud-v21-canary-2026-09-03.md`.
+`docs/benchmark_reports/step-19-local-cloud-v21-canary-2026-09-03.md` and
+`docs/benchmark_reports/manual-v21-story-diagnostics-2026-09-03.md`.
 
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 

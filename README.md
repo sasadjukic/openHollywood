@@ -416,6 +416,10 @@ worker cannot retry one source forever or starve later stories. The workspace
 now labels Blueprint and Production phases separately and offers failed
 production retry at the exact persisted node. Evidence:
 `docs/benchmark_reports/step-19-local-cloud-v21-canary-2026-09-03.md`.
+The exact premises, seeds, run metrics, safe specialist errors, retry outcomes,
+and Local continuity/critic findings for the seven related manual stories are
+preserved in
+`docs/benchmark_reports/manual-v21-story-diagnostics-2026-09-03.md`.
 
 Benchmark word-count ranges are advisory creative targets. New outputs persist a
 non-gating adherence measurement with the target, actual count, status, and word

@@ -171,3 +171,7 @@ conflict. Ruff lint and formatting pass across 134 files, strict mypy passes
 across 134 source files, all 268 pytest tests pass, frontend formatting, lint,
 and type checking pass, all 11 Vitest tests pass, and the production build
 succeeds. No canary was started as part of this implementation change.
+
+The complete reusable inputs and per-story persisted diagnostics for all five
+manual Cloud stories and both manual Local stories are preserved in
+[`manual-v21-story-diagnostics-2026-09-03.md`](manual-v21-story-diagnostics-2026-09-03.md).
