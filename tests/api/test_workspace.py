@@ -182,6 +182,8 @@ async def test_project_list_and_workspace_are_built_from_sqlite(
             "conversation_count": 1,
             "artifact_count": 1,
             "latest_workflow_run_id": str(workflow_run_id),
+            "latest_workflow_name": "story_blueprint",
+            "latest_workflow_node": "approval",
             "latest_workflow_status": "paused",
         }
     ]
@@ -234,6 +236,58 @@ async def test_budget_pause_does_not_expose_a_stale_human_interrupt(
 
     assert response.status_code == 200
     assert response.json()["workflow_runs"][0]["active_interrupt_id"] is None
+
+
+async def test_failed_run_exposes_latest_safe_specialist_diagnostic(
+    database_engine: Engine,
+) -> None:
+    project_id, workflow_run_id, _ = _persist_workspace(database_engine)
+    session_factory = create_session_factory(database_engine)
+    specialist_detail = (
+        "Structured output validation failed (provider_finish_reason=stop): "
+        "draft_evidence_refs:evidence references must be selected from "
+        "candidate_draft.content.evidence_catalog; "
+        "rejected_values=['draft_evidence_021']."
+    )
+    with session_factory.begin() as session:
+        workflow_run = session.get(WorkflowRun, workflow_run_id)
+        assert workflow_run is not None
+        workflow_run.workflow_name = "scene_production"
+        workflow_run.graph_version = "3"
+        workflow_run.status = RunStatus.FAILED
+        workflow_run.pause_reason = None
+        workflow_run.current_node = "continuity"
+        workflow_run.error_code = "workflow_execution_failed"
+        workflow_run.error_message = "production specialist returned invalid structured output"
+        workflow_run.invocations.append(
+            AgentInvocation(
+                specialist_role="continuity_supervisor",
+                provider="test-provider",
+                model_identifier="test-model",
+                status=InvocationStatus.FAILED,
+                request_settings={},
+                prompt_sha256="4" * 64,
+                input_tokens=100,
+                output_tokens=200,
+                estimated_cost_usd=Decimal("0"),
+                schema_validation_succeeded=False,
+                error_code="schema_validation_failed",
+                error_message=specialist_detail,
+            )
+        )
+
+    application = create_app(
+        workflow_event_store=WorkflowEventStore(session_factory),
+        workspace_store=WorkspaceStore(session_factory),
+    )
+    transport = ASGITransport(app=application)
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
+        response = await client.get(f"/api/v1/projects/{project_id}/workspace")
+
+    assert response.status_code == 200
+    run = response.json()["workflow_runs"][0]
+    assert run["error_message"] == "production specialist returned invalid structured output"
+    assert run["failure_detail"] == specialist_detail
 
 
 async def test_unknown_workspace_records_return_not_found(

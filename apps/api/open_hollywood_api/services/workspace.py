@@ -28,6 +28,7 @@ from open_hollywood_api.persistence.models import (
     ArtifactVersion,
     Conversation,
     Evaluation,
+    InvocationStatus,
     Message,
     MessageRole,
     Project,
@@ -55,6 +56,8 @@ class ProjectSummaryRecord:
     conversation_count: int
     artifact_count: int
     latest_workflow_run_id: UUID | None
+    latest_workflow_name: str | None
+    latest_workflow_node: str | None
     latest_workflow_status: str | None
 
 
@@ -97,6 +100,7 @@ class WorkflowRunRecord:
     updated_at: datetime
     error_code: str | None
     error_message: str | None
+    failure_detail: str | None
     budget: dict[str, int | str]
     usage: dict[str, int | str]
     retryable_nodes: tuple[str, ...]
@@ -461,6 +465,8 @@ def _project_summary(project: Project) -> ProjectSummaryRecord:
         conversation_count=len(project.conversations),
         artifact_count=len(project.artifacts),
         latest_workflow_run_id=latest_run.id if latest_run is not None else None,
+        latest_workflow_name=(latest_run.workflow_name if latest_run is not None else None),
+        latest_workflow_node=(latest_run.current_node if latest_run is not None else None),
         latest_workflow_status=(latest_run.status.value if latest_run is not None else None),
     )
 
@@ -508,6 +514,7 @@ def _workflow_run_record(workflow_run: WorkflowRun) -> WorkflowRunRecord:
         updated_at=_as_utc(workflow_run.updated_at),
         error_code=workflow_run.error_code,
         error_message=workflow_run.error_message,
+        failure_detail=_workflow_failure_detail(workflow_run),
         budget=RunBudget.from_data(
             workflow_run.budget,
             default_max_graph_steps=DEFAULT_MAX_GRAPH_STEPS,
@@ -515,6 +522,39 @@ def _workflow_run_record(workflow_run: WorkflowRun) -> WorkflowRunRecord:
         usage=run_usage(workflow_run).to_data(),
         retryable_nodes=_retryable_nodes(workflow_run),
     )
+
+
+def _workflow_failure_detail(workflow_run: WorkflowRun) -> str | None:
+    """Prefer the last safe specialist diagnostic over a generic run failure."""
+    workflow_detail = (
+        workflow_run.error_message.strip()
+        if isinstance(workflow_run.error_message, str) and workflow_run.error_message.strip()
+        else None
+    )
+    if workflow_run.status is not RunStatus.FAILED:
+        return None
+    generic_workflow_details = {
+        "production specialist returned invalid structured output",
+        "The persisted agentic scene-production run failed.",
+    }
+    if workflow_detail is not None and workflow_detail not in generic_workflow_details:
+        return workflow_detail
+    failed_invocations = (
+        invocation
+        for invocation in workflow_run.invocations
+        if invocation.status is InvocationStatus.FAILED
+        and isinstance(invocation.error_message, str)
+        and invocation.error_message.strip()
+    )
+    latest_failed_invocation = max(
+        failed_invocations,
+        key=lambda invocation: (invocation.started_at, str(invocation.id)),
+        default=None,
+    )
+    if latest_failed_invocation is None:
+        return workflow_detail
+    invocation_detail = latest_failed_invocation.error_message
+    return invocation_detail.strip() if isinstance(invocation_detail, str) else workflow_detail
 
 
 def _retryable_nodes(workflow_run: WorkflowRun) -> tuple[str, ...]:

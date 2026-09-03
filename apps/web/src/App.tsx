@@ -5,13 +5,14 @@ import type {
   ModelSelectionInput,
   ProjectExportFormat,
   ProjectList,
+  ProjectSummary,
   RunBudgetPatch,
   RunControlAction,
   WorkspaceArtifact,
   WorkspaceRun,
   WorkflowEventEnvelope,
 } from "@open-hollywood/contracts";
-import { useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 
 import {
   controlRun,
@@ -67,6 +68,12 @@ export function App() {
   const projectsQuery = useQuery({
     queryFn: fetchProjects,
     queryKey: projectsQueryKey,
+    refetchInterval: (query) =>
+      query.state.data?.projects.some((project) =>
+        ["pending", "running"].includes(project.latest_workflow_status ?? ""),
+      )
+        ? 1_000
+        : false,
     retry: 1,
   });
   const modelProfilesQuery = useQuery({
@@ -80,11 +87,11 @@ export function App() {
     queryKey: ["model-catalog"],
   });
 
-  const projects = projectsQuery.data?.projects ?? [];
+  const projectList = projectsQuery.data?.projects ?? [];
   const selectedProjectId = isCreatingStory
     ? null
-    : (projects.find((project) => project.id === requestedProjectId)?.id ??
-      projects[0]?.id ??
+    : (projectList.find((project) => project.id === requestedProjectId)?.id ??
+      projectList[0]?.id ??
       null);
 
   const workspaceQuery = useQuery({
@@ -111,6 +118,43 @@ export function App() {
     },
   });
   const workspace = workspaceQuery.data;
+  const workspaceLatestRun = workspace?.workflow_runs[0];
+  const projects = projectList.map((project) =>
+    workspace && workspaceLatestRun && project.id === workspace.project.id
+      ? {
+          ...project,
+          artifact_count: workspace.project.artifact_count,
+          latest_workflow_name: workspaceLatestRun.workflow_name,
+          latest_workflow_node: workspaceLatestRun.current_node,
+          latest_workflow_run_id: workspaceLatestRun.id,
+          latest_workflow_status: workspaceLatestRun.status,
+        }
+      : project,
+  );
+  useEffect(() => {
+    if (!workspace || !workspaceLatestRun) {
+      return;
+    }
+    queryClient.setQueryData<ProjectList>(projectsQueryKey, (current) =>
+      current
+        ? {
+            ...current,
+            projects: current.projects.map((project) =>
+              project.id === workspace.project.id
+                ? {
+                    ...project,
+                    artifact_count: workspace.project.artifact_count,
+                    latest_workflow_name: workspaceLatestRun.workflow_name,
+                    latest_workflow_node: workspaceLatestRun.current_node,
+                    latest_workflow_run_id: workspaceLatestRun.id,
+                    latest_workflow_status: workspaceLatestRun.status,
+                  }
+                : project,
+            ),
+          }
+        : current,
+    );
+  }, [queryClient, workspace, workspaceLatestRun]);
   const activeRun =
     workspace?.workflow_runs.find((run) => run.id === requestedRunId) ??
     workspace?.workflow_runs[0];
@@ -385,7 +429,7 @@ export function App() {
           <section className="nav-section">
             <div className="nav-heading">
               <span>Stories</span>
-              <span>{projectsQuery.data.projects.length}</span>
+              <span>{projects.length}</span>
             </div>
             <button
               className={`new-story-button ${
@@ -405,7 +449,7 @@ export function App() {
               New story
             </button>
             <div className="project-list">
-              {projectsQuery.data.projects.map((project) => {
+              {projects.map((project) => {
                 const mustStopBeforeDelete = ["pending", "running"].includes(
                   project.latest_workflow_status ?? "",
                 );
@@ -440,9 +484,7 @@ export function App() {
                         <strong>{project.name}</strong>
                         <small>
                           {project.artifact_count} artifacts ·{" "}
-                          {humanize(
-                            project.latest_workflow_status ?? "Not started",
-                          )}
+                          {projectWorkflowLabel(project)}
                         </small>
                       </span>
                     </button>
@@ -472,7 +514,7 @@ export function App() {
                   </div>
                 );
               })}
-              {projectsQuery.data.projects.length === 0 && (
+              {projects.length === 0 && (
                 <p className="nav-empty">
                   Your local story library is ready for its first premise.
                 </p>
@@ -617,7 +659,7 @@ export function App() {
                       activeRun.id && runControlMutation.error instanceof Error
                       ? runControlMutation.error.message
                       : activeRun.status === "failed"
-                        ? activeRun.error_message
+                        ? (activeRun.failure_detail ?? activeRun.error_message)
                         : null
                   }
                   isPending={
@@ -1077,6 +1119,25 @@ function workflowPhase(run: WorkspaceRun): string {
     : run.workflow_name === "story_blueprint"
       ? "Story Blueprint"
       : humanize(run.workflow_name);
+}
+
+function projectWorkflowLabel(project: ProjectSummary): string {
+  if (!project.latest_workflow_status) {
+    return "Not Started";
+  }
+  const status = humanize(project.latest_workflow_status);
+  const phase =
+    project.latest_workflow_name === "scene_production"
+      ? "Production"
+      : project.latest_workflow_name === "story_blueprint"
+        ? "Story Blueprint"
+        : project.latest_workflow_name
+          ? humanize(project.latest_workflow_name)
+          : null;
+  const node = project.latest_workflow_node
+    ? ` at ${humanize(project.latest_workflow_node)}`
+    : "";
+  return phase ? `${phase} · ${status}${node}` : `${status}${node}`;
 }
 
 function numericValue(

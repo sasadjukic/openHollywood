@@ -489,6 +489,14 @@ export type ProjectSummary = {
    */
   id: string;
   /**
+   * Latest Workflow Name
+   */
+  latest_workflow_name: string | null;
+  /**
+   * Latest Workflow Node
+   */
+  latest_workflow_node: string | null;
+  /**
    * Latest Workflow Run Id
    */
   latest_workflow_run_id: string | null;
@@ -1013,6 +1021,10 @@ export type WorkspaceRun = {
    * Error Message
    */
   error_message: string | null;
+  /**
+   * Failure Detail
+   */
+  failure_detail: string | null;
   /**
    * Graph Version
    */

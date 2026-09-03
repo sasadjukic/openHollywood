@@ -63,6 +63,8 @@ function configureWorkspaceApi(options?: {
                   description: "A supernatural horror story.",
                   id: projectId,
                   latest_workflow_run_id: runId,
+                  latest_workflow_name: "story_blueprint",
+                  latest_workflow_node: "approval",
                   latest_workflow_status: "paused",
                   name: "The Untouched Stroller",
                   status: "active",
@@ -454,6 +456,9 @@ describe("App", () => {
     await waitFor(() => {
       expect(selector).toHaveValue(productionRunId);
       expect(screen.getByText("Production at Draft")).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: /^The Untouched Stroller/ }),
+      ).toHaveTextContent("Production · Running at Draft");
     });
 
     await user.selectOptions(selector, runId);
@@ -547,6 +552,8 @@ describe("App", () => {
     production.error_code = "workflow_execution_failed";
     production.error_message =
       "production specialist returned invalid structured output";
+    production.failure_detail =
+      "Structured output validation failed: rejected_values=['draft_evidence_021'].";
     production.retryable_nodes = ["continuity"];
     const fetchMock = configureWorkspaceApi({ workspace });
 
@@ -554,6 +561,11 @@ describe("App", () => {
 
     expect(
       await screen.findByText("Production at Continuity"),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "Structured output validation failed: rejected_values=['draft_evidence_021'].",
+      ),
     ).toBeInTheDocument();
     expect(
       screen.queryByRole("button", { name: "Stop" }),
@@ -740,6 +752,8 @@ function workspaceResponse(): ProjectWorkspace {
       description: "A supernatural horror story.",
       id: projectId,
       latest_workflow_run_id: runId,
+      latest_workflow_name: "story_blueprint",
+      latest_workflow_node: "approval",
       latest_workflow_status: "paused",
       name: "The Untouched Stroller",
       status: "active",
@@ -754,6 +768,7 @@ function workspaceResponse(): ProjectWorkspace {
         current_node: "approval",
         error_code: null,
         error_message: null,
+        failure_detail: null,
         graph_version: "3",
         id: runId,
         parent_workflow_run_id: null,
@@ -807,6 +822,8 @@ function workspaceWithRunningProduction(): ProjectWorkspace {
     project: {
       ...workspace.project,
       latest_workflow_run_id: productionRunId,
+      latest_workflow_name: "scene_production",
+      latest_workflow_node: "draft",
       latest_workflow_status: "running",
     },
     workflow_runs: [production, approvedBlueprint],
