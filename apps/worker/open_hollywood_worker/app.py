@@ -74,6 +74,7 @@ def create_worker_app(
                     app.state.workflow_command_service = QueuedWorkflowCommandService(
                         session_factory,
                         blueprint_service,
+                        production_service,
                         cancel_active_run=worker.cancel_active_run,
                         wake_worker=worker.wake,
                     )

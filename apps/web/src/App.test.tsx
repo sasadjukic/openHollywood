@@ -453,13 +453,13 @@ describe("App", () => {
     const selector = await screen.findByLabelText("Workflow attempt");
     await waitFor(() => {
       expect(selector).toHaveValue(productionRunId);
-      expect(screen.getByText("At Draft")).toBeInTheDocument();
+      expect(screen.getByText("Production at Draft")).toBeInTheDocument();
     });
 
     await user.selectOptions(selector, runId);
 
     expect(selector).toHaveValue(runId);
-    expect(screen.getByText("At Approval")).toBeInTheDocument();
+    expect(screen.getByText("Story Blueprint at Approval")).toBeInTheDocument();
   });
 
   it("submits a durable stop command from the active run controls", async () => {
@@ -531,6 +531,51 @@ describe("App", () => {
           ),
         ),
       ).toBe(true);
+    });
+  });
+
+  it("retries failed production from its exact node without offering stop", async () => {
+    const user = userEvent.setup();
+    const workspace = workspaceWithRunningProduction();
+    const production = workspace.workflow_runs[0];
+    if (!production) {
+      throw new Error("The workspace fixture requires a production run.");
+    }
+    production.status = "failed";
+    production.current_node = "continuity";
+    production.completed_at = "2026-07-23T10:01:00Z";
+    production.error_code = "workflow_execution_failed";
+    production.error_message =
+      "production specialist returned invalid structured output";
+    production.retryable_nodes = ["continuity"];
+    const fetchMock = configureWorkspaceApi({ workspace });
+
+    renderApp();
+
+    expect(
+      await screen.findByText("Production at Continuity"),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Stop" }),
+    ).not.toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Retry" }));
+
+    await waitFor(() => {
+      const controlRequest = fetchMock.mock.calls.find(([input]) =>
+        requestUrl(input).includes(
+          `/workflow-runs/${productionRunId}/controls`,
+        ),
+      );
+      expect(controlRequest).toBeDefined();
+    });
+    const controlRequest = fetchMock.mock.calls.find(([input]) =>
+      requestUrl(input).includes(`/workflow-runs/${productionRunId}/controls`),
+    );
+    const request = controlRequest?.[0];
+    expect(request).toBeInstanceOf(Request);
+    await expect((request as Request).clone().json()).resolves.toMatchObject({
+      action: "retry_from_node",
+      target_node: "continuity",
     });
   });
 

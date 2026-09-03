@@ -86,8 +86,10 @@ Workflow runs now expose durable, idempotent pause, resume, stop,
 retry-from-node, and budget-update commands. Active pause requests take effect
 at the next safe node boundary; stop cancels the run and any open invocation;
 resume continues from the SQLite checkpoint without repeating completed work.
-Retry-from-node creates a linked child run from compatible immutable artifact
-versions instead of rewriting source history. Aggregate model-call, token,
+Retry-from-node creates a linked child run for Story Blueprint changes. A failed
+production specialist node retries the same durable production checkpoint, so
+completed scenes, immutable artifact versions, events, and invocation history
+remain intact while only the failed node is attempted again. Aggregate model-call, token,
 cost, and wall-clock usage is visible in the workspace and checked before each
 model-backed node so an unaffordable next call pauses with partial artifacts
 preserved. Human approval remains a distinct pause reason and still requires
@@ -394,6 +396,26 @@ partial or qualitative coverage advisory. The application now owns continuity
 metadata and stable semantic identity; compact contradiction and World Rule
 catalogs plus focused Local repair policy v4 remove repeated grammar. Evidence:
 `docs/benchmark_reports/step-19-local-v20-canary-2026-09-02.md`.
+
+The mixed v21 canary completed two of five Local production-runnable cases and
+one of four Cloud cases; the Local batch also retained one budget-paused run and
+the known OH-V01-006 Blueprint failure. Local semantic continuity overreach
+remained, while two Cloud cases emitted invalid draft-evidence references and a
+third reported 21,161 provider input tokens against the 20,000-token ceiling.
+Prompt contract v21 and production graph v3 remain unchanged while runtime
+hardening addresses these operational failures: production budgets now reserve
+all ten model calls per scene implied by two revision cycles, Cloud-capable
+profiles receive a bounded 24,000-token input allowance, and the Cloud inline
+continuity schema shares one draft-evidence definition instead of repeating the
+same enum. Exact catalog excerpts can be normalized to an unambiguous evidence
+handle, while invalid handles persist bounded rejected values in the safe
+field-level diagnostic. Regenerated approved Blueprints append deterministic
+Scene Plan and initial Story Bible versions instead of colliding with version
+one. Pre-graph handoff failures create terminal production children so the
+worker cannot retry one source forever or starve later stories. The workspace
+now labels Blueprint and Production phases separately and offers failed
+production retry at the exact persisted node. Evidence:
+`docs/benchmark_reports/step-19-local-cloud-v21-canary-2026-09-03.md`.
 
 Benchmark word-count ranges are advisory creative targets. New outputs persist a
 non-gating adherence measurement with the target, actual count, status, and word

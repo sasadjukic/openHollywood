@@ -272,6 +272,40 @@ class RunControlStore:
             )
             return _result(session, record)
 
+    def complete_checkpoint_retry(self, command_id: UUID) -> RunControlResult:
+        """Requeue one failed run at its exact durable checkpoint."""
+        with self._session_factory.begin() as session:
+            record = _require_control(session, command_id)
+            workflow_run = _require_run(session, record.workflow_run_id)
+            if record.resulting_workflow_run_id is not None:
+                return _result(session, record)
+            if workflow_run.status is not RunStatus.FAILED:
+                raise RunControlError("checkpoint retry requires a failed workflow run")
+            if not workflow_run.checkpoint_id:
+                raise RunControlError(
+                    "workflow failed before a durable retry checkpoint was available"
+                )
+            if not workflow_run.current_node or record.target_node != workflow_run.current_node:
+                raise RunControlError("checkpoint retry must target the workflow's failed node")
+            workflow_run.status = RunStatus.PENDING
+            workflow_run.pause_reason = None
+            workflow_run.completed_at = None
+            workflow_run.error_code = None
+            workflow_run.error_message = None
+            record.resulting_workflow_run_id = workflow_run.id
+            _mark_applied(record, workflow_run.checkpoint_id)
+            _add_event(
+                session,
+                workflow_run.id,
+                "workflow.retry.queued",
+                {
+                    "command_id": str(command_id),
+                    "resulting_workflow_run_id": str(workflow_run.id),
+                    "target_node": workflow_run.current_node,
+                },
+            )
+            return _result(session, record)
+
     def fail_command(self, command_id: UUID, error: Exception) -> None:
         """Persist a redacted command failure for idempotent replay."""
         safe_message = active_secret_guard().redact_text(str(error))[:2000]

@@ -130,6 +130,7 @@ async def test_worker_claims_browser_story_and_completes_production(
             retry = await QueuedWorkflowCommandService(
                 session_factory,
                 blueprint_service,
+                production_service,
                 wake_worker=worker.wake,
             ).apply_control(
                 created.workflow_run_id,

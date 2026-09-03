@@ -59,6 +59,7 @@ from open_hollywood_api.services.production_model_executor import (
     _materialize_continuity_finding,
     _materialize_continuity_identity,
     _materialize_requirement_audit,
+    _normalize_continuity_evidence_refs,
     _Operation,
     _output_schema,
     _scene_plan_requirement_applicability,
@@ -916,6 +917,34 @@ def test_v13_unknown_evidence_handle_fails_with_catalog_guidance() -> None:
                 "draft_evidence_refs": ["invented_evidence"],
             },
             context,
+        )
+
+
+def test_v21_exact_excerpt_is_normalized_to_its_unambiguous_evidence_handle() -> None:
+    context = _schema_test_continuity_context()
+
+    normalized = _normalize_continuity_evidence_refs(
+        ["Mara pockets the brass key."],
+        context,
+        location="requirement_coverage.required_element_1.evidence_refs",
+        issue_type="requirement_coverage_evidence_invalid",
+    )
+
+    assert normalized == ["draft_evidence_0001"]
+
+
+def test_v21_invalid_evidence_diagnostic_preserves_bounded_rejected_value() -> None:
+    context = _schema_test_continuity_context()
+
+    with pytest.raises(
+        ValueError,
+        match=r"rejected_values=\['invented_evidence_ref'\]",
+    ):
+        _normalize_continuity_evidence_refs(
+            ["invented_evidence_ref"],
+            context,
+            location="requirement_coverage.required_element_1.evidence_refs",
+            issue_type="requirement_coverage_evidence_invalid",
         )
 
 
@@ -2114,9 +2143,10 @@ def test_initial_continuity_schema_omits_every_recheck_only_field() -> None:
         "canonical_claim_ids",
         "logical_conflict_assessment",
     } <= set(contradiction["required"])
-    assert contradiction["properties"]["draft_evidence_refs"]["items"]["enum"] == [
-        "draft_evidence_0001"
-    ]
+    assert definitions["DraftEvidenceReference"]["enum"] == ["draft_evidence_0001"]
+    assert contradiction["properties"]["draft_evidence_refs"]["items"] == {
+        "$ref": "#/$defs/DraftEvidenceReference"
+    }
     assert contradiction["properties"]["canonical_claim_ids"]["items"]["enum"] == [
         "story_bible_brass_key_established_facts"
     ]
@@ -2130,6 +2160,9 @@ def test_initial_continuity_schema_omits_every_recheck_only_field() -> None:
         "evidence_search_result",
     } <= set(missing["required"])
     assert partial["properties"]["evidence_refs"]["minItems"] == 1
+    assert partial["properties"]["evidence_refs"]["items"] == {
+        "$ref": "#/$defs/DraftEvidenceReference"
+    }
     assert {"requirement_id", "draft_evidence_refs"} <= set(forbidden["required"])
     assert forbidden["properties"]["requirement_id"]["enum"] == ["forbidden_shortcut_1"]
     assert coverage["required"] == ["required_element_1"]
@@ -2241,9 +2274,10 @@ def test_continuity_recheck_schema_exposes_recheck_analysis_fields() -> None:
         ]
     }
     assert contradiction["properties"]["revised_draft_evidence_refs"]["minItems"] == 1
-    assert contradiction["properties"]["revised_draft_evidence_refs"]["items"]["enum"] == [
-        "draft_evidence_0001"
-    ]
+    assert definitions["DraftEvidenceReference"]["enum"] == ["draft_evidence_0001"]
+    assert contradiction["properties"]["revised_draft_evidence_refs"]["items"] == {
+        "$ref": "#/$defs/DraftEvidenceReference"
+    }
     assert "canonical_source_refs" not in world_contradiction["properties"]
     assert "recheck_evidence_state" not in contradiction["properties"]
     assert "revised_evidence" not in missing["properties"]
@@ -3252,6 +3286,8 @@ async def test_approved_blueprint_runs_durable_production_and_replays(
         assert production_run.status is RunStatus.SUCCEEDED
         assert production_run.checkpoint_id == execution.checkpoint_id
         assert production_run.budget["max_cost_usd"] == "5.00"
+        assert production_run.budget["max_model_calls"] == 30
+        assert production_run.budget["per_call_input_tokens"] == 20_000
         assert session.scalar(select(func.count()).select_from(AgentInvocation)) == 19
         production_invocations = session.scalars(
             select(AgentInvocation).where(

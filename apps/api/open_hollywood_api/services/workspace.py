@@ -11,8 +11,11 @@ from uuid import UUID
 from open_hollywood_engine.workflows import (
     BLUEPRINT_RETRYABLE_NODES,
     DEFAULT_MAX_GRAPH_STEPS,
+    SCENE_PRODUCTION_GRAPH_VERSION,
+    SCENE_PRODUCTION_WORKFLOW_NAME,
     STORY_BLUEPRINT_GRAPH_VERSION,
     STORY_BLUEPRINT_WORKFLOW_NAME,
+    ProductionNode,
     RunBudget,
     RunPauseReason,
 )
@@ -510,12 +513,24 @@ def _workflow_run_record(workflow_run: WorkflowRun) -> WorkflowRunRecord:
             default_max_graph_steps=DEFAULT_MAX_GRAPH_STEPS,
         ).to_data(),
         usage=run_usage(workflow_run).to_data(),
-        retryable_nodes=(
-            tuple(node.value for node in BLUEPRINT_RETRYABLE_NODES)
-            if workflow_run.workflow_name == STORY_BLUEPRINT_WORKFLOW_NAME
-            else ()
-        ),
+        retryable_nodes=_retryable_nodes(workflow_run),
     )
+
+
+def _retryable_nodes(workflow_run: WorkflowRun) -> tuple[str, ...]:
+    if workflow_run.workflow_name == STORY_BLUEPRINT_WORKFLOW_NAME:
+        return tuple(node.value for node in BLUEPRINT_RETRYABLE_NODES)
+    current_node = workflow_run.current_node
+    if (
+        workflow_run.workflow_name == SCENE_PRODUCTION_WORKFLOW_NAME
+        and workflow_run.graph_version == SCENE_PRODUCTION_GRAPH_VERSION
+        and workflow_run.status is RunStatus.FAILED
+        and workflow_run.checkpoint_id
+        and isinstance(current_node, str)
+        and current_node in {node.value for node in ProductionNode}
+    ):
+        return (current_node,)
+    return ()
 
 
 def _active_interrupt_id(events: list[WorkflowEvent]) -> str | None:

@@ -9,6 +9,7 @@ from uuid import UUID
 from open_hollywood_engine.workflows import (
     DEFAULT_MAX_GRAPH_STEPS,
     INTERACTIVE_BLUEPRINT_BUDGET,
+    SCENE_PRODUCTION_WORKFLOW_NAME,
     STORY_BLUEPRINT_WORKFLOW_NAME,
     RunBudget,
     RunControlAction,
@@ -18,6 +19,7 @@ from sqlalchemy.orm import Session, sessionmaker
 
 from open_hollywood_api.persistence.models import WorkflowRun
 from open_hollywood_api.services.blueprint_workflow import BlueprintWorkflowService
+from open_hollywood_api.services.production_workflow import SceneProductionService
 from open_hollywood_api.services.run_controls import (
     RunControlError,
     RunControlResult,
@@ -44,12 +46,14 @@ class QueuedWorkflowCommandService:
         self,
         session_factory: sessionmaker[Session],
         blueprint_service: BlueprintWorkflowService,
+        production_service: SceneProductionService,
         *,
         cancel_active_run: Callable[[UUID], None] | None = None,
         wake_worker: Callable[[], None] | None = None,
     ) -> None:
         self._session_factory = session_factory
         self._blueprint_service = blueprint_service
+        self._production_service = production_service
         self._controls = RunControlStore(session_factory)
         self._cancel_active_run = cancel_active_run
         self._wake_worker = wake_worker
@@ -79,12 +83,19 @@ class QueuedWorkflowCommandService:
                 self._wake_worker()
             return result
         if command.action is RunControlAction.RETRY_FROM_NODE:
-            if self._workflow_name(workflow_run_id) != STORY_BLUEPRINT_WORKFLOW_NAME:
-                raise RunControlError("retry-from-node is available only for Story Blueprint runs")
-            result = await self._blueprint_service.queue_retry_from_node(
-                workflow_run_id,
-                self._interactive_retry_command(workflow_run_id, command),
-            )
+            workflow_name = self._workflow_name(workflow_run_id)
+            if workflow_name == STORY_BLUEPRINT_WORKFLOW_NAME:
+                result = await self._blueprint_service.queue_retry_from_node(
+                    workflow_run_id,
+                    self._interactive_retry_command(workflow_run_id, command),
+                )
+            elif workflow_name == SCENE_PRODUCTION_WORKFLOW_NAME:
+                result = await self._production_service.queue_retry_from_node(
+                    workflow_run_id,
+                    command,
+                )
+            else:
+                raise RunControlError("retry-from-node is unavailable for this workflow")
             if self._wake_worker is not None:
                 self._wake_worker()
             return result
