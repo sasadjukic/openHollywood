@@ -421,6 +421,22 @@ and Local continuity/critic findings for the seven related manual stories are
 preserved in
 `docs/benchmark_reports/manual-v21-story-diagnostics-2026-09-03.md`.
 
+The prompt-v22 Local/Cloud canary exposed a new structural bottleneck: all six
+production-terminal failures were initial continuity validations of redundant
+model-authored non-world certificate fields, while genuine World Rule repairs
+continued to work. Scene-production prompt contract v23 keeps graph v3 but
+reduces that model contract to a canonical claim selector, exact draft evidence,
+a direct-conflict disposition, a corrective action, and an optional ungated
+explanation. The application derives category, conflict kind, exact assertion,
+provenance, and lineage. Focused schema repair now applies equally to Local and
+Cloud and can carry bounded expected/received diagnostics. Writers and critics
+also receive remaining story-wide advisory word-budget context; the application
+prevents a word-count-only critique from becoming a scene revision gate unless
+the request explicitly declares a hard scene-length constraint. The detailed
+comparison and fresh-v23 acceptance criteria are recorded in
+`docs/benchmark_reports/step-19-local-cloud-v22-canary-2026-09-04.md`; a v23
+canary remains pending.
+
 Benchmark word-count ranges are advisory creative targets. New outputs persist a
 non-gating adherence measurement with the target, actual count, status, and word
 deviation. Automatic completion reflects a finished, non-truncated document,
