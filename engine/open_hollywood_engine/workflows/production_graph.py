@@ -15,6 +15,7 @@ from langgraph.types import RetryPolicy
 
 from open_hollywood_engine.artifacts import (
     ArtifactKind,
+    ContinuityReport,
     CritiqueVerdict,
     StoryBibleInvariantError,
     validate_story_bible_transition,
@@ -37,6 +38,7 @@ from open_hollywood_engine.workflows.production_contracts import (
     AcceptedProductionUnit,
     ContinuityCheckResult,
     ContinuityCheckTask,
+    ContinuityRevisionLimitError,
     DialogueIntegrationTask,
     DialoguePassConfiguration,
     NullSceneProductionWorkflowObserver,
@@ -128,6 +130,7 @@ class ProductionGraphState(DialogueGraphState, total=False):
     draft_artifacts: list[DialogueArtifactReferenceState]
     critique_artifacts: list[DialogueArtifactReferenceState]
     continuity_artifacts: list[DialogueArtifactReferenceState]
+    current_continuity_history: list[DialogueArtifactReferenceState]
     story_bible_update_artifacts: list[DialogueArtifactReferenceState]
     story_bible_artifacts: list[DialogueArtifactReferenceState]
     accepted_units: list[AcceptedProductionUnitState]
@@ -173,6 +176,7 @@ def initial_production_state(production: SceneProductionInput) -> ProductionGrap
         "draft_artifacts": [],
         "critique_artifacts": [],
         "continuity_artifacts": [],
+        "current_continuity_history": [],
         "story_bible_update_artifacts": [],
         "story_bible_artifacts": [_artifact_to_state(production.initial_story_bible)],
         "accepted_units": [],
@@ -503,6 +507,10 @@ def _continuity_node(
             previous_continuity=_optional_artifact_from_state(
                 state.get("pending_continuity_artifact")
             ),
+            continuity_history=tuple(
+                _artifact_from_state(reference)
+                for reference in state.get("current_continuity_history", [])
+            ),
         )
         result = await executor.check_continuity(task)
         _validate_continuity(task, result)
@@ -522,10 +530,14 @@ def _continuity_node(
                 *state.get("continuity_artifacts", []),
                 report_state,
             ],
+            "current_continuity_history": [
+                *state.get("current_continuity_history", []),
+                report_state,
+            ],
         }
         if has_blockers and revision_number >= production.maximum_revision_cycles:
-            raise SceneProductionStateError(
-                "blocking continuity findings remain at the revision limit"
+            raise ContinuityRevisionLimitError(
+                _continuity_terminal_failure_message(result.report, revision_number)
             )
         if (has_blockers or critique_requires_revision) and (
             revision_number < production.maximum_revision_cycles
@@ -647,6 +659,7 @@ def _accept_node(
             "current_critique_artifact": None,
             "current_continuity_artifact": None,
             "pending_continuity_artifact": None,
+            "current_continuity_history": [],
             "current_story_bible_update_artifact": None,
             "current_dialogue_runs": 0,
             "current_acceptance_reason": None,
@@ -662,6 +675,31 @@ def _route_after_draft(state: ProductionGraphState) -> str:
     production = _production_from_state(state)
     unit = _current_unit(state, production)
     return "dialogue" if unit.dialogue_pass is not None else "critique"
+
+
+def _continuity_terminal_failure_message(
+    report: ContinuityReport,
+    revision_number: int,
+) -> str:
+    """Return a bounded, cause-oriented terminal diagnostic without story prose."""
+    blockers = [finding for finding in report.findings if finding.blocks_approval]
+    details = [
+        {
+            "finding_id": finding.id,
+            "category": finding.category.value,
+            "basis": finding.basis.value if finding.basis is not None else None,
+            "recheck_disposition": (
+                finding.recheck_disposition.value
+                if finding.recheck_disposition is not None
+                else None
+            ),
+        }
+        for finding in blockers[:8]
+    ]
+    return (
+        "continuity_revision_limit_reached: blocking findings remain after "
+        f"revision {revision_number}; blockers={details}"
+    )
 
 
 def _route_after_continuity(state: ProductionGraphState) -> str:
@@ -821,6 +859,7 @@ def _validate_continuity(
             task.story_bible,
             task.draft,
             task.unit.plan,
+            *task.continuity_history,
             *((task.previous_continuity,) if task.previous_continuity is not None else ()),
         ),
     )

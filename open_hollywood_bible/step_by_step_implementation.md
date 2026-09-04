@@ -616,9 +616,31 @@ expected/received values. Writers and critics receive an application-derived
 story-wide advisory length packet, and word-count-only critic findings cannot
 become revision gates unless an explicit hard scene constraint exists.
 Regression coverage preserves real World Rule and structural-critique
-blocking. A fresh prompt-v23 canary remains pending, so Step 19 stays in
-progress. Evidence:
+blocking. The prompt-v23 acceptance criteria and subsequent results are
+recorded below. Evidence:
 `docs/benchmark_reports/step-19-local-cloud-v22-canary-2026-09-04.md`.
+
+The prompt-v23 canary completed six of nine production-runnable cases, versus
+three of nine for v22. It removed every v22 redundant-certificate terminal
+failure, raised structurally valid continuity attempts to 49/51 (26/26 Local),
+and kept all six completed stories within the advisory word range. Local
+OH-V01-001 still exhausted revisions through semantic repair ping-pong; Local
+OH-V01-003 replaced an accepted scene assignment with future-scene material
+after a near-total rewrite while its critic returned PASS. Local OH-V01-002's
+pause coincided with Windows correcting a two-hour dual-boot host-clock error
+and is recorded as environmental rather than an application defect. Production
+graph v4 and prompt v24 now scope Blueprint prompt context to the current scene,
+promote explicit viewpoint and scene-assignment drift to blocking critique,
+enforce a 0.35 prior-draft similarity floor for continuity-only repair, retain
+bounded cumulative per-scene continuity history, preserve stable IDs for
+semantic recurrences, narrow Blueprint contradiction claims, and persist
+cause-oriented revision-limit diagnostics. Blind human review remains required
+for semantic requirements, target format, quality, and preference. Ruff
+lint/format and strict mypy pass across 134 Python files, all 276 pytest tests
+pass, all 11 frontend tests pass, frontend formatting/lint/type checking pass,
+and the production build succeeds. A fresh v24 canary remains pending, so Step
+19 stays in progress. Evidence:
+`docs/benchmark_reports/step-19-local-cloud-v23-canary-2026-09-04.md`.
 
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 

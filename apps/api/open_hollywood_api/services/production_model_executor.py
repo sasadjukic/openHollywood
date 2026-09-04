@@ -10,6 +10,7 @@ from collections.abc import Iterable, Mapping
 from copy import deepcopy
 from dataclasses import dataclass
 from datetime import UTC, datetime
+from difflib import SequenceMatcher
 from enum import StrEnum
 from math import ceil
 from typing import Any, cast
@@ -153,6 +154,7 @@ _NON_WORLD_REPAIR_ACTIONS = (
     "correct_sequence",
 )
 _DIRECT_CONFLICT_DISPOSITION = "directly_incompatible"
+_TARGETED_REVISION_MINIMUM_SIMILARITY = 0.35
 _STORY_LENGTH_ISSUE_PATTERN = re.compile(
     r"\b(?:word[ -]?count|words?|length)\b",
     re.IGNORECASE,
@@ -164,6 +166,20 @@ _STORY_LENGTH_TARGET_PATTERN = re.compile(
 _STRUCTURAL_CRITIQUE_PATTERN = re.compile(
     r"\b(?:causal|continuity|contradict|character|dialogue|ending|logic|plot|"
     r"required element|scene plan|turning point)\w*\b",
+    re.IGNORECASE,
+)
+_SCENE_ASSIGNMENT_CRITIQUE_PATTERN = re.compile(
+    r"\b(?:point[ -]of[ -]view|pov|viewpoint|scene assignment|assigned (?:character|"
+    r"protagonist)|future scene|next scene|wrong (?:character|scene))\b",
+    re.IGNORECASE,
+)
+_SCENE_PLAN_DRIFT_PATTERN = re.compile(
+    r"\b(?:miss(?:es|ing)?|omit(?:s|ted)?|abandon(?:s|ed)?|replace(?:s|d)?|"
+    r"wrong|instead|does not|doesn't|fails? to)\b",
+    re.IGNORECASE,
+)
+_SCENE_PLAN_ANCHOR_PATTERN = re.compile(
+    r"\b(?:goal|conflict|turning point|outcome|exit state|scene plan)\b",
     re.IGNORECASE,
 )
 _QUALITATIVE_CONTRADICTION_PATTERNS = tuple(
@@ -295,9 +311,10 @@ _CONTINUITY_RECHECK_REQUIREMENT = (
     "resolution_assessment, or mark it still_blocking with repair_assessment. Both statuses "
     "select exact revised_draft_evidence_refs. The application rehydrates the prior finding's "
     "identity, basis, category, provenance, and repair; never repeat the complete finding. Put "
-    "only genuinely new defects or advisories in new_findings. A new finding cannot reuse the "
-    "same canonical claim, World Rule, or forbidden-shortcut requirement as a prior finding; "
-    "semantic duplicates are application-consolidated. A new non-world blocker must cite at "
+    "only genuinely new defects or advisories in new_findings. Consult continuity_history before "
+    "calling a defect new. A defect matching any historical canonical claim, World Rule, or "
+    "requirement keeps its stable application identity and prior repair direction; semantic "
+    "duplicates are application-consolidated. A new non-world blocker must cite at "
     "least one exact assertion introduced or changed by the revision. Prior IDs are "
     "application-owned and "
     "are unavailable there. The application owns canonical finding IDs and derives "
@@ -417,6 +434,7 @@ class _ContinuityModelContext:
     requirement_enforcement: Mapping[str, str]
     world_rule_ids: tuple[str, ...]
     previous_candidate_draft: dict[str, Any] | None = None
+    continuity_history: tuple[dict[str, Any], ...] = ()
 
     @property
     def evidence_refs(self) -> tuple[str, ...]:
@@ -571,6 +589,41 @@ class _ContinuityModelContext:
             and isinstance(finding.get("id"), str)
         )
 
+    @property
+    def historical_blocking_finding_ids(self) -> tuple[str, ...]:
+        """Return stable blocker IDs from every earlier report in this scene."""
+        reports = self.continuity_history or (
+            (self.previous_continuity_report,)
+            if self.previous_continuity_report is not None
+            else ()
+        )
+        return tuple(
+            dict.fromkeys(
+                finding["id"]
+                for report in reports
+                for finding in _continuity_report_findings(report)
+                if finding.get("severity") in {"error", "blocking"}
+                and isinstance(finding.get("id"), str)
+            )
+        )
+
+    @property
+    def historical_semantic_finding_ids(self) -> Mapping[str, str]:
+        """Map every known semantic issue to its first stable application ID."""
+        identities: dict[str, str] = {}
+        reports = self.continuity_history or (
+            (self.previous_continuity_report,)
+            if self.previous_continuity_report is not None
+            else ()
+        )
+        for report in reports:
+            for finding in _continuity_report_findings(report):
+                finding_id = finding.get("id")
+                key = _continuity_finding_semantic_key(finding, self)
+                if isinstance(finding_id, str) and key is not None:
+                    identities.setdefault(key, finding_id)
+        return identities
+
 
 _OUTPUT_MODELS: Mapping[_Operation, type[BaseModel]] = {
     _Operation.WRITE: SceneDraft,
@@ -585,12 +638,17 @@ _INSTRUCTIONS: Mapping[_Operation, str] = {
         "approved Blueprint, current canonical Story Bible, and prior accepted scenes. "
         "On revision, address the supplied critique and, when present, the exact blocking "
         "Continuity Report including each finding's recommended_resolution, without "
-        "changing scene identity. Treat length_guidance as a story-wide advisory allocation, "
+        "changing scene identity. Keep revisions minimally invasive: preserve unrelated prose, "
+        "the assigned viewpoint, characters, scene purpose, and scene outcome while repairing "
+        "only the supplied defects. Never draft material assigned to a later scene. Treat "
+        "length_guidance as a story-wide advisory allocation, "
         "not a hard per-scene quota."
     ),
     _Operation.CRITIQUE: (
         "Independently evaluate the exact scene draft against its Scene Plan, the "
-        "approved Blueprint, prose quality, dramatic progress, and prompt constraints. "
+        "approved Blueprint, prose quality, dramatic progress, and prompt constraints. A wrong "
+        "viewpoint or assigned character, or replacement of the planned goal, turning point, "
+        "outcome, or exit state with later-scene material, is blocking and cannot receive PASS. "
         "The target word-count range is story-wide and advisory. Use length_guidance for "
         "context, but never revise or reject a scene solely because that scene is under or "
         "over a proportional word allocation."
@@ -1109,6 +1167,22 @@ class ProfileRoutedProductionExecutor(SceneProductionExecutor):
                     invocation.request_settings = {
                         **invocation.request_settings,
                         "continuity_recheck_observations": list(observations),
+                    }
+            if operation is _Operation.WRITE and isinstance(output, SceneDraft):
+                similarity = _targeted_revision_similarity(
+                    output.model_dump(mode="json"), execution
+                )
+                if similarity is not None:
+                    invocation.request_settings = {
+                        **invocation.request_settings,
+                        "revision_scope_observation": {
+                            "mode": "targeted_continuity_repair",
+                            "prior_draft_similarity": round(similarity, 4),
+                            "minimum_similarity": _TARGETED_REVISION_MINIMUM_SIMILARITY,
+                            "within_change_budget": (
+                                similarity >= _TARGETED_REVISION_MINIMUM_SIMILARITY
+                            ),
+                        },
                     }
             invocation.schema_validation_succeeded = True
             invocation.completed_at = datetime.now(UTC)
@@ -1960,7 +2034,12 @@ def _schema_repair_guidance(
                 diagnostic_value = issue.get(diagnostic_key)
                 if isinstance(diagnostic_value, str):
                     directive[diagnostic_key] = diagnostic_value
-            if issue_type == "missing_requirement_used_as_contradiction":
+            if issue_type == "scene_revision_scope_exceeded":
+                directive["action"] = (
+                    "restore the previous draft and apply only the repair-ledger changes; "
+                    "preserve unrelated prose, viewpoint, assigned characters, and scene outcome"
+                )
+            elif issue_type == "missing_requirement_used_as_contradiction":
                 directive["action"] = (
                     "remove the redundant contradiction and represent an omitted obligation "
                     "only in its keyed requirement_coverage entry"
@@ -2154,6 +2233,11 @@ def _messages(
             payload["previous_continuity_report"] = (
                 continuity_model_context.previous_continuity_report
             )
+        if len(continuity_model_context.continuity_history) > 1:
+            payload["continuity_history"] = [
+                _bounded_continuity_history_entry(report)
+                for report in continuity_model_context.continuity_history[:-1]
+            ]
         payload["output_schema_variant"] = continuity_schema_variant.value
         payload["requirement_coverage_catalog"] = continuity_model_context.requirement_catalog
         payload["forbidden_shortcut_catalog"] = continuity_model_context.forbidden_shortcut_catalog
@@ -2179,13 +2263,27 @@ def _messages(
                 "previous_report_version_id": continuity_model_context.previous_continuity_report[
                     "artifact_version_id"
                 ],
+                "historical_blocking_finding_ids": list(
+                    continuity_model_context.historical_blocking_finding_ids
+                ),
+                "recurrence_policy": (
+                    "A defect matching any historical finding keeps that stable finding ID and "
+                    "is still_blocking; do not alternate repair guidance for the same canonical "
+                    "claim, World Rule, or requirement."
+                ),
             }
     else:
         payload["frozen_benchmark_constraints"] = execution.constraints
         if operation in {_Operation.WRITE, _Operation.CRITIQUE}:
+            payload["input_artifacts"] = _scene_scoped_prompt_inputs(execution)
+            payload["scene_assignment_contract"] = _scene_assignment_contract(execution)
             length_guidance = _story_length_guidance(execution)
             if length_guidance is not None:
                 payload["length_guidance"] = length_guidance
+        if operation is _Operation.WRITE:
+            revision_contract = _targeted_revision_contract(execution)
+            if revision_contract is not None:
+                payload["revision_contract"] = revision_contract
     if execution.previous_failure is not None:
         retry_context = dict(execution.previous_failure)
         payload["retry_context"] = retry_context
@@ -2201,6 +2299,256 @@ def _messages(
         ModelMessage(role=MessageRole.SYSTEM, content=system),
         ModelMessage(role=MessageRole.USER, content=user),
     )
+
+
+def _scene_scoped_prompt_inputs(execution: _Execution) -> tuple[dict[str, Any], ...]:
+    """Hide future scene assignments while retaining exact persisted input lineage."""
+    plan = _continuity_scene_plan(execution)
+    scene_id = plan.get("id")
+    character_ids = {value for value in plan.get("character_ids", []) if isinstance(value, str)}
+    beat_ids = {value for value in plan.get("beat_ids", []) if isinstance(value, str)}
+    location_id = plan.get("location_id")
+
+    def selected(content: Mapping[str, object], name: str, predicate: Any) -> list[object]:
+        values = content.get(name)
+        if not isinstance(values, list):
+            return []
+        return [deepcopy(value) for value in values if isinstance(value, dict) and predicate(value)]
+
+    scoped: list[dict[str, Any]] = []
+    for item in execution.inputs:
+        if item.get("artifact_kind") != ArtifactKind.STORY_BLUEPRINT.value:
+            scoped.append(deepcopy(item))
+            continue
+        content = item.get("content")
+        if not isinstance(content, dict):
+            raise SceneProductionError("approved Blueprint prompt input is invalid")
+        bounded = {key: deepcopy(value) for key, value in item.items() if key != "content"}
+        bounded["context_scope"] = "current_scene_only"
+        bounded["content"] = {
+            key: deepcopy(value)
+            for key, value in content.items()
+            if key
+            not in {
+                "characters",
+                "relationships",
+                "locations",
+                "world_rules",
+                "beats",
+                "scene_plans",
+            }
+        }
+        bounded_content = cast(dict[str, Any], bounded["content"])
+        bounded_content.update(
+            characters=selected(
+                content,
+                "characters",
+                lambda value: value.get("id") in character_ids,
+            ),
+            relationships=selected(
+                content,
+                "relationships",
+                lambda value: (
+                    value.get("source_character_id") in character_ids
+                    or value.get("target_character_id") in character_ids
+                ),
+            ),
+            locations=selected(content, "locations", lambda value: value.get("id") == location_id),
+            world_rules=selected(
+                content,
+                "world_rules",
+                lambda value: (
+                    (
+                        not value.get("relevant_character_ids")
+                        and not value.get("relevant_location_ids")
+                    )
+                    or bool(character_ids.intersection(value.get("relevant_character_ids", [])))
+                    or location_id in value.get("relevant_location_ids", [])
+                ),
+            ),
+            beats=selected(content, "beats", lambda value: value.get("id") in beat_ids),
+            scene_plans=selected(content, "scene_plans", lambda value: value.get("id") == scene_id),
+        )
+        scoped.append(bounded)
+    return tuple(scoped)
+
+
+def _scene_assignment_contract(execution: _Execution) -> dict[str, object]:
+    """Expose one exact current-scene assignment independently of prose guidance."""
+    plan = _continuity_scene_plan(execution)
+    character_ids = [value for value in plan.get("character_ids", []) if isinstance(value, str)]
+    point_of_view = plan.get("point_of_view_character_id")
+    return {
+        "policy_version": "1",
+        "scene_id": execution.unit_id,
+        "scene_number": execution.unit_number,
+        "assigned_character_ids": character_ids,
+        "point_of_view_character_id": (
+            point_of_view
+            if isinstance(point_of_view, str)
+            else (character_ids[0] if len(character_ids) == 1 else None)
+        ),
+        "goal": plan.get("goal"),
+        "conflict": plan.get("conflict"),
+        "turning_point": plan.get("turning_point"),
+        "outcome": plan.get("outcome"),
+        "exit_state": plan.get("exit_state"),
+        "assigned_beat_ids": [
+            value for value in plan.get("beat_ids", []) if isinstance(value, str)
+        ],
+        "hard_failures": [
+            "wrong_point_of_view_or_primary_character",
+            "current_scene_replaced_by_future_scene_material",
+            "planned_turning_point_or_outcome_replaced",
+        ],
+    }
+
+
+def _targeted_revision_contract(execution: _Execution) -> dict[str, object] | None:
+    """Build a concrete repair ledger for a revision without expanding model authority."""
+    if execution.revision_number <= 0:
+        return None
+    critique = _prior_critique(execution)
+    report = _prior_continuity_report(execution)
+    blockers = (
+        [
+            {
+                key: deepcopy(finding.get(key))
+                for key in (
+                    "id",
+                    "category",
+                    "basis",
+                    "requirement_id",
+                    "world_rule_ids",
+                    "recommended_resolution",
+                )
+                if finding.get(key) is not None
+            }
+            for finding in report.get("findings", [])
+            if isinstance(finding, dict) and finding.get("severity") in {"error", "blocking"}
+        ]
+        if report is not None
+        else []
+    )
+    critique_verdict = critique.get("verdict") if critique is not None else None
+    targeted = critique_verdict == CritiqueVerdict.PASS.value and bool(blockers)
+    contract: dict[str, object] = {
+        "policy_version": "1",
+        "mode": "targeted_continuity_repair" if targeted else "bounded_scene_revision",
+        "prior_critique_verdict": critique_verdict,
+        "repair_ledger": blockers,
+        "preserve": [
+            "scene_identity",
+            "assigned_point_of_view_and_characters",
+            "planned_goal_turning_point_outcome_and_exit_state",
+            "all_unrelated_prose_and_successful beats",
+        ],
+        "prohibited": [
+            "full_rewrite_for_a_localized_repair",
+            "material_assigned_to_a_future_scene",
+            "new_unrequested_story_mechanics",
+        ],
+    }
+    if targeted:
+        contract["minimum_prior_draft_similarity"] = _TARGETED_REVISION_MINIMUM_SIMILARITY
+        contract["enforcement"] = "application_validated"
+    return contract
+
+
+def _prior_critique(execution: _Execution) -> dict[str, Any] | None:
+    critiques = tuple(
+        item.get("content")
+        for item in execution.inputs
+        if item.get("artifact_kind") == ArtifactKind.CRITIQUE.value
+    )
+    if not critiques:
+        return None
+    critique = critiques[-1]
+    if not isinstance(critique, dict):
+        raise SceneProductionError("prior critique content is invalid")
+    return critique
+
+
+def _prior_scene_draft(execution: _Execution) -> dict[str, Any] | None:
+    drafts = tuple(
+        item.get("content")
+        for item in execution.inputs
+        if item.get("artifact_kind") == ArtifactKind.SCENE_DRAFT.value
+        and isinstance(item.get("content"), dict)
+        and item["content"].get("scene_id") == execution.unit_id
+        and item["content"].get("revision_number") == execution.revision_number - 1
+    )
+    if len(drafts) > 1:
+        raise SceneProductionError("scene revision has ambiguous prior drafts")
+    return cast(dict[str, Any], drafts[0]) if drafts else None
+
+
+def _targeted_revision_similarity(
+    output_data: Mapping[str, object],
+    execution: _Execution,
+) -> float | None:
+    contract = _targeted_revision_contract(execution)
+    if contract is None or contract.get("mode") != "targeted_continuity_repair":
+        return None
+    prior = _prior_scene_draft(execution)
+    prior_prose = prior.get("prose") if prior is not None else None
+    revised_prose = output_data.get("prose")
+    if not isinstance(prior_prose, str) or not isinstance(revised_prose, str):
+        return None
+    prior_words = re.findall(r"\w+|[^\w\s]", prior_prose.casefold())
+    revised_words = re.findall(r"\w+|[^\w\s]", revised_prose.casefold())
+    return SequenceMatcher(None, prior_words, revised_words, autojunk=False).ratio()
+
+
+def _validate_targeted_scene_revision(
+    output_data: Mapping[str, object],
+    execution: _Execution,
+) -> None:
+    """Reject a continuity-only revision that replaces rather than repairs the scene."""
+    similarity = _targeted_revision_similarity(output_data, execution)
+    if similarity is None or similarity >= _TARGETED_REVISION_MINIMUM_SIMILARITY:
+        return
+    raise _StructuredOutputContractError(
+        "prose",
+        "continuity-only revision replaced too much unrelated scene prose",
+        issue_type="scene_revision_scope_exceeded",
+        expected_value=f">={_TARGETED_REVISION_MINIMUM_SIMILARITY:.2f}",
+        received_value=f"{similarity:.3f}",
+    )
+
+
+def _bounded_continuity_history_entry(report: Mapping[str, object]) -> dict[str, object]:
+    """Expose historical semantic identity and repair direction without story excerpts."""
+    findings = _continuity_report_findings(report)
+    return {
+        "artifact_version_id": report.get("artifact_version_id"),
+        "findings": [
+            {
+                key: deepcopy(finding.get(key))
+                for key in (
+                    "id",
+                    "category",
+                    "basis",
+                    "requirement_id",
+                    "world_rule_ids",
+                    "canonical_source_refs",
+                    "recommended_resolution",
+                    "recheck_disposition",
+                )
+                if finding.get(key) is not None
+            }
+            for finding in findings
+            if finding.get("severity") in {"error", "blocking"}
+        ],
+    }
+
+
+def _continuity_report_findings(report: Mapping[str, object]) -> tuple[dict[str, Any], ...]:
+    content = report.get("content")
+    findings = content.get("findings") if isinstance(content, dict) else report.get("findings")
+    if not isinstance(findings, list):
+        return ()
+    return tuple(finding for finding in findings if isinstance(finding, dict))
 
 
 def _benchmark_constraint_applicability(
@@ -2501,8 +2849,6 @@ def _continuity_model_context(execution: _Execution) -> _ContinuityModelContext:
         for item in prompt_inputs
         if item.get("artifact_kind") == ArtifactKind.CONTINUITY_REPORT.value
     )
-    if len(prior_reports) > 1:
-        raise SceneProductionError("continuity re-check requires at most one prior report")
     canonical_inputs = tuple(
         _bounded_continuity_canonical_input(item, execution)
         for item in prompt_inputs
@@ -2533,7 +2879,7 @@ def _continuity_model_context(execution: _Execution) -> _ContinuityModelContext:
     return _ContinuityModelContext(
         candidate_draft=candidate,
         accepted_prior_drafts=prior_drafts,
-        previous_continuity_report=prior_reports[0] if prior_reports else None,
+        previous_continuity_report=prior_reports[-1] if prior_reports else None,
         canonical_source_catalog=_continuity_canonical_source_catalog(
             canonical_inputs,
         ),
@@ -2548,6 +2894,7 @@ def _continuity_model_context(execution: _Execution) -> _ContinuityModelContext:
             prompt_inputs,
             candidate,
         ),
+        continuity_history=prior_reports,
     )
 
 
@@ -2821,7 +3168,7 @@ def _continuity_claim_categories(
     field_name = source_path.rsplit(".", 1)[-1]
     is_blueprint_character = ".characters[" in source_path
     if artifact_kind == ArtifactKind.CHARACTER.value or is_blueprint_character:
-        if field_name in {"name", "story_role"}:
+        if field_name == "name":
             return (ContinuityCategory.CHARACTER.value,)
         if field_name in {"secrets", "initial_knowledge"}:
             return (ContinuityCategory.CHARACTER_KNOWLEDGE.value,)
@@ -2831,7 +3178,9 @@ def _continuity_claim_categories(
         return ()
     is_blueprint_relationship = ".relationships[" in source_path
     if artifact_kind == ArtifactKind.RELATIONSHIP.value or is_blueprint_relationship:
-        if field_name in {"label", "history"}:
+        if field_name == "label" or (
+            field_name == "history" and artifact_kind == ArtifactKind.RELATIONSHIP.value
+        ):
             return (ContinuityCategory.RELATIONSHIP.value,)
         return ()
     is_blueprint_location = ".locations[" in source_path
@@ -3167,10 +3516,12 @@ def _materialize_output_data(
             scene_number=writing.unit.unit_number,
             revision_number=writing.revision_number,
         )
+        _validate_targeted_scene_revision(materialized, execution)
         return materialized
     if operation is _Operation.CRITIQUE:
         critique_task = cast(SceneCritiqueTask, task)
         materialized = _normalize_story_length_critique(materialized, execution)
+        materialized = _normalize_scene_assignment_critique(materialized)
         scores = materialized.get("scores")
         if (
             not isinstance(scores, list)
@@ -3378,6 +3729,44 @@ def _normalize_story_length_critique(
     return normalized
 
 
+def _normalize_scene_assignment_critique(
+    critique: dict[str, Any],
+) -> dict[str, Any]:
+    """Prevent explicit scene-assignment drift from surviving as a minor PASS issue."""
+    issues = critique.get("issues")
+    if not isinstance(issues, list) or not issues:
+        return critique
+    normalized_issues: list[object] = []
+    promoted = False
+    for issue in issues:
+        if not isinstance(issue, dict):
+            normalized_issues.append(issue)
+            continue
+        category = issue.get("category")
+        description = issue.get("description")
+        if not isinstance(category, str) or not isinstance(description, str):
+            normalized_issues.append(issue)
+            continue
+        diagnostic = f"{category} {description}"
+        exact_assignment_failure = _SCENE_ASSIGNMENT_CRITIQUE_PATTERN.search(diagnostic) is not None
+        planned_anchor_failure = (
+            _SCENE_PLAN_ANCHOR_PATTERN.search(diagnostic) is not None
+            and _SCENE_PLAN_DRIFT_PATTERN.search(description) is not None
+        )
+        if not exact_assignment_failure and not planned_anchor_failure:
+            normalized_issues.append(issue)
+            continue
+        promoted = True
+        normalized_issues.append({**issue, "severity": CritiqueSeverity.BLOCKING.value})
+    if not promoted:
+        return critique
+    return {
+        **critique,
+        "issues": normalized_issues,
+        "verdict": CritiqueVerdict.REVISE.value,
+    }
+
+
 def _is_story_length_only_critique_issue(issue: Mapping[str, object]) -> bool:
     """Recognize an issue whose asserted defect is only scene-level word count."""
     description = issue.get("description")
@@ -3442,7 +3831,7 @@ def _materialize_requirement_coverage(
             issue_type="requirement_partition_mismatch",
         )
     materialized: list[dict[str, object]] = []
-    prior_ids = set(model_context.prior_blocking_finding_ids)
+    prior_ids = set(model_context.historical_blocking_finding_ids)
     for requirement_id in expected_ids:
         raw = coverage[requirement_id]
         if not isinstance(raw, dict) or raw.get("status") not in _COVERAGE_STATUSES:
@@ -3712,26 +4101,24 @@ def _new_prohibitions(
 
 
 def _prior_continuity_resolutions(execution: _Execution) -> dict[str, str]:
-    """Return exact repair text from the single prior continuity report, if any."""
-    report = _prior_continuity_report(execution)
-    if report is None:
-        return {}
-    findings = report.get("findings")
-    if not isinstance(findings, list):
-        raise ValueError("prior continuity report findings are invalid")
+    """Return the latest exact repair text for every historical continuity blocker."""
     resolutions: dict[str, str] = {}
-    for finding in findings:
-        if not isinstance(finding, dict):
-            continue
-        finding_id = finding.get("id")
-        resolution = finding.get("recommended_resolution")
-        if (
-            finding.get("severity") in {"error", "blocking"}
-            and isinstance(finding_id, str)
-            and isinstance(resolution, str)
-            and resolution.strip()
-        ):
-            resolutions[finding_id] = resolution
+    for report in _prior_continuity_reports(execution):
+        findings = report.get("findings")
+        if not isinstance(findings, list):
+            raise ValueError("prior continuity report findings are invalid")
+        for finding in findings:
+            if not isinstance(finding, dict):
+                continue
+            finding_id = finding.get("id")
+            resolution = finding.get("recommended_resolution")
+            if (
+                finding.get("severity") in {"error", "blocking"}
+                and isinstance(finding_id, str)
+                and isinstance(resolution, str)
+                and resolution.strip()
+            ):
+                resolutions[finding_id] = resolution
     return resolutions
 
 
@@ -4156,17 +4543,6 @@ def _consolidate_continuity_semantic_duplicates(
     model_context: _ContinuityModelContext,
 ) -> list[object]:
     """Keep one finding for each requirement, canonical claim, rule, or shortcut."""
-    prior_keys: set[str] = set()
-    report = model_context.previous_continuity_report
-    content = report.get("content") if isinstance(report, dict) else None
-    prior_findings = content.get("findings") if isinstance(content, dict) else None
-    if isinstance(prior_findings, list):
-        prior_keys.update(
-            key
-            for finding in prior_findings
-            if isinstance(finding, dict)
-            and (key := _continuity_finding_semantic_key(finding, model_context)) is not None
-        )
     seen: set[str] = set()
     consolidated: list[object] = []
     for finding in findings:
@@ -4177,10 +4553,7 @@ def _consolidate_continuity_semantic_duplicates(
         if key is None:
             consolidated.append(finding)
             continue
-        is_new_recheck = finding.get("recheck_disposition") == (
-            ContinuityRecheckDisposition.NEWLY_EXPOSED.value
-        )
-        if key in seen or (is_new_recheck and key in prior_keys):
+        if key in seen:
             continue
         seen.add(key)
         consolidated.append(finding)
@@ -4255,6 +4628,9 @@ def _validate_continuity_recheck_analysis(
         findings,
         prior_report,
         revised_draft_prose=_current_scene_draft_prose(execution),
+        historical_blocking_finding_ids=set(
+            _continuity_model_context(execution).historical_blocking_finding_ids
+        ),
     )
     if issues:
         raise ContinuityRecheckStagnationError(
@@ -4264,19 +4640,22 @@ def _validate_continuity_recheck_analysis(
 
 
 def _prior_continuity_report(execution: _Execution) -> dict[str, Any] | None:
-    reports = tuple(
-        item.get("content")
-        for item in execution.inputs
-        if item.get("artifact_kind") == ArtifactKind.CONTINUITY_REPORT.value
-    )
-    if len(reports) > 1:
-        raise ValueError("continuity re-check requires at most one prior report")
+    reports = _prior_continuity_reports(execution)
     if not reports:
         return None
-    report = reports[0]
-    if not isinstance(report, dict):
-        raise ValueError("prior continuity report content is invalid")
-    return report
+    return reports[-1]
+
+
+def _prior_continuity_reports(execution: _Execution) -> tuple[dict[str, Any], ...]:
+    reports: list[dict[str, Any]] = []
+    for item in execution.inputs:
+        if item.get("artifact_kind") != ArtifactKind.CONTINUITY_REPORT.value:
+            continue
+        report = item.get("content")
+        if not isinstance(report, dict):
+            raise ValueError("prior continuity report content is invalid")
+        reports.append(report)
+    return tuple(reports)
 
 
 def _invalid_continuity_recheck_finding_ids(
@@ -4303,6 +4682,7 @@ def _continuity_recheck_issues(
     prior_report: Mapping[str, object],
     *,
     revised_draft_prose: str | None = None,
+    historical_blocking_finding_ids: set[str] | None = None,
 ) -> tuple[dict[str, str], ...]:
     """Validate application-owned re-check state and exact current-draft evidence."""
     prior_findings = prior_report.get("findings")
@@ -4315,6 +4695,7 @@ def _continuity_recheck_issues(
         and isinstance(finding.get("id"), str)
         and finding.get("severity") in {"error", "blocking"}
     }
+    historical_ids = historical_blocking_finding_ids or set(prior_by_id)
     issues: list[dict[str, str]] = []
 
     def issue(finding_id: str, code: str, message: str) -> None:
@@ -4336,7 +4717,7 @@ def _continuity_recheck_issues(
         finding_id = cast(str, finding["id"])
         expected_disposition = (
             ContinuityRecheckDisposition.STILL_BLOCKING.value
-            if finding_id in prior_by_id
+            if finding_id in historical_ids
             else ContinuityRecheckDisposition.NEWLY_EXPOSED.value
         )
         revised_evidence = finding.get("revised_evidence")
@@ -4413,9 +4794,23 @@ def _continuity_recheck_observations(
         for finding in prior_findings
         if isinstance(finding, dict) and isinstance(finding.get("id"), str)
     }
+    historical_ids = set(_continuity_model_context(execution).historical_blocking_finding_ids)
     observations: list[dict[str, str]] = []
     for finding in report.findings:
         prior = prior_by_id.get(finding.id)
+        if (
+            prior is None
+            and finding.id in historical_ids
+            and finding.recheck_disposition is ContinuityRecheckDisposition.STILL_BLOCKING
+        ):
+            observations.append(
+                {
+                    "finding_id": finding.id,
+                    "type": "historical_blocker_recurred",
+                    "disposition": "blocking",
+                }
+            )
+            continue
         if prior is None or not finding.repair_assessment:
             continue
         prior_evidence = prior.get("revised_evidence") or prior.get("evidence")
@@ -4749,13 +5144,22 @@ def _materialize_continuity_identity(
         materialized["recheck_disposition"] = ContinuityRecheckDisposition.STILL_BLOCKING.value
     else:
         prefix = "continuity_new" if is_blocking else "continuity_advisory"
-        materialized["id"] = (
+        historical_id = (
+            model_context.historical_semantic_finding_ids.get(semantic_key)
+            if semantic_key is not None
+            else None
+        )
+        materialized["id"] = historical_id or (
             _semantic_continuity_finding_id(semantic_key)
             if semantic_key is not None
             else f"{prefix}_r{revision_number:02d}_{index + 1:03d}"
         )
         if is_blocking:
-            materialized["recheck_disposition"] = ContinuityRecheckDisposition.NEWLY_EXPOSED.value
+            materialized["recheck_disposition"] = (
+                ContinuityRecheckDisposition.STILL_BLOCKING.value
+                if historical_id is not None
+                else ContinuityRecheckDisposition.NEWLY_EXPOSED.value
+            )
     return materialized
 
 
@@ -4802,13 +5206,17 @@ def _materialize_continuity_finding(
         materialized["blocks_approval"] = True
         resolution = finding.get("recommended_resolution")
         finding_id = finding.get("id")
-        if (
-            (not isinstance(resolution, str) or not resolution.strip())
-            and isinstance(finding_id, str)
-            and prior_resolutions is not None
-            and finding_id in prior_resolutions
+        historical_resolution = (
+            prior_resolutions.get(finding_id)
+            if isinstance(finding_id, str) and prior_resolutions is not None
+            else None
+        )
+        if historical_resolution is not None and (
+            finding.get("recheck_disposition") == ContinuityRecheckDisposition.STILL_BLOCKING.value
+            or not isinstance(resolution, str)
+            or not resolution.strip()
         ):
-            materialized["recommended_resolution"] = prior_resolutions[finding_id]
+            materialized["recommended_resolution"] = historical_resolution
     return materialized
 
 
@@ -4862,6 +5270,7 @@ def _continuity_inputs(task: ContinuityCheckTask) -> tuple[ArtifactReference, ..
             task.story_bible,
             task.draft,
             *task.accepted_units,
+            *task.continuity_history,
             *((task.previous_continuity,) if task.previous_continuity is not None else ()),
         )
     )
@@ -4901,32 +5310,33 @@ def _continuity_recheck_input_references(
     )
     if not reports:
         return references
-    if len(reports) != 1:
-        raise SceneProductionError("continuity re-check requires exactly one prior report")
-    content = reports[0].get("content")
-    prior_version_value = content.get("scene_version_id") if isinstance(content, dict) else None
-    try:
-        prior_version_id = UUID(str(prior_version_value))
-    except (TypeError, ValueError) as error:
-        raise SceneProductionError(
-            "prior Continuity Report has no valid candidate-draft lineage"
-        ) from error
-    if any(reference.version_id == prior_version_id for reference in references):
-        return references
-    version = session.scalar(
-        select(ArtifactVersion)
-        .where(ArtifactVersion.id == prior_version_id)
-        .options(joinedload(ArtifactVersion.artifact))
-    )
-    if (
-        version is None
-        or version.artifact.project_id != project_id
-        or version.artifact.artifact_type != ArtifactKind.SCENE_DRAFT.value
-    ):
-        raise SceneProductionError(
-            "prior Continuity Report candidate-draft lineage cannot be resolved"
+    resolved = references
+    for report in reports:
+        content = report.get("content")
+        prior_version_value = content.get("scene_version_id") if isinstance(content, dict) else None
+        try:
+            prior_version_id = UUID(str(prior_version_value))
+        except (TypeError, ValueError) as error:
+            raise SceneProductionError(
+                "prior Continuity Report has no valid candidate-draft lineage"
+            ) from error
+        if any(reference.version_id == prior_version_id for reference in resolved):
+            continue
+        version = session.scalar(
+            select(ArtifactVersion)
+            .where(ArtifactVersion.id == prior_version_id)
+            .options(joinedload(ArtifactVersion.artifact))
         )
-    return _unique_references((*references, _reference(version)))
+        if (
+            version is None
+            or version.artifact.project_id != project_id
+            or version.artifact.artifact_type != ArtifactKind.SCENE_DRAFT.value
+        ):
+            raise SceneProductionError(
+                "prior Continuity Report candidate-draft lineage cannot be resolved"
+            )
+        resolved = _unique_references((*resolved, _reference(version)))
+    return resolved
 
 
 def _load_inputs(
