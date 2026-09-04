@@ -22,6 +22,8 @@ from open_hollywood_engine.artifacts import (
     ContinuityRecheckDisposition,
     ContinuityReport,
     Critique,
+    CritiqueSeverity,
+    CritiqueVerdict,
     SceneDraft,
     StoryBible,
     StoryBibleInvariantError,
@@ -109,9 +111,9 @@ _CONTINUITY_MODEL_CERTIFICATION_FIELDS = frozenset(
     {
         "canonical_claim_ids",
         "conflict_kind",
-        "conflicting_attribute",
+        "conflict_disposition",
+        "conflict_explanation",
         "draft_assertion",
-        "logical_conflict_assessment",
         "repair_action",
         "violation_kind",
         "rule_conflict_assessment",
@@ -149,6 +151,20 @@ _NON_WORLD_REPAIR_ACTIONS = (
     "replace",
     "correct_state",
     "correct_sequence",
+)
+_DIRECT_CONFLICT_DISPOSITION = "directly_incompatible"
+_STORY_LENGTH_ISSUE_PATTERN = re.compile(
+    r"\b(?:word[ -]?count|words?|length)\b",
+    re.IGNORECASE,
+)
+_STORY_LENGTH_TARGET_PATTERN = re.compile(
+    r"\b(?:minimum|maximum|target|range|limit|under|below|short|over|above|exceed)\w*\b",
+    re.IGNORECASE,
+)
+_STRUCTURAL_CRITIQUE_PATTERN = re.compile(
+    r"\b(?:causal|continuity|contradict|character|dialogue|ending|logic|plot|"
+    r"required element|scene plan|turning point)\w*\b",
+    re.IGNORECASE,
 )
 _QUALITATIVE_CONTRADICTION_PATTERNS = tuple(
     re.compile(pattern, re.IGNORECASE)
@@ -204,15 +220,16 @@ _CONTINUITY_FINDING_BASIS_REQUIREMENT = (
     "contradiction must "
     "select draft_evidence_refs from candidate_draft.content.evidence_catalog. A non-world "
     "contradiction selects exactly one self-describing canonical_claim_id from "
-    "contradiction_claim_catalog and completes the typed direct-conflict certificate; the "
-    "application derives category, source, and lineage. "
+    "contradiction_claim_catalog, one or more exact draft evidence handles, a "
+    "directly_incompatible disposition, and a corrective repair_action. A short human-readable "
+    "conflict_explanation is optional and never lexically gated; the application derives the "
+    "category, conflict kind, source, lineage, and exact draft assertion. "
     "Scene Plan obligations are unavailable in this branch and can only be assessed through "
     "requirement_coverage. A World Rule contradiction "
     "selects only exact world_rule_ids; the application derives their canonical source "
     "references. Contradiction means an "
-    "affirmative current-draft statement or action that conflicts with canon. The exact "
-    "draft_assertion must be one of the selected evidence excerpts, conflict_kind must match "
-    "the selected claim category, and repair_action must correct, replace, or remove the "
+    "affirmative current-draft statement or action that conflicts with canon. The selected "
+    "repair_action must correct, replace, or remove the "
     "existing incompatible assertion rather than add context. Never use contradiction "
     "for absent, weak, implicit, or incomplete requirement coverage. A "
     "forbidden_shortcut_violation must cite one exact due-now forbidden "
@@ -297,7 +314,7 @@ _CONTINUITY_RECHECK_REQUIREMENT = (
     "with contradictory guidance unless exact Scene Plan or Story Bible evidence proves "
     "the prior repair invalid."
 )
-_LOCAL_SCHEMA_REPAIR_COMMON_RULES = (
+_SCHEMA_REPAIR_COMMON_RULES = (
     "Return the complete replacement JSON object, not a patch or explanation.",
     "Correct every validation issue at its exact focus location before changing any "
     "unrelated creative content.",
@@ -307,7 +324,7 @@ _LOCAL_SCHEMA_REPAIR_COMMON_RULES = (
     "When an optional field is not applicable, use the schema default shape (null, an "
     "empty array, or omission as permitted by the supplied schema) instead of placeholder text.",
 )
-_LOCAL_SCHEMA_REPAIR_OPERATION_RULES: Mapping[_Operation, tuple[str, ...]] = {
+_SCHEMA_REPAIR_OPERATION_RULES: Mapping[_Operation, tuple[str, ...]] = {
     _Operation.WRITE: (
         "Keep prose and title as non-empty strings, is_complete=true, and preserve the "
         "assigned scene and revision identity.",
@@ -323,9 +340,10 @@ _LOCAL_SCHEMA_REPAIR_OPERATION_RULES: Mapping[_Operation, tuple[str, ...]] = {
         "Match every blocking finding's basis_details object to its basis-specific evidence "
         "contract. Select draft "
         "evidence handles from candidate_draft.content.evidence_catalog. Non-world "
-        "contradictions select exactly one typed claim ID from contradiction_claim_catalog and "
-        "supply draft_assertion, conflict_kind, conflicting_attribute, "
-        "logical_conflict_assessment, and repair_action; "
+        "contradictions select exactly one typed claim ID from contradiction_claim_catalog, "
+        "one or more draft evidence handles, conflict_disposition=directly_incompatible, and "
+        "one corrective repair_action; the application derives the exact assertion, category, "
+        "conflict kind, provenance, and lineage. "
         "World Rule contradictions select world_rule_ids and omit canonical_source_refs. "
         "Scene Plan requirements exist only in requirement_coverage. Never copy prose or "
         "requirement text into an ID field.",
@@ -360,11 +378,15 @@ class _StructuredOutputContractError(ValueError):
         *,
         issue_type: str | None = None,
         issues: tuple[dict[str, str], ...] = (),
+        expected_value: str | None = None,
+        received_value: str | None = None,
     ) -> None:
         super().__init__(message)
         self.location = location
         self.issue_type = issue_type or type(self).__name__
         self.issues = issues
+        self.expected_value = expected_value
+        self.received_value = received_value
 
 
 class ContinuityRecheckStagnationError(_StructuredOutputContractError):
@@ -563,11 +585,15 @@ _INSTRUCTIONS: Mapping[_Operation, str] = {
         "approved Blueprint, current canonical Story Bible, and prior accepted scenes. "
         "On revision, address the supplied critique and, when present, the exact blocking "
         "Continuity Report including each finding's recommended_resolution, without "
-        "changing scene identity."
+        "changing scene identity. Treat length_guidance as a story-wide advisory allocation, "
+        "not a hard per-scene quota."
     ),
     _Operation.CRITIQUE: (
         "Independently evaluate the exact scene draft against its Scene Plan, the "
-        "approved Blueprint, prose quality, dramatic progress, and prompt constraints."
+        "approved Blueprint, prose quality, dramatic progress, and prompt constraints. "
+        "The target word-count range is story-wide and advisory. Use length_guidance for "
+        "context, but never revise or reject a scene solely because that scene is under or "
+        "over a proportional word allocation."
     ),
     _Operation.CONTINUITY: (
         "Check the exact scene draft against the exact canonical Story Bible and Scene "
@@ -1136,7 +1162,7 @@ class ProfileRoutedProductionExecutor(SceneProductionExecutor):
                 invocation.request_settings = {
                     **invocation.request_settings,
                     "structured_failure": {
-                        "schema_version": "1",
+                        "schema_version": "2",
                         "issues": list(safe_validation_issues),
                     },
                 }
@@ -1259,7 +1285,14 @@ def _structured_failure_issues(
             {
                 key: value
                 for key, raw_value in issue.items()
-                if key in {"location", "type", "message"}
+                if key
+                in {
+                    "location",
+                    "type",
+                    "message",
+                    "expected_value",
+                    "received_value",
+                }
                 and (value := _safe_structured_failure_detail(raw_value)) is not None
             }
             for issue in error.issues[:_MAX_SAFE_STRUCTURED_FAILURE_ISSUES]
@@ -1276,6 +1309,16 @@ def _structured_failure_issues(
     }
     if detail is not None:
         issue["message"] = detail
+    if isinstance(error, _StructuredOutputContractError):
+        for key, raw_value in (
+            ("expected_value", error.expected_value),
+            ("received_value", error.received_value),
+        ):
+            if (
+                raw_value is not None
+                and (value := _safe_structured_failure_detail(raw_value)) is not None
+            ):
+                issue[key] = value
     return (issue,)
 
 
@@ -1739,20 +1782,11 @@ def _continuity_basis_detail_schema(
             "maxItems": _MAX_CANONICAL_CLAIMS_PER_FINDING,
             "title": "Canonical Claim Ids",
         }
-        properties["logical_conflict_assessment"] = {
+        properties["conflict_disposition"] = {
             "type": "string",
-            "minLength": 1,
-            "title": "Logical Conflict Assessment",
+            "const": _DIRECT_CONFLICT_DISPOSITION,
         }
-        properties["draft_assertion"] = {
-            "type": "string",
-            "minLength": 1,
-        }
-        properties["conflict_kind"] = {
-            "type": "string",
-            "enum": sorted(set(_NON_WORLD_CONFLICT_KIND_BY_CATEGORY.values())),
-        }
-        properties["conflicting_attribute"] = {
+        properties["conflict_explanation"] = {
             "type": "string",
             "minLength": 1,
         }
@@ -1763,10 +1797,7 @@ def _continuity_basis_detail_schema(
         required.extend(
             (
                 "canonical_claim_ids",
-                "draft_assertion",
-                "conflict_kind",
-                "conflicting_attribute",
-                "logical_conflict_assessment",
+                "conflict_disposition",
                 "repair_action",
             )
         )
@@ -1864,7 +1895,7 @@ def _select_production_model(
     return cloud, (fallback,)
 
 
-def _local_schema_repair_guidance(
+def _schema_repair_guidance(
     *,
     operation: _Operation,
     deployment: ModelDeployment,
@@ -1872,14 +1903,13 @@ def _local_schema_repair_guidance(
     continuity_schema_variant: _ContinuitySchemaVariant | None = None,
     continuity_model_context: _ContinuityModelContext | None = None,
 ) -> dict[str, object] | None:
-    """Build a narrow repair packet without replaying the global continuity catalogs."""
-    if (
-        deployment is not ModelDeployment.LOCAL
-        or previous_failure is None
-        or previous_failure.get("error_code")
-        not in {"schema_validation_failed", _CONTINUITY_RECHECK_STAGNATION_ERROR_CODE}
-    ):
+    """Build one provider-neutral repair packet without replaying global catalogs."""
+    if previous_failure is None or previous_failure.get("error_code") not in {
+        "schema_validation_failed",
+        _CONTINUITY_RECHECK_STAGNATION_ERROR_CODE,
+    }:
         return None
+    del deployment
 
     focus_locations: list[str] = []
     validation_issues = previous_failure.get("validation_issues")
@@ -1893,7 +1923,7 @@ def _local_schema_repair_guidance(
     if not focus_locations:
         focus_locations.append("$")
 
-    operation_rules = list(_LOCAL_SCHEMA_REPAIR_OPERATION_RULES[operation])
+    operation_rules = list(_SCHEMA_REPAIR_OPERATION_RULES[operation])
     if operation is _Operation.CONTINUITY:
         if continuity_schema_variant is _ContinuitySchemaVariant.INITIAL_CHECK:
             operation_rules.insert(
@@ -1926,6 +1956,10 @@ def _local_schema_repair_guidance(
                 "issue_type": issue_type,
                 "action": "replace the value at this exact location with the schema-valid form",
             }
+            for diagnostic_key in ("expected_value", "received_value"):
+                diagnostic_value = issue.get(diagnostic_key)
+                if isinstance(diagnostic_value, str):
+                    directive[diagnostic_key] = diagnostic_value
             if issue_type == "missing_requirement_used_as_contradiction":
                 directive["action"] = (
                     "remove the redundant contradiction and represent an omitted obligation "
@@ -1972,9 +2006,8 @@ def _local_schema_repair_guidance(
                 )
             elif issue_type == "non_world_conflict_certificate_invalid":
                 directive["action"] = (
-                    "complete a direct-conflict certificate using the exact selected draft "
-                    "excerpt, the category-specific conflict_kind, one conflicting_attribute, "
-                    "and a repair_action that corrects or removes the existing assertion; "
+                    "select conflict_disposition=directly_incompatible and a repair_action "
+                    "that corrects or removes the selected draft evidence; "
                     "otherwise remove the blocker or return it as advisory craft feedback"
                 )
             elif issue_type == "new_contradiction_not_new_to_revision":
@@ -1991,15 +2024,77 @@ def _local_schema_repair_guidance(
             directives.append(directive)
 
     guidance: dict[str, object] = {
-        "policy_version": "5",
+        "policy_version": "6",
         "mode": "repair_only",
         "focus_locations": focus_locations,
         "directives": directives,
-        "common_rules": list(_LOCAL_SCHEMA_REPAIR_COMMON_RULES),
+        "common_rules": list(_SCHEMA_REPAIR_COMMON_RULES),
         "operation_rules": operation_rules,
     }
     if continuity_schema_variant is not None:
         guidance["schema_variant"] = continuity_schema_variant.value
+    return guidance
+
+
+def _story_length_guidance(execution: _Execution) -> dict[str, object] | None:
+    """Derive a soft scene allocation from the story-wide advisory word range."""
+    target = execution.constraints.get("target_word_count")
+    if not isinstance(target, dict):
+        return None
+    minimum = target.get("minimum")
+    maximum = target.get("maximum")
+    if (
+        not isinstance(minimum, int)
+        or isinstance(minimum, bool)
+        or not isinstance(maximum, int)
+        or isinstance(maximum, bool)
+        or minimum < 0
+        or maximum < minimum
+    ):
+        return None
+
+    accepted_words = 0
+    current_candidate_words: int | None = None
+    for artifact in execution.inputs:
+        if artifact.get("artifact_kind") != ArtifactKind.SCENE_DRAFT.value:
+            continue
+        content = artifact.get("content")
+        if not isinstance(content, dict):
+            continue
+        prose = content.get("prose")
+        scene_id = content.get("scene_id")
+        if not isinstance(prose, str):
+            continue
+        words = len(prose.split())
+        if scene_id == execution.unit_id:
+            current_candidate_words = words
+        else:
+            accepted_words += words
+
+    remaining_scenes = execution.unit_count - execution.unit_number + 1
+    if remaining_scenes < 1:
+        raise SceneProductionError("length guidance requires valid remaining scene bounds")
+    remaining_minimum = max(0, minimum - accepted_words)
+    remaining_maximum = max(0, maximum - accepted_words)
+    guidance: dict[str, object] = {
+        "policy": "story_wide_advisory",
+        "story_target_words": {"minimum": minimum, "maximum": maximum},
+        "accepted_scene_words_so_far": accepted_words,
+        "remaining_story_target_words": {
+            "minimum": remaining_minimum,
+            "maximum": remaining_maximum,
+        },
+        "remaining_scenes_including_current": remaining_scenes,
+        "current_scene_soft_allocation_words": {
+            "minimum": ceil(remaining_minimum / remaining_scenes),
+            "maximum": ceil(remaining_maximum / remaining_scenes),
+        },
+        "enforcement": (
+            "advisory_only; never revise, reject, or block solely for scene word count"
+        ),
+    }
+    if current_candidate_words is not None:
+        guidance["current_candidate_words"] = current_candidate_words
     return guidance
 
 
@@ -2011,7 +2106,7 @@ def _messages(
     continuity_schema_variant: _ContinuitySchemaVariant | None,
     continuity_model_context: _ContinuityModelContext | None,
 ) -> tuple[ModelMessage, ...]:
-    local_schema_repair = _local_schema_repair_guidance(
+    schema_repair = _schema_repair_guidance(
         operation=operation,
         deployment=execution.selection.deployment,
         previous_failure=execution.previous_failure,
@@ -2025,10 +2120,10 @@ def _messages(
         "or undeclared fields. If retry_context is present, correct every reported "
         "structural error without changing the assignment or inventing new lineage."
         + (
-            " This is a Local structured-output repair attempt. Follow "
-            "local_schema_repair exactly, prioritize its focus locations, and return the "
+            " This is a structured-output repair attempt. Follow schema_repair exactly, "
+            "prioritize its focus locations, and return the "
             "entire corrected object once."
-            if local_schema_repair is not None
+            if schema_repair is not None
             else ""
         )
     )
@@ -2069,7 +2164,15 @@ def _messages(
         payload["continuity_contract"] = {
             "version": SCENE_PRODUCTION_PROMPT_TEMPLATE_VERSION,
             "coverage_statuses": ["met", "partial", "absent"],
-            "application_owns": ["finding_id", "category", "source", "lineage", "severity"],
+            "application_owns": [
+                "finding_id",
+                "category",
+                "conflict_kind",
+                "draft_assertion",
+                "source",
+                "lineage",
+                "severity",
+            ],
         }
         if continuity_model_context.previous_continuity_report is not None:
             payload["continuity_recheck"] = {
@@ -2079,11 +2182,15 @@ def _messages(
             }
     else:
         payload["frozen_benchmark_constraints"] = execution.constraints
+        if operation in {_Operation.WRITE, _Operation.CRITIQUE}:
+            length_guidance = _story_length_guidance(execution)
+            if length_guidance is not None:
+                payload["length_guidance"] = length_guidance
     if execution.previous_failure is not None:
         retry_context = dict(execution.previous_failure)
         payload["retry_context"] = retry_context
-    if local_schema_repair is not None:
-        payload["local_schema_repair"] = local_schema_repair
+    if schema_repair is not None:
+        payload["schema_repair"] = schema_repair
     user = json.dumps(
         payload,
         ensure_ascii=False,
@@ -3063,6 +3170,7 @@ def _materialize_output_data(
         return materialized
     if operation is _Operation.CRITIQUE:
         critique_task = cast(SceneCritiqueTask, task)
+        materialized = _normalize_story_length_critique(materialized, execution)
         scores = materialized.get("scores")
         if (
             not isinstance(scores, list)
@@ -3240,6 +3348,74 @@ def _materialize_output_data(
             source_story_bible.prohibited_contradictions,
         )
     return materialized
+
+
+def _normalize_story_length_critique(
+    critique: dict[str, Any],
+    execution: _Execution,
+) -> dict[str, Any]:
+    """Keep the story-wide advisory range from becoming a per-scene revision gate."""
+    issues = critique.get("issues")
+    if not isinstance(issues, list) or not issues:
+        return critique
+    if _has_explicit_hard_scene_length_constraint(execution.constraints):
+        return critique
+
+    normalized = dict(critique)
+    normalized_issues: list[object] = []
+    length_issue_count = 0
+    for issue in issues:
+        if not isinstance(issue, dict) or not _is_story_length_only_critique_issue(issue):
+            normalized_issues.append(issue)
+            continue
+        length_issue_count += 1
+        normalized_issues.append({**issue, "severity": CritiqueSeverity.NOTE.value})
+    if not length_issue_count:
+        return critique
+    normalized["issues"] = normalized_issues
+    if length_issue_count == len(issues):
+        normalized["verdict"] = CritiqueVerdict.PASS.value
+    return normalized
+
+
+def _is_story_length_only_critique_issue(issue: Mapping[str, object]) -> bool:
+    """Recognize an issue whose asserted defect is only scene-level word count."""
+    description = issue.get("description")
+    category = issue.get("category")
+    if not isinstance(description, str) or not isinstance(category, str):
+        return False
+    primary = f"{category} {description}"
+    if (
+        _STORY_LENGTH_ISSUE_PATTERN.search(primary) is None
+        or _STORY_LENGTH_TARGET_PATTERN.search(primary) is None
+        or _STRUCTURAL_CRITIQUE_PATTERN.search(description) is not None
+    ):
+        return False
+    recommendation = issue.get("recommendation")
+    if not isinstance(recommendation, str):
+        return False
+    return (
+        _STORY_LENGTH_ISSUE_PATTERN.search(recommendation) is not None
+        or re.search(r"\b(?:expand|lengthen|trim|shorten|cut)\b", recommendation, re.IGNORECASE)
+        is not None
+    )
+
+
+def _has_explicit_hard_scene_length_constraint(constraints: Mapping[str, object]) -> bool:
+    """Preserve an expressly hard scene-length request outside the advisory benchmark range."""
+    if any(
+        key in constraints
+        for key in ("hard_scene_word_count", "strict_scene_word_count", "scene_word_limit")
+    ):
+        return True
+    required = constraints.get("required_elements")
+    if not isinstance(required, list):
+        return False
+    hard_length = re.compile(
+        r"\b(?:must|exactly|at least|at most|no (?:more|fewer) than)\b.{0,40}\bwords?\b",
+        re.IGNORECASE,
+    )
+    return any(isinstance(item, str) and hard_length.search(item) is not None for item in required)
 
 
 def _materialize_requirement_coverage(
@@ -3462,7 +3638,6 @@ def _continuity_model_findings(
                     issue_type="non_world_claim_provenance_invalid",
                 )
             retained["canonical_claim_ids"] = claim_ids
-            retained["logical_conflict_assessment"] = repair_assessment
         materialized.append(retained)
     materialized.extend(new)
     return materialized
@@ -3572,7 +3747,7 @@ def _downgrade_qualitative_non_world_contradiction(finding: object) -> object:
         return finding
     assessment_text = " ".join(
         value
-        for field_name in ("summary", "logical_conflict_assessment", "repair_assessment")
+        for field_name in ("summary", "conflict_explanation", "repair_assessment")
         if isinstance((value := finding.get(field_name)), str)
     )
     resolution = finding.get("recommended_resolution")
@@ -3758,6 +3933,8 @@ def _validate_continuity_finding_contract(
                         f"{location}.canonical_source_refs",
                         "application-derived non-world provenance is incomplete",
                         issue_type="non_world_claim_provenance_invalid",
+                        expected_value=json.dumps(expected_refs, separators=(",", ":")),
+                        received_value=json.dumps(references, separators=(",", ":")),
                     )
                 expected_category = model_context.canonical_claim_categories[
                     cast(str, claim_ids[0])
@@ -3767,45 +3944,28 @@ def _validate_continuity_finding_contract(
                         f"{location}.category",
                         "application-derived contradiction category is inconsistent",
                         issue_type="non_world_claim_provenance_invalid",
-                    )
-                if (
-                    not isinstance(finding.get("logical_conflict_assessment"), str)
-                    or not cast(str, finding["logical_conflict_assessment"]).strip()
-                ):
-                    raise _StructuredOutputContractError(
-                        f"{location}.logical_conflict_assessment",
-                        "non-world contradictions must explain the affirmative logical conflict",
+                        expected_value=expected_category,
+                        received_value=str(finding.get("category")),
                     )
                 if finding.get("_prior_finding_recheck") is not True:
-                    draft_assertion = finding.get("draft_assertion")
-                    if not isinstance(draft_assertion, str) or draft_assertion not in cast(
-                        list[object], evidence
-                    ):
-                        raise _StructuredOutputContractError(
-                            f"{location}.draft_assertion",
-                            "the certified draft assertion must be one exact selected evidence "
-                            "excerpt",
-                            issue_type="non_world_conflict_certificate_invalid",
-                        )
                     expected_conflict_kind = _NON_WORLD_CONFLICT_KIND_BY_CATEGORY.get(
                         expected_category
                     )
                     if finding.get("conflict_kind") != expected_conflict_kind:
                         raise _StructuredOutputContractError(
                             f"{location}.conflict_kind",
-                            "the contradiction kind must match the selected canonical claim "
-                            "category",
+                            "the application-derived contradiction kind is inconsistent",
                             issue_type="non_world_conflict_certificate_invalid",
+                            expected_value=str(expected_conflict_kind),
+                            received_value=str(finding.get("conflict_kind")),
                         )
-                    if (
-                        not isinstance(finding.get("conflicting_attribute"), str)
-                        or not cast(str, finding["conflicting_attribute"]).strip()
-                    ):
+                    if finding.get("conflict_disposition") != _DIRECT_CONFLICT_DISPOSITION:
                         raise _StructuredOutputContractError(
-                            f"{location}.conflicting_attribute",
-                            "a direct contradiction must identify the exact subject attribute "
-                            "with incompatible values",
+                            f"{location}.conflict_disposition",
+                            "a non-world contradiction must select the direct-conflict disposition",
                             issue_type="non_world_conflict_certificate_invalid",
+                            expected_value=_DIRECT_CONFLICT_DISPOSITION,
+                            received_value=str(finding.get("conflict_disposition")),
                         )
                     if finding.get("repair_action") not in _NON_WORLD_REPAIR_ACTIONS:
                         raise _StructuredOutputContractError(
@@ -3813,22 +3973,11 @@ def _validate_continuity_finding_contract(
                             "a contradiction repair must remove, replace, or correct the "
                             "existing incompatible assertion",
                             issue_type="non_world_conflict_certificate_invalid",
-                        )
-                    logical_assessment = cast(str, finding["logical_conflict_assessment"])
-                    if (
-                        re.search(
-                            r"\b(?:cannot both be true|mutually exclusive|incompatible|directly "
-                            r"contradicts?)\b",
-                            logical_assessment,
-                            re.IGNORECASE,
-                        )
-                        is None
-                    ):
-                        raise _StructuredOutputContractError(
-                            f"{location}.logical_conflict_assessment",
-                            "the conflict certificate must state why both affirmative "
-                            "propositions cannot simultaneously be true",
-                            issue_type="non_world_conflict_certificate_invalid",
+                            expected_value=json.dumps(
+                                _NON_WORLD_REPAIR_ACTIONS,
+                                separators=(",", ":"),
+                            ),
+                            received_value=str(finding.get("repair_action")),
                         )
         else:
             requirement_id = finding.get("requirement_id")
@@ -4419,6 +4568,17 @@ def _materialize_continuity_evidence(
         location=ref_field,
     )
     materialized["evidence"] = excerpts
+    if (
+        basis == ContinuityFindingBasis.CONTRADICTION.value
+        and materialized.get("category") != ContinuityCategory.WORLD_RULE.value
+    ):
+        category = materialized.get("category")
+        materialized["draft_assertion"] = excerpts[0]
+        materialized["conflict_kind"] = (
+            _NON_WORLD_CONFLICT_KIND_BY_CATEGORY.get(category)
+            if isinstance(category, str)
+            else None
+        )
     if model_context.previous_continuity_report is not None:
         materialized["revised_evidence"] = excerpts
     return materialized
@@ -4995,7 +5155,7 @@ def _request_composition_metrics(
         "previous_continuity_report",
         "world_rule_catalog",
     }
-    retry_keys = {"local_schema_repair", "retry_context"}
+    retry_keys = {"schema_repair", "retry_context"}
     inline_schema = user_payload.pop("output_schema", None)
     artifact_context = {
         key: user_payload.pop(key) for key in tuple(user_payload) if key in artifact_keys

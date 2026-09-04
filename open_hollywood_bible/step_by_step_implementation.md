@@ -599,6 +599,27 @@ hardening change. Evidence:
 `docs/benchmark_reports/step-19-local-cloud-v21-canary-2026-09-03.md` and
 `docs/benchmark_reports/manual-v21-story-diagnostics-2026-09-03.md`.
 
+The prompt-v22 canary then completed zero of five production-runnable Local
+cases and three of four Cloud cases. All six production-terminal failures were
+initial continuity application-validation failures in the redundant non-world
+direct-conflict certificate: five `conflict_kind` mismatches, four lexical
+`logical_conflict_assessment` failures, and three exact-copy `draft_assertion`
+failures across twelve attempts. No retry recovered a case. Compact continuity
+inputs and schemas stayed substantially below the corrected Cloud allowance,
+and genuine World Rule repairs still converged, so prompt v23 retains graph v3
+while removing the failure-prone duplication. The model now selects one typed
+canonical claim, exact draft evidence handles, a direct-conflict disposition,
+and a corrective action; the application derives category, conflict kind,
+provenance, lineage, and exact assertion. Optional explanation text is not
+lexically gated. Focused schema repair is provider-neutral and includes safe
+expected/received values. Writers and critics receive an application-derived
+story-wide advisory length packet, and word-count-only critic findings cannot
+become revision gates unless an explicit hard scene constraint exists.
+Regression coverage preserves real World Rule and structural-critique
+blocking. A fresh prompt-v23 canary remains pending, so Step 19 stays in
+progress. Evidence:
+`docs/benchmark_reports/step-19-local-cloud-v22-canary-2026-09-04.md`.
+
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 
 21. [ ] **Package the stable system with Tauri** and test crash/restart, offline, missing-model, invalid-key, provider-timeout, and low-disk-space behavior.
