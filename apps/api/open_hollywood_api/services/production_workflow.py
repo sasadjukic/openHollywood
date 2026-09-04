@@ -35,6 +35,7 @@ from open_hollywood_engine.workflows import (
     ArtifactReference,
     CharacterTurnResult,
     CharacterTurnTask,
+    ContinuityRevisionLimitError,
     DialogueSubgraphExecutor,
     DirectorBriefingResult,
     DirectorBriefingTask,
@@ -744,19 +745,24 @@ class SceneProductionService:
 
     def _fail_run(self, workflow_run_id: UUID, error: Exception) -> None:
         safe_message = active_secret_guard().redact_text(str(error))[:2_000]
+        error_code = (
+            error.error_code
+            if isinstance(error, ContinuityRevisionLimitError)
+            else "workflow_execution_failed"
+        )
         with self._session_factory.begin() as session:
             run = _require_run(session, workflow_run_id)
             run.status = RunStatus.FAILED
             finish_active_interval(run)
             run.pause_reason = None
-            run.error_code = "workflow_execution_failed"
+            run.error_code = error_code
             run.error_message = safe_message
             _add_event(
                 session,
                 workflow_run_id,
                 "workflow.failed",
                 {
-                    "error_code": "workflow_execution_failed",
+                    "error_code": error_code,
                     "node": run.current_node,
                 },
                 source=run.current_node,

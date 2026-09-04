@@ -38,6 +38,7 @@ from open_hollywood_engine.workflows import (
     CharacterTurnTask,
     ContinuityCheckResult,
     ContinuityCheckTask,
+    ContinuityRevisionLimitError,
     DialogueIntegrationTask,
     DialoguePassConfiguration,
     DialogueSubgraphExecutor,
@@ -493,6 +494,8 @@ async def test_blocking_continuity_finding_uses_bounded_revision_before_update()
     assert revision_task.previous_continuity == executor.continuity_artifacts[0]
     assert executor.continuity_tasks[0].previous_continuity is None
     assert executor.continuity_tasks[1].previous_continuity == executor.continuity_artifacts[0]
+    assert executor.continuity_tasks[0].continuity_history == ()
+    assert executor.continuity_tasks[1].continuity_history == (executor.continuity_artifacts[0],)
     assert result.accepted_units[0].revision_cycles_used == 1
 
 
@@ -502,14 +505,18 @@ async def test_blocking_continuity_at_revision_limit_fails_closed() -> None:
     graph = build_scene_production_graph(executor, FakeDialogueExecutor())
 
     with pytest.raises(
-        SceneProductionStateError,
-        match="blocking continuity findings remain",
-    ):
+        ContinuityRevisionLimitError,
+        match=(
+            r"continuity_revision_limit_reached:.*"
+            r"finding_id.*scene-1_contradiction.*category.*fact.*basis.*contradiction"
+        ),
+    ) as failure:
         await graph.ainvoke(
             initial_production_state(production),
             config=_graph_config(production),
         )
 
+    assert failure.value.error_code == "continuity_revision_limit_reached"
     assert not executor.story_bible_tasks
 
 

@@ -434,8 +434,30 @@ also receive remaining story-wide advisory word-budget context; the application
 prevents a word-count-only critique from becoming a scene revision gate unless
 the request explicitly declares a hard scene-length constraint. The detailed
 comparison and fresh-v23 acceptance criteria are recorded in
-`docs/benchmark_reports/step-19-local-cloud-v22-canary-2026-09-04.md`; a v23
-canary remains pending.
+`docs/benchmark_reports/step-19-local-cloud-v22-canary-2026-09-04.md`.
+
+The prompt-v23 canary then completed six of nine production-runnable cases,
+double v22's result. It eliminated the redundant non-world certificate
+failures, restored Local continuity throughput, recovered every isolated
+structured-output failure on the bounded retry, and kept all completed stories
+inside the advisory word range. Two Local cases still exhausted revisions:
+one through semantic continuity ping-pong, and one after a near-total rewrite
+substituted future-scene material while the critic incorrectly returned PASS.
+A separate Local pause coincided with Windows correcting a two-hour host-clock
+error after an Ubuntu-to-Windows dual boot and is treated as environmental.
+
+Production graph v4 and prompt contract v24 add a current-scene-only Blueprint
+view, explicit scene-assignment gates, application-built revision repair
+ledgers, a 0.35 similarity floor for continuity-only revisions, cumulative
+per-scene continuity history with stable semantic recurrence IDs, narrower
+Blueprint contradiction authority, and cause-oriented revision-limit
+diagnostics. Blind human review remains the authority for semantic prompt
+requirements, target format, quality scores, and preference. Evidence and
+fresh-v24 acceptance criteria are recorded in
+`docs/benchmark_reports/step-19-local-cloud-v23-canary-2026-09-04.md`; a v24
+canary remains pending. Ruff lint/format and strict mypy pass across 134 Python
+files, all 276 pytest tests pass, all 11 frontend tests pass, frontend
+formatting/lint/type checking pass, and the production build succeeds.
 
 Benchmark word-count ranges are advisory creative targets. New outputs persist a
 non-gating adherence measurement with the target, actual count, status, and word

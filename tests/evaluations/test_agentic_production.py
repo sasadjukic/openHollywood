@@ -60,18 +60,22 @@ from open_hollywood_api.services.production_model_executor import (
     _materialize_continuity_identity,
     _materialize_requirement_audit,
     _normalize_continuity_evidence_refs,
+    _normalize_scene_assignment_critique,
     _normalize_story_length_critique,
     _Operation,
     _output_schema,
     _scene_plan_requirement_applicability,
+    _scene_scoped_prompt_inputs,
     _schema_repair_guidance,
     _select_production_model,
     _story_length_guidance,
     _structured_failure_issues,
     _structured_failure_message,
     _StructuredOutputContractError,
+    _targeted_revision_contract,
     _validate_continuity_finding_contract,
     _validate_new_recheck_contradiction_evidence,
+    _validate_targeted_scene_revision,
 )
 from open_hollywood_api.services.production_workflow import (
     BenchmarkSceneProductionService,
@@ -1541,12 +1545,12 @@ def test_v22_blueprint_claim_catalog_excludes_plans_and_open_creative_descriptio
     }
 
     assert "content.characters[0].name" in paths
-    assert "content.characters[0].story_role" in paths
     assert "content.characters[0].initial_knowledge" in paths
     assert "content.relationships[0].label" in paths
-    assert "content.relationships[0].history" in paths
     assert "content.locations[0].name" in paths
     assert "content.locations[0].constraints" in paths
+    assert "content.characters[0].story_role" not in paths
+    assert "content.relationships[0].history" not in paths
     assert not any(".beats[" in path for path in paths)
     assert not any(
         path.endswith(
@@ -2455,6 +2459,197 @@ def test_v23_structural_critique_remains_revision_driving() -> None:
     assert _normalize_story_length_critique(critique, execution) == critique
 
 
+def test_v24_scene_scoped_prompt_omits_future_scene_assignments() -> None:
+    base = _v17_catalog_test_execution(
+        scene_plan={
+            "character_ids": ["mara"],
+            "location_id": "east_hall",
+            "beat_ids": ["beat_1"],
+        }
+    )
+    blueprint = {
+        "artifact_kind": ArtifactKind.STORY_BLUEPRINT.value,
+        "artifact_key": "approved_blueprint",
+        "artifact_version_id": str(uuid4()),
+        "content": {
+            "thematic_thesis": "Memory requires accountable choices.",
+            "characters": [
+                {"id": "mara", "name": "Mara"},
+                {"id": "sylvie", "name": "Sylvie Future"},
+            ],
+            "relationships": [],
+            "locations": [
+                {"id": "east_hall", "name": "East Hall"},
+                {"id": "future_lab", "name": "Future Lab"},
+            ],
+            "world_rules": [],
+            "beats": [
+                {"id": "beat_1", "summary": "Mara enters."},
+                {"id": "beat_2", "summary": "Sylvie investigates acoustics."},
+            ],
+            "scene_plans": [
+                {"id": "scene_1", "title": "Mara at the Door"},
+                {"id": "scene_2", "title": "Sylvie Acoustic Investigation"},
+            ],
+        },
+    }
+    execution = replace(base, inputs=(*base.inputs, blueprint))
+
+    scoped = _scene_scoped_prompt_inputs(execution)
+    prompt_text = json.dumps(scoped)
+
+    assert "Memory requires accountable choices." in prompt_text
+    assert "Mara at the Door" in prompt_text
+    assert "Sylvie Acoustic Investigation" not in prompt_text
+    assert "Sylvie Future" not in prompt_text
+    scoped_blueprint = next(
+        item for item in scoped if item["artifact_kind"] == ArtifactKind.STORY_BLUEPRINT.value
+    )
+    assert scoped_blueprint["context_scope"] == "current_scene_only"
+
+
+def test_v24_explicit_wrong_pov_cannot_remain_a_minor_pass() -> None:
+    critique = {
+        "issues": [
+            {
+                "category": "POV Consistency",
+                "severity": "minor",
+                "description": (
+                    "The scene uses Sylvie's viewpoint instead of assigned protagonist Mara."
+                ),
+                "evidence": ["Sylvie listened to the wall."],
+                "recommendation": "Restore Mara's assigned point of view.",
+            }
+        ],
+        "verdict": "pass",
+    }
+
+    normalized = _normalize_scene_assignment_critique(critique)
+
+    assert normalized["verdict"] == "revise"
+    issues = cast(list[dict[str, object]], normalized["issues"])
+    assert issues[0]["severity"] == "blocking"
+
+
+def test_v24_targeted_continuity_revision_rejects_full_rewrite() -> None:
+    base = _v17_catalog_test_execution(
+        scene_plan={
+            "goal": "Mara returns the key.",
+            "turning_point": "The lock accepts it.",
+            "outcome": "The door opens.",
+        },
+        draft_prose=(
+            "Mara crossed the east hall with the brass key. "
+            "She argued with Theo, chose the locked door, and returned the key."
+        ),
+    )
+    critique = {
+        "artifact_kind": ArtifactKind.CRITIQUE.value,
+        "artifact_key": "scene_1_critique",
+        "artifact_version_id": str(uuid4()),
+        "content": {"verdict": "pass"},
+    }
+    continuity = {
+        "artifact_kind": ArtifactKind.CONTINUITY_REPORT.value,
+        "artifact_key": "scene_1_continuity",
+        "artifact_version_id": str(uuid4()),
+        "content": {
+            "findings": [
+                {
+                    "id": "continuity_key_return",
+                    "category": "fact",
+                    "basis": "contradiction",
+                    "severity": "blocking",
+                    "recommended_resolution": "Keep the scene and return the key at the door.",
+                }
+            ]
+        },
+    }
+    execution = replace(
+        base,
+        inputs=(*base.inputs, critique, continuity),
+        revision_number=1,
+    )
+
+    contract = _targeted_revision_contract(execution)
+
+    assert contract is not None
+    assert contract["mode"] == "targeted_continuity_repair"
+    assert contract["repair_ledger"]
+    _validate_targeted_scene_revision(
+        {
+            "prose": (
+                "Mara crossed the east hall with the brass key. "
+                "She argued with Theo, chose the locked door, and returned the key at its latch."
+            )
+        },
+        execution,
+    )
+    with pytest.raises(_StructuredOutputContractError) as failure:
+        _validate_targeted_scene_revision(
+            {
+                "prose": (
+                    "Sylvie mapped resonant harmonics beneath the observatory. "
+                    "A choir of machines answered her experiment from the future laboratory."
+                )
+            },
+            execution,
+        )
+    assert failure.value.issue_type == "scene_revision_scope_exceeded"
+
+
+def test_v24_historical_semantic_recurrence_keeps_stable_identity() -> None:
+    base = _schema_test_continuity_context(recheck=True)
+    claim_id = base.canonical_claim_ids[0]
+    source_ref = base.canonical_claim_source_refs[claim_id]
+    first_report = {
+        "artifact_version_id": str(uuid4()),
+        "content": {
+            "findings": [
+                {
+                    "id": "continuity_original_key_conflict",
+                    "severity": "blocking",
+                    "basis": "contradiction",
+                    "canonical_source_refs": [source_ref],
+                }
+            ]
+        },
+    }
+    latest_report = cast(dict[str, Any], base.previous_continuity_report)
+    context = replace(
+        base,
+        previous_continuity_report=latest_report,
+        continuity_history=(first_report, latest_report),
+    )
+    recurring = {
+        "severity": "blocking",
+        "basis": "contradiction",
+        "canonical_claim_ids": [claim_id],
+        "repair_assessment": "The original incompatible assertion has returned.",
+    }
+
+    materialized = _materialize_continuity_identity(
+        recurring,
+        context,
+        index=0,
+        revision_number=2,
+    )
+
+    assert isinstance(materialized, dict)
+    assert materialized["id"] == "continuity_original_key_conflict"
+    assert materialized["recheck_disposition"] == "still_blocking"
+    materialized["recommended_resolution"] = "Use contradictory new guidance."
+    persisted = _materialize_continuity_finding(
+        materialized,
+        "scene_1",
+        prior_resolutions={
+            "continuity_original_key_conflict": "Keep the original repair direction."
+        },
+    )
+    assert isinstance(persisted, dict)
+    assert persisted["recommended_resolution"] == "Keep the original repair direction."
+
+
 def test_initial_continuity_schema_omits_every_recheck_only_field() -> None:
     context = _schema_test_continuity_context()
     schema = _output_schema(
@@ -3071,7 +3266,12 @@ async def test_same_continuity_finding_inherits_resolution_across_recheck(
     ]
     assert all(set(report) == {"findings"} for report in gateway.continuity_recheck_reports)
     for recheck_contract in gateway.continuity_recheck_contracts:
-        assert set(recheck_contract) == {"previous_report_version_id"}
+        assert set(recheck_contract) == {
+            "previous_report_version_id",
+            "historical_blocking_finding_ids",
+            "recurrence_policy",
+        }
+        assert recheck_contract["historical_blocking_finding_ids"]
 
     continuity_requests = [
         request
@@ -3090,6 +3290,10 @@ async def test_same_continuity_finding_inherits_resolution_across_recheck(
     ]
     assert initial_requests
     assert recheck_requests
+    assert sorted(
+        len(json.loads(request.messages[-1].content).get("continuity_history", []))
+        for request in recheck_requests
+    ) == [0, 1]
     for request in initial_requests:
         assert request.response_schema is not None
         payload = json.loads(request.messages[-1].content)
