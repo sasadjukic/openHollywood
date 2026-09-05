@@ -18,6 +18,8 @@ from open_hollywood_engine.artifacts import (
     ContinuityReport,
     ContinuitySeverity,
     Critique,
+    CritiqueIssue,
+    CritiqueSeverity,
     CritiqueVerdict,
     DialogueBriefing,
     DialogueEvaluation,
@@ -39,6 +41,7 @@ from open_hollywood_engine.workflows import (
     ContinuityCheckResult,
     ContinuityCheckTask,
     ContinuityRevisionLimitError,
+    CritiqueRevisionLimitError,
     DialogueIntegrationTask,
     DialoguePassConfiguration,
     DialogueSubgraphExecutor,
@@ -518,6 +521,67 @@ async def test_blocking_continuity_at_revision_limit_fails_closed() -> None:
 
     assert failure.value.error_code == "continuity_revision_limit_reached"
     assert not executor.story_bible_tasks
+
+
+class HardCritiqueExecutor(FakeProductionExecutor):
+    """Return an evidenced hard assignment failure until the requested repair succeeds."""
+
+    def __init__(self, *, repair_succeeds: bool) -> None:
+        super().__init__()
+        self._repair_succeeds = repair_succeeds
+
+    async def critique(self, task: SceneCritiqueTask) -> SceneCritiqueResult:
+        result = await super().critique(task)
+        if task.unit.unit_id != "scene-1" or (self._repair_succeeds and task.revision_number > 0):
+            return result
+        critique = result.critique.model_copy(
+            update={
+                "verdict": CritiqueVerdict.REVISE,
+                "issues": (
+                    CritiqueIssue(
+                        category="scene_assignment:point_of_view_character_id",
+                        severity=CritiqueSeverity.BLOCKING,
+                        description="The scene replaces its assigned viewpoint character.",
+                        evidence=("Secret prose",),
+                        recommendation="Restore the assigned viewpoint.",
+                    ),
+                ),
+            }
+        )
+        return SceneCritiqueResult(critique=critique, artifact=result.artifact)
+
+
+async def test_hard_critique_at_revision_cap_cannot_update_or_accept() -> None:
+    executor = HardCritiqueExecutor(repair_succeeds=False)
+    production = _production_input(maximum_revision_cycles=1, units=_units(dialogue=False))
+    graph = build_scene_production_graph(executor, FakeDialogueExecutor())
+
+    with pytest.raises(CritiqueRevisionLimitError, match="blocking_issue_count=1") as failure:
+        await graph.ainvoke(initial_production_state(production), config=_graph_config(production))
+
+    assert failure.value.error_code == "critique_revision_limit_reached"
+    assert [task.revision_number for task in executor.writing_tasks] == [0, 1]
+    assert not executor.story_bible_tasks
+
+
+async def test_repaired_hard_critique_clears_gate_before_acceptance() -> None:
+    executor = HardCritiqueExecutor(repair_succeeds=True)
+    production = _production_input(maximum_revision_cycles=1, units=_units(dialogue=False))
+    graph = build_scene_production_graph(executor, FakeDialogueExecutor())
+
+    state = cast(
+        ProductionGraphState,
+        await graph.ainvoke(initial_production_state(production), config=_graph_config(production)),
+    )
+    result = production_result_from_state(state)
+
+    assert len(result.accepted_units) == 3
+    assert result.accepted_units[0].revision_cycles_used == 1
+    assert result.accepted_units[0].acceptance_reason is UnitAcceptanceReason.PASSED_RUBRIC
+    assert (
+        result.accepted_units[-1].acceptance_reason is UnitAcceptanceReason.REVISION_LIMIT_REACHED
+    )
+    assert state["critique_blocking_issue_count"] == 0
 
 
 def test_production_input_rejects_noncontiguous_units() -> None:
