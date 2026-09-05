@@ -260,6 +260,7 @@ class ProductionFixtureGateway(BlueprintFixtureGateway):
             content["target_artifact_key"] = "model_invented_draft"
             content["target_artifact_version_id"] = invented_version_id
             content["overall_score"] = 999
+            content["assignment_violations"] = []
         elif role == "continuity_supervisor":
             content.update(
                 story_bible_version_id=invented_version_id,
@@ -1348,6 +1349,10 @@ def test_initial_continuity_evidence_is_bound_to_the_current_draft() -> None:
     finding["conflict_kind"] = "fact"
     finding["conflict_disposition"] = "directly_incompatible"
     finding["repair_action"] = "replace"
+    finding["conflict_explanation"] = (
+        "The draft locks the east door despite its established state; "
+        "no authorized transition reconciles the assertions."
+    )
     _validate_continuity_finding_contract([finding], execution)
 
 
@@ -1544,11 +1549,11 @@ def test_v22_blueprint_claim_catalog_excludes_plans_and_open_creative_descriptio
         for entry in _continuity_model_context(execution).canonical_source_catalog
     }
 
-    assert "content.characters[0].name" in paths
-    assert "content.characters[0].initial_knowledge" in paths
-    assert "content.relationships[0].label" in paths
-    assert "content.locations[0].name" in paths
-    assert "content.locations[0].constraints" in paths
+    assert "content.characters[0].name" not in paths
+    assert "content.characters[0].initial_knowledge[0]" in paths
+    assert "content.relationships[0].label" not in paths
+    assert "content.locations[0].name" not in paths
+    assert "content.locations[0].constraints[0]" in paths
     assert "content.characters[0].story_role" not in paths
     assert "content.relationships[0].history" not in paths
     assert not any(".beats[" in path for path in paths)
@@ -1592,6 +1597,7 @@ def test_v22_qualitative_non_world_blocker_becomes_advisory(
         "canonical_source_refs": ["canonical_source_0001"],
         "recommended_resolution": resolution,
         "conflict_explanation": summary,
+        "conflict_disposition": "craft_preference",
     }
 
     materialized = _downgrade_qualitative_non_world_contradiction(finding)
@@ -1801,6 +1807,7 @@ def test_v21_recheck_discards_semantically_duplicate_new_finding() -> None:
     )
     retained = {
         "id": prior_id,
+        "summary": "Mara's key action contradicts the established fact.",
         "severity": "blocking",
         "basis": "contradiction",
         "category": "fact",
@@ -2508,7 +2515,11 @@ def test_v24_scene_scoped_prompt_omits_future_scene_assignments() -> None:
     assert scoped_blueprint["context_scope"] == "current_scene_only"
 
 
-def test_v24_explicit_wrong_pov_cannot_remain_a_minor_pass() -> None:
+def test_v25_explicit_wrong_pov_cannot_remain_a_minor_pass() -> None:
+    execution = _v17_catalog_test_execution(
+        scene_plan={"character_ids": ["mara"], "point_of_view_character_id": "mara"},
+        draft_prose="Sylvie listened to the wall.",
+    )
     critique = {
         "issues": [
             {
@@ -2521,14 +2532,22 @@ def test_v24_explicit_wrong_pov_cannot_remain_a_minor_pass() -> None:
                 "recommendation": "Restore Mara's assigned point of view.",
             }
         ],
+        "assignment_violations": [
+            {
+                "anchor": "point_of_view_character_id",
+                "draft_evidence": "Sylvie listened to the wall.",
+                "explanation": "Sylvie replaces the assigned viewpoint character Mara.",
+                "recommended_resolution": "Restore Mara's assigned point of view.",
+            }
+        ],
         "verdict": "pass",
     }
 
-    normalized = _normalize_scene_assignment_critique(critique)
+    normalized = _normalize_scene_assignment_critique(critique, execution)
 
     assert normalized["verdict"] == "revise"
     issues = cast(list[dict[str, object]], normalized["issues"])
-    assert issues[0]["severity"] == "blocking"
+    assert issues[-1]["severity"] == "blocking"
 
 
 def test_v24_targeted_continuity_revision_rejects_full_rewrite() -> None:
@@ -2608,6 +2627,7 @@ def test_v24_historical_semantic_recurrence_keeps_stable_identity() -> None:
             "findings": [
                 {
                     "id": "continuity_original_key_conflict",
+                    "summary": "The key is returned despite established non-return.",
                     "severity": "blocking",
                     "basis": "contradiction",
                     "canonical_source_refs": [source_ref],
@@ -2623,6 +2643,7 @@ def test_v24_historical_semantic_recurrence_keeps_stable_identity() -> None:
     )
     recurring = {
         "severity": "blocking",
+        "summary": "The key is returned despite established non-return.",
         "basis": "contradiction",
         "canonical_claim_ids": [claim_id],
         "repair_assessment": "The original incompatible assertion has returned.",
@@ -2638,7 +2659,7 @@ def test_v24_historical_semantic_recurrence_keeps_stable_identity() -> None:
     assert isinstance(materialized, dict)
     assert materialized["id"] == "continuity_original_key_conflict"
     assert materialized["recheck_disposition"] == "still_blocking"
-    materialized["recommended_resolution"] = "Use contradictory new guidance."
+    materialized["recommended_resolution"] = "Correct the repair using current evidence."
     persisted = _materialize_continuity_finding(
         materialized,
         "scene_1",
@@ -2647,7 +2668,7 @@ def test_v24_historical_semantic_recurrence_keeps_stable_identity() -> None:
         },
     )
     assert isinstance(persisted, dict)
-    assert persisted["recommended_resolution"] == "Keep the original repair direction."
+    assert persisted["recommended_resolution"] == "Correct the repair using current evidence."
 
 
 def test_initial_continuity_schema_omits_every_recheck_only_field() -> None:
@@ -2696,10 +2717,15 @@ def test_initial_continuity_schema_omits_every_recheck_only_field() -> None:
         "conflict_disposition",
         "repair_action",
     } <= set(contradiction["required"])
-    assert "conflict_explanation" not in contradiction["required"]
+    assert "conflict_explanation" in contradiction["required"]
     assert contradiction["properties"]["conflict_disposition"] == {
         "type": "string",
-        "const": "directly_incompatible",
+        "enum": [
+            "directly_incompatible",
+            "craft_preference",
+            "compatible_development",
+            "insufficient_canonical_support",
+        ],
     }
     assert definitions["DraftEvidenceReference"]["enum"] == ["draft_evidence_0001"]
     assert contradiction["properties"]["draft_evidence_refs"]["items"] == {

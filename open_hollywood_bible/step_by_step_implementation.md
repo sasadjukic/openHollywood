@@ -638,9 +638,39 @@ cause-oriented revision-limit diagnostics. Blind human review remains required
 for semantic requirements, target format, quality, and preference. Ruff
 lint/format and strict mypy pass across 134 Python files, all 276 pytest tests
 pass, all 11 frontend tests pass, frontend formatting/lint/type checking pass,
-and the production build succeeds. A fresh v24 canary remains pending, so Step
-19 stays in progress. Evidence:
+and the production build succeeds. These checks refer to the v24 implementation;
+the completed canary is recorded below. Evidence:
 `docs/benchmark_reports/step-19-local-cloud-v23-canary-2026-09-04.md`.
+
+The completed v24 canary produced four of nine runnable stories: Cloud remained
+four of four, but Local fell from two of five to zero of five. The known Local
+OH-V01-006 Blueprint failure stayed outside the production denominator. Scoped
+context reduced Cloud production input by 17.7%, all Cloud structured attempts
+succeeded, and Local persisted revisions avoided the v24 0.35 similarity floor.
+Two benign critic notes were falsely promoted by topic keywords. Local
+continuity retained unsupported concerns and changed allegations under stable
+IDs, while OH-V01-003 cleared scene checks but failed the resolved-thread Bible
+invariant twice. The operator-confirmed v23 dual-boot clock correction remains
+environmental and does not require runtime clock changes.
+
+Production graph v5 and prompt v25 now use explicit assignment findings with
+exact draft evidence, shared critic/continuity requirement timing, smaller
+canonical assertions with scope, and recheck outcomes that can invalidate an
+unsupported allegation or retain only advisory feedback. Recurrence identity
+includes the original normalized allegation as well as its source; this is
+conservative identity matching, not semantic equivalence detection. Resolved
+Bible threads require an actual explanation and receive application-owned
+resolution-scene lineage with precise bounded retry diagnostics. Advisory
+Blueprint name observations preserve immutable approved content, and hard
+critic blockers now fail at the revision cap even when continuity clears.
+Scoped context, repair ledgers, and bounded revision restraint remain in place.
+The checks improve structural and provenance guarantees; model interpretation
+still requires canary evidence and blind human evaluation. Combined verification
+passes: Ruff lint/format and strict mypy across 141 Python files, all 341 pytest
+tests, frontend formatting/lint/type checks, all 11 Vitest tests, and the
+production build. No v25 canary has been started. Step 19 remains
+**IN PROGRESS** because the formal campaign and human review are not complete.
+Evidence: `docs/benchmark_reports/step-19-local-cloud-v24-canary-2026-09-05.md`.
 
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 

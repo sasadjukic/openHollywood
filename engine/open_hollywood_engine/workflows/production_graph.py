@@ -16,6 +16,7 @@ from langgraph.types import RetryPolicy
 from open_hollywood_engine.artifacts import (
     ArtifactKind,
     ContinuityReport,
+    CritiqueSeverity,
     CritiqueVerdict,
     StoryBibleInvariantError,
     validate_story_bible_transition,
@@ -39,6 +40,7 @@ from open_hollywood_engine.workflows.production_contracts import (
     ContinuityCheckResult,
     ContinuityCheckTask,
     ContinuityRevisionLimitError,
+    CritiqueRevisionLimitError,
     DialogueIntegrationTask,
     DialoguePassConfiguration,
     NullSceneProductionWorkflowObserver,
@@ -126,6 +128,7 @@ class ProductionGraphState(DialogueGraphState, total=False):
     current_dialogue_runs: int
     current_acceptance_reason: str | None
     critique_requires_revision: bool
+    critique_blocking_issue_count: int
     revision_scheduled: bool
     draft_artifacts: list[DialogueArtifactReferenceState]
     critique_artifacts: list[DialogueArtifactReferenceState]
@@ -171,6 +174,7 @@ def initial_production_state(production: SceneProductionInput) -> ProductionGrap
         "current_dialogue_runs": 0,
         "current_acceptance_reason": None,
         "critique_requires_revision": False,
+        "critique_blocking_issue_count": 0,
         "pending_continuity_artifact": None,
         "revision_scheduled": False,
         "draft_artifacts": [],
@@ -472,6 +476,9 @@ def _critique_node(
             "current_critique_artifact": critique_state,
             "current_acceptance_reason": None,
             "critique_requires_revision": (result.critique.verdict is not CritiqueVerdict.PASS),
+            "critique_blocking_issue_count": sum(
+                issue.severity is CritiqueSeverity.BLOCKING for issue in result.critique.issues
+            ),
             "revision_scheduled": False,
             "critique_artifacts": [
                 *state.get("critique_artifacts", []),
@@ -538,6 +545,15 @@ def _continuity_node(
         if has_blockers and revision_number >= production.maximum_revision_cycles:
             raise ContinuityRevisionLimitError(
                 _continuity_terminal_failure_message(result.report, revision_number)
+            )
+        if (
+            state.get("critique_blocking_issue_count", 0) > 0
+            and revision_number >= production.maximum_revision_cycles
+        ):
+            raise CritiqueRevisionLimitError(
+                "critique_revision_limit_reached: hard critique issues remain after "
+                f"revision {revision_number}; scene_id={unit.unit_id}; "
+                f"blocking_issue_count={state['critique_blocking_issue_count']}"
             )
         if (has_blockers or critique_requires_revision) and (
             revision_number < production.maximum_revision_cycles
@@ -664,6 +680,7 @@ def _accept_node(
             "current_dialogue_runs": 0,
             "current_acceptance_reason": None,
             "critique_requires_revision": False,
+            "critique_blocking_issue_count": 0,
             "revision_scheduled": False,
             "production_complete": next_index == len(production.units),
         }

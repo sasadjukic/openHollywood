@@ -454,10 +454,34 @@ Blueprint contradiction authority, and cause-oriented revision-limit
 diagnostics. Blind human review remains the authority for semantic prompt
 requirements, target format, quality scores, and preference. Evidence and
 fresh-v24 acceptance criteria are recorded in
-`docs/benchmark_reports/step-19-local-cloud-v23-canary-2026-09-04.md`; a v24
-canary remains pending. Ruff lint/format and strict mypy pass across 134 Python
-files, all 276 pytest tests pass, all 11 frontend tests pass, frontend
-formatting/lint/type checking pass, and the production build succeeds.
+`docs/benchmark_reports/step-19-local-cloud-v23-canary-2026-09-04.md`.
+
+The completed v24 canary regressed to four of nine production-runnable cases:
+Cloud retained four of four completions, while Local fell from two of five to
+zero of five. Cloud production input fell 17.7%, every Cloud structured call
+succeeded, and revision preservation improved across profiles. Local exposed
+two keyword-driven false critic blockers, continuity judgments that changed
+meaning while keeping an old finding identity, and a resolved Story Bible
+thread whose status-dependent requirements were not expressed in the model
+schema. The permanent Local OH-V01-006 Blueprint failure remains excluded from
+the production denominator.
+
+Production graph v5 and prompt v25 replace keyword escalation with explicit,
+evidence-bound assignment findings, align critic obligation timing with
+continuity, narrow canonical claims and expose their scope, allow unsupported
+recheck findings to be invalidated or made advisory, and distinguish recurrence
+by source plus original allegation. Story Bible thread output now has explicit
+open/resolved branches and application-derived resolution-scene lineage.
+Nonblocking Blueprint observations expose ambiguous building names without
+changing approved content. Hard critique issues now fail at the revision cap;
+soft quality revisions retain bounded acceptance. These checks validate
+structure and evidence provenance, while semantic correctness still requires
+evaluation. Detailed findings and the v25 validation plan are recorded in
+`docs/benchmark_reports/step-19-local-cloud-v24-canary-2026-09-05.md`.
+Ruff lint/format and strict mypy pass over 141 Python files, all 341 pytest
+tests pass, and frontend formatting/lint/type checks, all 11 Vitest tests, and
+the production build pass. A fresh v25 canary remains pending; no canary was
+started by this implementation.
 
 Benchmark word-count ranges are advisory creative targets. New outputs persist a
 non-gating adherence measurement with the target, actual count, status, and word

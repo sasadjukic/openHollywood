@@ -22,6 +22,7 @@ from open_hollywood_engine.artifacts import (
     StoryBible,
     StoryBlueprint,
 )
+from open_hollywood_engine.artifacts.blueprint_integrity import blueprint_name_observations
 from open_hollywood_engine.evaluations import canonical_sha256
 from open_hollywood_engine.models import (
     ModelCallBudget,
@@ -36,6 +37,7 @@ from open_hollywood_engine.workflows import (
     CharacterTurnResult,
     CharacterTurnTask,
     ContinuityRevisionLimitError,
+    CritiqueRevisionLimitError,
     DialogueSubgraphExecutor,
     DirectorBriefingResult,
     DirectorBriefingTask,
@@ -596,6 +598,22 @@ class SceneProductionService:
                     budget=budget.to_data(),
                 )
                 session.add(production_run)
+                name_observations = blueprint_name_observations(blueprint)
+                if name_observations:
+                    _add_event(
+                        session,
+                        production_run_id,
+                        "workflow.blueprint.integrity_observed",
+                        {
+                            "approved_blueprint_version_id": str(approved_blueprint.version_id),
+                            "observations": [item.to_data() for item in name_observations],
+                            "registered_locations": [
+                                {"id": location.id, "name": location.name}
+                                for location in blueprint.locations
+                            ],
+                        },
+                        source="handoff",
+                    )
             elif (
                 production_run.project_id != blueprint_run.project_id
                 or production_run.parent_workflow_run_id != blueprint_run_id
@@ -747,7 +765,7 @@ class SceneProductionService:
         safe_message = active_secret_guard().redact_text(str(error))[:2_000]
         error_code = (
             error.error_code
-            if isinstance(error, ContinuityRevisionLimitError)
+            if isinstance(error, (ContinuityRevisionLimitError, CritiqueRevisionLimitError))
             else "workflow_execution_failed"
         )
         with self._session_factory.begin() as session:

@@ -26,8 +26,8 @@ from open_hollywood_engine.workflows.dialogue_contracts import (
 )
 
 SCENE_PRODUCTION_WORKFLOW_NAME = "scene_production"
-SCENE_PRODUCTION_GRAPH_VERSION = "4"
-SCENE_PRODUCTION_PROMPT_TEMPLATE_VERSION = "24"
+SCENE_PRODUCTION_GRAPH_VERSION = "5"
+SCENE_PRODUCTION_PROMPT_TEMPLATE_VERSION = "25"
 DEFAULT_PRODUCTION_NODE_TIMEOUT_SECONDS = 900
 DEFAULT_MAX_REVISION_CYCLES = 2
 MAX_REVISION_CYCLES = 5
@@ -529,6 +529,12 @@ class ContinuityRevisionLimitError(SceneProductionStateError):
     """Raised with bounded blocker evidence when continuity exhausts revisions."""
 
     error_code = "continuity_revision_limit_reached"
+
+
+class CritiqueRevisionLimitError(SceneProductionStateError):
+    """Raised when a hard critique issue remains after the bounded revision allowance."""
+
+    error_code = "critique_revision_limit_reached"
 
 
 class RetryableSceneProductionError(SceneProductionError):

@@ -1,0 +1,82 @@
+{
+  "source": "Frozen v24 canary, 2026-09-05. Minimal synthetic-story excerpts; no project IDs, invocation IDs, credentials, or full drafts.",
+  "continuity": [
+    {
+      "case": "OH-V01-001-local-shoe-framing",
+      "canonical_category": "location",
+      "canonical_claim": "The Overgrown Plateau",
+      "draft_evidence": "Their presence felt less like simple litter and more like an accumulation of momentary stasis points, echoes of countless lives that had paused here, never completing their exit.",
+      "summary": "The draft dismisses the shoes as merely a physical obstacle or a momentary distraction, failing to integrate them into the required narrative weight of decay.",
+      "repair_assessment": "The previous finding remains blocking as the current draft evidence does not sufficiently elevate the shoes beyond mere debris.",
+      "recommended_resolution": "Revise the character's internal monologue regarding the shoes to acknowledge their narrative weight, even if they are not structurally relevant, to align with the world rule.",
+      "expected": "Location name does not support the alleged thematic contradiction; framing is advisory."
+    },
+    {
+      "case": "OH-V01-002-local-card-date",
+      "canonical_category": "character",
+      "canonical_claim": "Elara Vance",
+      "draft_evidence": "Below it, the date seemed to shimmer with an impossible conviction: *October 14th, 2024*.",
+      "summary": "The card's date, 'October 14th, 2034' (draft_evidence_0012), remains a direct contradiction to the established canon of the current time period, which is not 2034.",
+      "repair_assessment": "The date must be changed to something that does not contradict the established timeline.",
+      "expected": "Character name establishes no date; stale 2034 assessment cannot certify the changed 2024 evidence."
+    },
+    {
+      "case": "OH-V01-002-local-temporal-bleed",
+      "canonical_category": "relationship",
+      "canonical_claim": "Temporal Echo/Self-Confrontation",
+      "draft_evidence": "The moment the concentrated light struck the ink on the date—'2024'—something happened. A faint, almost inaudible *hiss* accompanied a visible, momentary bloom of color beneath the writing.",
+      "summary": "The narrative fails to incorporate a specific, sensory interaction with the card that forces the temporal bleed to manifest, as required by the 'temporal_bleed_mechanism' world rule.",
+      "recommended_resolution": "The narrative must incorporate a specific, sensory interaction with the card (e.g., touching the ink, exposing it to a specific light source) that forces the bleed to manifest, as required by the 'temporal_bleed_mechanism' world rule, rather than simply stating the feeling of a 'leak'.",
+      "expected": "World-rule claim cannot use relationship-label provenance; requested light interaction is present."
+    },
+    {
+      "case": "OH-V01-004-local-elias-return",
+      "canonical_category": "timeline",
+      "canonical_claim": "The ideological sparring match intensifies, moving from general threat assessment to personal philosophy, culminating in Clara asserting her own agency.",
+      "scene_plan_entry_state": "The tension from Scene 2 hangs heavy, with Elias regaining rhetorical footing.",
+      "scene_plan_conflict": "Elias tries to steer the conversation back to divine law; Clara counters by revealing a vulnerability in both of their narratives.",
+      "draft_evidence": "Father Elias, recovering with the disciplined grace of a man accustomed to controlling discourse, stepped forward again.",
+      "summary": "The draft contradicts the established character relationship from Scene 2's ending.",
+      "recommended_resolution": "The draft must ensure that the immediate aftermath of the previous scene's climax (where the protected person's will was established as the dominant variable) is reflected in the characters' initial reactions, rather than allowing Elias to immediately re-establish a purely theological argument.",
+      "recheck_summary": "The draft does not sufficiently establish the moment where the focus shifts entirely to Clara's internal decision-making process, which is required by the 'agency_as_ultimate_authority' world rule.",
+      "recheck_evidence": "Both men were looking at me, waiting for the next move, but the silence this time was different; it was a vacuum, sucking the air of their conflicting certainties out of the room.",
+      "expected": "Plan explicitly authorizes Elias regaining rhetoric; new agency-framing allegation is not the original contradiction."
+    },
+    {
+      "case": "OH-V01-005-local-scoff-to-photograph",
+      "canonical_category": "timeline",
+      "canonical_claim": "The siblings enter The Study, finding the body and immediately falling into their established pattern of disagreement.",
+      "accepted_prior_evidence": "Elara scoffed, a sharp, controlled sound. You mistake pattern recognition for deep emotional insight, Cora.",
+      "draft_evidence": "Elara, positioned near the fireplace, her silhouette sharp against the fading embers, scoffed—a controlled, academically dismissive sound.",
+      "summary": "The initial description of Elara's reaction to the box contradicts the established emotional tone of the previous scene's ending.",
+      "recommended_resolution": "Revise Elara's reaction to be less overtly dismissive of 'emotional insight' and more focused on the *implication* of the object, maintaining the intellectual sparring dynamic established in the prior scene's conclusion.",
+      "recheck_summary": "The draft evidence introduces a new, highly personal object (the photograph) that is not accounted for in the established canon or the previous scene's focus, creating a continuity gap regarding its introduction and significance.",
+      "recheck_evidence": "There, tucked partially beneath the cushion, was a thin, silver-framed photograph.",
+      "scene_plan_requirement": "The focus must narrow to a specific, debatable object or document found within The Study.",
+      "expected": "Scoff continues accepted tone; new object is not incompatible with prior canon; photograph allegation cannot retain scoff-repair identity."
+    }
+  ],
+  "critique": [
+    {
+      "case": "OH-V01-003-local-next-scene-advice",
+      "category": "Minor Thematic Foreshadowing",
+      "description": "The scene concludes with Elara feeling a sense of 'victory' based on math. While this is correct for Scene 1, the narrative needs to subtly plant seeds that this mathematical conclusion is insufficient, perhaps by having the building react to her certainty in a way that suggests emotional resonance, rather than just structural mechanics. This is a note for the next scene, not a failure of the current one.",
+      "recommendation": "Ensure the next scene introduces a sensory or emotional anomaly that defies the GCD model.",
+      "expected": "Advice mentioning next scene is not an assignment failure."
+    },
+    {
+      "case": "OH-V01-004-local-pov-polish",
+      "category": "Minor Structural Polish",
+      "description": "The description of the protected person's agency is slightly expository in the final paragraph. While the *effect* is correct, weaving the *feeling* of that shift more deeply into Brick's immediate, visceral reaction (e.g., a sudden, sharp intake of breath, a physical tensing) would elevate the scene from 'successful' to 'masterful' by keeping the focus tightly on the POV character's internal processing of the unexpected variable.",
+      "expected": "POV polish is not wrong POV and must not be promoted to blocking."
+    }
+  ],
+  "blueprint_place_mention": {
+    "case": "OH-V01-003-local-conflicting-building-prose",
+    "character_id": "architect-elara",
+    "character_description": "A meticulous, skeptical architect who moved into the grand but decaying Hawthorne building specifically for its unique structural history.",
+    "location_id": "the_tenement_hallway",
+    "location_name": "The Hallways of Blackwood Tower",
+    "expected": "Report unregistered place mention as a warning with exact source; do not infer identity, rename approved content, or block production."
+  }
+}
