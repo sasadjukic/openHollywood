@@ -501,6 +501,21 @@ and v25 baselines and packages matched completed stories for blind human review.
 See `benchmarks/README.md` for the repeatability protocol. No v26 canary or human
 review was run by this implementation; Step 19 remains **IN PROGRESS**.
 
+The completed v26 canary regressed to 3/9 runnable completions and 16/44 accepted
+scenes. All five Local initial drafts exactly matched v25, but the new viewpoint
+quotation gate failed across all nine runnable cases. Selective repairs retain
+v26's Bible-history fix and terminal adjudication while simplifying aligned
+viewpoint reviews, using evidence handles for real violations, separating reviewer
+response repair from story revision, and exposing original continuity allegations
+and combined terminal gates. New runs use graph v7 / prompt v27 so v26 evidence
+remains immutable. Offline tests are not proof of live semantic correctness.
+`scripts/production_probe.py` can inspect and explicitly run isolated saved-input
+critic/Bible probes in new diagnostic directories, without resuming a canary or
+modifying canonical state. Eight probes are predeclared in
+`benchmarks/v0.1/production-probes-v27.json`; no live probe or new canary was run
+by this repair. See `docs/benchmark_reports/step-19-local-cloud-v26-canary-2026-09-08.md`
+and ADR 0008. v23/v25 remain the comparison baselines.
+
 Benchmark word-count ranges are advisory creative targets. New outputs persist a
 non-gating adherence measurement with the target, actual count, status, and word
 deviation. Automatic completion reflects a finished, non-truncated document,

@@ -1,0 +1,16 @@
+{
+  "schema_version": "1",
+  "evidence_type": "isolated_specialist_probe_not_canary",
+  "status": "prepared_not_run",
+  "maximum_calls_per_probe": 2,
+  "cases": [
+    {"name": "local-001-critic", "source": "v26-canary-2026-09-08", "invocation_id": "fed2b407-1de8-4176-b881-7d4d0e3087c5", "review_focus": "Retained v25 success; no reviewer-format manuscript blocker."},
+    {"name": "local-002-critic", "source": "v26-canary-2026-09-08", "invocation_id": "b3f1fb35-9c93-4df2-ad11-d9bf8d637125", "review_focus": "Own first-person interiority is allowed; metadata is not a story defect."},
+    {"name": "local-003-critic", "source": "v26-canary-2026-09-08", "invocation_id": "4e4157c9-79e9-48d5-9834-e71dd5a8c740", "review_focus": "Approved investigator deductions are not a hard viewpoint violation."},
+    {"name": "local-004-critic", "source": "v26-canary-2026-09-08", "invocation_id": "61da4d47-e5f3-4a65-ad95-a5f4768f8732", "review_focus": "Retained v25 success; no reviewer-format manuscript blocker."},
+    {"name": "local-005-critic", "source": "v26-canary-2026-09-08", "invocation_id": "2e3110bd-c174-4fb4-b8f7-8a5949df2dac", "review_focus": "Positive control: examine Cora's private perspective against assigned Elara and approved style."},
+    {"name": "cloud-002-critic", "source": "v26-canary-2026-09-08", "invocation_id": "b279792c-0c54-4cf0-9e0b-d6f3cbb0f12f", "review_focus": "Evidence references work for prompt-only Cloud output; explicit Cloud opt-in required."},
+    {"name": "local-002-bible", "source": "v25-canary-2026-09-07", "invocation_id": "2deb4389-649c-4bda-b9e5-bf1d4a391d1c", "review_focus": "Historical resolved threads retain their original scene and resolution; reducer succeeds."},
+    {"name": "local-003-bible", "source": "v25-canary-2026-09-07", "invocation_id": "e0ef8f92-eb2e-4306-ae62-65485e1a3cb5", "review_focus": "Historical resolved threads retain their original scene and resolution; reducer succeeds."}
+  ]
+}
