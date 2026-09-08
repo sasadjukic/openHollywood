@@ -1,0 +1,23 @@
+{
+  "source": "v25-canary-2026-09-07; selected saved inputs and artifact excerpts, not reconstructed failed responses",
+  "unresolved_goal": {
+    "case": "Local OH-V01-005, scene 2",
+    "goal": "To find a single piece of objective evidence that can settle the argument conclusively.",
+    "outcome": "The argument becomes more personal, shifting from 'what happened' to 'who we are.'",
+    "exit_state": "They have exhausted several lines of inquiry without resolution; exhaustion sets in.",
+    "time_context": "Dusk deepening the shadows",
+    "canonical_claim": "The siblings enter The Study, finding the body and immediately falling into their established pattern of disagreement.",
+    "evidence": "She lifted the journal, careful not to smudge the leather.",
+    "allegation": "The scene fails to satisfy the blocking requirement of establishing a single, objective piece of evidence that can settle the argument, instead relying on a cascade of equally ambiguous clues.",
+    "expected_adjudication": "requirement_only"
+  },
+  "reintroduced_repair": {
+    "case": "Local OH-V01-002, scene 3 revision 1",
+    "evidence": "The shared memory wasn't just recalled; it was wrenched into existence by the temporal bleed mechanism itself.",
+    "allegation": "The draft fails to explicitly name the 'temporal_bleed_mechanism' when describing the memory recall, which is required to satisfy the continuity established in the previous report's finding."
+  },
+  "resolved_threads": [
+    {"case": "Local OH-V01-002", "thread_id": "relationship_elara_to_future", "resolved_scene": "s3", "update_scene": "s4"},
+    {"case": "Local OH-V01-003", "thread_id": "thread_memory_anchor_shift", "resolved_scene": "scene_4", "update_scene": "scene_5"}
+  ]
+}

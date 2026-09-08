@@ -884,7 +884,8 @@ def _materialize_schema_artifact(
 def _maximum_production_model_calls(production: SceneProductionInput) -> int:
     """Reserve writer, critic, continuity, and Bible calls for every bounded attempt."""
     attempts = 1 + production.maximum_revision_cycles
-    return len(production.units) * (attempts * 3 + 1)
+    # Reserve one focused adjudication per scene, including its one structural retry.
+    return len(production.units) * (attempts * 3 + 1 + 2)
 
 
 def _matching_character_reference(

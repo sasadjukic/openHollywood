@@ -89,6 +89,13 @@ def apply_story_bible_update(
             and thread.status is StoryThreadStatus.OPEN
         ):
             raise StoryBibleInvariantError(f"resolved story thread {thread.id!r} cannot reopen")
+        if existing.status is StoryThreadStatus.RESOLVED and (
+            thread.resolved_scene_id != existing.resolved_scene_id
+            or thread.resolution != existing.resolution
+        ):
+            raise StoryBibleInvariantError(
+                f"resolved story thread {thread.id!r} cannot change resolution history"
+            )
 
     new_prohibitions = set(update.prohibited_contradictions)
     if len(new_prohibitions) != len(update.prohibited_contradictions):

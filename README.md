@@ -478,10 +478,28 @@ soft quality revisions retain bounded acceptance. These checks validate
 structure and evidence provenance, while semantic correctness still requires
 evaluation. Detailed findings and the v25 validation plan are recorded in
 `docs/benchmark_reports/step-19-local-cloud-v24-canary-2026-09-05.md`.
-Ruff lint/format and strict mypy pass over 141 Python files, all 341 pytest
-tests pass, and frontend formatting/lint/type checks, all 11 Vitest tests, and
-the production build pass. A fresh v25 canary remains pending; no canary was
-started by this implementation.
+The completed v25 canary restored six of nine runnable completions and reached
+38 of 44 accepted scenes, compared with v23's 32 and v24's 24. Local OH-V01-001
+completed for the first time, OH-V01-004 recovered, and Cloud retained four of
+four completions. Two Local runs cleared their current scene reviews but failed
+when already-resolved Bible threads were re-emitted in a later scene's delta.
+Local OH-V01-005 still failed an unsupported continuity judgment. Technical
+completion does not establish literary quality; blind human scores remain pending.
+
+Production graph v6 and prompt v26 preserve resolved-thread history, add one
+bounded terminal non-world continuity adjudication, reject contradictory
+resolved/new-finding partitions, require a separate evidence-bound viewpoint
+audit, and persist failure layers plus selected-claim assessments. Adjudication
+cannot release World Rules, missing requirements, forbidden shortcuts, or hard
+critic gates; uncertainty stays blocking. It uses existing specialist routing,
+budgets, cancellation, durable checkpoints, and at most two model attempts.
+
+The six changes and remaining semantic validation work are documented in
+`docs/benchmark_reports/step-19-local-cloud-v25-canary-2026-09-07.md`.
+`scripts/canary_review.py` compares future clean canaries against hash-pinned v23
+and v25 baselines and packages matched completed stories for blind human review.
+See `benchmarks/README.md` for the repeatability protocol. No v26 canary or human
+review was run by this implementation; Step 19 remains **IN PROGRESS**.
 
 Benchmark word-count ranges are advisory creative targets. New outputs persist a
 non-gating adherence measurement with the target, actual count, status, and word

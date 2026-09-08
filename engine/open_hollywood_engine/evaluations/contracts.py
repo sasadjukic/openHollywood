@@ -339,6 +339,7 @@ class BenchmarkFailureAttempt(EvaluationModel):
     error_code: NonEmptyText
     error_message: NonEmptyText
     provider_finish_reason: NonEmptyText | None = None
+    failure_layer: NonEmptyText | None = None
 
 
 class BenchmarkOutput(EvaluationModel):

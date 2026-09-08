@@ -82,6 +82,12 @@ from open_hollywood_api.persistence.models import (
     agent_invocation_inputs,
 )
 from open_hollywood_api.persistence.secret_policy import active_secret_guard
+from open_hollywood_api.services.production_adjudication import (
+    ADJUDICATION_INSTRUCTIONS,
+    adjudication_schema,
+    disputed_findings,
+    materialize_adjudication,
+)
 from open_hollywood_api.services.structured_output import normalize_json_document
 
 
@@ -89,6 +95,7 @@ class _Operation(StrEnum):
     WRITE = "write"
     CRITIQUE = "critique"
     CONTINUITY = "continuity"
+    ADJUDICATION = "continuity_adjudication"
     STORY_BIBLE_UPDATE = "story_bible_update"
 
 
@@ -372,6 +379,9 @@ _SCHEMA_REPAIR_OPERATION_RULES: Mapping[_Operation, tuple[str, ...]] = {
         "Complete every schema-required requirement_coverage property with met, partial, or "
         "absent. Cite closest exact evidence for met and partial, and for absent whenever a "
         "related passage exists. Do not use a contradiction for an omitted requirement.",
+        "Do not declare a prior allegation released and create its paraphrase as a new "
+        "blocker using the same source and only the evidence just used for release. If the "
+        "original defect remains, mark its exact prior key still_blocking instead.",
     ),
     _Operation.STORY_BIBLE_UPDATE: (
         "Character, relationship, location, scene, fact, and thread references must use "
@@ -383,7 +393,9 @@ _SCHEMA_REPAIR_OPERATION_RULES: Mapping[_Operation, tuple[str, ...]] = {
         "declared in established_facts in this same response.",
         "A resolved thread requires a non-empty resolution explaining the payoff established "
         "by the accepted scene. An open thread must omit resolution or set it to null. "
-        "Do not provide resolved_scene_id; the application derives resolution lineage.",
+        "Omit unchanged already-resolved threads entirely: their explanation and origin "
+        "are immutable history. Do not provide resolved_scene_id; the application derives "
+        "resolution lineage for new resolutions.",
     ),
 }
 
@@ -633,6 +645,7 @@ _OUTPUT_MODELS: Mapping[_Operation, type[BaseModel]] = {
     _Operation.WRITE: SceneDraft,
     _Operation.CRITIQUE: Critique,
     _Operation.CONTINUITY: ContinuityReport,
+    _Operation.ADJUDICATION: ContinuityReport,
     _Operation.STORY_BIBLE_UPDATE: StoryBibleUpdate,
 }
 
@@ -656,6 +669,11 @@ _INSTRUCTIONS: Mapping[_Operation, str] = {
         "incompatible replacement or missing planned turn/outcome. Return [] when none exist. "
         "A mention of POV, advice for the next scene, polish, or an achieved turn that could "
         "be stronger is not an assignment violation. Ordinary craft feedback belongs in issues. "
+        "Complete point_of_view_check independently of the overall score. Narrating another "
+        "character's private thoughts as known fact, or replacing the assigned viewpoint, is "
+        "a violation even in excellent prose; observable speech/actions and the assigned "
+        "viewpoint's explicit inference are allowed. Do not label an actual viewpoint "
+        "replacement minor polish. not_assigned is allowed only with no assigned viewpoint. "
         "Use critic_requirement_scope as the exclusive due-now obligation list; do not demand "
         "story-wide requirements before their due scene. "
         "The target word-count range is story-wide and advisory. Use length_guidance for "
@@ -669,7 +687,12 @@ _INSTRUCTIONS: Mapping[_Operation, str] = {
         f"{_CONTINUITY_FINDING_BASIS_REQUIREMENT} "
         f"{_CONTINUITY_REQUIREMENT_AUDIT_REQUIREMENT} "
         f"{_CONTINUITY_WORLD_RULE_REQUIREMENT} "
-        f"{_CONTINUITY_REQUIREMENT_SCOPE}"
+        f"{_CONTINUITY_REQUIREMENT_SCOPE} "
+        "A paraphrased historical allegation is not a new finding. Do not declare a prior "
+        "finding resolved/invalidated/advisory and reintroduce it as new using the same "
+        "source and only the evidence just cited for release. New blockers need a distinct "
+        "incompatible assertion; otherwise correct the original prior-finding decision. "
+        "Previous review advice never establishes new canonical requirements."
     ),
     _Operation.STORY_BIBLE_UPDATE: (
         "Return only the typed delta established by the accepted scene. Preserve the "
@@ -677,7 +700,9 @@ _INSTRUCTIONS: Mapping[_Operation, str] = {
         "Choose an open or resolved thread change explicitly. Resolved threads require a "
         "non-empty resolution explaining what the accepted scene actually resolved; never "
         "invent a payoff to satisfy the schema. Open threads have no resolution. The "
-        "application attaches resolved_scene_id, so omit that field."
+        "application attaches resolved_scene_id, so omit that field. thread_changes is a "
+        "delta, not the full thread list. Omit already-resolved threads: their resolution "
+        "and original scene are immutable. Never reopen or rewrite them."
     ),
 }
 
@@ -728,7 +753,7 @@ class ProfileRoutedProductionExecutor(SceneProductionExecutor):
         task: ContinuityCheckTask,
     ) -> ContinuityCheckResult:
         output, references = await self._execute(
-            _Operation.CONTINUITY,
+            _Operation.ADJUDICATION if task.adjudication else _Operation.CONTINUITY,
             task,
             _continuity_inputs(task),
         )
@@ -782,10 +807,14 @@ class ProfileRoutedProductionExecutor(SceneProductionExecutor):
             return replay
         output_model = _OUTPUT_MODELS[operation]
         continuity_schema_variant = (
-            _continuity_schema_variant(execution) if operation is _Operation.CONTINUITY else None
+            _continuity_schema_variant(execution)
+            if operation in {_Operation.CONTINUITY, _Operation.ADJUDICATION}
+            else None
         )
         continuity_model_context = (
-            _continuity_model_context(execution) if operation is _Operation.CONTINUITY else None
+            _continuity_model_context(execution)
+            if operation in {_Operation.CONTINUITY, _Operation.ADJUDICATION}
+            else None
         )
         output_schema = _output_schema(
             operation,
@@ -827,14 +856,20 @@ class ProfileRoutedProductionExecutor(SceneProductionExecutor):
                 output_schema if execution.selection.deployment is ModelDeployment.LOCAL else None
             ),
         )
+        response: ModelResponse | None = None
+        failure_layer = "provider_transport"
         try:
             response = await self._gateway.generate(request)
             _require_matching_response(response, execution)
+            failure_layer = "response_decoding"
             output_data = json.loads(normalize_json_document(response.content))
-            output = output_model.model_validate(
-                _materialize_output_data(operation, task, execution, output_data)
-            )
+            failure_layer = "application_materialization"
+            materialized = _materialize_output_data(operation, task, execution, output_data)
+            failure_layer = "domain_validation"
+            output = output_model.model_validate(materialized)
+            failure_layer = "assignment_validation"
             _validate_output(operation, task, output)
+            failure_layer = "canonical_transition"
             references = await asyncio.to_thread(
                 self._complete_invocation,
                 invocation_id,
@@ -851,6 +886,7 @@ class ProfileRoutedProductionExecutor(SceneProductionExecutor):
                 "cancelled_execution",
                 "The production specialist call was cancelled before completion.",
                 None,
+                failure_layer="cancelled_execution",
             )
             raise
         except ModelGatewayError as error:
@@ -861,6 +897,7 @@ class ProfileRoutedProductionExecutor(SceneProductionExecutor):
                 str(error),
                 None,
                 usage=error.usage,
+                failure_layer="provider_transport",
             )
             if error.retryable:
                 raise RetryableSceneProductionError(str(error)) from error
@@ -873,6 +910,7 @@ class ProfileRoutedProductionExecutor(SceneProductionExecutor):
                 str(error),
                 None,
                 response,
+                failure_layer=failure_layer,
             )
             raise
         except (ValueError, json.JSONDecodeError, StoryBibleInvariantError) as error:
@@ -891,6 +929,7 @@ class ProfileRoutedProductionExecutor(SceneProductionExecutor):
                 False,
                 response,
                 validation_issues,
+                failure_layer=failure_layer,
             )
             raise RetryableSceneProductionError(
                 "production specialist returned invalid structured output"
@@ -938,7 +977,7 @@ class ProfileRoutedProductionExecutor(SceneProductionExecutor):
                 raise SceneProductionError("production call budget does not match its frozen run")
             resolved_input_references = input_references
             inputs = _load_inputs(session, resolved_input_references)
-            if operation is _Operation.CONTINUITY:
+            if operation in {_Operation.CONTINUITY, _Operation.ADJUDICATION}:
                 resolved_input_references = _continuity_recheck_input_references(
                     session,
                     resolved_input_references,
@@ -1174,6 +1213,16 @@ class ProfileRoutedProductionExecutor(SceneProductionExecutor):
             invocation.estimated_cost_usd = response.estimated_cost_usd
             invocation.latency_ms = response.timing.total_ms
             _apply_response_metadata(invocation, response)
+            if isinstance(output, ContinuityReport):
+                invocation.request_settings = {
+                    **invocation.request_settings,
+                    "continuity_finding_audit": _continuity_finding_audit(
+                        execution,
+                        output,
+                        json.loads(normalize_json_document(response.content)),
+                        adjudication=operation is _Operation.ADJUDICATION,
+                    ),
+                }
             if operation is _Operation.CONTINUITY and isinstance(output, ContinuityReport):
                 observations = _continuity_recheck_observations(output, execution)
                 if observations:
@@ -1226,6 +1275,8 @@ class ProfileRoutedProductionExecutor(SceneProductionExecutor):
         response: ModelResponse | None = None,
         validation_issues: tuple[dict[str, str], ...] = (),
         usage: ModelUsage | None = None,
+        *,
+        failure_layer: str = "unknown",
     ) -> None:
         guard = active_secret_guard()
         safe_message = guard.redact_text(message)[:2_000]
@@ -1261,11 +1312,16 @@ class ProfileRoutedProductionExecutor(SceneProductionExecutor):
             invocation.completed_at = datetime.now(UTC)
             invocation.error_code = code
             invocation.error_message = safe_message
+            invocation.request_settings = {
+                **invocation.request_settings,
+                "failure_layer": failure_layer,
+            }
             if safe_validation_issues:
                 invocation.request_settings = {
                     **invocation.request_settings,
                     "structured_failure": {
                         "schema_version": "2",
+                        "failure_layer": failure_layer,
                         "issues": list(safe_validation_issues),
                     },
                 }
@@ -1341,7 +1397,7 @@ def _retry_context(
 
 def _structured_failure_message(
     error: ValueError | StoryBibleInvariantError,
-    response: ModelResponse,
+    response: ModelResponse | None,
 ) -> str:
     locations = [
         ":".join(
@@ -1357,7 +1413,8 @@ def _structured_failure_message(
     ]
     return (
         "Structured output validation failed "
-        f"(provider_finish_reason={response.finish_reason}): {', '.join(locations)}."
+        f"(provider_finish_reason={response.finish_reason if response else 'unavailable'}): "
+        f"{', '.join(locations)}."
     )
 
 
@@ -1473,6 +1530,12 @@ def _output_schema(
     continuity_model_context: _ContinuityModelContext | None = None,
 ) -> dict[str, Any]:
     """Build the exact model-facing schema without changing canonical artifacts."""
+    if operation is _Operation.ADJUDICATION:
+        if continuity_model_context is None:
+            raise ValueError("adjudication requires exact continuity inputs")
+        return adjudication_schema(
+            _adjudication_source(continuity_model_context), continuity_model_context.evidence_refs
+        )
     schema = deepcopy(_OUTPUT_MODELS[operation].model_json_schema())
     if operation is not _Operation.CONTINUITY:
         if continuity_schema_variant is not None:
@@ -1484,9 +1547,11 @@ def _output_schema(
                 raise SceneProductionError("critique schema is invalid")
             properties.pop("overall_score", None)
             properties["assignment_violations"] = _critic_assignment_violation_schema()
+            properties["point_of_view_check"] = _point_of_view_check_schema()
             schema["required"] = [
                 *[field for field in required if field != "overall_score"],
                 "assignment_violations",
+                "point_of_view_check",
             ]
         elif operation is _Operation.STORY_BIBLE_UPDATE:
             _story_bible_thread_output_schema(schema)
@@ -2093,7 +2158,8 @@ def _schema_repair_guidance(
             operation_rules.insert(
                 0,
                 "This is a re-check. Complete every exact key in prior_finding_rechecks with "
-                "status resolved or still_blocking, and put only semantically new issues in "
+                "status resolved, invalidated, advisory, or still_blocking, and put only "
+                "semantically new issues in "
                 "new_findings. Requirement gaps remain exclusively in requirement_coverage.",
             )
         else:
@@ -2122,6 +2188,17 @@ def _schema_repair_guidance(
                     "supply a non-empty resolution describing the payoff actually established "
                     "by the accepted scene; if no payoff occurred, keep the thread open with "
                     "resolution=null instead of inventing a resolution; omit resolved_scene_id"
+                )
+            elif issue_type in {"resolved_thread_cannot_reopen", "resolved_thread_history_changed"}:
+                directive["action"] = (
+                    "omit the already-resolved thread from this delta; preserve its original "
+                    "resolution and resolved scene exactly, without reopening or rewriting history"
+                )
+            elif issue_type == "released_finding_reintroduced":
+                directive["action"] = (
+                    "remove the renamed released allegation from new_findings, or cite a "
+                    "distinct incompatible assertion; if the prior defect actually remains, "
+                    "correct its prior_finding_rechecks entry instead of duplicating it"
                 )
             elif issue_type == "open_thread_has_resolution":
                 directive["action"] = (
@@ -2287,6 +2364,10 @@ def _messages(
     continuity_schema_variant: _ContinuitySchemaVariant | None,
     continuity_model_context: _ContinuityModelContext | None,
 ) -> tuple[ModelMessage, ...]:
+    if operation is _Operation.ADJUDICATION:
+        if continuity_model_context is None:
+            raise ValueError("adjudication messages require exact context")
+        return _adjudication_messages(execution, schema, continuity_model_context)
     schema_repair = _schema_repair_guidance(
         operation=operation,
         deployment=execution.selection.deployment,
@@ -2415,6 +2496,131 @@ def _messages(
     )
 
 
+def _adjudication_source(context: _ContinuityModelContext) -> dict[str, Any]:
+    prior = context.previous_continuity_report
+    if prior is None or not isinstance(prior.get("content"), dict):
+        raise ValueError("adjudication requires the exact disputed report")
+    return cast(dict[str, Any], prior["content"])
+
+
+def _adjudication_messages(
+    execution: _Execution,
+    schema: dict[str, Any],
+    context: _ContinuityModelContext,
+) -> tuple[ModelMessage, ...]:
+    report = _adjudication_source(context)
+    disputed = disputed_findings(report)
+    references = {ref for finding in disputed for ref in finding["canonical_source_refs"]}
+    sources = [
+        entry
+        for entry in context.canonical_source_catalog
+        if entry.get("reference_id") in references
+    ]
+    if references != {entry["reference_id"] for entry in sources}:
+        raise ValueError("adjudication source provenance is missing")
+    payload: dict[str, Any] = {
+        "assignment": {
+            "operation": _Operation.ADJUDICATION.value,
+            "specialist_role": execution.specialist_role,
+            "unit_id": execution.unit_id,
+            "unit_number": execution.unit_number,
+            "unit_count": execution.unit_count,
+            "revision_number": execution.revision_number,
+        },
+        "source_report_version_id": context.previous_continuity_report["artifact_version_id"]
+        if context.previous_continuity_report
+        else None,
+        "disputed_findings": disputed,
+        "canonical_source_catalog": sources,
+        "scene_assignment_contract": _scene_assignment_contract(execution),
+        "requirement_coverage_catalog": context.requirement_catalog,
+        "candidate_draft": context.candidate_draft,
+        "continuity_history": [
+            _bounded_continuity_history_entry(item) for item in context.continuity_history
+        ],
+    }
+    if execution.selection.deployment is ModelDeployment.LOCAL:
+        payload["output_schema_delivery"] = "enforced_by_local_gateway"
+    else:
+        payload["output_schema"] = schema
+    if execution.previous_failure:
+        payload["retry_context"] = execution.previous_failure
+    return (
+        ModelMessage(role=MessageRole.SYSTEM, content=ADJUDICATION_INSTRUCTIONS),
+        ModelMessage(
+            role=MessageRole.USER,
+            content=json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(",", ":")),
+        ),
+    )
+
+
+def _continuity_finding_audit(
+    execution: _Execution,
+    output: ContinuityReport,
+    response: object,
+    *,
+    adjudication: bool,
+) -> dict[str, object]:
+    """Keep bounded selected authority and assessments after model-only fields are stripped."""
+    context = _continuity_model_context(execution)
+    sources = {item["reference_id"]: item for item in context.canonical_source_catalog}
+    raw = response if isinstance(response, dict) else {}
+    explanations: dict[str, str] = {}
+    raw_findings = raw.get("new_findings", raw.get("findings", []))
+    for finding in raw_findings if isinstance(raw_findings, list) else []:
+        if not isinstance(finding, dict):
+            continue
+        details = finding.get("basis_details", finding)
+        if isinstance(details, dict):
+            explanations[str(finding.get("summary", ""))] = str(
+                details.get("conflict_explanation", details.get("rule_conflict_assessment", ""))
+            )
+    decisions = raw.get("decisions", raw.get("prior_finding_rechecks", {}))
+    guard = active_secret_guard()
+    records = []
+    for finding in output.findings:
+        decision = decisions.get(finding.id, {}) if isinstance(decisions, dict) else {}
+        assessment = (
+            decision.get("assessment")
+            or decision.get("repair_assessment")
+            or decision.get("resolution_assessment")
+            or explanations.get(finding.summary)
+            or finding.coverage_assessment
+            or ""
+        )
+        records.append(
+            {
+                "finding_id": finding.id,
+                "category": finding.category.value,
+                "basis": finding.basis.value if finding.basis else None,
+                "blocks_approval": finding.blocks_approval,
+                "decision": decision.get("disposition", decision.get("status")),
+                "assessment": guard.redact_text(str(assessment))[:1000],
+                "source_claims": [
+                    {
+                        key: guard.redact_text(str(source[key]))[:1000]
+                        for key in (
+                            "reference_id",
+                            "claim_id",
+                            "artifact_version_id",
+                            "source_path",
+                            "claim",
+                            "scope",
+                        )
+                        if key in source
+                    }
+                    for ref in finding.canonical_source_refs
+                    if (source := sources.get(ref))
+                ],
+            }
+        )
+    return {
+        "schema_version": "1",
+        "stage": "adjudication" if adjudication else "review",
+        "findings": records[:40],
+    }
+
+
 def _critic_assignment_violation_schema() -> dict[str, Any]:
     """Keep hard assignment findings explicit and separate from freeform craft notes."""
     return {
@@ -2437,6 +2643,87 @@ def _critic_assignment_violation_schema() -> dict[str, Any]:
             ],
         },
     }
+
+
+def _point_of_view_check_schema() -> dict[str, Any]:
+    branches = []
+    for status in ("aligned", "violation", "not_assigned"):
+        properties = {
+            "status": {"type": "string", "const": status},
+            "assessment": {"type": "string", "minLength": 1},
+            "draft_evidence": {"type": "string", "minLength": 0 if status == "not_assigned" else 1},
+        }
+        if status == "violation":
+            properties["recommended_resolution"] = {"type": "string", "minLength": 1}
+        branches.append(
+            {
+                "type": "object",
+                "additionalProperties": False,
+                "properties": properties,
+                "required": list(properties),
+            }
+        )
+    return {"anyOf": branches}
+
+
+def _normalize_point_of_view_check(
+    critique: dict[str, Any],
+    execution: _Execution,
+) -> dict[str, Any]:
+    check = critique.get("point_of_view_check")
+    if not isinstance(check, dict):
+        raise _StructuredOutputContractError(
+            "point_of_view_check",
+            "critic must independently audit the assigned viewpoint",
+            issue_type="point_of_view_check_missing",
+        )
+    status = check.get("status")
+    expected = {"status", "assessment", "draft_evidence"}
+    if status == "violation":
+        expected.add("recommended_resolution")
+    if (
+        not isinstance(status, str)
+        or status not in {"aligned", "violation", "not_assigned"}
+        or set(check) != expected
+        or any(not isinstance(value, str) for value in check.values())
+        or not check["assessment"].strip()
+    ):
+        raise _StructuredOutputContractError("point_of_view_check", "invalid viewpoint audit")
+    assigned = bool(_scene_assignment_contract(execution).get("point_of_view_character_id"))
+    if (status == "not_assigned") != (not assigned):
+        raise _StructuredOutputContractError(
+            "point_of_view_check.status", "viewpoint applicability must match the approved plan"
+        )
+    if status != "not_assigned" and (
+        not check["draft_evidence"].strip()
+        or check["draft_evidence"] not in _current_scene_draft_prose(execution)
+    ):
+        raise _StructuredOutputContractError(
+            "point_of_view_check.draft_evidence", "viewpoint audit requires exact current evidence"
+        )
+    result = {key: value for key, value in critique.items() if key != "point_of_view_check"}
+    violations = result.get("assignment_violations")
+    if isinstance(violations, list):
+        existing = [
+            item
+            for item in violations
+            if isinstance(item, dict) and item.get("anchor") == "point_of_view_character_id"
+        ]
+        if existing and status != "violation":
+            raise _StructuredOutputContractError(
+                "point_of_view_check.status", "viewpoint audit contradicts the assignment finding"
+            )
+        if status == "violation" and not existing:
+            result["assignment_violations"] = [
+                *violations,
+                {
+                    "anchor": "point_of_view_character_id",
+                    "draft_evidence": check["draft_evidence"],
+                    "explanation": check["assessment"],
+                    "recommended_resolution": check["recommended_resolution"],
+                },
+            ]
+    return result
 
 
 def _critic_requirement_scope(execution: _Execution) -> dict[str, object]:
@@ -2744,6 +3031,7 @@ def _bounded_continuity_history_entry(report: Mapping[str, object]) -> dict[str,
                 key: deepcopy(finding.get(key))
                 for key in (
                     "id",
+                    "summary",
                     "category",
                     "basis",
                     "requirement_id",
@@ -3736,7 +4024,7 @@ def _validate_output(
                 f"{critique_task.draft.version_id})"
             )
         return
-    if operation is _Operation.CONTINUITY:
+    if operation in {_Operation.CONTINUITY, _Operation.ADJUDICATION}:
         continuity_task = cast(ContinuityCheckTask, task)
         report = cast(ContinuityReport, output)
         if (
@@ -3770,6 +4058,21 @@ def _materialize_output_data(
     if not isinstance(output_data, dict):
         raise ValueError("production specialist output must be a JSON object")
     materialized = dict(output_data)
+    if operation is _Operation.ADJUDICATION:
+        context = _continuity_model_context(execution)
+        evidence = {
+            entry["evidence_ref"]: entry["exact_excerpt"]
+            for entry in context.candidate_draft["content"]["evidence_catalog"]
+        }
+        try:
+            source_report = _prior_continuity_report(execution)
+            if source_report is None:
+                raise ValueError("adjudication source report is missing")
+            return materialize_adjudication(output_data, source_report, evidence)
+        except ValueError as error:
+            raise _StructuredOutputContractError(
+                "decisions", str(error), issue_type="adjudication_contract_invalid"
+            ) from error
     if operation is _Operation.WRITE:
         writing = cast(SceneWritingTask, task)
         materialized.update(
@@ -3781,6 +4084,7 @@ def _materialize_output_data(
         return materialized
     if operation is _Operation.CRITIQUE:
         critique_task = cast(SceneCritiqueTask, task)
+        materialized = _normalize_point_of_view_check(materialized, execution)
         materialized = _normalize_story_length_critique(materialized, execution)
         materialized = _normalize_scene_assignment_critique(materialized, execution)
         scores = materialized.get("scores")
@@ -3949,12 +4253,9 @@ def _materialize_output_data(
     thread_changes = materialized.get("thread_changes")
     if isinstance(thread_changes, list):
         current_threads = {thread.id: thread for thread in source_story_bible.threads}
-        materialized["thread_changes"] = [
-            _materialize_thread_change(
-                change, scene_id, current_threads, location=f"thread_changes.{index}"
-            )
-            for index, change in enumerate(thread_changes)
-        ]
+        materialized["thread_changes"] = _materialize_thread_changes(
+            thread_changes, scene_id, current_threads
+        )
     contradictions = materialized.get("prohibited_contradictions")
     if isinstance(contradictions, list):
         materialized["prohibited_contradictions"] = _new_prohibitions(
@@ -4364,7 +4665,59 @@ def _continuity_model_findings(
             retained["canonical_claim_ids"] = claim_ids
         materialized.append(retained)
     materialized.extend(new)
+    _validate_released_finding_recurrence(prior, new, previous_by_id, model_context)
     return materialized
+
+
+def _validate_released_finding_recurrence(
+    decisions: Mapping[str, Any],
+    new_findings: list[object],
+    prior_findings: Mapping[str, Any],
+    context: _ContinuityModelContext,
+) -> None:
+    """A renamed blocker cannot reuse only the same evidence just used to release its source."""
+    released: dict[str, set[str]] = {}
+    for finding_id, decision in decisions.items():
+        if decision.get("status") not in {"resolved", "invalidated", "advisory"}:
+            continue
+        prior = prior_findings[finding_id]
+        for source_ref in prior.get("canonical_source_refs", []):
+            released.setdefault(source_ref, set()).update(
+                _resolve_continuity_evidence_refs(
+                    decision["revised_draft_evidence_refs"],
+                    context,
+                    location="prior_finding_rechecks",
+                )
+            )
+    for index, finding in enumerate(new_findings):
+        if not isinstance(finding, dict) or finding.get("severity") not in {"error", "blocking"}:
+            continue
+        flat = _flatten_continuity_model_finding(finding)
+        if flat.get("basis") != "contradiction" or not flat.get("canonical_claim_ids"):
+            continue
+        refs = flat.get("revised_draft_evidence_refs", flat.get("draft_evidence_refs", []))
+        claim_ids = flat["canonical_claim_ids"]
+        if (
+            not isinstance(refs, list)
+            or not isinstance(claim_ids, list)
+            or any(not isinstance(claim_id, str) for claim_id in claim_ids)
+        ):
+            raise _StructuredOutputContractError(
+                f"new_findings.{index}", "new findings require claim and evidence reference arrays"
+            )
+        excerpts = _resolve_continuity_evidence_refs(
+            refs, context, location=f"new_findings.{index}"
+        )
+        for claim_id in claim_ids:
+            source_ref = context.canonical_claim_source_refs.get(claim_id)
+            if source_ref in released and excerpts and set(excerpts).issubset(released[source_ref]):
+                raise _StructuredOutputContractError(
+                    f"new_findings.{index}",
+                    "new allegation reuses only the source and evidence just marked released; "
+                    "remove the recurrence, or cite the distinct new incompatible assertion. "
+                    "If the original defect remains, correct its prior recheck instead",
+                    issue_type="released_finding_reintroduced",
+                )
 
 
 def _source_story_bible(execution: _Execution) -> StoryBible:
@@ -4408,6 +4761,24 @@ def _materialize_thread_change(
     materialized = dict(change)
     thread_id = change.get("id")
     existing = current_threads.get(thread_id) if isinstance(thread_id, str) else None
+    if existing is not None and existing.status is StoryThreadStatus.RESOLVED:
+        if change.get("status") != StoryThreadStatus.RESOLVED.value:
+            raise _StructuredOutputContractError(
+                f"{location}.status",
+                f"resolved thread {existing.id!r} cannot reopen; omit unchanged thread",
+                issue_type="resolved_thread_cannot_reopen",
+                expected_value="resolved or omit unchanged thread",
+                received_value=str(change.get("status")),
+            )
+        if change.get("resolution") != existing.resolution:
+            raise _StructuredOutputContractError(
+                f"{location}.resolution",
+                f"resolved thread {existing.id!r} has immutable resolution history; "
+                "omit this thread from the delta instead of rewriting its resolution",
+                issue_type="resolved_thread_history_changed",
+                expected_value=f"original resolution scene {existing.resolved_scene_id}",
+                received_value=f"update scene {scene_id}",
+            )
     if existing is None:
         materialized["introduced_scene_id"] = scene_id
     else:
@@ -4441,6 +4812,38 @@ def _materialize_thread_change(
             )
         materialized["resolved_scene_id"] = None
     return materialized
+
+
+def _materialize_thread_changes(
+    changes: list[object],
+    scene_id: str,
+    current_threads: Mapping[str, StoryBibleThread],
+) -> list[object]:
+    """Validate every entry before removing idempotent resolved-thread echoes."""
+    result: list[object] = []
+    seen: set[str] = set()
+    for index, change in enumerate(changes):
+        location = f"thread_changes.{index}"
+        thread_id = change.get("id") if isinstance(change, dict) else None
+        if isinstance(thread_id, str):
+            if thread_id in seen:
+                raise _StructuredOutputContractError(
+                    f"{location}.id",
+                    "thread delta IDs must be unique",
+                    issue_type="duplicate_thread_change",
+                    received_value=thread_id,
+                )
+            seen.add(thread_id)
+        materialized = _materialize_thread_change(
+            change, scene_id, current_threads, location=location
+        )
+        existing = current_threads.get(thread_id) if isinstance(thread_id, str) else None
+        if existing is not None and existing.status is StoryThreadStatus.RESOLVED:
+            # The enclosing delta permits NEW resolutions only from this scene.
+            # The reducer already retains this unchanged historical thread.
+            continue
+        result.append(materialized)
+    return result
 
 
 def _new_prohibitions(
@@ -5892,6 +6295,7 @@ def _primary_kind(operation: _Operation) -> ArtifactKind:
         _Operation.WRITE: ArtifactKind.SCENE_DRAFT,
         _Operation.CRITIQUE: ArtifactKind.CRITIQUE,
         _Operation.CONTINUITY: ArtifactKind.CONTINUITY_REPORT,
+        _Operation.ADJUDICATION: ArtifactKind.CONTINUITY_REPORT,
         _Operation.STORY_BIBLE_UPDATE: ArtifactKind.STORY_BIBLE_UPDATE,
     }[operation]
 
@@ -5975,6 +6379,7 @@ def _temperature(operation: _Operation) -> float:
         _Operation.WRITE: 0.85,
         _Operation.CRITIQUE: 0.2,
         _Operation.CONTINUITY: 0.1,
+        _Operation.ADJUDICATION: 0.1,
         _Operation.STORY_BIBLE_UPDATE: 0.1,
     }[operation]
 

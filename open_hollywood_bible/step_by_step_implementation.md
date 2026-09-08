@@ -668,9 +668,31 @@ The checks improve structural and provenance guarantees; model interpretation
 still requires canary evidence and blind human evaluation. Combined verification
 passes: Ruff lint/format and strict mypy across 141 Python files, all 341 pytest
 tests, frontend formatting/lint/type checks, all 11 Vitest tests, and the
-production build. No v25 canary has been started. Step 19 remains
+production build. These checks refer to the v25 implementation; its completed
+canary and the next implementation are recorded below. Step 19 remains
 **IN PROGRESS** because the formal campaign and human review are not complete.
 Evidence: `docs/benchmark_reports/step-19-local-cloud-v24-canary-2026-09-05.md`.
+
+The completed v25 canary matched v23's six of nine runnable completions and
+advanced accepted scenes to 38/44 (v23: 32/44; v24: 24/44). Local OH-V01-001
+became a new success, OH-V01-004 recovered, and all four Cloud cases completed.
+Local OH-V01-002 and OH-V01-003 reached later scenes but failed historical
+resolved-thread delta validation; OH-V01-005 retained an unsupported continuity
+blocker. Local OH-V01-006 remains the exact inherited Blueprint failure, not a
+production failure. The operator-confirmed host clock issue is environmental.
+v23 and v25 are pinned comparison baselines until stronger evidence replaces them.
+
+Production graph v6 / prompt v26 implement the six follow-up changes: immutable
+resolved-thread history with no-op delta omission; a registered, budgeted terminal
+continuity adjudication node; an evidence/source guard against immediately
+reintroducing released findings under new wording; regression and positive-control
+tests including a separate hard viewpoint audit; failure-layer and selected-claim
+diagnostics; and matched technical comparison / blind human review tooling.
+The existing revision cap, World Rule and requirement gates, approval checkpoint,
+profile routing, and secret guards remain intact. No v26 canary or human review
+has been run. Live semantic performance and repeatability are pending; Step 19
+stays **IN PROGRESS**, and Step 20 has not been started. Evidence and verification:
+`docs/benchmark_reports/step-19-local-cloud-v25-canary-2026-09-07.md`.
 
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 
