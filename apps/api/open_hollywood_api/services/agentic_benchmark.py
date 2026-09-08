@@ -94,6 +94,7 @@ def _benchmark_failure_attempt(
     schema_variant = settings.get("output_schema_variant")
     attempt_number = settings.get("attempt_number")
     finish_reason = settings.get("provider_finish_reason")
+    failure_layer = settings.get("failure_layer")
     return BenchmarkFailureAttempt(
         invocation_id=invocation.id,
         workflow_node=(
@@ -118,6 +119,7 @@ def _benchmark_failure_attempt(
         provider_finish_reason=(
             finish_reason if isinstance(finish_reason, str) and finish_reason.strip() else None
         ),
+        failure_layer=(failure_layer if isinstance(failure_layer, str) and failure_layer else None),
     )
 
 

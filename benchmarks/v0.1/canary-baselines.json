@@ -1,0 +1,15 @@
+{
+  "schema_version": "1",
+  "baselines": [
+    {
+      "name": "v23",
+      "directory": "data/benchmarks/v0.1/v23-canary-2026-09-04",
+      "report_sha256": "b8e1dcce97f8e41b1632482db841e9ec2d182f552a660a11666da347574f2a4a"
+    },
+    {
+      "name": "v25",
+      "directory": "data/benchmarks/v0.1/v25-canary-2026-09-07",
+      "report_sha256": "7eed2294159d076fc6bdf69471d8d5c79ce0a686b55e0c62b18de1346451dc6f"
+    }
+  ]
+}

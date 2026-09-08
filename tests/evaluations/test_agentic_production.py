@@ -261,6 +261,17 @@ class ProductionFixtureGateway(BlueprintFixtureGateway):
             content["target_artifact_version_id"] = invented_version_id
             content["overall_score"] = 999
             content["assignment_violations"] = []
+            content["point_of_view_check"] = {
+                "status": "aligned"
+                if payload["scene_assignment_contract"].get("point_of_view_character_id")
+                else "not_assigned",
+                "assessment": "The fixture preserves its assigned viewpoint.",
+                "draft_evidence": next(
+                    item["content"]["prose"]
+                    for item in input_items
+                    if item["artifact_kind"] == ArtifactKind.SCENE_DRAFT.value
+                ),
+            }
         elif role == "continuity_supervisor":
             content.update(
                 story_bible_version_id=invented_version_id,
@@ -3901,7 +3912,7 @@ async def test_approved_blueprint_runs_durable_production_and_replays(
         assert production_run.status is RunStatus.SUCCEEDED
         assert production_run.checkpoint_id == execution.checkpoint_id
         assert production_run.budget["max_cost_usd"] == "5.00"
-        assert production_run.budget["max_model_calls"] == 30
+        assert production_run.budget["max_model_calls"] == 36
         assert production_run.budget["per_call_input_tokens"] == 20_000
         assert session.scalar(select(func.count()).select_from(AgentInvocation)) == 19
         production_invocations = session.scalars(

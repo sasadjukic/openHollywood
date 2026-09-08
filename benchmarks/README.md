@@ -127,3 +127,91 @@ unique reviewer/comparison pairs.
 
 The private blinding key and generated answer key must not be distributed with
 the public A/B review packet. None of these files may contain API keys.
+
+## Cross-version production canaries
+
+v23 and v25 are the reference runs until a stronger matched canary replaces them.
+`v0.1/canary-baselines.json` pins their exact report bytes. Preserve the original
+directories, databases, reports, approvals, and logs; never retag or resume an
+old graph checkpoint under a new production graph version.
+
+After a separately authorized clean canary has finished, compare it offline:
+
+```powershell
+uv run --extra api python scripts/canary_review.py compare `
+  --candidate data/benchmarks/v0.1/v26-canary-YYYY-MM-DD
+```
+
+The command reads SQLite in read-only mode and prints JSON. It rejects changed
+baseline report hashes, mismatched corpus/profile/seed/case snapshots, changed
+non-production workflow versions, different attempted case sets, mismatched
+database lineage, multiple production runs per selected case, and changed
+approved Blueprints. It reports raw and eligible completion denominators,
+retained/new/lost successes, accepted/planned scenes, all production attempts
+(including recovered failures), tokens, provider latency, and diagnostic layers.
+Only the exact inherited Local OH-V01-006 missing-beats error can be excluded.
+The comparison does not infer quality, and cannot prove models or host hardware
+remained identical beyond the recorded snapshots. Record environmental changes
+separately. Older traces without failure layers are explicitly unknown.
+
+For cross-version human quality, use the existing private-key creation command
+above and keep it outside the public directory. Then package a matched pair:
+
+```powershell
+uv run --extra api python scripts/canary_review.py package-review `
+  --left data/benchmarks/v0.1/v25-canary-2026-09-07 `
+  --right data/benchmarks/v0.1/v26-canary-YYYY-MM-DD `
+  --blinding-key data/evaluations/private-review.key `
+  --public-directory data/evaluations/v25-v26-public `
+  --private-key-output data/evaluations/v25-v26-private-answer-key.json `
+  --reviewer-id primary-reviewer
+```
+
+This creates a provenance-free A/B JSON packet, rubric guide, and blank CSV form.
+The separate private answer key identifies each candidate's run, case, report,
+and exact content. Existing outputs and source-canary directories are protected
+against overwrite. Repeat for v23; compare only cases completed in both versions,
+and keep every unpaired failure in the technical report. Do not distribute
+answer keys or source reports to reviewers. Do not manufacture completed forms.
+
+After actual reviewers score every dimension and hard gate, summarize their forms:
+
+```powershell
+uv run --extra api python scripts/canary_review.py summarize-reviews `
+  --public-bundle data/evaluations/v25-v26-public/public-bundle.json `
+  --answer-key data/evaluations/v25-v26-private-answer-key.json `
+  --reviews data/evaluations/v25-v26-public/review.csv
+```
+
+Blank cells, foreign packets, duplicate reviewer/comparison pairs, and mismatched
+content bindings are rejected. The summary separates weighted scores, hard-gate
+failures, preferences/ties, and pending comparison coverage. Multiple reviewers
+are supported; their rows are equally weighted, so balance reviewer coverage.
+These are canary-quality summaries, not completion of the formal Step 19 campaign.
+
+### Repeatability protocol
+
+1. Predeclare the usual six Local / four Cloud case IDs, approved Blueprint seed,
+   frozen corpus/profile/seed, graph/prompt versions, budget, and host/model
+   configuration. Use a new named output directory and clean approved-seed copy
+   for each repeat. Verify no production invocations/artifacts leaked into it.
+   Keep the mandatory prior human approvals intact; new Blueprints need new
+   approval. Never copy completed production checkpoints as a fresh experiment.
+2. Obtain authorization for the live runs and their aggregate cost. Run at least
+   three independent fresh repeats before claiming repeatability. Fixed seeds
+   do not guarantee identical provider output. Do not use cached successes or
+   retry-only reports as independent repeats. Record environmental interruptions
+   separately, retaining them in the raw accounting.
+3. Compare each repeat against both pinned baselines. To beat their observed
+   completion count requires at least seven of nine runnable completions, while
+   also reporting any lost previous success, per-profile results, scene progress,
+   validation failure/recovery rates, tokens, and cost. Do not promote a baseline
+   merely because one aggregate count increased while important cases regressed.
+4. Blind-review matched completed stories for voice, originality, character,
+   pacing, coherence, continuity, and the full canonical rubric/hard gates.
+   Require no material quality or safety-gate regression and report all partial
+   review coverage. A three-run sample is still small; report individual outcomes
+   and uncertainty rather than claiming statistical proof.
+
+The v26 implementation adds this tooling and protocol only. It does not launch
+live canaries, create human scores, or mark Step 19 complete.

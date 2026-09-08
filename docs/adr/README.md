@@ -11,3 +11,4 @@ tradeoffs. Status values are `Proposed`, `Accepted`, `Superseded`, or `Rejected`
 | 0004 | Provider-neutral model gateway | Accepted |
 | 0005 | Versioned artifacts and bounded context | Accepted |
 | 0006 | Runtime secret handles and leak guards | Accepted |
+| 0007 | Bounded terminal continuity adjudication | Accepted |

@@ -15,6 +15,8 @@ from langgraph.types import RetryPolicy
 
 from open_hollywood_engine.artifacts import (
     ArtifactKind,
+    ContinuityCategory,
+    ContinuityFindingBasis,
     ContinuityReport,
     CritiqueSeverity,
     CritiqueVerdict,
@@ -130,6 +132,7 @@ class ProductionGraphState(DialogueGraphState, total=False):
     critique_requires_revision: bool
     critique_blocking_issue_count: int
     revision_scheduled: bool
+    adjudication_required: bool
     draft_artifacts: list[DialogueArtifactReferenceState]
     critique_artifacts: list[DialogueArtifactReferenceState]
     continuity_artifacts: list[DialogueArtifactReferenceState]
@@ -177,6 +180,7 @@ def initial_production_state(production: SceneProductionInput) -> ProductionGrap
         "critique_blocking_issue_count": 0,
         "pending_continuity_artifact": None,
         "revision_scheduled": False,
+        "adjudication_required": False,
         "draft_artifacts": [],
         "critique_artifacts": [],
         "continuity_artifacts": [],
@@ -250,6 +254,11 @@ def build_scene_production_graph(
         **_node_policy(ProductionNode.CONTINUITY),
     )
     builder.add_node(
+        ProductionNode.CONTINUITY_ADJUDICATION.value,
+        _runnable(_adjudication_node(executor, lifecycle)),
+        **_node_policy(ProductionNode.CONTINUITY_ADJUDICATION),
+    )
+    builder.add_node(
         ProductionNode.STORY_BIBLE_UPDATE.value,
         _runnable(_story_bible_update_node(executor, lifecycle)),
         **_node_policy(ProductionNode.STORY_BIBLE_UPDATE),
@@ -286,7 +295,12 @@ def build_scene_production_graph(
         {
             "revise": ProductionNode.DRAFT.value,
             "update": ProductionNode.STORY_BIBLE_UPDATE.value,
+            "adjudicate": ProductionNode.CONTINUITY_ADJUDICATION.value,
         },
+    )
+    builder.add_edge(
+        ProductionNode.CONTINUITY_ADJUDICATION.value,
+        ProductionNode.STORY_BIBLE_UPDATE.value,
     )
     builder.add_edge(
         ProductionNode.STORY_BIBLE_UPDATE.value,
@@ -527,12 +541,11 @@ def _continuity_node(
             (result.artifact,),
         )
         report_state = _artifact_to_state(result.artifact)
-        critique_requires_revision = state.get("critique_requires_revision") is True
-        has_blockers = result.report.has_blocking_findings
         update: dict[str, Any] = {
             "current_continuity_artifact": report_state,
             "pending_continuity_artifact": None,
             "revision_scheduled": False,
+            "adjudication_required": False,
             "continuity_artifacts": [
                 *state.get("continuity_artifacts", []),
                 report_state,
@@ -542,34 +555,109 @@ def _continuity_node(
                 report_state,
             ],
         }
-        if has_blockers and revision_number >= production.maximum_revision_cycles:
-            raise ContinuityRevisionLimitError(
-                _continuity_terminal_failure_message(result.report, revision_number)
-            )
         if (
-            state.get("critique_blocking_issue_count", 0) > 0
-            and revision_number >= production.maximum_revision_cycles
-        ):
-            raise CritiqueRevisionLimitError(
-                "critique_revision_limit_reached: hard critique issues remain after "
-                f"revision {revision_number}; scene_id={unit.unit_id}; "
-                f"blocking_issue_count={state['critique_blocking_issue_count']}"
+            revision_number >= production.maximum_revision_cycles
+            and state.get("critique_blocking_issue_count", 0) == 0
+            and any(
+                finding.blocks_approval
+                and finding.basis is ContinuityFindingBasis.CONTRADICTION
+                and finding.category is not ContinuityCategory.WORLD_RULE
+                for finding in result.report.findings
             )
-        if (has_blockers or critique_requires_revision) and (
-            revision_number < production.maximum_revision_cycles
         ):
-            update["current_revision_number"] = revision_number + 1
-            update["current_acceptance_reason"] = None
-            update["revision_scheduled"] = True
-        else:
-            update["current_acceptance_reason"] = (
-                UnitAcceptanceReason.REVISION_LIMIT_REACHED.value
-                if critique_requires_revision
-                else UnitAcceptanceReason.PASSED_RUBRIC.value
-            )
+            update["adjudication_required"] = True
+            return update
+        update.update(_review_disposition(state, production, unit, revision_number, result.report))
         return update
 
     return continuity
+
+
+def _review_disposition(
+    state: ProductionGraphState,
+    production: SceneProductionInput,
+    unit: ProductionUnitInput,
+    revision_number: int,
+    report: ContinuityReport,
+) -> dict[str, Any]:
+    has_blockers = report.has_blocking_findings
+    critique_requires_revision = state.get("critique_requires_revision") is True
+    if has_blockers and revision_number >= production.maximum_revision_cycles:
+        raise ContinuityRevisionLimitError(
+            _continuity_terminal_failure_message(report, revision_number)
+        )
+    if state.get("critique_blocking_issue_count", 0) > 0 and (
+        revision_number >= production.maximum_revision_cycles
+    ):
+        raise CritiqueRevisionLimitError(
+            "critique_revision_limit_reached: hard critique issues remain after "
+            f"revision {revision_number}; scene_id={unit.unit_id}; "
+            f"blocking_issue_count={state['critique_blocking_issue_count']}"
+        )
+    if (has_blockers or critique_requires_revision) and (
+        revision_number < production.maximum_revision_cycles
+    ):
+        return {
+            "current_revision_number": revision_number + 1,
+            "current_acceptance_reason": None,
+            "revision_scheduled": True,
+        }
+    return {
+        "current_acceptance_reason": (
+            UnitAcceptanceReason.REVISION_LIMIT_REACHED.value
+            if critique_requires_revision
+            else UnitAcceptanceReason.PASSED_RUBRIC.value
+        )
+    }
+
+
+def _adjudication_node(
+    executor: SceneProductionExecutor,
+    observer: SceneProductionWorkflowObserver,
+) -> ProductionNodeCallable:
+    async def adjudicate(state: ProductionGraphState) -> dict[str, Any]:
+        production = _production_from_state(state)
+        unit = _current_unit(state, production)
+        revision = _require_integer(state, "current_revision_number")
+        if state.get("adjudication_required") is not True or (
+            revision != production.maximum_revision_cycles
+        ):
+            raise SceneProductionStateError("adjudication is only allowed at the terminal gate")
+        await observer.node_started(
+            production.workflow_run_id, ProductionNode.CONTINUITY_ADJUDICATION
+        )
+        task = ContinuityCheckTask(
+            production=production,
+            unit=unit,
+            story_bible=_required_current_artifact(state, "current_story_bible_artifact"),
+            draft=_required_current_artifact(state, "current_draft_artifact"),
+            accepted_units=_accepted_artifacts(state),
+            revision_number=revision,
+            previous_continuity=_required_current_artifact(state, "current_continuity_artifact"),
+            continuity_history=tuple(
+                _artifact_from_state(item) for item in state.get("current_continuity_history", [])
+            ),
+            adjudication=True,
+        )
+        result = await executor.check_continuity(task)
+        _validate_continuity(task, result)
+        await observer.node_completed(
+            production.workflow_run_id, ProductionNode.CONTINUITY_ADJUDICATION, (result.artifact,)
+        )
+        report_state = _artifact_to_state(result.artifact)
+        return {
+            **_review_disposition(state, production, unit, revision, result.report),
+            "current_continuity_artifact": report_state,
+            "adjudication_required": False,
+            "revision_scheduled": False,
+            "continuity_artifacts": [*state.get("continuity_artifacts", []), report_state],
+            "current_continuity_history": [
+                *state.get("current_continuity_history", []),
+                report_state,
+            ],
+        }
+
+    return adjudicate
 
 
 def _story_bible_update_node(
@@ -682,6 +770,7 @@ def _accept_node(
             "critique_requires_revision": False,
             "critique_blocking_issue_count": 0,
             "revision_scheduled": False,
+            "adjudication_required": False,
             "production_complete": next_index == len(production.units),
         }
 
@@ -720,6 +809,8 @@ def _continuity_terminal_failure_message(
 
 
 def _route_after_continuity(state: ProductionGraphState) -> str:
+    if state.get("adjudication_required") is True:
+        return "adjudicate"
     return "revise" if state.get("revision_scheduled") is True else "update"
 
 

@@ -26,8 +26,8 @@ from open_hollywood_engine.workflows.dialogue_contracts import (
 )
 
 SCENE_PRODUCTION_WORKFLOW_NAME = "scene_production"
-SCENE_PRODUCTION_GRAPH_VERSION = "5"
-SCENE_PRODUCTION_PROMPT_TEMPLATE_VERSION = "25"
+SCENE_PRODUCTION_GRAPH_VERSION = "6"
+SCENE_PRODUCTION_PROMPT_TEMPLATE_VERSION = "26"
 DEFAULT_PRODUCTION_NODE_TIMEOUT_SECONDS = 900
 DEFAULT_MAX_REVISION_CYCLES = 2
 MAX_REVISION_CYCLES = 5
@@ -51,6 +51,7 @@ class ProductionNode(StrEnum):
     DIALOGUE_INTEGRATION = "dialogue_integration"
     CRITIQUE = "critique"
     CONTINUITY = "continuity"
+    CONTINUITY_ADJUDICATION = "continuity_adjudication"
     STORY_BIBLE_UPDATE = "story_bible_update"
     ACCEPT = "accept"
 
@@ -101,6 +102,10 @@ PRODUCTION_NODE_DEFINITIONS: Mapping[ProductionNode, ProductionNodeDefinition] =
         ),
         ProductionNode.CONTINUITY: ProductionNodeDefinition(
             node=ProductionNode.CONTINUITY,
+            specialist_role=CONTINUITY_SUPERVISOR_ROLE,
+        ),
+        ProductionNode.CONTINUITY_ADJUDICATION: ProductionNodeDefinition(
+            node=ProductionNode.CONTINUITY_ADJUDICATION,
             specialist_role=CONTINUITY_SUPERVISOR_ROLE,
         ),
         ProductionNode.STORY_BIBLE_UPDATE: ProductionNodeDefinition(
@@ -275,7 +280,7 @@ class SceneProductionInput:
             per_attempt = 3  # writer, critic, and continuity on every candidate
             if unit.dialogue_pass is not None:
                 per_attempt += unit.dialogue_pass.max_graph_steps + 1
-            total += attempts * per_attempt + 2  # bible update and deterministic acceptance
+            total += attempts * per_attempt + 3  # at most one adjudication, Bible, acceptance
         return total
 
 
@@ -348,6 +353,7 @@ class ContinuityCheckTask:
     revision_number: int
     previous_continuity: ArtifactReference | None = None
     continuity_history: tuple[ArtifactReference, ...] = ()
+    adjudication: bool = False
 
 
 @dataclass(frozen=True, slots=True)
