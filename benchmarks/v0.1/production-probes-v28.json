@@ -1,0 +1,35 @@
+{
+  "schema_version": "1",
+  "evidence_type": "isolated_specialist_probe_not_canary",
+  "status": "prepared_not_run",
+  "candidate_prompt_version": "28",
+  "candidate_graph_version": "7",
+  "maximum_calls_per_probe": 2,
+  "promotion_policy": "Response validation alone is insufficient. Inspect all three judgments against the exact draft and approved style; do not launch a canary automatically.",
+  "cases": [
+    {
+      "name": "local-002-critic",
+      "source": "v26-canary-2026-09-08",
+      "invocation_id": "b3f1fb35-9c93-4df2-ad11-d9bf8d637125",
+      "review_focus": "Retain the v27 recovery: the assigned character's first-person interiority is allowed; reviewer metadata is not a manuscript defect.",
+      "expected_viewpoint_outcome": "no_blocking_viewpoint_issue"
+    },
+    {
+      "name": "local-003-critic",
+      "source": "v26-canary-2026-09-08",
+      "invocation_id": "4e4157c9-79e9-48d5-9834-e71dd5a8c740",
+      "review_focus": "Retain the v27 recovery: the assigned investigator's deductions are not private access to another character.",
+      "expected_viewpoint_outcome": "no_blocking_viewpoint_issue"
+    },
+    {
+      "name": "local-005-critic",
+      "source": "v26-canary-2026-09-08",
+      "invocation_id": "2e3110bd-c174-4fb4-b8f7-8a5949df2dac",
+      "review_focus": "Catch direct narration of Cora's private feelings with Elara explicitly assigned. The approved literary/internalized style does not specifically authorize that shift. Inspect draft_evidence_0044 and its surrounding context.",
+      "expected_viewpoint_outcome": "blocking_unauthorized_private_state",
+      "expected_subject_character_id": "cora",
+      "reference_evidence_ref": "draft_evidence_0044",
+      "reference_evidence_excerpt": "Cora felt the familiar, hot burn of being intellectually dismissed."
+    }
+  ]
+}

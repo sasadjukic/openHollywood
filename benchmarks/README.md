@@ -263,3 +263,32 @@ must not become a hard POV blocker, genuine unauthorized viewpoint changes must
 still be caught, and historical Bible resolutions must remain unchanged. Passing
 these isolated checks only authorizes consideration of a separately approved full
 canary; it does not establish production completion or literary quality.
+
+### Targeted viewpoint follow-up (prompt v28 / graph v7)
+
+The completed v27 isolated suite validated all eight responses on their first
+attempt, but Local 005 missed its intended other-character-private-state control.
+The full canary was held. See
+`docs/benchmark_reports/step-19-v27-isolated-probes-2026-09-08.md` and ADR 0009.
+
+`v0.1/production-probes-v28.json` predeclares three follow-up Local critic probes
+using the unchanged historical invocations for Local 002, 003, and 005. They are
+**prepared, not run**. Use the existing `production_probe inspect` command to
+verify inputs without model calls; after separate authorization, use `run` with
+each entry's source/invocation and a new diagnostic output directory. Do not reuse
+the completed v27 directory or alter the old registry or report.
+
+Expected viewpoint outcomes are separate from response validation:
+
+- Local 002: no hard blocker for the assigned character's first-person interiority.
+- Local 003: no hard blocker for the assigned investigator's deductions.
+- Local 005: a blocking finding for Cora's unauthorized private state, supported
+  by exact current-draft evidence (reference `draft_evidence_0044`) and interpreted
+  against Elara's explicit assignment and the approved style.
+
+The registry expectations are manual semantic-review criteria; the harness does
+not turn `validated` into an automatic semantic pass or launch another workflow.
+Actual craft judgments may differ. Inspect the finding, evidence, and surrounding
+prose instead of relying on overall scores or a single keyword. This batch permits
+at most six calls, all Local, under the original per-call envelopes. It does not
+authorize a full canary or claim a repeatability result.
