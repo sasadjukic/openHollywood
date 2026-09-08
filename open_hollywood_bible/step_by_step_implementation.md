@@ -717,6 +717,32 @@ live probes, a new full canary, repeatability, and blind review are still pendin
 Step 19 remains **IN PROGRESS**; no later phase is started. Evidence:
 `docs/benchmark_reports/step-19-local-cloud-v26-canary-2026-09-08.md` and ADR 0008.
 
+The completed v27 isolated suite validated all eight responses in eight calls,
+with no response repairs. Local 002/003 recovered the intended allowance for
+assigned-character interiority/deductions, and both Bible probes preserved exact
+resolved-thread history. Local 005 nevertheless missed its intended positive
+control: direct narration of Cora's private feelings with Elara explicitly
+assigned and no specific style authorization for that shift. The full canary was
+held; response validation was not treated as semantic success.
+
+The targeted follow-up uses prompt v28 with unchanged graph v7 on
+`codex/v28-production-contract`. Critic guidance now distinguishes attributable
+inference from direct private access, generic internalized style from specific
+narrative permission, and short intrusions from whole-scene replacement. It
+preserves assigned-character interiority, dialogue, observable behavior, authorized
+omniscient/shifting narration, and status-only aligned responses. Non-canonical
+contrasting examples and offline regression controls are added without changing
+the writer, output schemas, graph, budgets, or Bible reducer. Three exact-input
+Local follow-up probes are prepared with explicit semantic expectations, not run.
+Verification passes Ruff lint/format, strict mypy across 150 Python files, all
+412 Python tests (including 16 new viewpoint controls), frontend format/lint/type
+checks, all 11 frontend tests, and the production build. All three follow-up
+selections compile read-only with verified input hashes and Local 005's exact
+reference evidence. Thirteen protected historical/probe hashes remain unchanged.
+No live probes or full canary are launched. Step 19 remains **IN PROGRESS**, with
+live semantic verification, repeatability, and blind review pending. Evidence:
+`docs/benchmark_reports/step-19-v27-isolated-probes-2026-09-08.md` and ADR 0009.
+
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 
 21. [ ] **Package the stable system with Tauri** and test crash/restart, offline, missing-model, invalid-key, provider-timeout, and low-disk-space behavior.

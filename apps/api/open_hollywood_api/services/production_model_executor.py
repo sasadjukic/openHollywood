@@ -678,8 +678,20 @@ _INSTRUCTIONS: Mapping[_Operation, str] = {
         "wrong_viewpoint_character or unauthorized_private_state. The assigned character's "
         "own thoughts, feelings, deductions, free indirect narration, and interpretations "
         "are allowed; they need not be spoken or explicitly labelled as hypotheses. "
-        "Observable reactions and inferred feelings are not privileged access to another mind. "
-        "Honor the approved voice_and_style_guide, including authorized perspective shifts. "
+        "Other characters' speech, observable reactions, and inferences attributable to the "
+        "assigned character in context are allowed; inference needs no special label. "
+        "But narration directly asserting a DIFFERENT character's unspoken feelings, thoughts, "
+        "memories, or knowledge is unauthorized_private_state unless the approved style "
+        "specifically authorizes that access, such as omniscient narration or a perspective "
+        "shift permitted in this scene. General requests for literary, internalized, emotional, "
+        "or empathetic prose do not authorize another character's private perspective. "
+        "Neither an ensemble cast nor familiarity with another character grants that access. "
+        "Do not excuse directly narrated private experience as inference just because the "
+        "emotion is plausible from dialogue or behavior. A brief unauthorized intrusion still "
+        "counts; it need not replace the entire scene's viewpoint. Read surrounding context, "
+        "not isolated verbs: quoted speech, attributed inference, and explicitly authorized "
+        "perspective shifts must not be blocked. Apply viewpoint_contract's illustrative "
+        "boundary examples without treating them as story facts or draft evidence. "
         "Uncertain attribution and stylistic clarity are craft advice, not hard POV violations. "
         "A schema/evidence/response-format error belongs to YOUR REVIEW, never the manuscript: "
         "repair the response without inventing a story defect or requesting prose changes. "
@@ -2742,6 +2754,7 @@ def _critic_viewpoint_contract(execution: _Execution) -> dict[str, object]:
     )
     assigned = _scene_assignment_contract(execution).get("point_of_view_character_id")
     return {
+        "policy_version": "2",
         "assigned_character_id": assigned,
         "assignment_origin": (
             "explicit_scene_plan"
@@ -2757,8 +2770,22 @@ def _critic_viewpoint_contract(execution: _Execution) -> dict[str, object]:
             if isinstance(character, dict)
         ],
         "policy": "Assignment is a focal character, not an external-camera-only rule. "
-        "Their own interiority and deductions are allowed. Approved style governs "
-        "permitted shifts; do not infer a stricter narrative mode from a fallback ID.",
+        "Their own interiority and deductions are allowed. Other-character private access "
+        "requires specific approved narrative permission, not a generic literary/internalized "
+        "style. Preserve explicitly authorized omniscient or shifting perspectives. "
+        "Do not invent an assignment or a stricter narrative mode from a fallback ID.",
+        "boundary_examples": {
+            "scope": "Illustrations only, not story facts or evidence. Mara is assigned; "
+            "no perspective shift is authorized in these examples.",
+            "allowed": [
+                "Mara felt ashamed. (Assigned character's own interiority.)",
+                "Ivo clenched his jaw; Mara read it as shame. (Attributed inference.)",
+                "'I feel ashamed,' Ivo said. (Spoken disclosure, not private access.)",
+            ],
+            "unauthorized_private_state": "Ivo privately felt ashamed. "
+            "(Direct access to another character's unspoken feeling, "
+            "even when Mara could plausibly infer it.)",
+        },
     }
 
 
