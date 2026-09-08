@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 from collections.abc import Awaitable, Callable, Mapping
 from decimal import Decimal
 from typing import Any, TypedDict, cast
@@ -131,8 +132,10 @@ class ProductionGraphState(DialogueGraphState, total=False):
     current_acceptance_reason: str | None
     critique_requires_revision: bool
     critique_blocking_issue_count: int
+    critique_blocking_issue_indexes: list[int]
     revision_scheduled: bool
     adjudication_required: bool
+    adjudication_completed: bool
     draft_artifacts: list[DialogueArtifactReferenceState]
     critique_artifacts: list[DialogueArtifactReferenceState]
     continuity_artifacts: list[DialogueArtifactReferenceState]
@@ -178,9 +181,11 @@ def initial_production_state(production: SceneProductionInput) -> ProductionGrap
         "current_acceptance_reason": None,
         "critique_requires_revision": False,
         "critique_blocking_issue_count": 0,
+        "critique_blocking_issue_indexes": [],
         "pending_continuity_artifact": None,
         "revision_scheduled": False,
         "adjudication_required": False,
+        "adjudication_completed": False,
         "draft_artifacts": [],
         "critique_artifacts": [],
         "continuity_artifacts": [],
@@ -493,6 +498,11 @@ def _critique_node(
             "critique_blocking_issue_count": sum(
                 issue.severity is CritiqueSeverity.BLOCKING for issue in result.critique.issues
             ),
+            "critique_blocking_issue_indexes": [
+                index
+                for index, issue in enumerate(result.critique.issues)
+                if issue.severity is CritiqueSeverity.BLOCKING
+            ],
             "revision_scheduled": False,
             "critique_artifacts": [
                 *state.get("critique_artifacts", []),
@@ -555,22 +565,56 @@ def _continuity_node(
                 report_state,
             ],
         }
-        if (
-            revision_number >= production.maximum_revision_cycles
-            and state.get("critique_blocking_issue_count", 0) == 0
-            and any(
-                finding.blocks_approval
-                and finding.basis is ContinuityFindingBasis.CONTRADICTION
-                and finding.category is not ContinuityCategory.WORLD_RULE
-                for finding in result.report.findings
-            )
-        ):
+        if _adjudication_status(state, production, revision_number, result.report) == "eligible":
             update["adjudication_required"] = True
             return update
         update.update(_review_disposition(state, production, unit, revision_number, result.report))
         return update
 
     return continuity
+
+
+def _adjudication_status(
+    state: ProductionGraphState,
+    production: SceneProductionInput,
+    revision_number: int,
+    report: ContinuityReport,
+) -> str:
+    if state.get("adjudication_completed"):
+        return "completed"
+    if revision_number < production.maximum_revision_cycles:
+        return "revision_budget_remaining"
+    if state.get("critique_blocking_issue_count", 0) > 0:
+        return "skipped_hard_critic_blockers"
+    if any(
+        finding.blocks_approval
+        and finding.basis is ContinuityFindingBasis.CONTRADICTION
+        and finding.category is not ContinuityCategory.WORLD_RULE
+        for finding in report.findings
+    ):
+        return "eligible"
+    return "skipped_no_eligible_non_world_contradiction"
+
+
+def _review_gate_diagnostic(
+    state: ProductionGraphState,
+    production: SceneProductionInput,
+    revision_number: int,
+    report: ContinuityReport,
+) -> str:
+    """No story text in failures/checkpoints; exact artifact and issue references suffice."""
+    return json.dumps(
+        {
+            "adjudication": _adjudication_status(state, production, revision_number, report),
+            "critique_blocking_issue_count": state.get("critique_blocking_issue_count", 0),
+            "critique_artifact": state.get("current_critique_artifact"),
+            "critique_issue_indexes": state.get("critique_blocking_issue_indexes", []),
+            "continuity_blocking_finding_ids": [
+                finding.id for finding in report.findings if finding.blocks_approval
+            ],
+        },
+        separators=(",", ":"),
+    )
 
 
 def _review_disposition(
@@ -584,7 +628,11 @@ def _review_disposition(
     critique_requires_revision = state.get("critique_requires_revision") is True
     if has_blockers and revision_number >= production.maximum_revision_cycles:
         raise ContinuityRevisionLimitError(
-            _continuity_terminal_failure_message(report, revision_number)
+            _continuity_terminal_failure_message(
+                report,
+                revision_number,
+                review_gates=_review_gate_diagnostic(state, production, revision_number, report),
+            )
         )
     if state.get("critique_blocking_issue_count", 0) > 0 and (
         revision_number >= production.maximum_revision_cycles
@@ -593,6 +641,8 @@ def _review_disposition(
             "critique_revision_limit_reached: hard critique issues remain after "
             f"revision {revision_number}; scene_id={unit.unit_id}; "
             f"blocking_issue_count={state['critique_blocking_issue_count']}"
+            + "; review_gates="
+            + _review_gate_diagnostic(state, production, revision_number, report)
         )
     if (has_blockers or critique_requires_revision) and (
         revision_number < production.maximum_revision_cycles
@@ -646,9 +696,12 @@ def _adjudication_node(
         )
         report_state = _artifact_to_state(result.artifact)
         return {
-            **_review_disposition(state, production, unit, revision, result.report),
+            **_review_disposition(
+                {**state, "adjudication_completed": True}, production, unit, revision, result.report
+            ),
             "current_continuity_artifact": report_state,
             "adjudication_required": False,
+            "adjudication_completed": True,
             "revision_scheduled": False,
             "continuity_artifacts": [*state.get("continuity_artifacts", []), report_state],
             "current_continuity_history": [
@@ -769,8 +822,10 @@ def _accept_node(
             "current_acceptance_reason": None,
             "critique_requires_revision": False,
             "critique_blocking_issue_count": 0,
+            "critique_blocking_issue_indexes": [],
             "revision_scheduled": False,
             "adjudication_required": False,
+            "adjudication_completed": False,
             "production_complete": next_index == len(production.units),
         }
 
@@ -786,6 +841,8 @@ def _route_after_draft(state: ProductionGraphState) -> str:
 def _continuity_terminal_failure_message(
     report: ContinuityReport,
     revision_number: int,
+    *,
+    review_gates: str | None = None,
 ) -> str:
     """Return a bounded, cause-oriented terminal diagnostic without story prose."""
     blockers = [finding for finding in report.findings if finding.blocks_approval]
@@ -804,7 +861,9 @@ def _continuity_terminal_failure_message(
     ]
     return (
         "continuity_revision_limit_reached: blocking findings remain after "
-        f"revision {revision_number}; blockers={details}"
+        f"revision {revision_number}"
+        + (f"; review_gates={review_gates}" if review_gates is not None else "")
+        + f"; blockers={details}"
     )
 
 

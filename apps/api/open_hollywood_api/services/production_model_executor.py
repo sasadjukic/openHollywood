@@ -669,11 +669,20 @@ _INSTRUCTIONS: Mapping[_Operation, str] = {
         "incompatible replacement or missing planned turn/outcome. Return [] when none exist. "
         "A mention of POV, advice for the next scene, polish, or an achieved turn that could "
         "be stronger is not an assignment violation. Ordinary craft feedback belongs in issues. "
-        "Complete point_of_view_check independently of the overall score. Narrating another "
-        "character's private thoughts as known fact, or replacing the assigned viewpoint, is "
-        "a violation even in excellent prose; observable speech/actions and the assigned "
-        "viewpoint's explicit inference are allowed. Do not label an actual viewpoint "
-        "replacement minor polish. not_assigned is allowed only with no assigned viewpoint. "
+        "Complete point_of_view_check independently of the overall score: return only "
+        "{status: aligned} when there is no demonstrated violation, including when no "
+        "viewpoint is assigned. No quotation or proof of non-violation is required. "
+        "Report viewpoint violations ONLY in point_of_view_check, not assignment_violations "
+        "or issues. Select exact draft_evidence_refs from the current draft's evidence_catalog. "
+        "A violation must identify a DIFFERENT subject_character_id and either an actual "
+        "wrong_viewpoint_character or unauthorized_private_state. The assigned character's "
+        "own thoughts, feelings, deductions, free indirect narration, and interpretations "
+        "are allowed; they need not be spoken or explicitly labelled as hypotheses. "
+        "Observable reactions and inferred feelings are not privileged access to another mind. "
+        "Honor the approved voice_and_style_guide, including authorized perspective shifts. "
+        "Uncertain attribution and stylistic clarity are craft advice, not hard POV violations. "
+        "A schema/evidence/response-format error belongs to YOUR REVIEW, never the manuscript: "
+        "repair the response without inventing a story defect or requesting prose changes. "
         "Use critic_requirement_scope as the exclusive due-now obligation list; do not demand "
         "story-wide requirements before their due scene. "
         "The target word-count range is story-wide and advisory. Use length_guidance for "
@@ -693,6 +702,16 @@ _INSTRUCTIONS: Mapping[_Operation, str] = {
         "source and only the evidence just cited for release. New blockers need a distinct "
         "incompatible assertion; otherwise correct the original prior-finding decision. "
         "Previous review advice never establishes new canonical requirements."
+        " For each non-world blocker, compare ONLY its selected claim's exact assertion "
+        "with the current evidence: both must be unable to hold at once. A location claim "
+        "cannot certify an unrelated mathematical World Rule. Use the World Rule route for "
+        "actual rule breaches, not a more convenient non-world source. Added specificity, "
+        "investigation, metaphor, or an approved deduction is not itself a contradiction. "
+        "Use original_allegation_ledger to keep the FIRST allegation fixed: if a ratio was "
+        "removed, do not keep its ID blocking because a pattern or relationship remains. "
+        "Resolve repaired allegations, invalidate unsupported sources, and make uncertainty "
+        "about craft advisory. A genuinely different incompatible assertion needs its own "
+        "new-finding route and new current evidence."
     ),
     _Operation.STORY_BIBLE_UPDATE: (
         "Return only the typed delta established by the accepted scene. Preserve the "
@@ -820,6 +839,11 @@ class ProfileRoutedProductionExecutor(SceneProductionExecutor):
             operation,
             continuity_schema_variant=continuity_schema_variant,
             continuity_model_context=continuity_model_context,
+            critic_evidence_refs=(
+                tuple(item["evidence_ref"] for item in _critic_evidence_catalog(execution))
+                if operation is _Operation.CRITIQUE
+                else None
+            ),
         )
         messages = _messages(
             operation,
@@ -1213,6 +1237,26 @@ class ProfileRoutedProductionExecutor(SceneProductionExecutor):
             invocation.estimated_cost_usd = response.estimated_cost_usd
             invocation.latency_ms = response.timing.total_ms
             _apply_response_metadata(invocation, response)
+            if operation is _Operation.CRITIQUE and isinstance(output, Critique):
+                raw_check = json.loads(normalize_json_document(response.content))[
+                    "point_of_view_check"
+                ]
+                invocation.request_settings = {
+                    **invocation.request_settings,
+                    "viewpoint_audit": {
+                        "schema_version": "2",
+                        "status": raw_check["status"],
+                        "assigned_character_id": _scene_assignment_contract(execution).get(
+                            "point_of_view_character_id"
+                        ),
+                        "violation_kind": raw_check.get("violation_kind"),
+                        "subject_character_id": raw_check.get("subject_character_id"),
+                        "draft_evidence_refs": raw_check.get("draft_evidence_refs", []),
+                        "assessment": active_secret_guard().redact_text(
+                            str(raw_check.get("assessment", ""))
+                        )[:1000],
+                    },
+                }
             if isinstance(output, ContinuityReport):
                 invocation.request_settings = {
                     **invocation.request_settings,
@@ -1484,7 +1528,7 @@ def _structured_failure_issues(
 
 def _safe_structured_failure_detail(message: str) -> str | None:
     """Bound deterministic validation detail before persistence and model retry."""
-    normalized = " ".join(message.split())
+    normalized = " ".join(active_secret_guard().redact_text(message).split())
     if not normalized:
         return None
     if len(normalized) <= _MAX_SAFE_STRUCTURED_FAILURE_DETAIL_CHARS:
@@ -1528,6 +1572,7 @@ def _output_schema(
     *,
     continuity_schema_variant: _ContinuitySchemaVariant | None,
     continuity_model_context: _ContinuityModelContext | None = None,
+    critic_evidence_refs: tuple[str, ...] | None = None,
 ) -> dict[str, Any]:
     """Build the exact model-facing schema without changing canonical artifacts."""
     if operation is _Operation.ADJUDICATION:
@@ -1547,7 +1592,7 @@ def _output_schema(
                 raise SceneProductionError("critique schema is invalid")
             properties.pop("overall_score", None)
             properties["assignment_violations"] = _critic_assignment_violation_schema()
-            properties["point_of_view_check"] = _point_of_view_check_schema()
+            properties["point_of_view_check"] = _point_of_view_check_schema(critic_evidence_refs)
             schema["required"] = [
                 *[field for field in required if field != "overall_score"],
                 "assignment_violations",
@@ -2146,6 +2191,18 @@ def _schema_repair_guidance(
         focus_locations.append("$")
 
     operation_rules = list(_SCHEMA_REPAIR_OPERATION_RULES[operation])
+    if operation is _Operation.CRITIQUE:
+        operation_rules = [
+            "Repair only your review JSON. This is not a new draft or a story revision request.",
+            "A failure to format a review proves NO manuscript defect. Never put a reviewer "
+            "schema, quotation, evidence-handle, or metadata error in issues "
+            "or assignment_violations.",
+            "Use point_of_view_check={status: aligned} unless the prose itself demonstrates "
+            "a typed violation involving a different character. Select supplied evidence handles "
+            "only for a real violation; the assigned character's own interiority is allowed.",
+            "Return all required rubric scores within the schema bounds "
+            "and the full corrected object.",
+        ]
     if operation is _Operation.CONTINUITY:
         if continuity_schema_variant is _ContinuitySchemaVariant.INITIAL_CHECK:
             operation_rules.insert(
@@ -2181,7 +2238,7 @@ def _schema_repair_guidance(
             }
             for diagnostic_key in ("expected_value", "received_value"):
                 diagnostic_value = issue.get(diagnostic_key)
-                if isinstance(diagnostic_value, str):
+                if isinstance(diagnostic_value, str) and operation is not _Operation.CRITIQUE:
                     directive[diagnostic_key] = diagnostic_value
             if issue_type == "resolved_thread_missing_resolution":
                 directive["action"] = (
@@ -2281,8 +2338,14 @@ def _schema_repair_guidance(
                 )
             directives.append(directive)
 
+    if operation is _Operation.CRITIQUE:
+        # Keep field locations, but not failure prose or rejected model values, in review input.
+        directives = [
+            {"location": location, "action": "repair this review-response field only"}
+            for location in focus_locations
+        ]
     guidance: dict[str, object] = {
-        "policy_version": "6",
+        "policy_version": "7",
         "mode": "repair_only",
         "focus_locations": focus_locations,
         "directives": directives,
@@ -2432,6 +2495,9 @@ def _messages(
             continuity_model_context.contradiction_claim_catalog
         )
         payload["world_rule_catalog"] = continuity_model_context.world_rule_catalog
+        payload["original_allegation_ledger"] = _original_allegation_ledger(
+            continuity_model_context
+        )
         payload["continuity_contract"] = {
             "version": SCENE_PRODUCTION_PROMPT_TEMPLATE_VERSION,
             "coverage_statuses": ["met", "partial", "absent"],
@@ -2475,12 +2541,19 @@ def _messages(
                 if key not in {"required_elements", "forbidden_shortcuts"}
             }
             payload["critic_requirement_scope"] = _critic_requirement_scope(execution)
+            payload["viewpoint_contract"] = _critic_viewpoint_contract(execution)
         if operation is _Operation.WRITE:
             revision_contract = _targeted_revision_contract(execution)
             if revision_contract is not None:
                 payload["revision_contract"] = revision_contract
     if execution.previous_failure is not None:
-        retry_context = dict(execution.previous_failure)
+        # Reviewer transport/format diagnostics are not manuscript evidence. Do not
+        # replay their prose (or rejected values) into the critic's semantic assessment.
+        retry_context = (
+            {"scope": "review_response_only", "manuscript_defect_established": False}
+            if operation is _Operation.CRITIQUE
+            else dict(execution.previous_failure)
+        )
         payload["retry_context"] = retry_context
     if schema_repair is not None:
         payload["schema_repair"] = schema_repair
@@ -2538,6 +2611,7 @@ def _adjudication_messages(
         "continuity_history": [
             _bounded_continuity_history_entry(item) for item in context.continuity_history
         ],
+        "original_allegation_ledger": _original_allegation_ledger(context),
     }
     if execution.selection.deployment is ModelDeployment.LOCAL:
         payload["output_schema_delivery"] = "enforced_by_local_gateway"
@@ -2630,7 +2704,14 @@ def _critic_assignment_violation_schema() -> dict[str, Any]:
             "type": "object",
             "additionalProperties": False,
             "properties": {
-                "anchor": {"type": "string", "enum": list(_CRITIC_ASSIGNMENT_ANCHORS)},
+                "anchor": {
+                    "type": "string",
+                    "enum": [
+                        anchor
+                        for anchor in _CRITIC_ASSIGNMENT_ANCHORS
+                        if anchor != "point_of_view_character_id"
+                    ],
+                },
                 "draft_evidence": {"type": "string", "minLength": 1},
                 "explanation": {"type": "string", "minLength": 1},
                 "recommended_resolution": {"type": "string", "minLength": 1},
@@ -2645,25 +2726,78 @@ def _critic_assignment_violation_schema() -> dict[str, Any]:
     }
 
 
-def _point_of_view_check_schema() -> dict[str, Any]:
-    branches = []
-    for status in ("aligned", "violation", "not_assigned"):
-        properties = {
-            "status": {"type": "string", "const": status},
-            "assessment": {"type": "string", "minLength": 1},
-            "draft_evidence": {"type": "string", "minLength": 0 if status == "not_assigned" else 1},
-        }
-        if status == "violation":
-            properties["recommended_resolution"] = {"type": "string", "minLength": 1}
-        branches.append(
+def _critic_evidence_catalog(execution: _Execution) -> tuple[dict[str, str], ...]:
+    return _draft_evidence_catalog(_current_scene_draft_prose(execution))
+
+
+def _critic_viewpoint_contract(execution: _Execution) -> dict[str, object]:
+    plan = _continuity_scene_plan(execution)
+    blueprint: dict[str, Any] = next(
+        (
+            item["content"]
+            for item in execution.inputs
+            if item.get("artifact_kind") == ArtifactKind.STORY_BLUEPRINT.value
+        ),
+        {},
+    )
+    assigned = _scene_assignment_contract(execution).get("point_of_view_character_id")
+    return {
+        "assigned_character_id": assigned,
+        "assignment_origin": (
+            "explicit_scene_plan"
+            if plan.get("point_of_view_character_id")
+            else "single_character_fallback"
+            if assigned
+            else "unassigned"
+        ),
+        "approved_voice_and_style_guide": blueprint.get("voice_and_style_guide"),
+        "characters": [
+            {"id": character["id"], "name": character.get("name")}
+            for character in blueprint.get("characters", [])
+            if isinstance(character, dict)
+        ],
+        "policy": "Assignment is a focal character, not an external-camera-only rule. "
+        "Their own interiority and deductions are allowed. Approved style governs "
+        "permitted shifts; do not infer a stricter narrative mode from a fallback ID.",
+    }
+
+
+def _point_of_view_check_schema(evidence_refs: tuple[str, ...] | None = None) -> dict[str, Any]:
+    evidence: dict[str, Any] = {"type": "string"}
+    if evidence_refs is not None:
+        evidence["enum"] = list(evidence_refs)
+    violation = {
+        "status": {"type": "string", "const": "violation"},
+        "violation_kind": {
+            "type": "string",
+            "enum": ["wrong_viewpoint_character", "unauthorized_private_state"],
+        },
+        "subject_character_id": {"type": "string", "minLength": 1},
+        "draft_evidence_refs": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 3,
+            "items": evidence,
+        },
+        "assessment": {"type": "string", "minLength": 1},
+        "recommended_resolution": {"type": "string", "minLength": 1},
+    }
+    return {
+        "anyOf": [
             {
                 "type": "object",
                 "additionalProperties": False,
-                "properties": properties,
-                "required": list(properties),
-            }
-        )
-    return {"anyOf": branches}
+                "properties": {"status": {"type": "string", "const": "aligned"}},
+                "required": ["status"],
+            },
+            {
+                "type": "object",
+                "additionalProperties": False,
+                "properties": violation,
+                "required": list(violation),
+            },
+        ]
+    }
 
 
 def _normalize_point_of_view_check(
@@ -2677,52 +2811,94 @@ def _normalize_point_of_view_check(
             "critic must independently audit the assigned viewpoint",
             issue_type="point_of_view_check_missing",
         )
-    status = check.get("status")
-    expected = {"status", "assessment", "draft_evidence"}
-    if status == "violation":
-        expected.add("recommended_resolution")
-    if (
-        not isinstance(status, str)
-        or status not in {"aligned", "violation", "not_assigned"}
-        or set(check) != expected
-        or any(not isinstance(value, str) for value in check.values())
-        or not check["assessment"].strip()
-    ):
-        raise _StructuredOutputContractError("point_of_view_check", "invalid viewpoint audit")
-    assigned = bool(_scene_assignment_contract(execution).get("point_of_view_character_id"))
-    if (status == "not_assigned") != (not assigned):
-        raise _StructuredOutputContractError(
-            "point_of_view_check.status", "viewpoint applicability must match the approved plan"
-        )
-    if status != "not_assigned" and (
-        not check["draft_evidence"].strip()
-        or check["draft_evidence"] not in _current_scene_draft_prose(execution)
-    ):
-        raise _StructuredOutputContractError(
-            "point_of_view_check.draft_evidence", "viewpoint audit requires exact current evidence"
-        )
     result = {key: value for key, value in critique.items() if key != "point_of_view_check"}
     violations = result.get("assignment_violations")
-    if isinstance(violations, list):
-        existing = [
-            item
-            for item in violations
-            if isinstance(item, dict) and item.get("anchor") == "point_of_view_character_id"
-        ]
-        if existing and status != "violation":
-            raise _StructuredOutputContractError(
-                "point_of_view_check.status", "viewpoint audit contradicts the assignment finding"
-            )
-        if status == "violation" and not existing:
-            result["assignment_violations"] = [
-                *violations,
-                {
-                    "anchor": "point_of_view_character_id",
-                    "draft_evidence": check["draft_evidence"],
-                    "explanation": check["assessment"],
-                    "recommended_resolution": check["recommended_resolution"],
-                },
-            ]
+    raw_issues = critique.get("issues")
+    if isinstance(raw_issues, list) and any(
+        isinstance(item, dict) and str(item.get("category", "")).startswith("scene_assignment:")
+        for item in raw_issues
+    ):
+        raise _StructuredOutputContractError(
+            "issues",
+            "assignment issues must use their validated assignment audit route",
+            issue_type="unvalidated_assignment_issue",
+        )
+    if isinstance(violations, list) and any(
+        isinstance(item, dict) and item.get("anchor") == "point_of_view_character_id"
+        for item in violations
+    ):
+        raise _StructuredOutputContractError(
+            "assignment_violations",
+            "use only point_of_view_check for viewpoint findings",
+            issue_type="duplicate_viewpoint_route",
+        )
+    if check == {"status": "aligned"}:
+        return result
+    expected = {
+        "status",
+        "violation_kind",
+        "subject_character_id",
+        "draft_evidence_refs",
+        "assessment",
+        "recommended_resolution",
+    }
+    if (
+        set(check) != expected
+        or check.get("status") != "violation"
+        or check.get("violation_kind")
+        not in ("wrong_viewpoint_character", "unauthorized_private_state")
+        or any(
+            not isinstance(check.get(key), str) or not check[key].strip()
+            for key in expected - {"draft_evidence_refs"}
+        )
+    ):
+        raise _StructuredOutputContractError(
+            "point_of_view_check",
+            "use aligned, or a typed narrative violation with evidence handles",
+            issue_type="invalid_viewpoint_audit",
+        )
+    assigned = _scene_assignment_contract(execution).get("point_of_view_character_id")
+    if not assigned or check["subject_character_id"] == assigned:
+        raise _StructuredOutputContractError(
+            "point_of_view_check.subject_character_id",
+            "a viewpoint replacement or unauthorized private state must belong "
+            "to a different character; "
+            "the assigned character's interiority is allowed",
+            issue_type="viewpoint_subject_not_other_character",
+        )
+    catalog = {
+        item["evidence_ref"]: item["exact_excerpt"] for item in _critic_evidence_catalog(execution)
+    }
+    refs = check["draft_evidence_refs"]
+    if (
+        not isinstance(refs, list)
+        or not 1 <= len(refs) <= 3
+        or any(not isinstance(ref, str) or ref not in catalog for ref in refs)
+    ):
+        raise _StructuredOutputContractError(
+            "point_of_view_check.draft_evidence_refs",
+            "select 1-3 current evidence handles, not quotations or invented identifiers",
+            issue_type="viewpoint_evidence_reference_invalid",
+            expected_value=json.dumps(list(catalog)),
+            received_value=json.dumps(refs, ensure_ascii=False),
+        )
+    issues = result.get("issues", [])
+    if not isinstance(issues, list):
+        raise _StructuredOutputContractError("issues", "critique issues must be an array")
+    result["issues"] = [
+        *issues,
+        {
+            "category": "scene_assignment:point_of_view_character_id",
+            "severity": CritiqueSeverity.BLOCKING.value,
+            "description": (
+                f"Assigned point_of_view_character_id: {json.dumps(assigned)}. "
+                f"{check['assessment']}"
+            ),
+            "evidence": [catalog[ref] for ref in dict.fromkeys(refs)],
+            "recommendation": check["recommended_resolution"],
+        },
+    ]
+    result["verdict"] = CritiqueVerdict.REVISE.value
     return result
 
 
@@ -2745,6 +2921,17 @@ def _critic_requirement_scope(execution: _Execution) -> dict[str, object]:
 def _critic_prompt_inputs(execution: _Execution) -> tuple[dict[str, Any], ...]:
     """Remove deferred repeated requirements from the current Scene Plan views."""
     inputs = _scene_scoped_prompt_inputs(execution)
+    for item in inputs:
+        content = item.get("content")
+        if (
+            item.get("artifact_kind") == ArtifactKind.SCENE_DRAFT.value
+            and isinstance(content, dict)
+            and content.get("scene_id") == execution.unit_id
+            and content.get("revision_number") == execution.revision_number
+        ):
+            # Supply each sentence once, bound to its exact immutable draft version.
+            content["evidence_catalog"] = list(_critic_evidence_catalog(execution))
+            content.pop("prose", None)
     if execution.unit_number == execution.unit_count:
         return inputs
     deferred = execution.constraints.get("required_elements", [])
@@ -3019,6 +3206,47 @@ def _validate_targeted_scene_revision(
         expected_value=f">={_TARGETED_REVISION_MINIMUM_SIMILARITY:.2f}",
         received_value=f"{similarity:.3f}",
     )
+
+
+def _original_allegation_ledger(context: _ContinuityModelContext) -> list[dict[str, object]]:
+    """Bind each recheck to its first allegation and exact selected authority, not later advice."""
+    sources = {item["reference_id"]: item for item in context.canonical_source_catalog}
+    originals: dict[str, dict[str, object]] = {}
+    reports = context.continuity_history or (
+        (context.previous_continuity_report,) if context.previous_continuity_report else ()
+    )
+    for report in reports:
+        for finding in _continuity_report_findings(report):
+            finding_id = finding.get("id")
+            if finding_id not in context.prior_model_finding_ids or finding_id in originals:
+                continue
+            originals[finding_id] = {
+                "finding_id": finding_id,
+                "original_report_version_id": report.get("artifact_version_id"),
+                "original_allegation": deepcopy(finding.get("summary")),
+                "original_draft_evidence": deepcopy(finding.get("evidence", [])),
+                "original_requested_repair_not_canon": deepcopy(
+                    finding.get("recommended_resolution")
+                ),
+                "selected_assertions": [
+                    {
+                        key: deepcopy(source.get(key))
+                        for key in (
+                            "claim_id",
+                            "artifact_version_id",
+                            "source_path",
+                            "claim",
+                            "scope",
+                        )
+                    }
+                    for ref in finding.get("canonical_source_refs", [])
+                    if (source := sources.get(ref)) is not None
+                ],
+                "decision_rule": "still_blocking means the ORIGINAL conflict remains. "
+                "A changed allegation is not a failed repair. Resolve repairs; invalidate "
+                "unrelated sources. Never promote reviewer advice into approved canon.",
+            }
+    return list(originals.values())
 
 
 def _bounded_continuity_history_entry(report: Mapping[str, object]) -> dict[str, object]:

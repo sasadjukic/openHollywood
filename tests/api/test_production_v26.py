@@ -311,13 +311,15 @@ def test_viewpoint_audit_cannot_be_overruled_by_a_high_overall_score(status: str
     execution = _v17_catalog_test_execution(
         scene_plan={"point_of_view_character_id": "elara"}, draft_prose=prose
     )
-    check = {
-        "status": status,
-        "assessment": "The viewpoint boundary was checked.",
-        "draft_evidence": prose,
-    }
+    check: dict[str, Any] = {"status": status}
     if status == "violation":
-        check["recommended_resolution"] = "Frame observable actions through Elara's viewpoint."
+        check.update(
+            violation_kind="unauthorized_private_state",
+            subject_character_id="cora",
+            draft_evidence_refs=["draft_evidence_0001"],
+            assessment="Cora's private knowledge is narrated as fact.",
+            recommended_resolution="Frame observable actions through Elara's viewpoint.",
+        )
     result = _normalize_scene_assignment_critique(
         _normalize_point_of_view_check(
             {

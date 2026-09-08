@@ -261,17 +261,7 @@ class ProductionFixtureGateway(BlueprintFixtureGateway):
             content["target_artifact_version_id"] = invented_version_id
             content["overall_score"] = 999
             content["assignment_violations"] = []
-            content["point_of_view_check"] = {
-                "status": "aligned"
-                if payload["scene_assignment_contract"].get("point_of_view_character_id")
-                else "not_assigned",
-                "assessment": "The fixture preserves its assigned viewpoint.",
-                "draft_evidence": next(
-                    item["content"]["prose"]
-                    for item in input_items
-                    if item["artifact_kind"] == ArtifactKind.SCENE_DRAFT.value
-                ),
-            }
+            content["point_of_view_check"] = {"status": "aligned"}
         elif role == "continuity_supervisor":
             content.update(
                 story_bible_version_id=invented_version_id,
@@ -2285,7 +2275,7 @@ def test_schema_repair_guidance_is_provider_neutral_for_structured_failures(
 
     assert (guidance is not None) is expects_guidance
     if guidance is not None:
-        assert guidance["policy_version"] == "6"
+        assert guidance["policy_version"] == "7"
         assert guidance["mode"] == "repair_only"
         assert guidance["schema_variant"] == "initial_check"
         assert guidance["focus_locations"] == ["findings.0"]

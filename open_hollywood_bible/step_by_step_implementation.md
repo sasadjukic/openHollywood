@@ -694,6 +694,29 @@ has been run. Live semantic performance and repeatability are pending; Step 19
 stays **IN PROGRESS**, and Step 20 has not been started. Evidence and verification:
 `docs/benchmark_reports/step-19-local-cloud-v25-canary-2026-09-07.md`.
 
+The completed v26 canary reached 3/9 runnable completions, 0/5 Local and 3/4
+Cloud, with 16/44 accepted scenes. All five Local initial drafts exactly matched
+v25, isolating the main regression to downstream review. Five terminal failures
+exhausted the new viewpoint evidence contract; Local 003 also retained an
+unsupported continuity allegation and a likely false hard critic blocker.
+The adjudication node was never eligible in that case. Local Bible fixes were
+not reached, and human quality evidence remains pending.
+
+Selective repairs on the existing v26 development branch use graph v7 / prompt
+v27 for new executions. Aligned viewpoint reviews need no quotation; genuine
+violations use exact evidence handles and a different character's narrative
+breach. Reviewer-format failures no longer enter critic input as manuscript
+evidence. Approved-style/focal-character distinctions, first-allegation continuity
+ledgers, bounded viewpoint audits, and combined terminal diagnostics are added.
+Existing Bible-history protection and bounded adjudication remain intact.
+Offline regression and protected saved-input probe tooling are implemented;
+verification passes Ruff, strict mypy (149 files), all 396 Python tests, frontend
+format/lint/type checks, all 11 frontend tests, and the production build. All
+eight planned probe selections compile read-only against their frozen inputs;
+live probes, a new full canary, repeatability, and blind review are still pending.
+Step 19 remains **IN PROGRESS**; no later phase is started. Evidence:
+`docs/benchmark_reports/step-19-local-cloud-v26-canary-2026-09-08.md` and ADR 0008.
+
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 
 21. [ ] **Package the stable system with Tauri** and test crash/restart, offline, missing-model, invalid-key, provider-timeout, and low-disk-space behavior.

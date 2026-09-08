@@ -215,3 +215,51 @@ These are canary-quality summaries, not completion of the formal Step 19 campaig
 
 The v26 implementation adds this tooling and protocol only. It does not launch
 live canaries, create human scores, or mark Step 19 complete.
+
+### Isolated saved-input probes before another canary
+
+Graph v7 / prompt v27 repairs are tested against the eight predeclared selections
+in `v0.1/production-probes-v27.json`: five Local first critics, Cloud 002's first
+critic, and the v25 Local 002/003 late Bible failures. Source artifacts are read
+from SQLite with read-only access and checked against their exact content hashes.
+Requests use the current production contract, original model, seed, artifact
+versions, and per-call budgets. They are diagnostic re-evaluations, not clean
+canaries, new v25 runs, human scores, or canonical story updates.
+
+Inspect one selection without any model call or filesystem write:
+
+```powershell
+uv run --extra api python -m scripts.production_probe inspect `
+  --database data/benchmarks/v0.1/v26-canary-2026-09-08/campaign.db `
+  --invocation-id b3f1fb35-9c93-4df2-ad11-d9bf8d637125
+```
+
+After explicit authorization, run that one Local specialist probe:
+
+```powershell
+uv run --extra api python -m scripts.production_probe run `
+  --database data/benchmarks/v0.1/v26-canary-2026-09-08/campaign.db `
+  --invocation-id b3f1fb35-9c93-4df2-ad11-d9bf8d637125 `
+  --output-directory data/diagnostics/v27-probes/local-002-critic
+```
+
+Use each registry entry's `source` and `invocation_id` for the other selections.
+Cloud additionally requires `--allow-cloud` and uses the existing signed-in local
+Ollama Cloud route, not a new credential or provider. Each probe allows at most
+two sequential calls with 900-second timeouts. The manifest states its maximum
+token/cost envelope. Eight probes therefore allow at most 16 calls; inspect
+their budgets before authorizing the batch.
+
+The output directory must be new and outside source/protected canary directories.
+Requests are recorded before calling the model; completed attempts include
+provider usage, response hash/length, bounded diagnostics, and validated output.
+Raw failed response bodies are not stored. Interrupted output directories are
+preserved and cannot be silently reused. Bible probes additionally apply the real
+reducer in memory, preserving resolved-thread history. No writer, production graph,
+campaign report, checkpoint, or original database is modified.
+
+Inspect the actual reviewer judgments, not just `validated`: allowed interiority
+must not become a hard POV blocker, genuine unauthorized viewpoint changes must
+still be caught, and historical Bible resolutions must remain unchanged. Passing
+these isolated checks only authorizes consideration of a separately approved full
+canary; it does not establish production completion or literary quality.
