@@ -40,6 +40,7 @@ from open_hollywood_api.services.model_profiles import (
     ModelProfileStore,
 )
 from open_hollywood_api.services.production_model_executor import (
+    _CRITIC_RUBRIC_DIMENSIONS,
     BenchmarkProductionExecutor,
     ContinuityRecheckStagnationError,
     _benchmark_constraint_applicability,
@@ -52,6 +53,7 @@ from open_hollywood_api.services.production_model_executor import (
     _continuity_requirement_catalogs,
     _ContinuityModelContext,
     _ContinuitySchemaVariant,
+    _critic_evidence_catalog,
     _downgrade_qualitative_non_world_contradiction,
     _Execution,
     _invalid_continuity_recheck_finding_ids,
@@ -190,12 +192,13 @@ class ProductionFixtureGateway(BlueprintFixtureGateway):
                 rubric_version="1",
                 summary="The complete scene reaches its planned dramatic turn.",
                 strengths=("The scene changes the story state.",),
-                scores=(
+                scores=tuple(
                     RubricScore(
-                        dimension="dramatic_progress",
+                        dimension=dimension,
                         score=4,
                         rationale="The planned outcome is earned on the page.",
-                    ),
+                    )
+                    for dimension in _CRITIC_RUBRIC_DIMENSIONS
                 ),
                 overall_score=4.0,
                 verdict=CritiqueVerdict.PASS,
@@ -2536,7 +2539,7 @@ def test_v25_explicit_wrong_pov_cannot_remain_a_minor_pass() -> None:
         "assignment_violations": [
             {
                 "anchor": "point_of_view_character_id",
-                "draft_evidence": "Sylvie listened to the wall.",
+                "draft_evidence_refs": [_critic_evidence_catalog(execution)[0]["evidence_ref"]],
                 "explanation": "Sylvie replaces the assigned viewpoint character Mara.",
                 "recommended_resolution": "Restore Mara's assigned point of view.",
             }

@@ -1,0 +1,66 @@
+{
+  "schema_version": "1",
+  "evidence_type": "frozen_critic_transfer_plan_not_canary",
+  "status": "prepared_not_run",
+  "candidate_prompt_version": "29",
+  "candidate_graph_version": "7",
+  "candidate_model": "gemma4:31b-cloud",
+  "production_model_promotion": false,
+  "calls_per_frozen_scene": 3,
+  "requested_seeds": [
+    19105,
+    29105,
+    39105
+  ],
+  "retries": 0,
+  "historical_stage": "data/diagnostics/31b-next-stage-2026-09-09-1837",
+  "historical_report_sha256": "b1ce6e090a537ecdbb7ad6421bc8a27199b5be6f2777824d55a0b5dbf3a0f3a9",
+  "historical_novel_report_sha256": "5bb061c9d614d41db52b601cf7179502d208a285b71983c43572de297547ea4b",
+  "historical_novel_fixtures_sha256": "280d18ae8ba5bbc51a3a31b5478170b68312a365af2f3c768bd873ed8d5297c8",
+  "source_database": "data/benchmarks/v0.1/v26-canary-2026-09-08/campaign.db",
+  "frozen_scenes": [
+    {
+      "name": "local-002-critic",
+      "invocation_id": "b3f1fb35-9c93-4df2-ad11-d9bf8d637125",
+      "expected_pov": "aligned",
+      "overall_verdict_expectation": null,
+      "reason": "Whether the embodied recognition achieves the outcome needs human adjudication; do not assume pass or revise."
+    },
+    {
+      "name": "local-003-critic",
+      "invocation_id": "4e4157c9-79e9-48d5-9834-e71dd5a8c740",
+      "expected_pov": "aligned",
+      "overall_verdict_expectation": null,
+      "reason": "POV is aligned; mathematical plausibility and literary quality are separate questions."
+    },
+    {
+      "name": "local-005-critic",
+      "invocation_id": "2e3110bd-c174-4fb4-b8f7-8a5949df2dac",
+      "expected_pov": "unauthorized_private_state",
+      "expected_subject": "cora",
+      "reference_excerpt": "Cora felt the familiar, hot burn of being intellectually dismissed.",
+      "reference_ordinal": 44,
+      "overall_verdict_expectation": "revise"
+    }
+  ],
+  "human_adjudication": {
+    "novel-24-labels": "pending",
+    "local-002-outcome": "pending",
+    "local-003-quality": "pending"
+  },
+  "control_expansion": {
+    "status": "required_before_promotion",
+    "required_controls": [
+      "A demonstrably missing outcome",
+      "An achieved outcome with only optional dramatization advice",
+      "An unauthorized location replacement",
+      "An explicitly authorized location transition",
+      "A supported ordinary craft finding",
+      "A clean scene without findings"
+    ],
+    "note": "Offline simulated regression examples are not a live full-critic control suite. Freeze complete input artifacts and human-reviewed expectations before a separately authorized expanded test."
+  },
+  "promotion_policy": "No automatic run or model promotion. Check response validation, exact citations, substantive judgments, normalized verdict, and fixed-rubric scores separately. Preserve historical results. Successful bounded revision/re-critique must precede a separately authorized canary.",
+  "evidence_compatibility": "v29 handles append the exact draft version UUID to the historical ordinal. Match historical evidence by exact excerpt and immutable input, not by reusing an unscoped old handle.",
+  "execution_note": "This is a new-stage declaration, not a resumable campaign. Budget and freeze a new runner/output directory before live calls; do not reuse the hash-bound v28 diagnostic runner."
+}
