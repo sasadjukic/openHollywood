@@ -189,6 +189,13 @@ _CRITIC_ASSIGNMENT_ANCHORS = (
     "turning_point",
     "outcome",
 )
+_CRITIC_RUBRIC_NAME = "scene_craft"
+_CRITIC_RUBRIC_VERSION = "1"
+_CRITIC_RUBRIC_DIMENSIONS = {
+    "prose_quality": "Clarity, voice, specificity, and control of the prose.",
+    "dramatic_progress": "Causal development, pacing, and how convincingly the turn is earned.",
+    "character_consistency": "Distinct motives, voices, and believable behavior.",
+}
 _CONTINUITY_APPLICATION_OWNED_FINDING_FIELDS = frozenset(
     {
         "category",
@@ -665,10 +672,21 @@ _INSTRUCTIONS: Mapping[_Operation, str] = {
         "Independently evaluate the exact scene draft against its Scene Plan, the "
         "approved Blueprint, prose quality, and dramatic progress. Put concrete assignment "
         "violations exclusively in assignment_violations: select an anchor from "
-        "scene_assignment_contract, quote exact current-draft evidence, and explain the "
+        "scene_assignment_contract, select draft_evidence_refs, and explain the "
         "incompatible replacement or missing planned turn/outcome. Return [] when none exist. "
         "A mention of POV, advice for the next scene, polish, or an achieved turn that could "
         "be stronger is not an assignment violation. Ordinary craft feedback belongs in issues. "
+        "Use the same draft_evidence_refs field for assignment violations and craft issues; "
+        "select 1-3 distinct handles from the CURRENT draft's evidence_catalog, never quote "
+        "prose or reuse handles from an earlier draft. The application resolves the excerpts. "
+        "Before claiming a missing turn/outcome, consider the whole scene, including actions, "
+        "embodied reactions, and indirect realization of the planned change. Do not demand "
+        "a new mechanism or an extra action unless the approved plan actually requires it. "
+        "An absent or incompatible outcome still blocks; merely wanting a more explicit "
+        "or forceful realization is advisory craft feedback, not a hard assignment failure. "
+        "Use the fixed critic_rubric dimensions once each. Scores describe craft, not "
+        "permission to ignore a hard gate. Return revise whenever a blocking issue or typed "
+        "assignment/POV violation exists, even if every craft score is 5. "
         "Complete point_of_view_check independently of the overall score: return only "
         "{status: aligned} when there is no demonstrated violation, including when no "
         "viewpoint is assigned. No quotation or proof of non-violation is required. "
@@ -1605,8 +1623,35 @@ def _output_schema(
             properties.pop("overall_score", None)
             properties["assignment_violations"] = _critic_assignment_violation_schema()
             properties["point_of_view_check"] = _point_of_view_check_schema(critic_evidence_refs)
+            definitions = schema["$defs"]
+            definitions["CriticDraftEvidenceReference"] = {"type": "string"}
+            if critic_evidence_refs is not None:
+                definitions["CriticDraftEvidenceReference"]["enum"] = list(critic_evidence_refs)
+            issue_schema = definitions["CritiqueIssue"]
+            issue_schema["properties"].pop("evidence")
+            issue_schema["properties"]["draft_evidence_refs"] = _critic_evidence_refs_schema()
+            issue_schema["required"] = [
+                "draft_evidence_refs" if field == "evidence" else field
+                for field in issue_schema["required"]
+            ]
+            properties["point_of_view_check"]["anyOf"][1]["properties"]["draft_evidence_refs"] = (
+                _critic_evidence_refs_schema()
+            )
+            definitions["RubricScore"]["properties"]["dimension"] = {
+                "type": "string",
+                "enum": list(_CRITIC_RUBRIC_DIMENSIONS),
+            }
+            properties["scores"].update(
+                minItems=len(_CRITIC_RUBRIC_DIMENSIONS), maxItems=len(_CRITIC_RUBRIC_DIMENSIONS)
+            )
+            for field in ("rubric_name", "rubric_version"):
+                properties.pop(field)
             schema["required"] = [
-                *[field for field in required if field != "overall_score"],
+                *[
+                    field
+                    for field in required
+                    if field not in {"overall_score", "rubric_name", "rubric_version"}
+                ],
                 "assignment_violations",
                 "point_of_view_check",
             ]
@@ -2214,6 +2259,9 @@ def _schema_repair_guidance(
             "only for a real violation; the assigned character's own interiority is allowed.",
             "Return all required rubric scores within the schema bounds "
             "and the full corrected object.",
+            "Every assignment/POV/craft finding uses draft_evidence_refs: select 1-3 "
+            "distinct current-catalog handles, not prose, old handles, or draft_evidence/evidence. "
+            "Do not change the story to fix an evidence-format error.",
         ]
     if operation is _Operation.CONTINUITY:
         if continuity_schema_variant is _ContinuitySchemaVariant.INITIAL_CHECK:
@@ -2554,6 +2602,19 @@ def _messages(
             }
             payload["critic_requirement_scope"] = _critic_requirement_scope(execution)
             payload["viewpoint_contract"] = _critic_viewpoint_contract(execution)
+            payload["critic_rubric"] = {
+                "name": _CRITIC_RUBRIC_NAME,
+                "version": _CRITIC_RUBRIC_VERSION,
+                "dimensions": _CRITIC_RUBRIC_DIMENSIONS,
+                "anchors": {
+                    "1": "seriously broken",
+                    "3": "competent but flawed",
+                    "5": "highly controlled, near publishable with minor editing",
+                },
+                "policy": "Score each craft dimension once. The application derives their "
+                "unweighted mean separately from hard compliance gates. A high mean cannot "
+                "clear a blocking finding. This is not the final blind human story rubric.",
+            }
         if operation is _Operation.WRITE:
             revision_contract = _targeted_revision_contract(execution)
             if revision_contract is not None:
@@ -2707,6 +2768,15 @@ def _continuity_finding_audit(
     }
 
 
+def _critic_evidence_refs_schema() -> dict[str, Any]:
+    return {
+        "type": "array",
+        "minItems": 1,
+        "maxItems": 3,
+        "items": {"$ref": "#/$defs/CriticDraftEvidenceReference"},
+    }
+
+
 def _critic_assignment_violation_schema() -> dict[str, Any]:
     """Keep hard assignment findings explicit and separate from freeform craft notes."""
     return {
@@ -2724,13 +2794,13 @@ def _critic_assignment_violation_schema() -> dict[str, Any]:
                         if anchor != "point_of_view_character_id"
                     ],
                 },
-                "draft_evidence": {"type": "string", "minLength": 1},
+                "draft_evidence_refs": _critic_evidence_refs_schema(),
                 "explanation": {"type": "string", "minLength": 1},
                 "recommended_resolution": {"type": "string", "minLength": 1},
             },
             "required": [
                 "anchor",
-                "draft_evidence",
+                "draft_evidence_refs",
                 "explanation",
                 "recommended_resolution",
             ],
@@ -2739,7 +2809,79 @@ def _critic_assignment_violation_schema() -> dict[str, Any]:
 
 
 def _critic_evidence_catalog(execution: _Execution) -> tuple[dict[str, str], ...]:
-    return _draft_evidence_catalog(_current_scene_draft_prose(execution))
+    prose = _current_scene_draft_prose(execution)
+    draft = next(
+        item
+        for item in execution.inputs
+        if item.get("artifact_kind") == ArtifactKind.SCENE_DRAFT.value
+        and item["content"].get("scene_id") == execution.unit_id
+        and item["content"].get("revision_number") == execution.revision_number
+    )
+    # An ordinal alone could silently resolve to different prose after a revision.
+    version = UUID(str(draft["artifact_version_id"])).hex
+    return tuple(
+        {**entry, "evidence_ref": f"{entry['evidence_ref']}_{version}"}
+        for entry in _draft_evidence_catalog(prose)
+    )
+
+
+def _resolve_critic_evidence_refs(
+    refs: object,
+    execution: _Execution,
+    *,
+    location: str,
+    issue_type: str = "critic_evidence_reference_invalid",
+) -> list[str]:
+    catalog = {
+        entry["evidence_ref"]: entry["exact_excerpt"]
+        for entry in _critic_evidence_catalog(execution)
+    }
+    if (
+        not isinstance(refs, list)
+        or not 1 <= len(refs) <= 3
+        or any(not isinstance(ref, str) or ref not in catalog for ref in refs)
+        or len(set(refs)) != len(refs)
+    ):
+        raise _StructuredOutputContractError(
+            location,
+            "select 1-3 distinct current-draft evidence handles; no quotations, "
+            "unknown identifiers, or handles from earlier artifact versions",
+            issue_type=issue_type,
+        )
+    return [catalog[ref] for ref in refs]
+
+
+def _normalize_critic_craft_issues(
+    critique: dict[str, Any],
+    execution: _Execution,
+) -> dict[str, Any]:
+    """Resolve model-only craft references before adding application-owned hard issues."""
+    issues = critique.get("issues", [])
+    if not isinstance(issues, list):
+        raise _StructuredOutputContractError("issues", "critique issues must be an array")
+    normalized = []
+    for index, issue in enumerate(issues):
+        if not isinstance(issue, dict) or "evidence" in issue:
+            raise _StructuredOutputContractError(
+                f"issues.{index}",
+                "craft findings require draft_evidence_refs, not evidence",
+                issue_type="invalid_critic_issue",
+            )
+        evidence = _resolve_critic_evidence_refs(
+            issue.get("draft_evidence_refs"),
+            execution,
+            location=f"issues.{index}.draft_evidence_refs",
+        )
+        normalized.append(
+            {
+                **{key: value for key, value in issue.items() if key != "draft_evidence_refs"},
+                "evidence": evidence,
+            }
+        )
+    result = {**critique, "issues": normalized}
+    if any(issue.get("severity") == CritiqueSeverity.BLOCKING.value for issue in normalized):
+        result["verdict"] = CritiqueVerdict.REVISE.value
+    return result
 
 
 def _critic_viewpoint_contract(execution: _Execution) -> dict[str, object]:
@@ -2893,22 +3035,12 @@ def _normalize_point_of_view_check(
             "the assigned character's interiority is allowed",
             issue_type="viewpoint_subject_not_other_character",
         )
-    catalog = {
-        item["evidence_ref"]: item["exact_excerpt"] for item in _critic_evidence_catalog(execution)
-    }
-    refs = check["draft_evidence_refs"]
-    if (
-        not isinstance(refs, list)
-        or not 1 <= len(refs) <= 3
-        or any(not isinstance(ref, str) or ref not in catalog for ref in refs)
-    ):
-        raise _StructuredOutputContractError(
-            "point_of_view_check.draft_evidence_refs",
-            "select 1-3 current evidence handles, not quotations or invented identifiers",
-            issue_type="viewpoint_evidence_reference_invalid",
-            expected_value=json.dumps(list(catalog)),
-            received_value=json.dumps(refs, ensure_ascii=False),
-        )
+    evidence = _resolve_critic_evidence_refs(
+        check["draft_evidence_refs"],
+        execution,
+        location="point_of_view_check.draft_evidence_refs",
+        issue_type="viewpoint_evidence_reference_invalid",
+    )
     issues = result.get("issues", [])
     if not isinstance(issues, list):
         raise _StructuredOutputContractError("issues", "critique issues must be an array")
@@ -2921,7 +3053,7 @@ def _normalize_point_of_view_check(
                 f"Assigned point_of_view_character_id: {json.dumps(assigned)}. "
                 f"{check['assessment']}"
             ),
-            "evidence": [catalog[ref] for ref in dict.fromkeys(refs)],
+            "evidence": evidence,
             "recommendation": check["recommended_resolution"],
         },
     ]
@@ -4339,6 +4471,7 @@ def _materialize_output_data(
         return materialized
     if operation is _Operation.CRITIQUE:
         critique_task = cast(SceneCritiqueTask, task)
+        materialized = _normalize_critic_craft_issues(materialized, execution)
         materialized = _normalize_point_of_view_check(materialized, execution)
         materialized = _normalize_story_length_critique(materialized, execution)
         materialized = _normalize_scene_assignment_critique(materialized, execution)
@@ -4358,6 +4491,19 @@ def _materialize_output_data(
                 "critic scores must contain numeric rubric scores before overall score derivation",
                 issue_type="invalid_rubric_scores",
             )
+        dimensions = [score.get("dimension") for score in scores]
+        if (
+            len(dimensions) != len(_CRITIC_RUBRIC_DIMENSIONS)
+            or any(not isinstance(value, str) for value in dimensions)
+            or set(dimensions) != set(_CRITIC_RUBRIC_DIMENSIONS)
+        ):
+            raise _StructuredOutputContractError(
+                "scores",
+                "score each fixed critic_rubric dimension exactly once",
+                issue_type="invalid_rubric_dimensions",
+            )
+        materialized["rubric_name"] = _CRITIC_RUBRIC_NAME
+        materialized["rubric_version"] = _CRITIC_RUBRIC_VERSION
         materialized["overall_score"] = float(
             round(
                 sum(cast(int, score["score"]) for score in cast(list[dict[str, Any]], scores))
@@ -4568,19 +4714,22 @@ def _normalize_scene_assignment_critique(
         raise _StructuredOutputContractError("issues", "critique issues must be an array")
     normalized_issues: list[object] = list(issues or [])
     assignment = _scene_assignment_contract(execution)
-    draft_prose = _current_scene_draft_prose(execution)
     seen: set[str] = set()
-    required_fields = {"anchor", "draft_evidence", "explanation", "recommended_resolution"}
+    required_fields = {"anchor", "draft_evidence_refs", "explanation", "recommended_resolution"}
     for index, violation in enumerate(violations):
         location = f"assignment_violations.{index}"
         if (
             not isinstance(violation, dict)
             or set(violation) != required_fields
-            or any(not isinstance(value, str) or not value.strip() for value in violation.values())
+            or any(
+                not isinstance(violation[key], str) or not violation[key].strip()
+                for key in required_fields - {"draft_evidence_refs"}
+            )
         ):
             raise _StructuredOutputContractError(
                 location,
-                "assignment violation requires an anchor, exact evidence, explanation, and repair",
+                "assignment violation requires an anchor, draft_evidence_refs, "
+                "explanation, and repair",
                 issue_type="invalid_assignment_violation",
             )
         anchor = violation["anchor"]
@@ -4596,12 +4745,11 @@ def _normalize_scene_assignment_critique(
                 "each scene-assignment anchor may be reported only once",
                 issue_type="duplicate_assignment_violation",
             )
-        if violation["draft_evidence"] not in draft_prose:
-            raise _StructuredOutputContractError(
-                f"{location}.draft_evidence",
-                "assignment evidence must be an exact excerpt from the current draft",
-                issue_type="assignment_evidence_not_in_current_draft",
-            )
+        evidence = _resolve_critic_evidence_refs(
+            violation["draft_evidence_refs"],
+            execution,
+            location=f"{location}.draft_evidence_refs",
+        )
         seen.add(anchor)
         normalized_issues.append(
             {
@@ -4611,7 +4759,7 @@ def _normalize_scene_assignment_critique(
                     f"Assigned {anchor}: {json.dumps(assignment[anchor], ensure_ascii=False)}. "
                     f"{violation['explanation']}"
                 ),
-                "evidence": [violation["draft_evidence"]],
+                "evidence": evidence,
                 "recommendation": violation["recommended_resolution"],
             }
         )

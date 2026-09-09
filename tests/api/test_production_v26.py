@@ -24,6 +24,7 @@ from open_hollywood_api.services.production_adjudication import (
 from open_hollywood_api.services.production_model_executor import (
     BenchmarkProductionExecutor,
     _continuity_model_findings,
+    _critic_evidence_catalog,
     _materialize_thread_changes,
     _normalize_point_of_view_check,
     _normalize_scene_assignment_critique,
@@ -316,7 +317,7 @@ def test_viewpoint_audit_cannot_be_overruled_by_a_high_overall_score(status: str
         check.update(
             violation_kind="unauthorized_private_state",
             subject_character_id="cora",
-            draft_evidence_refs=["draft_evidence_0001"],
+            draft_evidence_refs=[_critic_evidence_catalog(execution)[0]["evidence_ref"]],
             assessment="Cora's private knowledge is narrated as fact.",
             recommended_resolution="Frame observable actions through Elara's viewpoint.",
         )

@@ -14,3 +14,4 @@ tradeoffs. Status values are `Proposed`, `Accepted`, `Superseded`, or `Rejected`
 | 0007 | Bounded terminal continuity adjudication | Accepted |
 | 0008 | Separate review-response repair from manuscript revision | Accepted |
 | 0009 | Distinguish viewpoint inference from private access | Accepted |
+| 0010 | One version-bound evidence interface for the scene critic | Accepted |

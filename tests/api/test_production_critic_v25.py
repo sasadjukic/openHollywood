@@ -8,6 +8,7 @@ from typing import Any, cast
 
 import pytest
 from open_hollywood_api.services.production_model_executor import (
+    _critic_evidence_catalog,
     _critic_prompt_inputs,
     _critic_requirement_scope,
     _messages,
@@ -55,10 +56,10 @@ def test_canary_polish_notes_do_not_become_hard_revisions(category: str, descrip
     assert result == {"issues": [issue], "verdict": "pass"}
 
 
-def _violation(**updates: str) -> dict[str, str]:
+def _violation(**updates: Any) -> dict[str, Any]:
     return {
         "anchor": "point_of_view_character_id",
-        "draft_evidence": "Sylvie listened to the wall.",
+        "draft_evidence_refs": ["draft_evidence_0001"],
         "explanation": "Sylvie replaces Mara as the assigned viewpoint character.",
         "recommended_resolution": "Restore Mara's perspective without replacing the scene.",
         **updates,
@@ -72,7 +73,15 @@ def test_assignment_violation_binds_exact_draft_and_plan_before_promotion() -> N
     )
 
     result = _normalize_scene_assignment_critique(
-        {"issues": [], "verdict": "pass", "assignment_violations": [_violation()]},
+        {
+            "issues": [],
+            "verdict": "pass",
+            "assignment_violations": [
+                _violation(
+                    draft_evidence_refs=[_critic_evidence_catalog(execution)[0]["evidence_ref"]]
+                )
+            ],
+        },
         execution,
     )
 
@@ -88,14 +97,14 @@ def test_assignment_violation_binds_exact_draft_and_plan_before_promotion() -> N
 @pytest.mark.parametrize(
     ("violation", "error_type"),
     [
-        (_violation(draft_evidence="Mara ran away."), "assignment_evidence_not_in_current_draft"),
+        (_violation(draft_evidence_refs=["Mara ran away."]), "critic_evidence_reference_invalid"),
         (_violation(anchor="future_scene"), "invalid_assignment_anchor"),
         (_violation(anchor="turning_point"), "invalid_assignment_anchor"),
         (_violation(explanation=""), "invalid_assignment_violation"),
     ],
 )
 def test_assignment_violation_rejects_invented_evidence_or_unassigned_anchors(
-    violation: dict[str, str], error_type: str
+    violation: dict[str, Any], error_type: str
 ) -> None:
     execution = _v17_catalog_test_execution(
         scene_plan={"point_of_view_character_id": "mara"},
@@ -133,7 +142,7 @@ def test_wrong_location_has_an_explicit_assignment_route() -> None:
             "assignment_violations": [
                 _violation(
                     anchor="location_id",
-                    draft_evidence="The entire scene takes place on the ocean liner.",
+                    draft_evidence_refs=[_critic_evidence_catalog(execution)[0]["evidence_ref"]],
                     explanation="The assigned locked cell is replaced, without a transition.",
                     recommended_resolution="Restore the assigned location.",
                 )

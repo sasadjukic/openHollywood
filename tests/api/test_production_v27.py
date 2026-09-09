@@ -9,6 +9,7 @@ from typing import Any
 
 import pytest
 from open_hollywood_api.services.production_model_executor import (
+    _critic_evidence_catalog,
     _critic_prompt_inputs,
     _messages,
     _normalize_point_of_view_check,
@@ -93,7 +94,13 @@ def test_true_other_mind_violation_resolves_handles_and_still_blocks() -> None:
         draft_prose=prose,
     )
     result = _normalize_point_of_view_check(
-        _review(_violation(draft_evidence_refs=["draft_evidence_0001", "draft_evidence_0002"])),
+        _review(
+            _violation(
+                draft_evidence_refs=[
+                    entry["evidence_ref"] for entry in _critic_evidence_catalog(execution)
+                ]
+            )
+        ),
         execution,
     )
     assert result["verdict"] == "revise"

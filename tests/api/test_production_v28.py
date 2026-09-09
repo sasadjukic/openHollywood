@@ -11,6 +11,7 @@ from uuid import uuid4
 
 import pytest
 from open_hollywood_api.services.production_model_executor import (
+    _critic_evidence_catalog,
     _Execution,
     _messages,
     _normalize_point_of_view_check,
@@ -97,7 +98,10 @@ def test_both_routes_receive_balanced_viewpoint_guidance(deployment: ModelDeploy
         a["content"] for a in payload["input_artifacts"] if a["artifact_kind"] == "scene_draft"
     )
     assert draft["evidence_catalog"] == [
-        {"evidence_ref": "draft_evidence_0001", "exact_excerpt": LOCAL_005_EXCERPT}
+        {
+            "evidence_ref": _critic_evidence_catalog(execution)[0]["evidence_ref"],
+            "exact_excerpt": LOCAL_005_EXCERPT,
+        }
     ]
     assert "prose" not in draft
     assert execution.inputs == original
@@ -153,6 +157,7 @@ def test_reported_private_feeling_becomes_exact_blocker_despite_high_craft_score
     execution = _execution(prose, other_character_id=subject)
     review = _review(
         _violation(
+            draft_evidence_refs=[_critic_evidence_catalog(execution)[0]["evidence_ref"]],
             subject_character_id=subject,
             assessment=f"{subject.title()}'s private feeling lacks an authorized shift.",
             recommended_resolution="Use observable behavior or the assigned viewpoint's inference.",
@@ -208,7 +213,8 @@ def test_targeted_probe_registry_preserves_inputs_and_does_not_claim_live_succes
         (ROOT / "benchmarks/v0.1/production-probes-v28.json").read_text(encoding="utf-8")
     )
     assert current["status"] == "prepared_not_run"
-    assert current["candidate_prompt_version"] == SCENE_PRODUCTION_PROMPT_TEMPLATE_VERSION == "28"
+    assert current["candidate_prompt_version"] == "28"  # Historical registry stays pinned.
+    assert SCENE_PRODUCTION_PROMPT_TEMPLATE_VERSION == "29"
     assert current["candidate_graph_version"] == SCENE_PRODUCTION_GRAPH_VERSION == "7"
     assert current["maximum_calls_per_probe"] == 2
     assert [case["name"] for case in current["cases"]] == [

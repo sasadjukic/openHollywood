@@ -516,6 +516,16 @@ modifying canonical state. Eight probes are predeclared in
 by this repair. See `docs/benchmark_reports/step-19-local-cloud-v26-canary-2026-09-08.md`
 and ADR 0008. v23/v25 remain the comparison baselines.
 
+The 31b candidate's v28 full-critic transfer preserved all nine target POV
+decisions but validated only six complete reviews: assignment findings confused
+evidence references with quotations. New prompt contract v29 (graph v7 unchanged)
+uses one version-bound evidence-reference interface for assignment, POV, and craft
+findings, resolves exact excerpts server-side, and pins a three-dimension scene
+craft rubric separately from hard compliance gates. Canonical artifacts remain
+compatible; no model is promoted and no canary is started. Outcome calibration
+and live semantic verification remain pending. See ADR 0010 and
+`docs/benchmark_reports/step-19-31b-transfer-v29-corrections-2026-09-09.md`.
+
 Benchmark word-count ranges are advisory creative targets. New outputs persist a
 non-gating adherence measurement with the target, actual count, status, and word
 deviation. Automatic completion reflects a finished, non-truncated document,

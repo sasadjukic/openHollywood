@@ -743,6 +743,30 @@ No live probes or full canary are launched. Step 19 remains **IN PROGRESS**, wit
 live semantic verification, repeatability, and blind review pending. Evidence:
 `docs/benchmark_reports/step-19-v27-isolated-probes-2026-09-08.md` and ADR 0009.
 
+The subsequent 31b candidate stage made 33 Cloud calls: 24/24 new POV controls
+matched provisional assistant labels, while the unchanged full critic made 9/9
+correct raw POV decisions but validated only 6/9 complete responses. All three
+Local-002 failures confused an evidence ID with a quotation. Local-005's Cora
+0044 intrusion was caught in all three samples; two raw pass verdicts were
+correctly normalized to revise. Other substantive judgments remain unadjudicated.
+
+Prompt v29 retains graph v7 and implements one version-bound evidence-reference
+interface for assignment, POV, and ordinary craft findings, plus application-owned
+rubric identity and a fixed three-dimension scene-craft mean separate from hard
+gates. Canonical evidence remains exact excerpts and old artifacts stay readable.
+Generic guidance distinguishes missing outcomes from optional stronger
+dramatization without declaring the disputed scenes right or wrong. No model
+routing, writer, budget, retry, continuity, or Bible behavior changes.
+Verification passes Ruff lint/format, strict mypy across 151 Python files, all
+449 Python tests, frontend format/lint/type checks, all 11 frontend tests, and
+the production build. Six read-only request compilations confirm Local/Cloud
+schema parity for the three frozen scenes; 425 protected evidence files remain
+unchanged. Pending promotion requirements are documented in
+`docs/benchmark_reports/step-19-31b-transfer-v29-corrections-2026-09-09.md` and
+ADR 0010. No live v29 evaluation or canary is launched. Step 19 remains
+**IN PROGRESS**, with human adjudication, expanded live controls, bounded repair
+loops, and blind story-quality review still pending.
+
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 
 21. [ ] **Package the stable system with Tauri** and test crash/restart, offline, missing-model, invalid-key, provider-timeout, and low-disk-space behavior.
