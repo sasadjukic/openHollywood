@@ -6,6 +6,17 @@ evaluated, properly formatted work through a durable specialist-agent workflow.
 
 ## Project status
 
+**Testing direction, 2026-09-11:** `gemma4:31b` through Ollama Cloud
+(`gemma4:31b-cloud`) is now the designated testing model. Active E4B tuning and
+narrow proofreading experiments are deferred in favor of complete production
+runs, recovery diagnostics and human story-quality review. Local, Hybrid and
+Cloud remain available product options. Step 19 remains **IN PROGRESS**; this
+decision does not change runtime profiles, prompt v29 or graph v7.
+
+- [Why we are moving on from E4B and the Cloud-first evaluation policy](docs/benchmark_reports/model-testing-direction-2026-09-11.md)
+- [31B creative-writing tests: exact results and evidence register](docs/benchmark_reports/gemma4-31b-evaluation-register-2026-09-11.md)
+- [Deferred critic/word-repair GitHub issue draft](docs/issue_drafts/gemma4-31b-critic-repair-follow-up.md)
+
 The legacy scene-execution prototype is preserved on the
 `openHollywood-legacy` branch and at the immutable `legacy-v2-final` tag. The
 active rewrite now includes a browser-based React client, a local FastAPI

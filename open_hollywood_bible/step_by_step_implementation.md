@@ -157,7 +157,7 @@ PDF/DOCX export.** A provider-neutral, invariant-checked manuscript contract
 assembles only complete latest versions of approved Scene Draft artifacts in
 unique, contiguous three-to-eight-scene order. The canonical Markdown renderer normalizes line endings and escapes structural markup. A separate typed Fountain screenplay contract renders title pages, forced headings and action, dialogue structures, transitions, sections, synopses, centered text, and page breaks without guessing script structure from prose. Searchable US-Letter PDF and editable US-Letter DOCX exporters use fixed metadata and canonicalized containers so identical inputs produce identical bytes. FastAPI exposes an export manifest, exact immutable source-version lineage, SHA-256 ETags, sanitized downloads, and fail-closed `409` behavior; the generated TypeScript SDK and workspace enable Markdown, PDF, and DOCX controls only for exportable projects. Evidence: `engine/open_hollywood_engine/rendering/`, `apps/api/open_hollywood_api/services/exports.py`, `apps/api/open_hollywood_api/routes/exports.py`, generated contracts, workspace export controls, and rendering/API/React tests. All four representative PDF pages and all four representative DOCX pages passed visual inspection. Ruff, mypy, 140 pytest tests, Prettier, ESLint, TypeScript, 5 Vitest tests, and the production build pass.
 
-19. [~] **IN PROGRESS 2026-07-26 — Build the evaluation harness** and run the benchmark corpus across local, cloud, and hybrid profiles. The provider-neutral harness core now strictly validates the frozen 12-prompt v0.1 corpus and pins its canonical digest, exact graph and prompt-contract versions, direct-model baseline, complete secret-free Local/Cloud/Hybrid profile snapshots, and prompt seeds into a deterministic 48-case campaign plan. Sequential case execution is failure-isolated and resumable from terminal results; successful outputs must carry exact workflow-run, model-invocation, and immutable artifact-version lineage. The accepted weighted rubric and hard gates are executable contracts. Deterministic A/B packaging separates provenance-free reviewer documents from the private answer key, and reporting maps blind human preferences back to systems while calculating the accepted completion, continuity, quality, preference, and cost thresholds. The operator command validates corpus integrity and creates plans from fully configured persisted presets. The application layer now executes the direct single-model baseline through a bounded provider-neutral call and persists its frozen prompt, invocation, workflow, and immutable story lineage idempotently. Campaign reports checkpoint atomically after each case, failed cases retry only when explicitly requested, and operator-configurable Ollama timeouts support long-form calls while distinguishing provider timeouts from outages. Retrying after an interrupted process closes stale running baseline attempts and preserves their immutable input lineage. Ollama Cloud response aliases are accepted only when they normalize to the frozen requested model; requested and provider-reported identifiers are both persisted. Operator commands create separated public/private review packets and summaries from schema-validated evidence. Failed structured calls retain provider usage, finish reason, response hash, and length, while a lone JSON fence is normalized without accepting surrounding
+19. [~] **IN PROGRESS 2026-07-26 — Build the evaluation harness** and execute phased benchmark evaluation (Cloud-first scope adopted 2026-09-11 below; Local/Hybrid qualification deferred). The provider-neutral harness core now strictly validates the frozen 12-prompt v0.1 corpus and pins its canonical digest, exact graph and prompt-contract versions, direct-model baseline, complete secret-free Local/Cloud/Hybrid profile snapshots, and prompt seeds into a deterministic 48-case campaign plan. Sequential case execution is failure-isolated and resumable from terminal results; successful outputs must carry exact workflow-run, model-invocation, and immutable artifact-version lineage. The accepted weighted rubric and hard gates are executable contracts. Deterministic A/B packaging separates provenance-free reviewer documents from the private answer key, and reporting maps blind human preferences back to systems while calculating the accepted completion, continuity, quality, preference, and cost thresholds. The operator command validates corpus integrity and creates plans from fully configured persisted presets. The application layer now executes the direct single-model baseline through a bounded provider-neutral call and persists its frozen prompt, invocation, workflow, and immutable story lineage idempotently. Campaign reports checkpoint atomically after each case, failed cases retry only when explicitly requested, and operator-configurable Ollama timeouts support long-form calls while distinguishing provider timeouts from outages. Retrying after an interrupted process closes stale running baseline attempts and preserves their immutable input lineage. Ollama Cloud response aliases are accepted only when they normalize to the frozen requested model; requested and provider-reported identifiers are both persisted. Operator commands create separated public/private review packets and summaries from schema-validated evidence. Failed structured calls retain provider usage, finish reason, response hash, and length, while a lone JSON fence is normalized without accepting surrounding
 commentary. Agentic cases now enter the real durable Story Blueprint graph:
 every registered specialist resolves its exact frozen profile selection,
 receives deterministic immutable inputs and benchmark constraints, uses schema enforcement when the deployment supports it, records a budgeted invocation plus output lineage, validates cross-artifact invariants, and pauses at the mandatory human approval interrupt. Replaying a paused case performs no duplicate model calls. Creative Brief prompt contract v6 requests only creative choices and the application deterministically attaches the frozen premise, format, genres, maturity, required elements, and forbidden elements; this keeps optional model fields from weakening benchmark intent. Prompted non-schema invariants preserve exact benchmark constraints; parallel World specialists cannot invent unresolved character references; the integrator emits only new beats and scene plans, and the application deterministically assembles immutable specialist artifacts into the Story Blueprint. Prompt contract v9 binds integration to a compact world summary, the Creative Brief's exact scene count, and no more than two beats per scene. Prompt-only cloud structured-output retries
@@ -766,6 +766,40 @@ unchanged. Pending promotion requirements are documented in
 ADR 0010. No live v29 evaluation or canary is launched. Step 19 remains
 **IN PROGRESS**, with human adjudication, expanded live controls, bounded repair
 loops, and blind story-quality review still pending.
+
+### Testing direction update — 2026-09-11
+
+The operator designates `gemma4:31b` through Ollama Cloud
+(`gemma4:31b-cloud`) as the testing model. E4B-driven tuning and further narrow
+proofreading experiments are deferred. Local, Hybrid and Cloud remain product
+options; no runtime profile, production prompt v29, graph v7 or safety gate changes
+in this documentation update. The next priority is complete Cloud production,
+including recovered failures, revision behavior and human story quality.
+
+The evidence register now consolidates 264 Cloud calls in the September 9–11
+focused series, plus the earlier single Cloud v27 probe. It records strong POV
+and assignment results, 3/3 exact-preservation c05 writer repairs, and the latest
+17/21 versus 15/21 minimal word-repair recommendations. The human correction
+that c05 requires duplicate removal is retained explicitly; Local-002/003's
+disputed broader judgments remain unscored. No v27/v28/v29 full canary has been
+completed. Latest full Cloud canary completions remain v25 4/4 and v26 3/4.
+
+Step 19 stays **IN PROGRESS**. Its current phase is explicitly Cloud-first:
+complete the intended workflows across the frozen 12-prompt corpus, compare
+against the direct-model baseline, inspect clean versus recovered completions,
+and collect the required blind human scores, hard-gate decisions, preference and
+budget evidence. Establish repeatability before closing this phase. This dated
+policy supersedes the earlier all-profile completion prerequisite for the current
+phase; Local/Hybrid qualification is deferred, not recorded as passed. Declare a
+new scope-bound plan and evidence record rather than marking the unfinished
+48-case historical campaign complete or weakening its sealing invariants.
+Hybrid evaluation is considered only after Cloud-first completion, with separate
+authorization. Step 20 has not started and no new model run is launched here.
+
+References:
+[testing decision](../docs/benchmark_reports/model-testing-direction-2026-09-11.md),
+[exact evaluation register](../docs/benchmark_reports/gemma4-31b-evaluation-register-2026-09-11.md),
+[deferred issue draft](../docs/issue_drafts/gemma4-31b-critic-repair-follow-up.md).
 
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 

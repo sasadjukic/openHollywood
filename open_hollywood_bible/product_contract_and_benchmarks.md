@@ -331,6 +331,37 @@ A model that writes attractive prose but fails 20% of structured story-bible upd
 
 ## 7. Cloud-model strategy
 
+### Active evaluation phase — 2026-09-11
+
+The operator has selected `gemma4:31b` through Ollama Cloud
+(`gemma4:31b-cloud`) as the testing model and ended active E4B-driven tuning.
+Local, Cloud and Hybrid remain first-class product options; local-first storage,
+the approval boundary and provider-neutral architecture do not change.
+
+For the current Step 19 phase, evaluate Cloud production first. Prioritize
+complete workflows, recovered versus terminal failures, revision preservation,
+usage and human story quality. Defer Hybrid testing until all intended Cloud
+workflows complete and this scoped phase meets the existing quality, hard-gate,
+blind-preference and budget criteria in section 5. A full 12-prompt Cloud corpus
+and direct-model baseline are required before closing the phase; a four-case
+canary or isolated critic test is insufficient. Step 19 remains IN PROGRESS.
+
+This explicitly supersedes the earlier requirement to finish Local and Hybrid
+evaluation before closing the current Step 19 phase. It does not qualify those
+profiles, relax runtime gates or silently complete the old 48-case campaign.
+New evidence must declare its Cloud-first scope, retain baseline and human-review
+coverage, and preserve historical reports and sealing invariants. Subsequent
+Hybrid evaluation requires a separate decision and plan.
+
+This is a testing-policy change only: no runtime profile, production prompt or
+graph is changed, and diagnostic critic variants are not automatically adopted.
+The [decision and rationale](../docs/benchmark_reports/model-testing-direction-2026-09-11.md)
+and [exact evaluation results](../docs/benchmark_reports/gemma4-31b-evaluation-register-2026-09-11.md)
+are the current references. The three-profile strategy below remains the product
+direction, with its testing sequence deferred as described above.
+
+### Original three-profile strategy
+
 Begin with three profiles, not a huge model matrix.
 
 ### Local baseline
