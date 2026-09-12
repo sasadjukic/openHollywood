@@ -3,6 +3,67 @@
 As of **2026-09-11**. This register consolidates completed Open Hollywood tests;
 it does not announce a new run or certify production readiness.
 
+## Subsequent production evidence — 2026-09-12
+
+The [September 12 manual v29 Cloud report](manual-v29-cloud-production-2026-09-12.md)
+adds **10/10 fresh premise-to-production completions and 59/59 accepted scenes**.
+SQLite reconciles all 326 operator-reported Cloud calls: 61 Blueprint plus 265
+production, with six failed attempts recovered automatically and no recorded
+manual retry or revision command. Eight scenes received one prose revision each.
+Human literary grading remains absent.
+
+This retrospective manual sample is separate from the frozen canary corpus.
+It updates the evidence available after this register's September 11 snapshot;
+the historical tables and then-current conclusions below remain dated records.
+Three four-story v29 canary batches and Step 19 acceptance remain pending.
+
+## Subsequent v29 canary batch 1 — 2026-09-12
+
+The [first v29 Cloud canary batch](step-19-cloud-v29-batch-1-2026-09-12.md)
+completed Cloud OH-V01-001 through OH-V01-004: **4/4 stories, 21/21 scenes,
+99/99 succeeded production calls, zero failed attempts**. Five continuity-driven
+prose revisions completed, with two semantic/recheck questions retained for human
+review. It matches the four v23/v25 Cloud successes and restores v26 Cloud 002's
+completion, with higher usage than v25. This is a named Cloud subset comparison;
+historical campaign invariants and evidence are unchanged.
+
+At batch 1 close, batches 2 and 3 remained outstanding. Human quality, direct-model preference,
+budget acceptance and repeatability are still pending; Step 19 is IN PROGRESS.
+
+## Subsequent v29 canary batch 2 — 2026-09-12
+
+Cloud OH-V01-005–008 finished with **2/4 stories completed, 16/21 scenes,
+88 production calls (84 succeeded, 4 failed) and five prose revisions**, in
+453.888 seconds. Cases 006 and 008 completed; 005 stopped on continuity
+structured-output repair exhaustion, and 007 stopped on hard-critic revision
+exhaustion. The repeated POV finding in 007 needs semantic review. The original
+failures were preserved without manual retries or contract tuning.
+
+The local evidence archive is
+data/benchmarks/v0.1/v29-cloud-batch-2-2026-09-12/; its execution receipt,
+diagnostics, partial drafts, successful manuscripts and final SQLite snapshot
+are available for consolidation. At batch 2 close, 8/12 cases had been
+attempted and 6 completed. Batch 3 and Step 19 acceptance remained pending;
+consolidation was deferred until all three batches finished.
+
+## Completed v29 Cloud canary cycle — 2026-09-12
+
+The [consolidated three-batch report](step-19-cloud-v29-consolidated-2026-09-12.md)
+covers all 12 frozen Cloud cases: **9 completed, 3 failed; 54/64 scenes;
+268 calls (261 succeeded, 7 failed); 13 prose revisions across 12 scenes**.
+Batch 3 completed 010–012; 009 stopped on repeated critic validation failure.
+The other failures were 005 (continuity structured repair) and 007 (hard-critic
+POV revision limit). Case 007's inference handling and several continuity
+rechecks require human adjudication. Seven completed stories had no failed
+calls; two completed after automatic recovery.
+
+Recorded production usage totals 2,991,223 tokens, with 1,398.995 seconds of
+summed runner time. Three intact archives, nine manuscripts and unsuccessful
+partial drafts support the report. Runtime, seed and approvals remained frozen;
+no terminal rerun or tuning replaced these outcomes. The manual ten-story
+sample remains separate. Step 19 is IN PROGRESS pending quality/preference,
+semantic adjudication, cost acceptance and repeatability.
+
 ## Reading the scores
 
 The tested Cloud identifier was `gemma4:31b-cloud`; the provider reported

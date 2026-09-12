@@ -15,6 +15,10 @@ decision does not change runtime profiles, prompt v29 or graph v7.
 
 - [Why we are moving on from E4B and the Cloud-first evaluation policy](docs/benchmark_reports/model-testing-direction-2026-09-11.md)
 - [31B creative-writing tests: exact results and evidence register](docs/benchmark_reports/gemma4-31b-evaluation-register-2026-09-11.md)
+- [September 12 manual v29 Cloud: 10/10 completions and recovery evidence](docs/benchmark_reports/manual-v29-cloud-production-2026-09-12.md)
+- [v29 Cloud canary batch 1: 4/4 completions, 99/99 valid calls](docs/benchmark_reports/step-19-cloud-v29-batch-1-2026-09-12.md)
+- [v29 Cloud canary: all 12 cases and consolidated diagnostics](docs/benchmark_reports/step-19-cloud-v29-consolidated-2026-09-12.md)
+- [v29 follow-up: exact revisions and corrected unassigned-POV diagnosis](docs/benchmark_reports/step-19-cloud-v29-pov-revision-follow-up-2026-09-12.md)
 - [Deferred critic/word-repair GitHub issue draft](docs/issue_drafts/gemma4-31b-critic-repair-follow-up.md)
 
 The legacy scene-execution prototype is preserved on the

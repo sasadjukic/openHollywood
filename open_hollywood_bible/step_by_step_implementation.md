@@ -801,6 +801,91 @@ References:
 [exact evaluation register](../docs/benchmark_reports/gemma4-31b-evaluation-register-2026-09-11.md),
 [deferred issue draft](../docs/issue_drafts/gemma4-31b-critic-repair-follow-up.md).
 
+### Manual v29 Cloud evidence — 2026-09-12
+
+Ten fresh manual stories completed under production prompt v29 / graph v7 with
+the Cloud 31B model, accepting 59/59 planned scenes. A read-only SQLite audit
+reconciles 326 calls (61 Blueprint + 265 production), six automatically recovered
+failed attempts, eight one-cycle scene revisions, 10 exact Blueprint approvals
+and zero run-control records. Notes, screenshots, artifacts, invocation lineage
+and accepted manuscripts are preserved under
+data/diagnostics/manual-v29-cloud-2026-09-12/. Public results and hashes are in
+the [manual evaluation report](../docs/benchmark_reports/manual-v29-cloud-production-2026-09-12.md).
+
+This manual completion sample is separate from the frozen 12-prompt corpus and
+has no human literary scores or matched direct-model baseline. Step 19 remains
+**IN PROGRESS**; three four-story v29 Cloud canary batches, blind review, budget
+assessment and repeatability remain outstanding. No model call, canary staging,
+production-contract change or later phase began while documenting this evidence.
+
+### v29 Cloud canary batch 1 completed — 2026-09-12
+
+Cloud OH-V01-001 through OH-V01-004 completed under prompt v29 / graph v7:
+**4/4 stories, 21/21 accepted scenes, 99/99 succeeded production invocations**.
+Five continuity-driven prose revisions completed without failed calls or manual
+controls. The isolated approved-seed copy, explicit four-case scope, exact prior
+approvals, source hashes, logs and completed snapshot are preserved under
+data/benchmarks/v0.1/v29-cloud-batch-1-2026-09-12/. The
+[batch report](../docs/benchmark_reports/step-19-cloud-v29-batch-1-2026-09-12.md)
+records usage, matched historical Cloud comparisons and two semantic questions
+requiring human review.
+
+At batch 1 close, Step 19 remained **IN PROGRESS**. Batches 2 and 3 had not started; human quality,
+direct-model baseline/preference, budget acceptance and repeatability remain
+outstanding. No runtime tuning, later phase or Hybrid execution was introduced.
+
+### v29 Cloud canary batch 2 completed — 2026-09-12
+
+Cloud OH-V01-005 through OH-V01-008 reached terminal outcomes under the same
+prompt v29 / graph v7, Cloud model, approved Blueprints, seeds and budgets:
+**2/4 stories completed, 16/21 scenes accepted, 88 production calls (84 succeeded,
+4 failed), five prose revisions**, in 453.888 seconds. Cases 006 and 008
+completed. Case 005 exhausted its continuity structured-repair attempt on scene
+2; case 007 reached the hard-critic revision limit on scene 5. The latter's
+repeated POV allegation despite inference wording remains a semantic review
+question, not a human-adjudicated defect. Case 008 recovered a critic validation
+failure automatically.
+
+Local receipts, failure details, exact revision diffs, two completed manuscripts,
+failed-case partial drafts and an audited final snapshot are preserved under
+data/benchmarks/v0.1/v29-cloud-batch-2-2026-09-12/. The archive's 17 evidence files
+and 179 artifact content hashes were validated; original seed, batch 1 evidence
+and runtime hashes remain unchanged. No new Blueprint calls, approvals, manual
+run controls or production tuning occurred.
+
+At batch 2 close, eight of twelve Cloud cases had been attempted: **6 completed, 2 failed,
+37/42 planned scenes accepted** across batches 1 and 2. Batch 3 had not started.
+The final consolidated diagnostic document was deferred until all three batches
+finished, as requested. Step 19 remains **IN PROGRESS**; human quality, direct-model
+preference, budget acceptance and repeatability remain outstanding.
+
+### v29 Cloud canary cycle completed; diagnostics consolidated — 2026-09-12
+
+Batch 3 ran Cloud OH-V01-009–012: **3/4 stories completed, 17/22 accepted
+scenes, 81 calls (78 succeeded, 3 failed), three prose revisions**, in 452.385
+seconds. Cases 010–012 completed; 009 exhausted the critic's structured repair
+on the assigned-character interiority validation rule. Its failure and all
+partial artifacts are retained. Case 010 recovered a writer JSON error.
+
+All three batches now cover **12/12 frozen Cloud cases: 9 completed, 3 failed,
+54/64 planned scenes accepted, 268 calls (261 succeeded, 7 failed), 13 prose
+revisions across 12 scenes**. Recorded usage was 2,767,113 input + 224,110 output
+tokens; summed runner time was 1,398.995 seconds. No new Blueprint calls,
+approvals, manual run controls or runtime tuning occurred.
+
+The [consolidated diagnostic report](../docs/benchmark_reports/step-19-cloud-v29-consolidated-2026-09-12.md)
+records outcomes, exact failure classes, recovery, critic/continuity questions,
+revision preservation, usage, matched historical context and source receipts.
+Nine completed manuscripts and failed-case drafts are indexed in local
+data/diagnostics/v29-cloud-cycle-2026-09-12/. All three archives passed source,
+approval and integrity checks (52 archived files, 561 artifact hashes).
+
+The canary execution and requested consolidation are complete. **Step 19
+remains IN PROGRESS**: repeated POV boundary failures, case 007's inference
+loop and questionable continuity rechecks need adjudication; blind human
+quality/preference, real cost acceptance and repeatability remain open.
+No later phase or additional model experiment has started.
+
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 
 21. [ ] **Package the stable system with Tauri** and test crash/restart, offline, missing-model, invalid-key, provider-timeout, and low-disk-space behavior.
