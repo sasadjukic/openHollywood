@@ -886,6 +886,34 @@ loop and questionable continuity rechecks need adjudication; blind human
 quality/preference, real cost acceptance and repeatability remain open.
 No later phase or additional model experiment has started.
 
+### Failed-review evidence implemented — 2026-09-12
+
+The first production-improvement step is complete: rejected critic, continuity
+and continuity-adjudication responses now retain bounded, redacted, allowlisted
+findings on the failed invocation, with exact input/candidate versions, scene/POV
+assignment, selected request-catalog evidence and explicit capture availability.
+The diagnostic record distinguishes an unassigned viewpoint from an allegation
+about the assigned character without changing the existing validator or error.
+Rejected findings remain unvalidated allegations, never manuscript facts.
+
+Prompt v29, graph v7, response schemas, provider requests, retries, revision
+limits and acceptance behavior are unchanged. Failure evidence is excluded from
+retry context and model messages. Historical canary archives remain unchanged;
+missing historical response bodies cannot be recovered. No live calls were run.
+See [ADR 0011](../docs/adr/0011-bounded-failed-review-evidence.md).
+
+Validation: 461 Python tests passed, including 12 new failure-evidence cases
+covering both POV causes, source resolution, malformed output, capture bounds,
+redaction, migrated SQLite persistence, recovery/terminal failure at the existing
+limit, artifact and prompt isolation, unchanged retry context, export and replay.
+Ruff lint/format and strict mypy passed. Frontend formatting, lint, type checking,
+all 11 tests and the production build also passed.
+
+**Step 19 remains IN PROGRESS.** Assignment-aware schemas, repair acceptance
+criteria, critic adjudication and continuity policy are separate future work.
+This completes observability work, not a claim of improved model judgment or
+production success rate; no later product phase has started.
+
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 
 21. [ ] **Package the stable system with Tauri** and test crash/restart, offline, missing-model, invalid-key, provider-timeout, and low-disk-space behavior.

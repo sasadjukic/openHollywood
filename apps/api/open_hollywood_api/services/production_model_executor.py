@@ -88,6 +88,7 @@ from open_hollywood_api.services.production_adjudication import (
     disputed_findings,
     materialize_adjudication,
 )
+from open_hollywood_api.services.production_failure_evidence import capture_review_failure
 from open_hollywood_api.services.structured_output import normalize_json_document
 
 
@@ -984,6 +985,19 @@ class ProfileRoutedProductionExecutor(SceneProductionExecutor):
                 response,
                 validation_issues,
                 failure_layer=failure_layer,
+                review_failure_evidence=(
+                    capture_review_failure(
+                        operation=operation.value,
+                        response_content=response.content,
+                        request_content=messages[-1].content,
+                        input_version_ids=tuple(
+                            str(value) for value in execution.input_version_ids
+                        ),
+                        validation_issues=validation_issues,
+                    )
+                    if response is not None
+                    else None
+                ),
             )
             raise RetryableSceneProductionError(
                 "production specialist returned invalid structured output"
@@ -1351,6 +1365,7 @@ class ProfileRoutedProductionExecutor(SceneProductionExecutor):
         usage: ModelUsage | None = None,
         *,
         failure_layer: str = "unknown",
+        review_failure_evidence: dict[str, Any] | None = None,
     ) -> None:
         guard = active_secret_guard()
         safe_message = guard.redact_text(message)[:2_000]
@@ -1390,6 +1405,11 @@ class ProfileRoutedProductionExecutor(SceneProductionExecutor):
                 **invocation.request_settings,
                 "failure_layer": failure_layer,
             }
+            if review_failure_evidence is not None:
+                invocation.request_settings = {
+                    **invocation.request_settings,
+                    "review_failure_evidence": review_failure_evidence,
+                }
             if safe_validation_issues:
                 invocation.request_settings = {
                     **invocation.request_settings,

@@ -143,6 +143,10 @@ when they resolve to the requested frozen model, while both requested and
 provider-reported identifiers remain persisted for audit. Failed structured
 calls retain provider usage, finish reason, response hash, and response length;
 a lone JSON Markdown fence is normalized without accepting mixed commentary.
+Failed production reviews also retain bounded, redacted attempted findings and
+request-bound evidence under invocation request settings. These diagnostic-only
+records distinguish unassigned POV from same-character allegations without
+changing prompts or retry behavior. See [ADR 0011](docs/adr/0011-bounded-failed-review-evidence.md).
 The agentic path now runs profile-routed, schema-validated specialists through
 the real durable Story Blueprint graph and stops at its mandatory human approval
 interrupt without duplicate calls on replay. Prompted non-schema invariants keep
