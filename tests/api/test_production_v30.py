@@ -134,7 +134,7 @@ class AssignmentSchemaGateway(V26Gateway):
         payload = json.loads(request.messages[-1].content)
         if payload.get("assignment", {}).get("operation") == "critique":
             self.critic_calls += 1
-            assert request.invocation.prompt_template_version == "32"
+            assert request.invocation.prompt_template_version == "33"
             assert request.response_schema is not None
             assignment = payload["scene_assignment_contract"]
             properties = cast(dict[str, Any], request.response_schema["properties"])

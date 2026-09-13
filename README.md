@@ -557,12 +557,21 @@ prose; retry and revision limits remain unchanged. Successful and failed repair
 assessments are diagnostic evidence, not proof of literary correctness. See
 [ADR 0013](docs/adr/0013-revision-acceptance-tests.md).
 
-Current prompt v32 / graph v9 adds focused terminal adjudication for disputed
+Prompt v32 / graph v9 adds focused terminal adjudication for disputed
 POV and scene-assignment findings. It shares the existing single adjudication
 allowance with continuity; uncertain or upheld findings still block, and neither
 path can bypass competing hard review gates. Original critiques and exact
 adjudication decisions remain inspectable. Ordinary prompts and production
 limits are unchanged. See [ADR 0014](docs/adr/0014-bounded-critic-adjudication.md).
+
+Current prompt v33 / graph v9 distinguishes incompatible assertions from later
+story development. Timeline claims bind events to their time; state claims identify
+their update scene; administrative thread labels cannot supply contradictions.
+History and explicit constraints remain binding. Continuity instructions are
+shorter, and budgets/retries/revision limits are unchanged. Restart diagnostics
+also close interrupted calls with an explicit unknown provider outcome. Offline
+checks passed; live semantic validation remains pending. See
+[ADR 0015](docs/adr/0015-scoped-continuity-development.md).
 
 Benchmark word-count ranges are advisory creative targets. New outputs persist a
 non-gating adherence measurement with the target, actual count, status, and word

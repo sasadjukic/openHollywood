@@ -101,11 +101,18 @@ def test_story_bible_objects_are_not_single_immutable_emotional_claims() -> None
         )
     )
     assert {entry["claim"] for entry in catalog} == {
-        "Yesterday",
-        "Elias yielded the floor.",
+        json.dumps(
+            {
+                "scene_id": "scene_1",
+                "summary": "Elias yielded the floor.",
+                "time_context": "Yesterday",
+            },
+            sort_keys=True,
+            separators=(",", ":"),
+        ),
         "Broken wrist",
     }
-    assert len({entry["claim_id"] for entry in catalog}) == 3
+    assert len({entry["claim_id"] for entry in catalog}) == 2
     assert all(
         "past_event_only" in entry["scope"]
         for entry in catalog

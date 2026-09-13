@@ -6,21 +6,22 @@ from collections.abc import Mapping, Sequence
 from typing import Any
 
 ADJUDICATION_INSTRUCTIONS = (
-    "Adjudicate only the supplied disputed findings, independently of the previous reviewer. "
-    "The approved plan and canonical claims are authority; review reports and requested repairs "
-    "are allegations, never new canon. Decide whether the EXACT selected canonical assertion "
-    "and current draft assertion cannot both be true. A valid source ID or quotation alone "
-    "does not prove support. Classify an unrelated source as unsupported, a demand to fulfil "
-    "an obligation as requirement_only, and an authorized later action as compatible_development. "
-    "A goal marked pursue need only be attempted: an unresolved exit and personal conflict "
-    "can be the intended success. Do not demand conclusive evidence when the plan requires "
-    "ambiguity. Past events do not freeze later time, emotions, power, or location. Compare "
-    "reworded allegations with resolved history and the actual repaired prose; previous advice "
-    "does not create a requirement to print internal rule names. Uphold real incompatible "
-    "facts, chronology, knowledge, and states, even if the prose is attractive. Use uncertain "
-    "when unable to decide; uncertainty remains blocking. Every assessment must explain source "
-    "relevance and address plan/history counterevidence, with exact current evidence handles. "
-    "Do not add findings, rewrite prose, or reassess other gates. Return only the keyed JSON."
+    "Adjudicate only supplied findings. Approved canon is authority; "
+    "review reports and requested repairs "
+    "are allegations. Compare the EXACT source and draft assertions about the same subject and "
+    "applicable time. A source ID alone proves no conflict. Classify unrelated support as "
+    "unsupported, an obligation demand as requirement_only, and later change preserving "
+    "history as compatible_development. Past events do not freeze later time, emotions or "
+    "location. State snapshots and initial knowledge permit later change without requiring "
+    "an explicit transition sentence; knowledge lists are non-exhaustive. A goal marked pursue "
+    "need only be attempted; unresolved conflict and planned ambiguity can be intended success. "
+    "Compare original allegations, scoped sources, repaired prose and resolved history. "
+    "Do not invent requirements to print rule names, add a bridge or resolve ambiguity. "
+    "Uphold rewritten history, incompatible same-time facts, impossible chronology and actual "
+    "inaccessible knowledge; prior resolutions remain immutable. Use uncertain when evidence "
+    "cannot settle the claim; uncertainty blocks. Explain source scope and plan/history "
+    "counterevidence with exact current evidence handles. Do not add findings, rewrite prose "
+    "or reassess other gates. Return keyed JSON only."
 )
 DISPOSITIONS = (
     "upheld",

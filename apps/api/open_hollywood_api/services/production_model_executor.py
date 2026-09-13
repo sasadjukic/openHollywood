@@ -241,34 +241,28 @@ _CONTINUITY_FINDING_RESOLUTION_REQUIREMENT = (
     "when no repair is needed."
 )
 _CONTINUITY_FINDING_BASIS_REQUIREMENT = (
-    "Every error or blocking finding must use exactly one basis_details branch. A "
-    "contradiction must "
-    "select draft_evidence_refs from candidate_draft.content.evidence_catalog. A non-world "
-    "contradiction selects exactly one self-describing canonical_claim_id from "
-    "contradiction_claim_catalog, one or more exact draft evidence handles, a "
-    "directly_incompatible disposition, and a corrective repair_action. If review instead "
-    "finds craft_preference, compatible_development, or insufficient_canonical_support, "
-    "select that disposition: the application makes it advisory regardless of severity. "
-    "A short human-readable "
-    "conflict_explanation must state the two incompatible assertions and address any "
-    "counterevidence in the current Scene Plan or accepted prior ending; it is never "
-    "lexically gated. A source establishes only its own assertion, not unrelated inferred "
-    "dates, mechanisms, or requirements. Historical events do not freeze later emotions "
-    "or rhetorical power. New objects and planned developments are allowed unless they "
-    "actually negate an established fact. The application derives the "
-    "category, conflict kind, source, lineage, and exact draft assertion. "
-    "Scene Plan obligations are unavailable in this branch and can only be assessed through "
-    "requirement_coverage. A World Rule contradiction "
-    "selects only exact world_rule_ids; the application derives their canonical source "
-    "references. Contradiction means an "
-    "affirmative current-draft statement or action that conflicts with canon. The selected "
-    "repair_action must correct, replace, or remove the "
-    "existing incompatible assertion rather than add context. Never use contradiction "
-    "for absent, weak, implicit, or incomplete requirement coverage. A "
-    "forbidden_shortcut_violation must cite one exact due-now forbidden "
-    "requirement_id and select the exact violating candidate-draft evidence reference. If the "
-    "forbidden shortcut is absent, report no violation. The application resolves selected "
-    "evidence references into exact persisted excerpts."
+    "Every error/blocking finding uses one basis_details branch and exact candidate-draft "
+    "evidence handles. A non-world contradiction selects one canonical_claim_id, "
+    "conflict_disposition and repair_action. Directly_incompatible requires affirmative "
+    "assertions about the SAME subject and applicable time that cannot both be true. "
+    "Explain both assertions, their temporal scope and plan/prior-ending counterevidence. "
+    "A historical event establishes what happened then, not the next scene's time or mood. "
+    "A state snapshot records the last known condition, not a permanent restriction. "
+    "Later movement, discovery, changed trust, revealed secrets and new objects can develop "
+    "without an explicit transition sentence. Initial/known-fact lists are not exhaustive "
+    "ceilings on later knowledge. A new inference is not omniscience; actual inaccessible "
+    "knowledge, impossible chronology and explicit constraints still block when evidenced. "
+    "Use compatible_development for later change that preserves history; craft_preference "
+    "for wanting a clearer bridge; insufficient_canonical_support when the source cannot "
+    "establish the alleged conflict. These become advisory regardless of severity. "
+    "Do not erase or rewrite a past event or established resolution to permit development. "
+    "Facts retain their stated scope, including explicit permanent limits. A missing "
+    "transition alone is not an affirmative contradiction. Correct/replace/remove only "
+    "an existing incompatible assertion, never use contradiction to add context or fill "
+    "weak/implicit/missing requirements. Scene Plan obligations use requirement_coverage. "
+    "World Rule contradictions select exact world_rule_ids; forbidden shortcuts select a "
+    "due-now forbidden requirement_id and exact violating evidence. Report no shortcut "
+    "violation when absent. The application owns category, lineage and resolved excerpts."
 )
 _CONTINUITY_REQUIREMENT_AUDIT_REQUIREMENT = (
     "Audit every entry in requirement_coverage_catalog exactly once by completing the "
@@ -1546,6 +1540,9 @@ def _retry_context(
         invocation
         for invocation in candidates
         if invocation.request_settings.get("task_fingerprint") == task_fingerprint
+        # A lost process is not a malformed model response. The invocation still
+        # counts toward the aggregate run budget; it supplies no review-repair input.
+        and invocation.error_code != "interrupted_execution"
         and invocation.request_settings.get("prompt_template_version")
         == SCENE_PRODUCTION_PROMPT_TEMPLATE_VERSION
     )
@@ -4358,6 +4355,9 @@ def _continuity_claim_categories(
         # The Scene Plan requirement catalog is its exclusive continuity route.
         return ()
     field_name = re.sub(r"\[\d+\]$", "", source_path.rsplit(".", 1)[-1])
+    if artifact_kind == ArtifactKind.STORY_BIBLE.value and field_name in {"kind", "status"}:
+        # Workflow labels describe the record; "open" does not forbid a later payoff.
+        return ()
     is_blueprint_character = ".characters[" in source_path
     if artifact_kind == ArtifactKind.CHARACTER.value or is_blueprint_character:
         if field_name in {"secrets", "initial_knowledge"}:
@@ -4438,6 +4438,38 @@ def _continuity_claim_categories(
     return artifact_categories.get(artifact_kind, ())
 
 
+def _continuity_claim_scope(source_path: str, record: Mapping[str, Any] | None) -> str:
+    record = record or {}
+    if ".timeline" in source_path:
+        return f"past_event_only@{record.get('scene_id', 'unspecified_scene')}"
+    if any(
+        marker in source_path
+        for marker in (".character_states", ".relationship_states", ".location_states")
+    ):
+        return (
+            f"state_snapshot@{record.get('last_updated_scene_id', 'last_accepted_scene')}; "
+            "later change allowed"
+        )
+    if ".initial_knowledge" in source_path:
+        return "initial_knowledge; later learning allowed; non-exhaustive"
+    if ".established_facts" in source_path:
+        return (
+            f"asserted@{record.get('established_scene_id', 'unspecified_scene')}; "
+            "applies to its stated time"
+        )
+    if ".threads" in source_path:
+        if record.get("status") == "resolved":
+            return (
+                f"resolved_history@{record.get('resolved_scene_id', 'unspecified_scene')}; "
+                "resolution immutable"
+            )
+        return (
+            f"open_setup@{record.get('introduced_scene_id', 'unspecified_scene')}; "
+            "later payoff allowed"
+        )
+    return "selected_assertion_only; unmentioned details allowed"
+
+
 def _continuity_canonical_source_catalog(
     inputs: tuple[dict[str, Any], ...],
 ) -> tuple[dict[str, Any], ...]:
@@ -4452,6 +4484,7 @@ def _continuity_canonical_source_catalog(
         canonical_id: str | None,
         related_ids: tuple[str, ...],
         categories: tuple[str, ...] | None = None,
+        record: Mapping[str, Any] | None = None,
     ) -> None:
         claim_text = (
             value.strip()
@@ -4467,16 +4500,7 @@ def _continuity_canonical_source_catalog(
             "artifact_version_id": artifact["artifact_version_id"],
             "source_path": source_path,
             "claim": claim_text,
-            "scope": (
-                "past_event_only; later planned actions and reactions may develop"
-                if ".timeline" in source_path
-                else "state_at_last_accepted_scene; explicit later transitions are allowed"
-                if any(
-                    marker in source_path
-                    for marker in (".character_states", ".relationship_states", ".location_states")
-                )
-                else "only_the_selected_assertion; unmentioned details are not forbidden"
-            ),
+            "scope": _continuity_claim_scope(source_path, record),
         }
         claim_categories = categories or _continuity_claim_categories(
             cast(str, artifact["artifact_kind"]),
@@ -4522,6 +4546,7 @@ def _continuity_canonical_source_catalog(
         canonical_id: str | None,
         related_ids: tuple[str, ...],
         field_name: str | None = None,
+        record: Mapping[str, Any] | None = None,
     ) -> None:
         if isinstance(value, dict):
             local_id = next(
@@ -4554,6 +4579,26 @@ def _continuity_canonical_source_catalog(
                     )
                 )
             )
+            if (
+                artifact["artifact_kind"] == ArtifactKind.STORY_BIBLE.value
+                and re.fullmatch(r"content\.timeline\[\d+\]", source_path)
+                and isinstance(value.get("summary"), str)
+                and isinstance(value.get("time_context"), str)
+            ):
+                # Keep an event and its time together; a bare "morning" is not timeless canon.
+                add_claim(
+                    {
+                        key: value[key]
+                        for key in ("summary", "time_context", "scene_id")
+                        if key in value
+                    },
+                    artifact=artifact,
+                    source_path=source_path,
+                    canonical_id=local_id,
+                    related_ids=local_related,
+                    record=value,
+                )
+                return
             claim_categories = _continuity_claim_categories(
                 cast(str, artifact["artifact_kind"]),
                 source_path,
@@ -4570,6 +4615,7 @@ def _continuity_canonical_source_catalog(
                     canonical_id=local_id,
                     related_ids=local_related,
                     categories=claim_categories,
+                    record=value,
                 )
                 return
             for key, nested in value.items():
@@ -4585,6 +4631,7 @@ def _continuity_canonical_source_catalog(
                     canonical_id=local_id,
                     related_ids=local_related,
                     field_name=key,
+                    record=value,
                 )
             return
         if isinstance(value, list):
@@ -4597,6 +4644,7 @@ def _continuity_canonical_source_catalog(
                             source_path=f"{source_path}[{index}]",
                             canonical_id=canonical_id,
                             related_ids=(*related_ids, fact_id),
+                            record=record,
                         )
                 return
             if value and all(not isinstance(nested, (dict, list)) for nested in value):
@@ -4608,6 +4656,7 @@ def _continuity_canonical_source_catalog(
                             source_path=f"{source_path}[{index}]",
                             canonical_id=canonical_id,
                             related_ids=related_ids,
+                            record=record,
                         )
                 return
             for index, nested in enumerate(value):
@@ -4618,6 +4667,7 @@ def _continuity_canonical_source_catalog(
                     canonical_id=canonical_id,
                     related_ids=related_ids,
                     field_name=field_name,
+                    record=record,
                 )
             return
         if (
@@ -4631,6 +4681,7 @@ def _continuity_canonical_source_catalog(
                 source_path=source_path,
                 canonical_id=canonical_id,
                 related_ids=(*related_ids, value),
+                record=record,
             )
             return
         if (
@@ -4648,6 +4699,7 @@ def _continuity_canonical_source_catalog(
             source_path=source_path,
             canonical_id=canonical_id,
             related_ids=related_ids,
+            record=record,
         )
 
     for item in inputs:

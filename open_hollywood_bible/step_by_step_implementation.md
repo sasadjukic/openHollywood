@@ -1033,6 +1033,42 @@ The aggregate manual review remains deferred until the user requests it after at
 least ten stories. **Step 19 remains IN PROGRESS** and step 5 remains pending.
 
 
+### Contradiction versus ordinary development — 2026-09-13
+
+Production-improvement step 5 is COMPLETE under prompt v33 / graph v9.
+Continuity claims now bind timeline events to their time and scene, identify
+state snapshots by their actual update scene, and distinguish initial knowledge,
+scoped facts and open/resolved history. Administrative kind/status labels cannot
+supply contradiction evidence. Later change and missing explanatory bridges do
+not alone establish incompatibility; real contradictions and explicit constraints
+remain blocking. Existing dispositions, revision limits, budgets and adjudication
+allowances are unchanged. See [ADR 0015](../docs/adr/0015-scoped-continuity-development.md).
+
+The three latest v32 manual stories completed. The Root Ritual resumed at
+19:51:02 local after the reported reboot, using the interrupted scene's exact
+input lineage. App records do not establish the OS crash's cause. Future recovery
+now closes stranded calls as interrupted_execution with unknown provider outcome,
+without treating process loss as a malformed-response retry or removing it from
+the aggregate call budget. Original completed-run records remain unchanged.
+SQLite integrity and foreign-key checks passed, as did all 146 artifact hashes.
+No adjudication was exercised by these three manual runs.
+
+Validation: all 521 Python tests passed, Ruff lint/format and strict mypy (159
+files) passed, and the production build passed. Nine new cases cover scoped
+claims, retained constraints, real SQLite advisory/hard routing and recovery
+bookkeeping. Three reconstructed v32 requests exactly matched their recorded
+hashes; each matched v33 request was shorter. Continuity system text decreased
+from 7,328 to 7,184 characters. Evidence is retained locally under
+data/diagnostics/v33-step5-offline-2026-09-13/.
+
+No live v33 probe or canary was run, and offline outcomes do not establish a
+semantic improvement or completion rate. All five production-improvement
+implementations are complete. The user's manual-test cadence continues; aggregate
+review remains deferred until requested after at least ten stories. **Step 19
+remains IN PROGRESS** pending evaluation/human review. No later product phase has
+started.
+
+
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 
 21. [ ] **Package the stable system with Tauri** and test crash/restart, offline, missing-model, invalid-key, provider-timeout, and low-disk-space behavior.
