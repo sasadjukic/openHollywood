@@ -16,3 +16,4 @@ tradeoffs. Status values are `Proposed`, `Accepted`, `Superseded`, or `Rejected`
 | 0009 | Distinguish viewpoint inference from private access | Accepted |
 | 0010 | One version-bound evidence interface for the scene critic | Accepted |
 | 0011 | Bounded evidence for rejected production reviews | Accepted |
+| 0012 | Bind critic choices to the approved scene assignment | Accepted |

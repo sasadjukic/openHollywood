@@ -914,6 +914,45 @@ criteria, critic adjudication and continuity policy are separate future work.
 This completes observability work, not a claim of improved model judgment or
 production success rate; no later product phase has started.
 
+### Assignment-bound critic schema completed — 2026-09-13
+
+Production-improvement step 2 is complete under prompt v30 / graph v7.
+The application specializes each critic response schema from the exact approved
+scene assignment: no assigned POV means only aligned status is available;
+assignment findings can select only populated supported anchors. Explicit POV
+and the existing single-character fallback retain the current narrative audit.
+Same-character and other semantic/structural guards remain unchanged; no closed
+character roster or keyword-derived narrative permission was introduced.
+
+Production and isolated-probe requests use the same specialization. Prompt prose,
+input artifacts, budgets, retry/revision limits and all manuscript acceptance
+rules remain unchanged; schema size is equal or smaller for matched inputs.
+See [ADR 0012](../docs/adr/0012-assignment-bound-critic-schema.md).
+
+Validation: 472 Python tests passed (11 new cases), Ruff lint/format and strict
+mypy passed, and the production build passed. Offline controls cover Local/Cloud
+schema delivery, explicit/unassigned/fallback POV, populated anchors, unchanged
+hard gates, source immutability, and SQLite workflow completion/replay.
+
+The authorized focused Cloud probe of OH-V01-009 scene 2 used source invocation
+c79d2999-842a-4710-a101-fc57ade60b7e and exact frozen v29 input artifacts,
+gemma4:31b-cloud, seed 19209 and unchanged per-call budgets. It returned a valid
+pass with no issues on its first call: 13,323 input / 467 output tokens, 1,945 ms
+provider latency. Evidence is in data/diagnostics/v30-step2-cloud-009-2026-09-13/.
+This is one isolated critic result, not a full-story completion, a new canary
+score or repeatability evidence. The original source snapshot hash was verified.
+
+Manual-test policy agreed on 2026-09-13: the user will run one or more stories
+after each improvement step and keep a date/story log. Do not create individual
+manual-story reports. Preserve normal app diagnostics and, when the user asks
+after at least ten manually tested stories, compile an aggregate diagnostic
+review that distinguishes the contract/runtime versions tested. Focused
+benchmark retests may accompany individual steps.
+
+**Step 19 remains IN PROGRESS.** Repair criteria, critic adjudication and
+continuity policy remain subsequent work; no later product phase has started.
+
+
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 
 21. [ ] **Package the stable system with Tauri** and test crash/restart, offline, missing-model, invalid-key, provider-timeout, and low-disk-space behavior.

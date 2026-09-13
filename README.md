@@ -545,6 +545,11 @@ compatible; no model is promoted and no canary is started. Outcome calibration
 and live semantic verification remain pending. See ADR 0010 and
 `docs/benchmark_reports/step-19-31b-transfer-v29-corrections-2026-09-09.md`.
 
+Current prompt contract v30 (graph v7) specializes the critic schema to the exact
+approved assignment: unassigned POV exposes only aligned status, and assignment
+findings expose only populated anchors. Prompts, budgets, retries and manuscript
+validation rules are unchanged. See [ADR 0012](docs/adr/0012-assignment-bound-critic-schema.md).
+
 Benchmark word-count ranges are advisory creative targets. New outputs persist a
 non-gating adherence measurement with the target, actual count, status, and word
 deviation. Automatic completion reflects a finished, non-truncated document,

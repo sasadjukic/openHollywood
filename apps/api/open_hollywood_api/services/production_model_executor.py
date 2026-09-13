@@ -870,6 +870,7 @@ class ProfileRoutedProductionExecutor(SceneProductionExecutor):
             operation,
             continuity_schema_variant=continuity_schema_variant,
             continuity_model_context=continuity_model_context,
+            critic_execution=execution if operation is _Operation.CRITIQUE else None,
             critic_evidence_refs=(
                 tuple(item["evidence_ref"] for item in _critic_evidence_catalog(execution))
                 if operation is _Operation.CRITIQUE
@@ -1623,6 +1624,7 @@ def _output_schema(
     continuity_schema_variant: _ContinuitySchemaVariant | None,
     continuity_model_context: _ContinuityModelContext | None = None,
     critic_evidence_refs: tuple[str, ...] | None = None,
+    critic_execution: _Execution | None = None,
 ) -> dict[str, Any]:
     """Build the exact model-facing schema without changing canonical artifacts."""
     if operation is _Operation.ADJUDICATION:
@@ -1675,6 +1677,8 @@ def _output_schema(
                 "assignment_violations",
                 "point_of_view_check",
             ]
+            if critic_execution is not None:
+                _bind_critic_assignment_schema(schema, critic_execution)
         elif operation is _Operation.STORY_BIBLE_UPDATE:
             _story_bible_thread_output_schema(schema)
         return schema
@@ -2826,6 +2830,26 @@ def _critic_assignment_violation_schema() -> dict[str, Any]:
             ],
         },
     }
+
+
+def _bind_critic_assignment_schema(schema: dict[str, Any], execution: _Execution) -> None:
+    """Remove inapplicable choices using only the exact approved scene assignment."""
+    assignment = _scene_assignment_contract(execution)
+    properties = schema["properties"]
+    if not assignment.get("point_of_view_character_id"):
+        # Applicability is settled by the application, without interpreting prose/style.
+        properties["point_of_view_check"] = properties["point_of_view_check"]["anyOf"][0]
+    anchors = [
+        anchor
+        for anchor in _CRITIC_ASSIGNMENT_ANCHORS
+        if anchor != "point_of_view_character_id" and assignment.get(anchor)
+    ]
+    if anchors:
+        violations = properties["assignment_violations"]
+        violations["maxItems"] = len(anchors)
+        violations["items"]["properties"]["anchor"]["enum"] = anchors
+    else:
+        properties["assignment_violations"] = {"type": "array", "maxItems": 0}
 
 
 def _critic_evidence_catalog(execution: _Execution) -> tuple[dict[str, str], ...]:

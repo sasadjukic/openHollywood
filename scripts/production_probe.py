@@ -229,6 +229,7 @@ def probe_request(probe: Probe, execution: _Execution) -> ModelRequest:
     schema = _output_schema(
         probe.operation,
         continuity_schema_variant=None,
+        critic_execution=execution if probe.operation is _Operation.CRITIQUE else None,
         critic_evidence_refs=tuple(
             item["evidence_ref"] for item in _critic_evidence_catalog(execution)
         )
