@@ -550,12 +550,19 @@ approved assignment: unassigned POV exposes only aligned status, and assignment
 findings expose only populated anchors. Prompts, budgets, retries and manuscript
 validation rules are unchanged. See [ADR 0012](docs/adr/0012-assignment-bound-critic-schema.md).
 
-Current prompt v31 / graph v8 gives writer and critic the same version-bound repair
+Prompt v31 / graph v8 gives writer and critic the same version-bound repair
 tests and requires current-evidence met/unmet assessments on revision. Unmet hard
 repairs remain blocking. Context projections replace duplicated review/scene
 prose; retry and revision limits remain unchanged. Successful and failed repair
 assessments are diagnostic evidence, not proof of literary correctness. See
 [ADR 0013](docs/adr/0013-revision-acceptance-tests.md).
+
+Current prompt v32 / graph v9 adds focused terminal adjudication for disputed
+POV and scene-assignment findings. It shares the existing single adjudication
+allowance with continuity; uncertain or upheld findings still block, and neither
+path can bypass competing hard review gates. Original critiques and exact
+adjudication decisions remain inspectable. Ordinary prompts and production
+limits are unchanged. See [ADR 0014](docs/adr/0014-bounded-critic-adjudication.md).
 
 Benchmark word-count ranges are advisory creative targets. New outputs persist a
 non-gating adherence measurement with the target, actual count, status, and word

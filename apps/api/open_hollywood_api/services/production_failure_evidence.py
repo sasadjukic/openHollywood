@@ -170,7 +170,12 @@ def capture_review_failure(
     validation_issues: tuple[dict[str, str], ...],
 ) -> dict[str, Any] | None:
     """Observe rejected reviews without changing validation, recovery or manuscript state."""
-    if operation not in {"critique", "continuity", "continuity_adjudication"}:
+    if operation not in {
+        "critique",
+        "critic_adjudication",
+        "continuity",
+        "continuity_adjudication",
+    }:
         return None
     capture = _Capture()
     evidence: dict[str, Any] = {

@@ -1001,6 +1001,38 @@ critic adjudication and continuity-policy changes are steps 4 and 5 and have
 not been implemented. No later product phase has started.
 
 
+### Bounded critic adjudication — 2026-09-13
+
+Production-improvement step 4 is COMPLETE under prompt v32 / graph v9.
+The registered critic_adjudication node reuses the existing
+one-visit/two-attempt terminal adjudication allowance. It addresses typed POV and
+scene-assignment allegations against the approved plan, complete current scene
+and original repair tests. Upheld or uncertain findings remain blocking. Unrelated
+critic issues and all continuity blockers prevent this path; competing review
+blockers are identified explicitly. Continuity-only adjudication is unchanged.
+
+A new immutable critique preserves original evidence, scores and rubric verdict;
+only specifically released allegations become notes. Diagnostics bind exact
+source critique/candidate IDs and issue decisions. No ordinary prompt growth,
+new prose retries, increased budgets, migrations or new human checkpoints.
+See [ADR 0014](../docs/adr/0014-bounded-critic-adjudication.md).
+
+Validation: the full 511-test Python regression suite passed. A final 35-test
+focused run passed after adding rejection-text isolation, covering all 26 step-4
+cases plus the production graph controls. Ruff lint/format, strict mypy (158 files)
+and the production build passed. Ordinary writer/critic instructions remain
+586/3,848 characters; the separate adjudication instruction is 1,298 characters.
+A matched fixture request is shorter than its full critic counterpart. No live
+v32 Cloud probe or canary was run; offline outcomes establish control-flow and
+contract behavior, not semantic accuracy or a new completion score.
+
+The three post-step-3 manual stories completed under v31 with 74 production calls
+and no failed calls. Keep these separate from v32 validation. No individual manual
+report or comparative quality judgment is inferred from the SammyAI premise reuse.
+The aggregate manual review remains deferred until the user requests it after at
+least ten stories. **Step 19 remains IN PROGRESS** and step 5 remains pending.
+
+
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 
 21. [ ] **Package the stable system with Tauri** and test crash/restart, offline, missing-model, invalid-key, provider-timeout, and low-disk-space behavior.

@@ -214,9 +214,9 @@ def test_targeted_probe_registry_preserves_inputs_and_does_not_claim_live_succes
     )
     assert current["status"] == "prepared_not_run"
     assert current["candidate_prompt_version"] == "28"  # Historical registry stays pinned.
-    assert SCENE_PRODUCTION_PROMPT_TEMPLATE_VERSION == "31"
+    assert SCENE_PRODUCTION_PROMPT_TEMPLATE_VERSION == "32"
     assert current["candidate_graph_version"] == "7"
-    assert SCENE_PRODUCTION_GRAPH_VERSION == "8"
+    assert SCENE_PRODUCTION_GRAPH_VERSION == "9"
     assert current["maximum_calls_per_probe"] == 2
     assert [case["name"] for case in current["cases"]] == [
         "local-002-critic",

@@ -38,6 +38,7 @@ from open_hollywood_engine.workflows.dialogue_graph import (
     initial_dialogue_state,
 )
 from open_hollywood_engine.workflows.production_contracts import (
+    ADJUDICABLE_CRITIC_CATEGORIES,
     PRODUCTION_NODE_DEFINITIONS,
     AcceptedProductionUnit,
     ContinuityCheckResult,
@@ -131,6 +132,7 @@ class ProductionGraphState(DialogueGraphState, total=False):
     current_dialogue_runs: int
     current_acceptance_reason: str | None
     critique_requires_revision: bool
+    critique_adjudicable_issue_count: int
     critique_blocking_issue_count: int
     critique_blocking_issue_indexes: list[int]
     revision_scheduled: bool
@@ -181,6 +183,7 @@ def initial_production_state(production: SceneProductionInput) -> ProductionGrap
         "current_acceptance_reason": None,
         "critique_requires_revision": False,
         "critique_blocking_issue_count": 0,
+        "critique_adjudicable_issue_count": 0,
         "critique_blocking_issue_indexes": [],
         "pending_continuity_artifact": None,
         "revision_scheduled": False,
@@ -259,6 +262,11 @@ def build_scene_production_graph(
         **_node_policy(ProductionNode.CONTINUITY),
     )
     builder.add_node(
+        ProductionNode.CRITIC_ADJUDICATION.value,
+        _runnable(_critic_adjudication_node(executor, lifecycle)),
+        **_node_policy(ProductionNode.CRITIC_ADJUDICATION),
+    )
+    builder.add_node(
         ProductionNode.CONTINUITY_ADJUDICATION.value,
         _runnable(_adjudication_node(executor, lifecycle)),
         **_node_policy(ProductionNode.CONTINUITY_ADJUDICATION),
@@ -301,7 +309,12 @@ def build_scene_production_graph(
             "revise": ProductionNode.DRAFT.value,
             "update": ProductionNode.STORY_BIBLE_UPDATE.value,
             "adjudicate": ProductionNode.CONTINUITY_ADJUDICATION.value,
+            "adjudicate_critic": ProductionNode.CRITIC_ADJUDICATION.value,
         },
+    )
+    builder.add_edge(
+        ProductionNode.CRITIC_ADJUDICATION.value,
+        ProductionNode.STORY_BIBLE_UPDATE.value,
     )
     builder.add_edge(
         ProductionNode.CONTINUITY_ADJUDICATION.value,
@@ -497,6 +510,11 @@ def _critique_node(
             "current_critique_artifact": critique_state,
             "current_acceptance_reason": None,
             "critique_requires_revision": (result.critique.verdict is not CritiqueVerdict.PASS),
+            "critique_adjudicable_issue_count": sum(
+                issue.severity is CritiqueSeverity.BLOCKING
+                and issue.category in ADJUDICABLE_CRITIC_CATEGORIES
+                for issue in result.critique.issues
+            ),
             "critique_blocking_issue_count": sum(
                 issue.severity is CritiqueSeverity.BLOCKING for issue in result.critique.issues
             ),
@@ -587,6 +605,14 @@ def _adjudication_status(
     if revision_number < production.maximum_revision_cycles:
         return "revision_budget_remaining"
     if state.get("critique_blocking_issue_count", 0) > 0:
+        if report.has_blocking_findings:
+            return "skipped_competing_review_blockers"
+        if (
+            revision_number > 0
+            and state.get("critique_adjudicable_issue_count", 0)
+            == (state["critique_blocking_issue_count"])
+        ):
+            return "eligible"
         return "skipped_hard_critic_blockers"
     if any(
         finding.blocks_approval
@@ -663,6 +689,91 @@ def _review_disposition(
     }
 
 
+def _critic_adjudication_node(
+    executor: SceneProductionExecutor,
+    observer: SceneProductionWorkflowObserver,
+) -> ProductionNodeCallable:
+    async def adjudicate(state: ProductionGraphState) -> dict[str, Any]:
+        production = _production_from_state(state)
+        unit = _current_unit(state, production)
+        revision = _require_integer(state, "current_revision_number")
+        if (
+            state.get("adjudication_required") is not True
+            or state.get("adjudication_completed")
+            or revision < 1
+            or revision != production.maximum_revision_cycles
+            or not state.get("critique_blocking_issue_count")
+            or state.get("critique_adjudicable_issue_count")
+            != state["critique_blocking_issue_count"]
+        ):
+            raise SceneProductionStateError(
+                "critic adjudication is only allowed at its terminal gate"
+            )
+        await observer.node_started(production.workflow_run_id, ProductionNode.CRITIC_ADJUDICATION)
+        # The current report is already appended; the preceding N reviews are the repair history.
+        history_state: ProductionGraphState = {
+            **state,
+            "critique_artifacts": state["critique_artifacts"][:-1],
+        }
+        task = SceneCritiqueTask(
+            production=production,
+            unit=unit,
+            draft=_required_current_artifact(state, "current_draft_artifact"),
+            accepted_units=_accepted_artifacts(state),
+            story_bible=_required_current_artifact(state, "current_story_bible_artifact"),
+            revision_number=revision,
+            critique_history=_current_critique_history(history_state, revision),
+            disputed_critique=_required_current_artifact(state, "current_critique_artifact"),
+            continuity_report=_required_current_artifact(state, "current_continuity_artifact"),
+        )
+        result = await executor.critique(task)
+        _validate_critique(task, result)
+        await observer.node_completed(
+            production.workflow_run_id, ProductionNode.CRITIC_ADJUDICATION, (result.artifact,)
+        )
+        reference = _artifact_to_state(result.artifact)
+        blockers = [
+            index
+            for index, issue in enumerate(result.critique.issues)
+            if issue.severity is CritiqueSeverity.BLOCKING
+        ]
+        if blockers:
+            raise CritiqueRevisionLimitError(
+                "critique_revision_limit_reached: hard critique issues remain after adjudication; "
+                f"revision={revision}; scene_id={unit.unit_id}; "
+                f"blocking_issue_count={len(blockers)}; "
+                "review_gates="
+                + json.dumps(
+                    {
+                        "adjudication": "completed",
+                        "critique_artifact": reference,
+                        "critique_issue_indexes": blockers,
+                        "continuity_blocking_finding_ids": [],
+                    },
+                    separators=(",", ":"),
+                )
+            )
+        requires_revision = result.critique.verdict is not CritiqueVerdict.PASS
+        return {
+            "current_critique_artifact": reference,
+            "critique_artifacts": [*state["critique_artifacts"], reference],
+            "critique_blocking_issue_count": 0,
+            "critique_adjudicable_issue_count": 0,
+            "critique_blocking_issue_indexes": [],
+            "critique_requires_revision": requires_revision,
+            "adjudication_required": False,
+            "adjudication_completed": True,
+            "revision_scheduled": False,
+            "current_acceptance_reason": (
+                UnitAcceptanceReason.REVISION_LIMIT_REACHED.value
+                if requires_revision
+                else UnitAcceptanceReason.PASSED_RUBRIC.value
+            ),
+        }
+
+    return adjudicate
+
+
 def _adjudication_node(
     executor: SceneProductionExecutor,
     observer: SceneProductionWorkflowObserver,
@@ -671,8 +782,10 @@ def _adjudication_node(
         production = _production_from_state(state)
         unit = _current_unit(state, production)
         revision = _require_integer(state, "current_revision_number")
-        if state.get("adjudication_required") is not True or (
-            revision != production.maximum_revision_cycles
+        if (
+            state.get("adjudication_completed")
+            or state.get("adjudication_required") is not True
+            or (revision != production.maximum_revision_cycles)
         ):
             raise SceneProductionStateError("adjudication is only allowed at the terminal gate")
         await observer.node_started(
@@ -824,6 +937,7 @@ def _accept_node(
             "current_acceptance_reason": None,
             "critique_requires_revision": False,
             "critique_blocking_issue_count": 0,
+            "critique_adjudicable_issue_count": 0,
             "critique_blocking_issue_indexes": [],
             "revision_scheduled": False,
             "adjudication_required": False,
@@ -871,7 +985,9 @@ def _continuity_terminal_failure_message(
 
 def _route_after_continuity(state: ProductionGraphState) -> str:
     if state.get("adjudication_required") is True:
-        return "adjudicate"
+        return (
+            "adjudicate_critic" if state.get("critique_blocking_issue_count", 0) else "adjudicate"
+        )
     return "revise" if state.get("revision_scheduled") is True else "update"
 
 
@@ -1007,7 +1123,14 @@ def _validate_critique(
     result: SceneCritiqueResult,
 ) -> None:
     _require_artifact_kind(result.artifact, ArtifactKind.CRITIQUE)
-    _require_new_version(result.artifact, (task.draft,))
+    _require_new_version(
+        result.artifact,
+        (
+            task.draft,
+            *task.critique_history,
+            *((task.disputed_critique,) if task.disputed_critique else ()),
+        ),
+    )
     critique = result.critique
     if (
         critique.target_artifact_kind is not ArtifactKind.SCENE_DRAFT

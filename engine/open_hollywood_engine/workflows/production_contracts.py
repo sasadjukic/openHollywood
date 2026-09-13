@@ -26,8 +26,8 @@ from open_hollywood_engine.workflows.dialogue_contracts import (
 )
 
 SCENE_PRODUCTION_WORKFLOW_NAME = "scene_production"
-SCENE_PRODUCTION_GRAPH_VERSION = "8"
-SCENE_PRODUCTION_PROMPT_TEMPLATE_VERSION = "31"
+SCENE_PRODUCTION_GRAPH_VERSION = "9"
+SCENE_PRODUCTION_PROMPT_TEMPLATE_VERSION = "32"
 DEFAULT_PRODUCTION_NODE_TIMEOUT_SECONDS = 900
 DEFAULT_MAX_REVISION_CYCLES = 2
 MAX_REVISION_CYCLES = 5
@@ -37,6 +37,18 @@ SCENE_WRITER_ROLE = "scene_writer"
 SCENE_CRITIC_ROLE = "scene_critic"
 CONTINUITY_SUPERVISOR_ROLE = "continuity_supervisor"
 STORY_BIBLE_MAINTAINER_ROLE = "story_bible_maintainer"
+# Only typed semantic assignment allegations can use the terminal critic path.
+ADJUDICABLE_CRITIC_CATEGORIES = frozenset(
+    f"scene_assignment:{anchor}"
+    for anchor in (
+        "point_of_view_character_id",
+        "assigned_character_ids",
+        "location_id",
+        "scene_id",
+        "turning_point",
+        "outcome",
+    )
+)
 
 
 def _is_integer(value: object) -> bool:
@@ -51,6 +63,7 @@ class ProductionNode(StrEnum):
     DIALOGUE_INTEGRATION = "dialogue_integration"
     CRITIQUE = "critique"
     CONTINUITY = "continuity"
+    CRITIC_ADJUDICATION = "critic_adjudication"
     CONTINUITY_ADJUDICATION = "continuity_adjudication"
     STORY_BIBLE_UPDATE = "story_bible_update"
     ACCEPT = "accept"
@@ -103,6 +116,10 @@ PRODUCTION_NODE_DEFINITIONS: Mapping[ProductionNode, ProductionNodeDefinition] =
         ProductionNode.CONTINUITY: ProductionNodeDefinition(
             node=ProductionNode.CONTINUITY,
             specialist_role=CONTINUITY_SUPERVISOR_ROLE,
+        ),
+        ProductionNode.CRITIC_ADJUDICATION: ProductionNodeDefinition(
+            node=ProductionNode.CRITIC_ADJUDICATION,
+            specialist_role=SCENE_CRITIC_ROLE,
         ),
         ProductionNode.CONTINUITY_ADJUDICATION: ProductionNodeDefinition(
             node=ProductionNode.CONTINUITY_ADJUDICATION,
@@ -332,6 +349,8 @@ class SceneCritiqueTask:
     story_bible: ArtifactReference
     revision_number: int
     critique_history: tuple[ArtifactReference, ...] = ()
+    disputed_critique: ArtifactReference | None = None
+    continuity_report: ArtifactReference | None = None
 
 
 @dataclass(frozen=True, slots=True)

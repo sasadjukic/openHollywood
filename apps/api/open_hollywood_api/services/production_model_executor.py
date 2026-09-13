@@ -88,6 +88,12 @@ from open_hollywood_api.services.production_adjudication import (
     disputed_findings,
     materialize_adjudication,
 )
+from open_hollywood_api.services.production_critic_adjudication import (
+    CRITIC_ADJUDICATION_INSTRUCTIONS,
+    critic_adjudication_schema,
+    disputed_critic_issues,
+    materialize_critic_adjudication,
+)
 from open_hollywood_api.services.production_failure_evidence import capture_review_failure
 from open_hollywood_api.services.production_revision_acceptance import (
     compact_repair_inputs,
@@ -102,6 +108,7 @@ class _Operation(StrEnum):
     CRITIQUE = "critique"
     CONTINUITY = "continuity"
     ADJUDICATION = "continuity_adjudication"
+    CRITIC_ADJUDICATION = "critic_adjudication"
     STORY_BIBLE_UPDATE = "story_bible_update"
 
 
@@ -358,6 +365,10 @@ _SCHEMA_REPAIR_COMMON_RULES = (
     "empty array, or omission as permitted by the supplied schema) instead of placeholder text.",
 )
 _SCHEMA_REPAIR_OPERATION_RULES: Mapping[_Operation, tuple[str, ...]] = {
+    _Operation.CRITIC_ADJUDICATION: (
+        "Return exactly the supplied decisions with valid current evidence; "
+        "review-format errors are not manuscript defects.",
+    ),
     _Operation.WRITE: (
         "Keep prose and title as non-empty strings, is_complete=true, and preserve the "
         "assigned scene and revision identity.",
@@ -657,6 +668,7 @@ class _ContinuityModelContext:
 _OUTPUT_MODELS: Mapping[_Operation, type[BaseModel]] = {
     _Operation.WRITE: SceneDraft,
     _Operation.CRITIQUE: Critique,
+    _Operation.CRITIC_ADJUDICATION: Critique,
     _Operation.CONTINUITY: ContinuityReport,
     _Operation.ADJUDICATION: ContinuityReport,
     _Operation.STORY_BIBLE_UPDATE: StoryBibleUpdate,
@@ -794,8 +806,19 @@ class ProfileRoutedProductionExecutor(SceneProductionExecutor):
         )
 
     async def critique(self, task: SceneCritiqueTask) -> SceneCritiqueResult:
+        if task.disputed_critique is not None and (
+            task.revision_number < 1
+            or task.revision_number != task.production.maximum_revision_cycles
+            or len(task.critique_history) != task.revision_number
+            or task.continuity_report is None
+        ):
+            raise SceneProductionError(
+                "critic adjudication requires terminal revision, history and continuity gate"
+            )
         output, references = await self._execute(
-            _Operation.CRITIQUE,
+            _Operation.CRITIC_ADJUDICATION
+            if task.disputed_critique is not None
+            else _Operation.CRITIQUE,
             task,
             _critique_inputs(task),
         )
@@ -875,7 +898,9 @@ class ProfileRoutedProductionExecutor(SceneProductionExecutor):
             operation,
             continuity_schema_variant=continuity_schema_variant,
             continuity_model_context=continuity_model_context,
-            critic_execution=execution if operation is _Operation.CRITIQUE else None,
+            critic_execution=execution
+            if operation in {_Operation.CRITIQUE, _Operation.CRITIC_ADJUDICATION}
+            else None,
             critic_evidence_refs=(
                 tuple(item["evidence_ref"] for item in _critic_evidence_catalog(execution))
                 if operation is _Operation.CRITIQUE
@@ -1059,7 +1084,7 @@ class ProfileRoutedProductionExecutor(SceneProductionExecutor):
                     project_id=run.project_id,
                 )
                 inputs = _load_inputs(session, resolved_input_references)
-            if operation in {_Operation.WRITE, _Operation.CRITIQUE}:
+            if operation in {_Operation.WRITE, _Operation.CRITIQUE, _Operation.CRITIC_ADJUDICATION}:
                 resolved_input_references = _critic_repair_input_references(
                     session, resolved_input_references, inputs, project_id=run.project_id
                 )
@@ -1292,6 +1317,28 @@ class ProfileRoutedProductionExecutor(SceneProductionExecutor):
             invocation.estimated_cost_usd = response.estimated_cost_usd
             invocation.latency_ms = response.timing.total_ms
             _apply_response_metadata(invocation, response)
+            if operation is _Operation.CRITIC_ADJUDICATION:
+                adjudicated_source = _critic_adjudication_source(execution)
+                raw = json.loads(normalize_json_document(response.content))
+                invocation.request_settings = {
+                    **invocation.request_settings,
+                    "critic_adjudication_audit": {
+                        "schema_version": "1",
+                        "source_critique_version_id": adjudicated_source["artifact_version_id"],
+                        "candidate_version_id": adjudicated_source["content"][
+                            "target_artifact_version_id"
+                        ],
+                        "decisions": {
+                            key: {
+                                **value,
+                                "assessment": active_secret_guard().redact_text(
+                                    value["assessment"]
+                                )[:1000],
+                            }
+                            for key, value in raw["decisions"].items()
+                        },
+                    },
+                }
             if operation is _Operation.CRITIQUE and isinstance(output, Critique):
                 raw_review = json.loads(normalize_json_document(response.content))
                 raw_check = raw_review["point_of_view_check"]
@@ -1656,6 +1703,14 @@ def _output_schema(
     critic_execution: _Execution | None = None,
 ) -> dict[str, Any]:
     """Build the exact model-facing schema without changing canonical artifacts."""
+    if operation is _Operation.CRITIC_ADJUDICATION:
+        if critic_execution is None:
+            raise ValueError("critic adjudication requires exact inputs")
+        source = _critic_adjudication_source(critic_execution)
+        return critic_adjudication_schema(
+            source["content"],
+            tuple(item["evidence_ref"] for item in _critic_evidence_catalog(critic_execution)),
+        )
     if operation is _Operation.ADJUDICATION:
         if continuity_model_context is None:
             raise ValueError("adjudication requires exact continuity inputs")
@@ -2366,7 +2421,10 @@ def _schema_repair_guidance(
             }
             for diagnostic_key in ("expected_value", "received_value"):
                 diagnostic_value = issue.get(diagnostic_key)
-                if isinstance(diagnostic_value, str) and operation is not _Operation.CRITIQUE:
+                if isinstance(diagnostic_value, str) and operation not in {
+                    _Operation.CRITIQUE,
+                    _Operation.CRITIC_ADJUDICATION,
+                }:
                     directive[diagnostic_key] = diagnostic_value
             if issue_type == "resolved_thread_missing_resolution":
                 directive["action"] = (
@@ -2466,7 +2524,7 @@ def _schema_repair_guidance(
                 )
             directives.append(directive)
 
-    if operation is _Operation.CRITIQUE:
+    if operation in {_Operation.CRITIQUE, _Operation.CRITIC_ADJUDICATION}:
         # Keep field locations, but not failure prose or rejected model values, in review input.
         directives = [
             {"location": location, "action": "repair this review-response field only"}
@@ -2555,6 +2613,8 @@ def _messages(
     continuity_schema_variant: _ContinuitySchemaVariant | None,
     continuity_model_context: _ContinuityModelContext | None,
 ) -> tuple[ModelMessage, ...]:
+    if operation is _Operation.CRITIC_ADJUDICATION:
+        return _critic_adjudication_messages(execution, schema)
     if operation is _Operation.ADJUDICATION:
         if continuity_model_context is None:
             raise ValueError("adjudication messages require exact context")
@@ -2721,6 +2781,90 @@ def _messages(
     return (
         ModelMessage(role=MessageRole.SYSTEM, content=system),
         ModelMessage(role=MessageRole.USER, content=user),
+    )
+
+
+def _critic_adjudication_source(execution: _Execution) -> dict[str, Any]:
+    draft = next(
+        item
+        for item in execution.inputs
+        if item["artifact_kind"] == "scene_draft"
+        and item["content"]["scene_id"] == execution.unit_id
+        and item["content"]["revision_number"] == execution.revision_number
+    )
+    sources = [
+        item
+        for item in execution.inputs
+        if item["artifact_kind"] == "critique"
+        and item["content"]["target_artifact_version_id"] == draft["artifact_version_id"]
+    ]
+    gates = [
+        item
+        for item in execution.inputs
+        if item["artifact_kind"] == "continuity_report"
+        and item["content"]["scene_version_id"] == draft["artifact_version_id"]
+    ]
+    if len(sources) != 1 or len(gates) != 1:
+        raise ValueError("critic adjudication requires exact source critique and continuity gate")
+    if ContinuityReport.model_validate(gates[0]["content"]).has_blocking_findings:
+        raise ValueError("critic adjudication cannot bypass a continuity blocker")
+    report = sources[0]["content"]
+    issues = disputed_critic_issues(report)
+    if not issues or len(issues) != sum(
+        item["severity"] == "blocking" for item in report["issues"]
+    ):
+        raise ValueError("critic adjudication cannot release unrelated hard issues")
+    return sources[0]
+
+
+def _critic_adjudication_messages(
+    execution: _Execution, schema: dict[str, Any]
+) -> tuple[ModelMessage, ...]:
+    source = _critic_adjudication_source(execution)
+    prior_inputs = tuple(item for item in execution.inputs if item is not source)
+    inputs = compact_repair_inputs(
+        _critic_prompt_inputs(execution),
+        scene_id=execution.unit_id,
+        revision=execution.revision_number,
+        critic=True,
+    )
+    inputs = tuple(
+        item for item in inputs if item["artifact_kind"] not in {"critique", "continuity_report"}
+    )
+    payload: dict[str, Any] = {
+        "assignment": {
+            "operation": _Operation.CRITIC_ADJUDICATION.value,
+            "specialist_role": execution.specialist_role,
+            "unit_id": execution.unit_id,
+            "unit_number": execution.unit_number,
+            "unit_count": execution.unit_count,
+            "revision_number": execution.revision_number,
+        },
+        "source_critique_version_id": source["artifact_version_id"],
+        "disputed_findings": disputed_critic_issues(source["content"]),
+        "scene_assignment_contract": _scene_assignment_contract(execution),
+        "viewpoint_contract": _critic_viewpoint_contract(execution),
+        "requirement_scope": _critic_requirement_scope(execution),
+        "repair_acceptance_tests": critic_repair_tests(prior_inputs, execution.unit_id),
+        "input_artifacts": inputs,
+    }
+    if execution.selection.deployment is ModelDeployment.LOCAL:
+        payload["output_schema_delivery"] = "enforced_by_local_gateway"
+    else:
+        payload["output_schema"] = schema
+    repair = _schema_repair_guidance(
+        operation=_Operation.CRITIC_ADJUDICATION,
+        deployment=execution.selection.deployment,
+        previous_failure=execution.previous_failure,
+    )
+    if repair is not None:
+        payload["schema_repair"] = repair
+    return (
+        ModelMessage(role=MessageRole.SYSTEM, content=CRITIC_ADJUDICATION_INSTRUCTIONS),
+        ModelMessage(
+            role=MessageRole.USER,
+            content=json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(",", ":")),
+        ),
     )
 
 
@@ -4553,7 +4697,7 @@ def _validate_output(
         ):
             raise ValueError("scene draft does not match its exact assignment")
         return
-    if operation is _Operation.CRITIQUE:
+    if operation in {_Operation.CRITIQUE, _Operation.CRITIC_ADJUDICATION}:
         critique_task = cast(SceneCritiqueTask, task)
         critique = cast(Critique, output)
         if (
@@ -4601,6 +4745,21 @@ def _materialize_output_data(
     if not isinstance(output_data, dict):
         raise ValueError("production specialist output must be a JSON object")
     materialized = dict(output_data)
+    if operation is _Operation.CRITIC_ADJUDICATION:
+        try:
+            source = _critic_adjudication_source(execution)
+            return materialize_critic_adjudication(
+                output_data,
+                source["content"],
+                {
+                    item["evidence_ref"]: item["exact_excerpt"]
+                    for item in _critic_evidence_catalog(execution)
+                },
+            )
+        except ValueError as error:
+            raise _StructuredOutputContractError(
+                "decisions", str(error), issue_type="critic_adjudication_contract_invalid"
+            ) from error
     if operation is _Operation.ADJUDICATION:
         context = _continuity_model_context(execution)
         evidence = {
@@ -6668,6 +6827,8 @@ def _critique_inputs(task: SceneCritiqueTask) -> tuple[ArtifactReference, ...]:
             task.story_bible,
             *task.accepted_units,
             *task.critique_history,
+            *((task.disputed_critique,) if task.disputed_critique is not None else ()),
+            *((task.continuity_report,) if task.continuity_report is not None else ()),
         )
     )
 
@@ -6889,6 +7050,7 @@ def _primary_kind(operation: _Operation) -> ArtifactKind:
     return {
         _Operation.WRITE: ArtifactKind.SCENE_DRAFT,
         _Operation.CRITIQUE: ArtifactKind.CRITIQUE,
+        _Operation.CRITIC_ADJUDICATION: ArtifactKind.CRITIQUE,
         _Operation.CONTINUITY: ArtifactKind.CONTINUITY_REPORT,
         _Operation.ADJUDICATION: ArtifactKind.CONTINUITY_REPORT,
         _Operation.STORY_BIBLE_UPDATE: ArtifactKind.STORY_BIBLE_UPDATE,
@@ -6973,6 +7135,7 @@ def _temperature(operation: _Operation) -> float:
     return {
         _Operation.WRITE: 0.85,
         _Operation.CRITIQUE: 0.2,
+        _Operation.CRITIC_ADJUDICATION: 0.1,
         _Operation.CONTINUITY: 0.1,
         _Operation.ADJUDICATION: 0.1,
         _Operation.STORY_BIBLE_UPDATE: 0.1,

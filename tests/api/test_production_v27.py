@@ -223,7 +223,7 @@ def test_terminal_error_exposes_both_gates_and_why_adjudication_was_skipped() ->
     diagnostic = json.loads(str(failure.value).split("; review_gates=")[1].split("; blockers=")[0])
     assert diagnostic["critique_issue_indexes"] == [2]
     assert diagnostic["continuity_blocking_finding_ids"] == ["disputed"]
-    assert diagnostic["adjudication"] == "skipped_hard_critic_blockers"
+    assert diagnostic["adjudication"] == "skipped_competing_review_blockers"
     state["critique_blocking_issue_count"] = 0
     assert _adjudication_status(state, production, 2, report) == "eligible"
     state["adjudication_completed"] = True
