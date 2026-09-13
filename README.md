@@ -545,10 +545,17 @@ compatible; no model is promoted and no canary is started. Outcome calibration
 and live semantic verification remain pending. See ADR 0010 and
 `docs/benchmark_reports/step-19-31b-transfer-v29-corrections-2026-09-09.md`.
 
-Current prompt contract v30 (graph v7) specializes the critic schema to the exact
+Prompt contract v30 (graph v7) specialized the critic schema to the exact
 approved assignment: unassigned POV exposes only aligned status, and assignment
 findings expose only populated anchors. Prompts, budgets, retries and manuscript
 validation rules are unchanged. See [ADR 0012](docs/adr/0012-assignment-bound-critic-schema.md).
+
+Current prompt v31 / graph v8 gives writer and critic the same version-bound repair
+tests and requires current-evidence met/unmet assessments on revision. Unmet hard
+repairs remain blocking. Context projections replace duplicated review/scene
+prose; retry and revision limits remain unchanged. Successful and failed repair
+assessments are diagnostic evidence, not proof of literary correctness. See
+[ADR 0013](docs/adr/0013-revision-acceptance-tests.md).
 
 Benchmark word-count ranges are advisory creative targets. New outputs persist a
 non-gating adherence measurement with the target, actual count, status, and word

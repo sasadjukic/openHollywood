@@ -364,6 +364,7 @@ def _draft_node(
             revision_number=revision_number,
             previous_draft=previous_draft,
             previous_critique=previous_critique,
+            critique_history=_current_critique_history(state, revision_number),
             previous_continuity=previous_continuity,
         )
         result = await executor.write(task)
@@ -482,6 +483,7 @@ def _critique_node(
                 "current_story_bible_artifact",
             ),
             revision_number=revision_number,
+            critique_history=_current_critique_history(state, revision_number),
         )
         result = await executor.critique(task)
         _validate_critique(task, result)
@@ -1106,6 +1108,17 @@ def _validate_story_bible_update(
         raise SceneProductionStateError(str(error)) from error
 
 
+def _current_critique_history(
+    state: ProductionGraphState, revision_number: int
+) -> tuple[ArtifactReference, ...]:
+    if revision_number == 0:
+        return ()
+    history = state.get("critique_artifacts", [])
+    if len(history) < revision_number:
+        raise SceneProductionStateError("scene revision is missing its exact critique history")
+    return tuple(_artifact_from_state(item) for item in history[-revision_number:])
+
+
 def _all_inputs(task: SceneWritingTask) -> tuple[ArtifactReference, ...]:
     return (
         task.production.approved_blueprint,
@@ -1116,6 +1129,7 @@ def _all_inputs(task: SceneWritingTask) -> tuple[ArtifactReference, ...]:
         *task.accepted_units,
         task.story_bible,
         *((task.previous_draft,) if task.previous_draft is not None else ()),
+        *task.critique_history,
         *((task.previous_critique,) if task.previous_critique is not None else ()),
         *((task.previous_continuity,) if task.previous_continuity is not None else ()),
     )

@@ -265,6 +265,24 @@ class ProductionFixtureGateway(BlueprintFixtureGateway):
             content["overall_score"] = 999
             content["assignment_violations"] = []
             content["point_of_view_check"] = {"status": "aligned"}
+            if payload.get("repair_acceptance_tests"):
+                candidate = next(
+                    item
+                    for item in input_items
+                    if item["artifact_kind"] == "scene_draft"
+                    and item["content"]["scene_id"] == assignment["unit_id"]
+                    and item["content"]["revision_number"] == assignment["revision_number"]
+                )
+                content["repair_checks"] = {
+                    test["test_id"]: {
+                        "status": "met",
+                        "assessment": "Simulated repair decision, not semantic evidence.",
+                        "draft_evidence_refs": [
+                            candidate["content"]["evidence_catalog"][0]["evidence_ref"]
+                        ],
+                    }
+                    for test in payload["repair_acceptance_tests"]
+                }
         elif role == "continuity_supervisor":
             content.update(
                 story_bible_version_id=invented_version_id,

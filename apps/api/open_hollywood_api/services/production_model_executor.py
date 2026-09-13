@@ -89,6 +89,11 @@ from open_hollywood_api.services.production_adjudication import (
     materialize_adjudication,
 )
 from open_hollywood_api.services.production_failure_evidence import capture_review_failure
+from open_hollywood_api.services.production_revision_acceptance import (
+    compact_repair_inputs,
+    critic_repair_tests,
+    repair_checks_schema,
+)
 from open_hollywood_api.services.structured_output import normalize_json_document
 
 
@@ -661,17 +666,17 @@ _INSTRUCTIONS: Mapping[_Operation, str] = {
     _Operation.WRITE: (
         "Write one complete short-prose scene that follows the exact Scene Plan, "
         "approved Blueprint, current canonical Story Bible, and prior accepted scenes. "
-        "On revision, address the supplied critique and, when present, the exact blocking "
-        "Continuity Report including each finding's recommended_resolution, without "
-        "changing scene identity. Keep revisions minimally invasive: preserve unrelated prose, "
+        "On revision, satisfy revision_contract's acceptance tests and continuity repairs. "
+        "Fix the cited defect, not just a suggested qualifier; repair advice is not canon. "
+        "Preserve unrelated prose, "
         "the assigned viewpoint, characters, scene purpose, and scene outcome while repairing "
         "only the supplied defects. Never draft material assigned to a later scene. Treat "
         "length_guidance as a story-wide advisory allocation, "
         "not a hard per-scene quota."
     ),
     _Operation.CRITIQUE: (
-        "Independently evaluate the exact scene draft against its Scene Plan, the "
-        "approved Blueprint, prose quality, and dramatic progress. Put concrete assignment "
+        "Evaluate this draft against its approved plan/Blueprint and craft rubric. "
+        "Put concrete assignment "
         "violations exclusively in assignment_violations: select an anchor from "
         "scene_assignment_contract, select draft_evidence_refs, and explain the "
         "incompatible replacement or missing planned turn/outcome. Return [] when none exist. "
@@ -685,9 +690,9 @@ _INSTRUCTIONS: Mapping[_Operation, str] = {
         "a new mechanism or an extra action unless the approved plan actually requires it. "
         "An absent or incompatible outcome still blocks; merely wanting a more explicit "
         "or forceful realization is advisory craft feedback, not a hard assignment failure. "
-        "Use the fixed critic_rubric dimensions once each. Scores describe craft, not "
-        "permission to ignore a hard gate. Return revise whenever a blocking issue or typed "
-        "assignment/POV violation exists, even if every craft score is 5. "
+        "Score critic_rubric once per dimension; blockers override craft scores. "
+        "For repair_acceptance_tests, return repair_checks against the fixed original target, "
+        "with current evidence and why it is met/unmet. Qualifier changes alone prove nothing. "
         "Complete point_of_view_check independently of the overall score: return only "
         "{status: aligned} when there is no demonstrated violation, including when no "
         "viewpoint is assigned. No quotation or proof of non-violation is required. "
@@ -1054,6 +1059,11 @@ class ProfileRoutedProductionExecutor(SceneProductionExecutor):
                     project_id=run.project_id,
                 )
                 inputs = _load_inputs(session, resolved_input_references)
+            if operation in {_Operation.WRITE, _Operation.CRITIQUE}:
+                resolved_input_references = _critic_repair_input_references(
+                    session, resolved_input_references, inputs, project_id=run.project_id
+                )
+                inputs = _load_inputs(session, resolved_input_references)
             run_seed = _integer_input(run.input_state, "run_seed")
             fingerprint = canonical_sha256(
                 {
@@ -1283,9 +1293,28 @@ class ProfileRoutedProductionExecutor(SceneProductionExecutor):
             invocation.latency_ms = response.timing.total_ms
             _apply_response_metadata(invocation, response)
             if operation is _Operation.CRITIQUE and isinstance(output, Critique):
-                raw_check = json.loads(normalize_json_document(response.content))[
-                    "point_of_view_check"
-                ]
+                raw_review = json.loads(normalize_json_document(response.content))
+                raw_check = raw_review["point_of_view_check"]
+                if raw_review.get("repair_checks") is not None:
+                    invocation.request_settings = {
+                        **invocation.request_settings,
+                        "revision_acceptance_audit": {
+                            "schema_version": "1",
+                            "tests": critic_repair_tests(execution.inputs, execution.unit_id),
+                            "checks": {
+                                key: {
+                                    **value,
+                                    "assessment": active_secret_guard().redact_text(
+                                        value["assessment"]
+                                    )[:1000],
+                                }
+                                for key, value in raw_review["repair_checks"].items()
+                            },
+                            "candidate_version_id": str(
+                                cast(SceneCritiqueTask, task).draft.version_id
+                            ),
+                        },
+                    }
                 invocation.request_settings = {
                     **invocation.request_settings,
                     "viewpoint_audit": {
@@ -1679,6 +1708,21 @@ def _output_schema(
             ]
             if critic_execution is not None:
                 _bind_critic_assignment_schema(schema, critic_execution)
+                tests = critic_repair_tests(critic_execution.inputs, critic_execution.unit_id)
+                if tests:
+                    checks_schema = repair_checks_schema(tests)
+                    definitions.update(checks_schema.pop("$defs"))
+                    properties["repair_checks"] = checks_schema
+                    schema["required"].append("repair_checks")
+                    # These identifiers are already fixed by exact application inputs.
+                    for field in (
+                        "target_artifact_kind",
+                        "target_artifact_key",
+                        "target_artifact_version_id",
+                    ):
+                        properties.pop(field, None)
+                        schema["required"].remove(field)
+                    definitions.pop("ArtifactKind", None)
         elif operation is _Operation.STORY_BIBLE_UPDATE:
             _story_bible_thread_output_schema(schema)
         return schema
@@ -2618,7 +2662,15 @@ def _messages(
             if length_guidance is not None:
                 payload["length_guidance"] = length_guidance
         if operation is _Operation.CRITIQUE:
-            payload["input_artifacts"] = _critic_prompt_inputs(execution)
+            payload["input_artifacts"] = compact_repair_inputs(
+                _critic_prompt_inputs(execution),
+                scene_id=execution.unit_id,
+                revision=execution.revision_number,
+                critic=True,
+            )
+            tests = critic_repair_tests(execution.inputs, execution.unit_id)
+            if tests:
+                payload["repair_acceptance_tests"] = tests
             payload["frozen_benchmark_constraints"] = {
                 key: value
                 for key, value in execution.constraints.items()
@@ -2643,6 +2695,12 @@ def _messages(
             revision_contract = _targeted_revision_contract(execution)
             if revision_contract is not None:
                 payload["revision_contract"] = revision_contract
+                payload["input_artifacts"] = compact_repair_inputs(
+                    _scene_scoped_prompt_inputs(execution),
+                    scene_id=execution.unit_id,
+                    revision=execution.revision_number,
+                    critic=False,
+                )
     if execution.previous_failure is not None:
         # Reviewer transport/format diagnostics are not manuscript evidence. Do not
         # replay their prose (or rejected values) into the critic's semantic assessment.
@@ -3105,6 +3163,59 @@ def _normalize_point_of_view_check(
     return result
 
 
+def _normalize_repair_checks(critique: dict[str, Any], execution: _Execution) -> dict[str, Any]:
+    tests = critic_repair_tests(execution.inputs, execution.unit_id)
+    checks = critique.get("repair_checks")
+    if not tests and checks is None:
+        return critique
+    if (
+        not tests
+        or not isinstance(checks, dict)
+        or set(checks) != {test["test_id"] for test in tests}
+    ):
+        raise _StructuredOutputContractError(
+            "repair_checks",
+            "cover every exact repair test once; never invent test IDs",
+            issue_type="repair_test_coverage_invalid",
+        )
+    result = {key: value for key, value in critique.items() if key != "repair_checks"}
+    issues = list(result.get("issues", []))
+    for test in tests:
+        check = checks[test["test_id"]]
+        location = f"repair_checks.{test['test_id']}"
+        if (
+            not isinstance(check, dict)
+            or set(check) != {"status", "assessment", "draft_evidence_refs"}
+            or check.get("status") not in {"met", "unmet"}
+            or not isinstance(check.get("assessment"), str)
+            or not check["assessment"].strip()
+        ):
+            raise _StructuredOutputContractError(
+                location,
+                "report met/unmet, an assessment and current draft evidence",
+                issue_type="repair_test_assessment_invalid",
+            )
+        evidence = _resolve_critic_evidence_refs(
+            check["draft_evidence_refs"],
+            execution,
+            location=f"{location}.draft_evidence_refs",
+            issue_type="repair_test_evidence_invalid",
+        )
+        if check["status"] == "unmet":
+            issue = {
+                "category": test["category"],
+                "severity": test["severity"],
+                "description": test["claim"],
+                "evidence": evidence,
+                "recommendation": test["requested_change"],
+            }
+            if issue not in issues:
+                issues.append(issue)
+            result["verdict"] = CritiqueVerdict.REVISE.value
+    result["issues"] = issues
+    return result
+
+
 def _critic_requirement_scope(execution: _Execution) -> dict[str, object]:
     """Reuse continuity's obligation timing for the critic's independent assessment."""
     required, forbidden = _continuity_requirement_catalogs(execution)
@@ -3327,7 +3438,8 @@ def _targeted_revision_contract(execution: _Execution) -> dict[str, object] | No
     critique_verdict = critique.get("verdict") if critique is not None else None
     targeted = critique_verdict == CritiqueVerdict.PASS.value and bool(blockers)
     contract: dict[str, object] = {
-        "policy_version": "1",
+        "policy_version": "2",
+        "critic_acceptance_tests": critic_repair_tests(execution.inputs, execution.unit_id),
         "mode": "targeted_continuity_repair" if targeted else "bounded_scene_revision",
         "prior_critique_verdict": critique_verdict,
         "repair_ledger": blockers,
@@ -4519,6 +4631,7 @@ def _materialize_output_data(
         materialized = _normalize_point_of_view_check(materialized, execution)
         materialized = _normalize_story_length_critique(materialized, execution)
         materialized = _normalize_scene_assignment_critique(materialized, execution)
+        materialized = _normalize_repair_checks(materialized, execution)
         scores = materialized.get("scores")
         if (
             not isinstance(scores, list)
@@ -6539,6 +6652,7 @@ def _writing_inputs(task: SceneWritingTask) -> tuple[ArtifactReference, ...]:
             task.story_bible,
             *task.accepted_units,
             *((task.previous_draft,) if task.previous_draft is not None else ()),
+            *task.critique_history,
             *((task.previous_critique,) if task.previous_critique is not None else ()),
             *((task.previous_continuity,) if task.previous_continuity is not None else ()),
         )
@@ -6553,6 +6667,7 @@ def _critique_inputs(task: SceneCritiqueTask) -> tuple[ArtifactReference, ...]:
             task.draft,
             task.story_bible,
             *task.accepted_units,
+            *task.critique_history,
         )
     )
 
@@ -6590,6 +6705,39 @@ def _unique_references(
     for reference in references:
         by_version.setdefault(reference.version_id, reference)
     return tuple(by_version.values())
+
+
+def _critic_repair_input_references(
+    session: Session,
+    references: tuple[ArtifactReference, ...],
+    inputs: tuple[dict[str, Any], ...],
+    *,
+    project_id: UUID,
+) -> tuple[ArtifactReference, ...]:
+    """Bind every prior critique's target draft into the invocation's exact lineage."""
+    resolved = references
+    for item in inputs:
+        if item.get("artifact_kind") != ArtifactKind.CRITIQUE.value:
+            continue
+        try:
+            target_id = UUID(str(item["content"]["target_artifact_version_id"]))
+        except (KeyError, TypeError, ValueError) as error:
+            raise SceneProductionError("repair critique has no valid draft lineage") from error
+        if any(ref.version_id == target_id for ref in resolved):
+            continue
+        version = session.scalar(
+            select(ArtifactVersion)
+            .where(ArtifactVersion.id == target_id)
+            .options(joinedload(ArtifactVersion.artifact))
+        )
+        if (
+            version is None
+            or version.artifact.project_id != project_id
+            or version.artifact.artifact_type != ArtifactKind.SCENE_DRAFT.value
+        ):
+            raise SceneProductionError("repair critique draft lineage cannot be resolved")
+        resolved = _unique_references((*resolved, _reference(version)))
+    return resolved
 
 
 def _continuity_recheck_input_references(

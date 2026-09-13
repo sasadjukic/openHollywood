@@ -22,6 +22,7 @@ from typing import Any
 from uuid import UUID
 
 from open_hollywood_api.persistence.secret_policy import active_secret_guard
+from open_hollywood_api.services.production_failure_evidence import capture_review_failure
 from open_hollywood_api.services.production_model_executor import (
     _OUTPUT_MODELS,
     _critic_evidence_catalog,
@@ -37,6 +38,7 @@ from open_hollywood_api.services.production_model_executor import (
     _temperature,
     _validate_output,
 )
+from open_hollywood_api.services.production_revision_acceptance import critic_repair_tests
 from open_hollywood_api.services.structured_output import normalize_json_document
 from open_hollywood_engine.artifacts import ArtifactKind, StoryBibleUpdate, apply_story_bible_update
 from open_hollywood_engine.evaluations import canonical_sha256
@@ -225,6 +227,84 @@ def load_probe(database: Path, invocation_id: UUID) -> Probe:
     return Probe(database, invocation_id, operation, execution, task, manifest)
 
 
+def with_repair_history(probe: Probe, source_ids: tuple[UUID, ...]) -> Probe:
+    """Explicitly restore frozen earlier reviews absent from pre-v31 critic requests."""
+    if not source_ids:
+        return probe
+    if (
+        probe.operation is not _Operation.CRITIQUE
+        or len(source_ids) != probe.execution.revision_number
+    ):
+        raise ValueError("supply each earlier critique once, in revision order")
+    inputs = list(probe.execution.inputs)
+    hashes = dict(probe.manifest["input_artifact_sha256"])
+    original_hashes = dict(hashes)
+    for revision, source_id in enumerate(source_ids):
+        prior = load_probe(probe.database, source_id)
+        if (
+            prior.operation is not _Operation.CRITIQUE
+            or prior.execution.workflow_run_id != probe.execution.workflow_run_id
+            or prior.execution.unit_id != probe.execution.unit_id
+            or prior.execution.revision_number != revision
+        ):
+            raise ValueError("repair history must be the same run/scene's exact preceding reviews")
+        with closing(sqlite3.connect(probe.database.as_uri() + "?mode=ro", uri=True)) as connection:
+            connection.row_factory = sqlite3.Row
+            rows = connection.execute(
+                "SELECT v.*, a.artifact_key, a.artifact_type FROM artifact_versions v "
+                "JOIN artifacts a ON a.id=v.artifact_id "
+                "WHERE v.created_by_invocation_id=? AND a.artifact_type='critique'",
+                (source_id.hex,),
+            ).fetchall()
+        if len(rows) != 1:
+            raise ValueError("repair source requires one successfully persisted critique")
+        row = rows[0]
+        content = json.loads(row["content"])
+        candidate_ids = {
+            item["artifact_version_id"]
+            for item in prior.execution.inputs
+            if item["artifact_kind"] == "scene_draft"
+            and item["content"].get("scene_id") == prior.execution.unit_id
+            and item["content"].get("revision_number") == revision
+        }
+        if (
+            canonical_sha256(content) != row["content_sha256"]
+            or content["target_artifact_version_id"] not in candidate_ids
+        ):
+            raise ValueError("repair-source critique digest or target mismatch")
+        review = {
+            "artifact_kind": "critique",
+            "artifact_key": row["artifact_key"],
+            "artifact_version_id": str(UUID(row["id"])),
+            "content": content,
+        }
+        draft = next(
+            item
+            for item in prior.execution.inputs
+            if item["artifact_version_id"] == content["target_artifact_version_id"]
+        )
+        for item in (review, draft):
+            version_id = item["artifact_version_id"]
+            if version_id not in hashes:
+                inputs.append(item)
+                hashes[version_id] = canonical_sha256(item["content"])
+    execution = replace(
+        probe.execution,
+        inputs=tuple(inputs),
+        input_version_ids=tuple(UUID(item["artifact_version_id"]) for item in inputs),
+    )
+    return replace(
+        probe,
+        execution=execution,
+        manifest={
+            **probe.manifest,
+            "source_input_artifact_sha256": original_hashes,
+            "input_artifact_sha256": hashes,
+            "repair_source_invocation_ids": [str(value) for value in source_ids],
+        },
+    )
+
+
 def probe_request(probe: Probe, execution: _Execution) -> ModelRequest:
     schema = _output_schema(
         probe.operation,
@@ -317,6 +397,7 @@ async def run_probe(
                 else None,
             },
         )
+        response = None
         try:
             async with asyncio.timeout(900):
                 response = await gateway.generate(request)
@@ -333,14 +414,29 @@ async def run_probe(
                 response_length=len(response.content),
             )
             _require_matching_response(response, execution)
+            raw_data = json.loads(normalize_json_document(response.content))
             materialized = _materialize_output_data(
                 probe.operation,
                 probe.task,
                 execution,
-                json.loads(normalize_json_document(response.content)),
+                raw_data,
             )
             result = _OUTPUT_MODELS[probe.operation].model_validate(materialized)
             _validate_output(probe.operation, probe.task, result)
+            if probe.operation is _Operation.CRITIQUE and raw_data.get("repair_checks") is not None:
+                record["revision_acceptance_audit"] = {
+                    "schema_version": "1",
+                    "tests": critic_repair_tests(execution.inputs, execution.unit_id),
+                    "checks": {
+                        key: {
+                            **value,
+                            "assessment": active_secret_guard().redact_text(value["assessment"])[
+                                :1000
+                            ],
+                        }
+                        for key, value in raw_data["repair_checks"].items()
+                    },
+                }
             if isinstance(result, StoryBibleUpdate):
                 successor = apply_story_bible_update(_source_story_bible(execution), result)
                 record["successor_bible"] = successor.model_dump(mode="json")
@@ -359,6 +455,16 @@ async def run_probe(
             )
             if isinstance(error, ValueError) and not isinstance(error, SecretLeakError):
                 issues = _structured_failure_issues(error)
+                if response is not None:
+                    record["review_failure_evidence"] = capture_review_failure(
+                        operation=probe.operation.value,
+                        response_content=response.content,
+                        request_content=request.messages[-1].content,
+                        input_version_ids=tuple(
+                            str(value) for value in execution.input_version_ids
+                        ),
+                        validation_issues=issues,
+                    )
                 record["validation_issues"] = [
                     {key: active_secret_guard().redact_text(value) for key, value in issue.items()}
                     for issue in issues
@@ -404,8 +510,11 @@ def main() -> int:
     parser.add_argument("--invocation-id", required=True, type=UUID)
     parser.add_argument("--output-directory", type=Path)
     parser.add_argument("--allow-cloud", action="store_true")
+    parser.add_argument("--repair-source-invocation-id", action="append", type=UUID, default=[])
     args = parser.parse_args()
-    probe = load_probe(args.database, args.invocation_id)
+    probe = with_repair_history(
+        load_probe(args.database, args.invocation_id), tuple(args.repair_source_invocation_id)
+    )
     if args.command == "inspect":
         request = probe_request(probe, probe.execution)
         print(

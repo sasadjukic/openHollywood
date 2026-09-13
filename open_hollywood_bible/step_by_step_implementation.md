@@ -953,6 +953,54 @@ benchmark retests may accompany individual steps.
 continuity policy remain subsequent work; no later product phase has started.
 
 
+### Revision acceptance tests completed — 2026-09-13
+
+Production-improvement step 3 is complete under prompt v31 / graph v8.
+Writer and critic now share a bounded, version-bound repair target derived from
+the current scene's earlier canonical critiques and exact rejected drafts.
+Revision reviews must assess each target as met/unmet with current-draft
+evidence. Unmet issues retain their original severity; perfect craft scores
+cannot clear an unmet hard repair. Independent new blockers still apply.
+
+The original claim, evidence and acceptance condition stay available across the
+existing revision allowance. Exact repeated category/severity/claim/repair text
+keeps its first target; no fuzzy semantic matching is introduced. Advisory
+feedback remains available to the writer without becoming a hard gate. Actual
+word changes neither guarantee nor automatically become necessary for approval.
+Continuity rechecks/adjudication and all retry, call and revision limits remain
+unchanged. Canonical artifact schemas and SQL storage remain compatible.
+See [ADR 0013](../docs/adr/0013-revision-acceptance-tests.md).
+
+Context projections replace duplicated historical review and scene prose while
+preserving exact input-version lineage, the full current draft and canonical
+Bible. Writer/critic instruction text is shorter than v30. All three matched
+probe requests were smaller than their v30 equivalents. Successful repair
+assessments and failed review checks are retained in redacted diagnostic records.
+
+Validation: 486 Python tests passed, including 14 step-3 cases; the final focused
+repair suite also passed after the severity-preservation check. Ruff lint/format,
+strict mypy and the production build passed. Tests cover shared targets, stable
+original evidence, current-reference validation, missing/invented checks,
+unresolved hard gates, nonblocking advice, severity escalation, exact SQLite
+lineage, secret-safe audit/export, bounded recovery and replay.
+
+Four authorized isolated Cloud critic probes covered three frozen v29 scenes:
+007 scene 5 revision 1 (twice), 006 scene 5 revision 1 and 009 scene 2. All four
+validated on their first attempt and returned pass. Both 007 probes and 009
+retained nonblocking notes; 006 had no issues. The repeated 007 probe verified the success-audit export.
+Its saved assessment overcredits a qualifier already present in the original, so
+the pass does not establish sound critic reasoning. Original snapshots were
+hash-verified and remain unchanged. Exact requests, restored review lineage,
+results, measured sizes and runtime receipts are under
+data/diagnostics/v31-step3-cloud-2026-09-13/.
+
+These were critic probes, not fresh writer runs, complete stories or a new canary
+completion score. The aggregate manual-test review remains deferred until the
+user requests it after at least ten stories. **Step 19 remains IN PROGRESS**;
+critic adjudication and continuity-policy changes are steps 4 and 5 and have
+not been implemented. No later product phase has started.
+
+
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 
 21. [ ] **Package the stable system with Tauri** and test crash/restart, offline, missing-model, invalid-key, provider-timeout, and low-disk-space behavior.

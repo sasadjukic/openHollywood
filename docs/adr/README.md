@@ -17,3 +17,4 @@ tradeoffs. Status values are `Proposed`, `Accepted`, `Superseded`, or `Rejected`
 | 0010 | One version-bound evidence interface for the scene critic | Accepted |
 | 0011 | Bounded evidence for rejected production reviews | Accepted |
 | 0012 | Bind critic choices to the approved scene assignment | Accepted |
+| 0013 | Version-bound acceptance tests for scene revisions | Accepted |
