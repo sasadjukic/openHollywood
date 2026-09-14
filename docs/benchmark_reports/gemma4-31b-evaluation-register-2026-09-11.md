@@ -84,6 +84,65 @@ is not treated as proof of correct review judgments. This mixed-contract manual
 sample remains separate from the September 12 manual/canary denominators. No
 causal improvement rate is inferred; Step 19 remains IN PROGRESS.
 
+## Subsequent v33 Cloud canary batch 1 — 2026-09-14
+
+The [v33 batch-1 report](step-19-cloud-v33-batch-1-2026-09-14.md) records **4/4
+completions, 21/21 scenes and 88 calls (87 succeeded, one recovered validation
+failure)** for Cloud OH-V01-001–004. One scene received one prose revision;
+no adjudication or manual retry occurred. Exact approved Blueprints, seeds,
+Cloud profile, budgets and limits match v29 batch 1. Runtime source hashes and
+historical evidence were preserved.
+
+Compared with v29's 99 calls and five revisions, v33 used 11 fewer calls and
+13.8% fewer total tokens, while failed responses increased from zero to one.
+A 202.158-second successful critic call contributed to the longer 682.266-second
+runner interval. All 21 initial drafts differ from v29, preventing an identical-
+prose inference about review accuracy. The time-coverage evidence failure recurred.
+The safehouse isolation repair visibly changed the communication mechanism;
+its semantic necessity still deserves contextual review. Batches 2 and 3 remain
+unrun, and Step 19 remains IN PROGRESS pending full evaluation and human review.
+
+## Subsequent v33 Cloud canary batch 2 — 2026-09-14
+
+The [v33 batch-2 report](step-19-cloud-v33-batch-2-2026-09-14.md) records **4/4
+completions, 21/21 scenes and 99/99 successful calls** for Cloud OH-V01-005–008.
+Both v29 failures (005 and 007) now complete. Five prose revisions occurred across
+four scenes; there were no response failures, manual retries or adjudication calls.
+Exact approved inputs and the frozen v33 runtime/limits match the declared cycle.
+The batch took 881.186 seconds, including a successful 200.630-second critic call.
+
+Repair audits retain unmet/met transitions, but 005's final-scene requirement
+recap and 007's grief-inference allegation remain semantic concerns. All 18
+comparable initial drafts differ from v29; three candidate scenes extend beyond
+v29's failure points. No identical-prose or human-quality claim is inferred.
+The first two batches total **8/8 completions, 42/42 scenes, 187 calls (one recovered
+failure) and six revisions**. Batch 3 and full-cycle consolidation remain pending.
+Step 19 remains IN PROGRESS.
+
+## Completed v33 Cloud canary cycle — 2026-09-14
+
+The [consolidated three-batch report](step-19-cloud-v33-consolidated-2026-09-14.md)
+records **12/12 completed stories, 64/64 accepted scenes, 288 production calls
+(286 succeeded, two recovered failures), and ten revisions across nine scenes**.
+All three v29 failures (005, 007 and 009) now complete; the nine prior successes
+are retained. Batch 3 completed 009–012 in 568.998 seconds with 101 calls, one
+recovered continuity response failure, and four POV revisions in 011.
+
+Compared with the matched v29 cycle, completion rises from 9/12 to 12/12 and
+failed calls fall from seven to two. The candidate completes ten more scenes;
+its 3,171,102 tokens and 2,132.449 seconds of summed runner time are not equal-work
+efficiency measurements. All 57 paired initial drafts differ. Runtime, inputs,
+limits and historical evidence stayed frozen. No adjudication was exercised.
+
+The two failures share a time-coverage evidence-reference validation class.
+012's failed review also alleged that a closed door contradicted an unlocked
+door; the same-draft structured retry dropped that unvalidated allegation.
+POV inference handling, requirement recap demands and assessments crediting
+retained text remain concrete semantic concerns. All twelve manuscripts, exact
+repair audits and 599 checked artifact hashes support the report. The cycle is
+complete, while Step 19 remains IN PROGRESS pending human quality/preference,
+semantic review, cost acceptance and repeatability. Manual samples remain separate.
+
 ## Reading the scores
 
 The tested Cloud identifier was `gemma4:31b-cloud`; the provider reported

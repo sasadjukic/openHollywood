@@ -1096,6 +1096,99 @@ percentage nor a new combined canary score is inferred. **Step 19 remains IN
 PROGRESS** pending controlled evaluation and human review; no later phase starts.
 
 
+### v33 Cloud canary batch 1 completed — 2026-09-14
+
+Cloud OH-V01-001–004 completed under prompt v33 / graph v9: **4/4 stories,
+21/21 scenes, 88 production calls (87 succeeded, one recovered response failure)**.
+One scene received one prose revision. No new Blueprint calls or human approvals,
+manual retries, terminal adjudication or revision-limit exhaustion occurred.
+The run lasted 682.266 seconds, including one successful 202.158-second critic
+request. The next two batches have not been staged or launched.
+
+The isolated batch used the original human-approved seed, migrated only in its
+new directory. Exact Blueprint IDs/hashes, seeds, Cloud profile and limits match
+v29 batch 1. Ollama remains 0.34.0 and its model alias digest matches. Source,
+runtime and v29 evidence hashes were preserved. All 192 selected-project artifact
+hashes, final manuscript references, retry input lineage, database integrity and
+secret-export checks passed. The report is schema-valid with exactly four results.
+
+Evidence, completed snapshot and manuscripts are under
+`data/benchmarks/v0.1/v33-cloud-batch-1-2026-09-14/`; the
+[batch report](../docs/benchmark_reports/step-19-cloud-v33-batch-1-2026-09-14.md)
+records the matched comparison. Calls decreased from 99 to 88 and revisions from
+five to one, with 13.8% fewer total tokens. Failed calls rose from zero to one,
+and elapsed time increased. All 21 initial drafts differ from v29, so this is
+not an identical-prose test of reviewer accuracy. The time-coverage evidence
+failure persists; the isolation-rule repair and its qualification are retained.
+
+The separate cycle scope preserves the original 48-case plan's approval lineage
+while selecting only this Cloud subset. Batch 2 is 005–008 and batch 3 is 009–012;
+consolidation awaits both. **Step 19 remains IN PROGRESS**; no human quality scores
+or later product phase are claimed.
+
+
+### v33 Cloud canary batch 2 completed — 2026-09-14
+
+Cloud OH-V01-005–008 completed under the unchanged prompt v33 / graph v9:
+**4/4 stories, 21/21 scenes, 99/99 successful production calls**. Five revisions
+occurred across four scenes; no failed responses, new human approvals, manual
+retries, adjudication or revision-limit exhaustion occurred. Cases 005 and 007,
+which failed under v29, now complete. Runtime, seeds, exact approved Blueprints,
+Cloud profile and limits match the frozen cycle. Batch 1 evidence is preserved.
+
+The [batch-2 report](../docs/benchmark_reports/step-19-cloud-v33-batch-2-2026-09-14.md)
+and local archive `data/benchmarks/v0.1/v33-cloud-batch-2-2026-09-14/` preserve the
+final snapshot, manuscripts, review audits, five diffs, comparison hashes and
+semantic inspection notes. All 201 selected-project artifact hashes passed;
+canonical output lineage, inherited seed counts, database integrity, secret export,
+source hashes, bundle receipts and documentation links were checked.
+
+Calls increased from v29's 88 to 99 while accepted scenes rose from 16 to 21.
+The batch took 881.186 seconds; completion gains do not establish efficiency or
+literary superiority. All 18 comparable initial drafts differ. 005's redundant
+identification-evidence recap and 007's grief-inference handling remain review
+concerns, despite successful production and explicit repair tests.
+
+The first two batches total 8/8 completed cases, 42/42 scenes, 187 calls (186
+succeeded, one recovered failure), and six revisions. Batch 3 (009–012) has not
+been staged or launched. Full diagnostic consolidation waits for that batch.
+**Step 19 remains IN PROGRESS**; no human quality scores or later phase are claimed.
+
+
+### v33 Cloud canary cycle completed; diagnostics consolidated — 2026-09-14
+
+The final batch, Cloud OH-V01-009–012, completed **4/4 stories and 22/22 scenes**
+in 568.998 seconds: 101 calls (100 succeeded, one recovered continuity validation
+failure), with four POV revisions in 011. The user-authorized three-batch cycle
+is now complete under unchanged prompt v33 / graph v9, with **12/12 completions,
+64/64 scenes, 288 calls (286 succeeded, two recovered failures), and ten prose
+revisions across nine scenes**. All three v29 failures now complete; no prior
+success regresses in this run. No terminal retry, limit increase or tuning occurred.
+
+The [single consolidated report](../docs/benchmark_reports/step-19-cloud-v33-consolidated-2026-09-14.md)
+incorporates all three batches, the matched v29 comparison, review/revision
+analysis, timing, usage and twelve manuscript links. Final batch evidence lives
+in `data/benchmarks/v0.1/v33-cloud-batch-3-2026-09-14/`; consolidated analysis,
+lineage, exact recovery checks and semantic notes are in
+`data/diagnostics/v33-cloud-cycle-2026-09-14/`. Checks verified 59 source archive
+files, 599 artifact hashes, exact selected outcomes/approved inputs, consistent
+snapshots, all manuscript hashes, unchanged source/seed/prior receipts, database
+integrity/foreign keys, existing secret-export guards, and documentation links.
+
+Both failed responses lacked current-draft time-coverage evidence. The 012
+capture additionally preserves an unsupported closed-versus-unlocked allegation
+that disappeared on same-draft structured retry. 005/4 requirement scope, 007/5
+and 011/2 POV inference, and assessments crediting retained text remain review
+concerns. Nine critic repair assessments record eight met and one unmet result;
+no live adjudication occurred. All 57 paired initial drafts differ from v29.
+
+The cycle used 3,171,102 tokens and 2,132.449 seconds of summed runner time while
+completing ten more scenes than v29. No equal-work speed/cost or literary-quality
+claim is inferred. Application source did not change; validation covered canary
+evidence and documentation rather than rerunning the application build/test suite.
+**Product Step 19 remains IN PROGRESS** pending semantic review, human quality/
+preference, cost acceptance and repeatability; no later product phase is started.
+
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 
 21. [ ] **Package the stable system with Tauri** and test crash/restart, offline, missing-model, invalid-key, provider-timeout, and low-disk-space behavior.
