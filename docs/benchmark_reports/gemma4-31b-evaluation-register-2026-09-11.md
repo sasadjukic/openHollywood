@@ -64,6 +64,26 @@ no terminal rerun or tuning replaced these outcomes. The manual ten-story
 sample remains separate. Step 19 is IN PROGRESS pending quality/preference,
 semantic adjudication, cost acceptance and repeatability.
 
+## Subsequent manual v29–v33 review — 2026-09-13
+
+The [September 13 aggregate manual review](manual-v29-v33-cloud-production-2026-09-13.md),
+compiled September 14, records **12/12 completed stories and 70/70 accepted scenes**
+across v29 (one story), v30 (two), and v31/v32/v33 (three each). There were 381
+invocation records: 373 succeeded, seven failed responses recovered automatically,
+and one interrupted v32 call whose provider outcome remains unknown. Production
+accounts for 308 records; Blueprint creation accounts for 73. Seven distinct
+scenes received one prose revision each. One Windows reboot was followed by
+verified workflow recovery; two recovery events describe that same incident.
+
+The local evidence bundle contains 613 hash-verified artifact versions, exact
+inputs, 12 manuscripts, revision diffs and failed-review captures. All 12 Blueprint
+approvals are recorded, with no in-app run-control commands or human quality
+scores. No adjudication was exercised. The review identifies unsupported temporal
+reasoning and a remaining v33 supernatural-development allegation, so completion
+is not treated as proof of correct review judgments. This mixed-contract manual
+sample remains separate from the September 12 manual/canary denominators. No
+causal improvement rate is inferred; Step 19 remains IN PROGRESS.
+
 ## Reading the scores
 
 The tested Cloud identifier was `gemma4:31b-cloud`; the provider reported

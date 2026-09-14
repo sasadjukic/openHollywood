@@ -1069,6 +1069,33 @@ remains IN PROGRESS** pending evaluation/human review. No later product phase ha
 started.
 
 
+### Aggregate manual v29–v33 evidence — tested 2026-09-13, reviewed 2026-09-14
+
+The requested [twelve-story manual diagnostic review](../docs/benchmark_reports/manual-v29-v33-cloud-production-2026-09-13.md)
+is COMPLETE. All 12 workflows completed with 70/70 accepted scenes: one story
+under v29, two under v30, and three each under v31, v32 and v33. The sample records
+381 calls (308 production / 73 Blueprint), seven recovered failed responses,
+one interrupted v32 execution and seven one-cycle prose revisions. The interrupted
+call remains a historical RUNNING row; its provider outcome is unknown. One
+recovery at 19:51:02 local is supported by matching task/input lineage.
+
+The review preserves 613 verified artifact hashes, 2,322 input links, 12 rendered
+manuscripts, exact premises, version/seed identities, review audits and revision
+diffs under data/diagnostics/manual-v29-v33-cloud-2026-09-13/. All 12 applied
+Blueprint approvals are recorded; no in-app run controls or human quality scores
+exist. SQLite integrity, completion-event lineage, bundle hashes and report links
+were checked. No model calls, application-code changes or historical-data edits
+were made for the review.
+
+The sample includes one v31 critic acceptance test and three failed continuity
+response captures, but no live adjudication. v33 completed all three stories while
+still needing four structural response repairs and two prose revisions. Repeated
+time-coverage evidence failures and questionable semantic allegations remain
+visible. Different stories tested each contract, so neither a causal improvement
+percentage nor a new combined canary score is inferred. **Step 19 remains IN
+PROGRESS** pending controlled evaluation and human review; no later phase starts.
+
+
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 
 21. [ ] **Package the stable system with Tauri** and test crash/restart, offline, missing-model, invalid-key, provider-timeout, and low-disk-space behavior.
