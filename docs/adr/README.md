@@ -18,3 +18,4 @@ tradeoffs. Status values are `Proposed`, `Accepted`, `Superseded`, or `Rejected`
 | 0011 | Bounded evidence for rejected production reviews | Accepted |
 | 0012 | Bind critic choices to the approved scene assignment | Accepted |
 | 0013 | Version-bound acceptance tests for scene revisions | Accepted |
+| [0016](0016-scoped-benchmark-campaigns.md) | Explicit Cloud-first and all-profile benchmark scopes | Accepted |

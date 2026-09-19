@@ -21,6 +21,7 @@ NonEmptyText = Annotated[str, StringConstraints(strip_whitespace=True, min_lengt
 Sha256 = Annotated[str, StringConstraints(pattern=r"^[0-9a-f]{64}$")]
 
 BENCHMARK_SCHEMA_VERSION: Literal["1"] = "1"
+BENCHMARK_PLAN_SCHEMA_VERSION: Literal["2"] = "2"
 HUMAN_REVIEW_SCHEMA_VERSION: Literal["2"] = "2"
 CANONICAL_RUBRIC_NAME = "open-hollywood-story-quality"
 CANONICAL_RUBRIC_VERSION = "1"
@@ -295,6 +296,23 @@ class BenchmarkCase(EvaluationModel):
         return self.profile.mode.value
 
 
+class BenchmarkScope(StrEnum):
+    """Declared evaluation matrix, independent of provider and model choices."""
+
+    ALL_PROFILES = "all-profiles"
+    CLOUD_FIRST = "cloud-first"
+
+    @property
+    def agentic_modes(self) -> tuple[ModelProfileMode, ...]:
+        if self is BenchmarkScope.CLOUD_FIRST:
+            return (ModelProfileMode.CLOUD,)
+        return (ModelProfileMode.LOCAL, ModelProfileMode.CLOUD, ModelProfileMode.HYBRID)
+
+    @property
+    def target_keys(self) -> tuple[str, ...]:
+        return ("baseline", *(mode.value for mode in self.agentic_modes))
+
+
 class BenchmarkPlan(EvaluationModel):
     """Fully expanded, reproducible campaign input."""
 
@@ -305,15 +323,82 @@ class BenchmarkPlan(EvaluationModel):
     corpus_sha256: Sha256
     workflow_versions: dict[NonEmptyText, NonEmptyText]
     cases: tuple[BenchmarkCase, ...] = Field(min_length=1)
+    # Omit the field on legacy plans so their canonical hashes remain unchanged.
+    scope: BenchmarkScope | None = Field(default=None, exclude_if=lambda value: value is None)
 
     @model_validator(mode="after")
     def validate_plan(self) -> Self:
-        if self.schema_version != BENCHMARK_SCHEMA_VERSION:
-            raise ValueError(f"unsupported benchmark schema version {self.schema_version!r}")
+        self._validate_contents()
+        return self
+
+    def _validate_contents(self) -> None:
+        if self.schema_version not in (BENCHMARK_SCHEMA_VERSION, BENCHMARK_PLAN_SCHEMA_VERSION):
+            raise ValueError(f"unsupported benchmark plan schema version {self.schema_version!r}")
+        if self.schema_version == BENCHMARK_SCHEMA_VERSION and self.scope is not None:
+            raise ValueError("legacy benchmark plans cannot declare a new scope")
+        if self.schema_version == BENCHMARK_PLAN_SCHEMA_VERSION and self.scope is None:
+            raise ValueError("benchmark plan schema 2 requires an explicit scope")
         case_ids = [case.case_id for case in self.cases]
         if len(set(case_ids)) != len(case_ids):
             raise ValueError("benchmark case IDs must be unique")
-        return self
+        if self.scope is not None:
+            by_prompt: dict[tuple[str, str], set[str]] = {}
+            snapshots: dict[str, BenchmarkProfileSnapshot | BenchmarkModelTarget | None] = {}
+            for case in self.cases:
+                targets = by_prompt.setdefault((case.prompt_id, case.prompt_version), set())
+                if case.target_key in targets:
+                    raise ValueError("scoped plans require unique prompt/target pairs")
+                targets.add(case.target_key)
+                snapshot = case.profile if case.profile is not None else case.baseline_model
+                if snapshots.setdefault(case.target_key, snapshot) != snapshot:
+                    raise ValueError("scoped plans require one frozen configuration per target")
+            if any(targets != set(self.scope.target_keys) for targets in by_prompt.values()):
+                raise ValueError("benchmark cases do not match the declared scope")
+            if self.scope is BenchmarkScope.CLOUD_FIRST and any(
+                case.baseline_model is not None
+                and case.baseline_model.deployment is not ModelDeployment.CLOUD
+                for case in self.cases
+            ):
+                raise ValueError("Cloud-first plans require a Cloud direct-model baseline")
+
+    @property
+    def target_keys(self) -> tuple[str, ...]:
+        """Preserve historical summaries while omitting excluded scoped targets."""
+        return (self.scope or BenchmarkScope.ALL_PROFILES).target_keys
+
+    def select_agentic_targets(self, targets: frozenset[str] | None = None) -> frozenset[str]:
+        available = frozenset(case.target_key for case in self.cases if case.profile is not None)
+        selected = available if targets is None else targets
+        if not selected or not selected.issubset(available):
+            raise ValueError("agentic targets must be present in the campaign plan")
+        return selected
+
+    def require_matching_corpus(self, corpus: BenchmarkCorpus) -> None:
+        """Bind new scoped matrices and seeds to every frozen corpus prompt."""
+        self._validate_contents()
+        if (
+            self.corpus_id != corpus.corpus_id
+            or self.corpus_version != corpus.corpus_version
+            or self.corpus_sha256 != corpus.content_sha256
+        ):
+            raise ValueError("benchmark plan does not match the supplied corpus")
+        prompts = {(prompt.prompt_id, prompt.version): prompt for prompt in corpus.prompts}
+        if any((case.prompt_id, case.prompt_version) not in prompts for case in self.cases):
+            raise ValueError("benchmark plan references an unknown prompt version")
+        if self.scope is not None:
+            expected = {
+                (pid, version, target)
+                for pid, version in prompts
+                for target in self.scope.target_keys
+            }
+            actual = {(case.prompt_id, case.prompt_version, case.target_key) for case in self.cases}
+            if actual != expected:
+                raise ValueError("scoped plan must cover every corpus prompt and declared target")
+            if any(
+                case.run_seed != prompts[(case.prompt_id, case.prompt_version)].random_seed
+                for case in self.cases
+            ):
+                raise ValueError("scoped plan seeds must match the frozen corpus")
 
     @property
     def content_sha256(self) -> str:

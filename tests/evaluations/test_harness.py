@@ -912,7 +912,10 @@ async def test_formal_campaign_evidence_is_complete_deterministic_and_verifiable
     tmp_path: Path,
 ) -> None:
     corpus, full_plan = benchmark_plan
-    plan = full_plan.model_copy(update={"cases": full_plan.cases[:4]})
+    corpus = corpus.model_copy(update={"prompts": corpus.prompts[:1]})
+    plan = full_plan.model_copy(
+        update={"cases": full_plan.cases[:4], "corpus_sha256": corpus.content_sha256}
+    )
     report = await run_benchmark_plan(
         plan=plan,
         corpus=corpus,

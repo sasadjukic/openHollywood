@@ -42,6 +42,7 @@ from open_hollywood_engine.evaluations import (
     BenchmarkPlan,
     BenchmarkProfileSnapshot,
     BenchmarkRunReport,
+    BenchmarkScope,
     BenchmarkSummary,
     BlindAnswerKey,
     BlindPublicBundle,
@@ -113,8 +114,9 @@ def create_plan_from_database(
     campaign_id: UUID,
     corpus_path: Path,
     database_path: Path,
+    scope: BenchmarkScope = BenchmarkScope.ALL_PROFILES,
 ) -> BenchmarkPlan:
-    """Snapshot all three configured presets and the cloud writer baseline."""
+    """Snapshot only the scope's presets and the Cloud writer baseline."""
     corpus = load_benchmark_corpus(corpus_path)
     engine = create_sqlite_engine(database_path)
     try:
@@ -127,6 +129,7 @@ def create_plan_from_database(
             configuration=record.configuration,
         )
         for record in records
+        if record.mode in scope.agentic_modes
     }
     try:
         cloud_configuration = next(
@@ -141,6 +144,7 @@ def create_plan_from_database(
         baseline_model=baseline_model,
         profiles=profiles,
         workflow_versions=_current_runtime_versions(),
+        scope=scope,
     )
 
 
@@ -178,11 +182,17 @@ def _parser() -> argparse.ArgumentParser:
 
     plan = commands.add_parser(
         "plan",
-        help="Create a 48-case baseline/Local/Cloud/Hybrid campaign plan.",
+        help="Create an explicitly scoped baseline/agentic campaign plan.",
     )
     plan.add_argument("--corpus", type=Path, default=DEFAULT_CORPUS_PATH)
     plan.add_argument("--database", type=Path, default=DEFAULT_DATABASE_PATH)
     plan.add_argument("--campaign-id", type=UUID, default=None)
+    plan.add_argument(
+        "--scope",
+        choices=[scope.value for scope in BenchmarkScope],
+        default=BenchmarkScope.ALL_PROFILES.value,
+        help="all-profiles: 48 cases; cloud-first: 12 Cloud plus 12 baseline cases.",
+    )
     plan.add_argument("--output", type=Path, required=True)
     plan.add_argument(
         "--overwrite",
@@ -357,7 +367,7 @@ def _add_agentic_review_arguments(parser: argparse.ArgumentParser) -> None:
         "--target",
         action="append",
         choices=sorted(AGENTIC_TARGET_KEYS),
-        help="Agentic profile target; repeat as needed. Defaults to all three profiles.",
+        help="Agentic profile target; repeat as needed. Defaults to the plan's agentic targets.",
     )
 
 
@@ -546,6 +556,7 @@ def main(argv: list[str] | None = None) -> int:
             campaign_id=args.campaign_id or uuid4(),
             corpus_path=args.corpus,
             database_path=args.database,
+            scope=BenchmarkScope(args.scope),
         )
         _write_json_atomically(output, plan.model_dump(mode="json"))
         print(
@@ -553,6 +564,7 @@ def main(argv: list[str] | None = None) -> int:
                 {
                     "campaign_id": str(plan.campaign_id),
                     "case_count": len(plan.cases),
+                    "scope": plan.scope,
                     "output": str(output.resolve()),
                     "plan_sha256": plan.content_sha256,
                 },
@@ -617,7 +629,7 @@ def main(argv: list[str] | None = None) -> int:
         return 0
 
     if args.command == "prepare-agentic":
-        target_keys = _agentic_target_keys(args.target)
+        target_keys = _agentic_target_keys(args.target, plan)
         preparations = asyncio.run(
             _prepare_agentic_with_ollama(
                 plan=plan,
@@ -672,7 +684,7 @@ def main(argv: list[str] | None = None) -> int:
         if len({path.resolve() for path in blueprint_outputs}) != len(blueprint_outputs):
             raise ValueError("Blueprint review packet, form, and guide need distinct paths")
         _require_writable_outputs(blueprint_outputs, overwrite=args.overwrite)
-        target_keys = _agentic_target_keys(args.target)
+        target_keys = _agentic_target_keys(args.target, plan)
         packet = asyncio.run(
             _build_blueprint_review(
                 plan=plan,
@@ -704,7 +716,7 @@ def main(argv: list[str] | None = None) -> int:
         return 0
 
     if args.command == "approve-blueprints":
-        target_keys = _agentic_target_keys(args.target)
+        target_keys = _agentic_target_keys(args.target, plan)
         packet = BlueprintReviewPacket.model_validate(_read_json(args.packet))
         approvals = parse_blueprint_review_csv(
             packet,
@@ -742,7 +754,7 @@ def main(argv: list[str] | None = None) -> int:
         return 0
 
     if args.command == "run-agentic":
-        target_keys = _agentic_target_keys(args.target)
+        target_keys = _agentic_target_keys(args.target, plan)
         case_ids = _agentic_case_batch(
             plan,
             target_keys=target_keys,
@@ -1038,11 +1050,8 @@ async def _run_agentic_with_ollama(
         engine.dispose()
 
 
-def _agentic_target_keys(raw_targets: list[str] | None) -> frozenset[str]:
-    target_keys = frozenset(raw_targets or AGENTIC_TARGET_KEYS)
-    if not target_keys or not target_keys.issubset(AGENTIC_TARGET_KEYS):
-        raise ValueError("agentic targets must select Local, Cloud, or Hybrid")
-    return target_keys
+def _agentic_target_keys(raw_targets: list[str] | None, plan: BenchmarkPlan) -> frozenset[str]:
+    return plan.select_agentic_targets(None if raw_targets is None else frozenset(raw_targets))
 
 
 def _agentic_case_batch(

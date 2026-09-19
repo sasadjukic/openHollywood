@@ -16,6 +16,7 @@ from open_hollywood_engine.evaluations.blueprint_reviews import (
     render_blueprint_review_guide,
 )
 from open_hollywood_engine.evaluations.contracts import (
+    BENCHMARK_PLAN_SCHEMA_VERSION,
     BENCHMARK_SCHEMA_VERSION,
     CANONICAL_RUBRIC_NAME,
     CANONICAL_RUBRIC_VERSION,
@@ -33,6 +34,7 @@ from open_hollywood_engine.evaluations.contracts import (
     BenchmarkProfileSnapshot,
     BenchmarkPrompt,
     BenchmarkRunReport,
+    BenchmarkScope,
     BenchmarkSuccessCriteria,
     BenchmarkSummary,
     BenchmarkSystem,
@@ -85,6 +87,7 @@ from open_hollywood_engine.evaluations.reviews import (
 )
 
 __all__ = [
+    "BENCHMARK_PLAN_SCHEMA_VERSION",
     "BENCHMARK_SCHEMA_VERSION",
     "BLUEPRINT_REVIEW_CSV_COLUMNS",
     "BLUEPRINT_REVIEW_SCHEMA_VERSION",
@@ -113,6 +116,7 @@ __all__ = [
     "BenchmarkPrompt",
     "BenchmarkReportCheckpoint",
     "BenchmarkRunReport",
+    "BenchmarkScope",
     "BenchmarkSuccessCriteria",
     "BenchmarkSummary",
     "BenchmarkSystem",

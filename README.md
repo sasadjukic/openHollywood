@@ -133,8 +133,10 @@ invariants pass.
 
 The Step 19 evaluation harness is now in progress. Its provider-neutral core
 loads the frozen 12-prompt v0.1 corpus, pins exact graph, prompt-contract, and
-model-profile snapshots into 48-case campaign plans, resumes failure-isolated case execution,
-builds provenance-free blind A/B review packets with separate answer keys, and
+model-profile snapshots into explicitly scoped campaign plans: 24 cases for
+Cloud-first (12 Cloud plus 12 direct baselines), or 48 for all profiles. It resumes
+failure-isolated case execution, builds provenance-free blind A/B review packets
+with separate answer keys, and
 aggregates the accepted rubric, hard gates, preference rate, completion rate,
 and cost criteria. The direct baseline now runs through a bounded
 provider-neutral call with idempotent SQLite prompt, invocation, workflow, and
@@ -216,9 +218,14 @@ CSV forms and provenance-free rubric guides, imports complete human scores, and
 cryptographically binds review evidence to the exact public blind packet and
 private answer key. Complete campaigns can be sealed into deterministic,
 tamper-evident archives whose manifest, member hashes, review coverage, summary,
-and cross-document lineage are independently reverified. The formal
-Local/Cloud/Hybrid campaign and actual blind human reviews remain pending, so
-Step 19 is not yet marked complete.
+and cross-document lineage are independently reverified. `plan --scope cloud-first`
+requires only the Cloud preset; preparation, approval and execution default to
+the plan's agentic targets. New plans explicitly declare their scope, while
+legacy plan hashes and sealing requirements are preserved. See the
+[operator guide](benchmarks/README.md) and [ADR 0016](docs/adr/0016-scoped-benchmark-campaigns.md).
+The current qualification phase is Cloud-first. Formal comparative evaluation,
+actual blind human reviews, cost acceptance and repeatability remain pending, so
+Step 19 is not yet marked complete; Local and Hybrid qualification is deferred.
 
 The first Local v8 canary batch completed two of five production-runnable cases.
 Its failed invocations exposed that ordinary application validation messages

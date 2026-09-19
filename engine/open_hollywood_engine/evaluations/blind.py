@@ -41,8 +41,7 @@ def build_blind_bundle(
     """Build a reviewer packet and a separately stored identity map."""
     if len(blinding_key) < 16:
         raise ValueError("blinding_key must contain at least 16 bytes")
-    if plan.corpus_sha256 != corpus.content_sha256:
-        raise ValueError("benchmark plan and corpus digest do not match")
+    plan.require_matching_corpus(corpus)
     _validate_pairs(comparison_pairs)
 
     cases = {case.case_id: case for case in plan.cases}
