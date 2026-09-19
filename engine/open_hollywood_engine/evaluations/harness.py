@@ -148,12 +148,4 @@ def _validate_output_for_prompt(
 
 
 def _require_matching_corpus(plan: BenchmarkPlan, corpus: BenchmarkCorpus) -> None:
-    if (
-        plan.corpus_id != corpus.corpus_id
-        or plan.corpus_version != corpus.corpus_version
-        or plan.corpus_sha256 != corpus.content_sha256
-    ):
-        raise ValueError("benchmark plan does not match the supplied corpus")
-    prompt_refs = {(prompt.prompt_id, prompt.version) for prompt in corpus.prompts}
-    if any((case.prompt_id, case.prompt_version) not in prompt_refs for case in plan.cases):
-        raise ValueError("benchmark plan references an unknown prompt version")
+    plan.require_matching_corpus(corpus)

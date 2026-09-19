@@ -76,7 +76,7 @@ async def prepare_agentic_cases(
     database_path: Path,
     session_factory: sessionmaker[Session],
     gateway: ModelGateway,
-    target_keys: frozenset[str] = AGENTIC_TARGET_KEYS,
+    target_keys: frozenset[str] | None = None,
     case_ids: tuple[UUID, ...] | None = None,
 ) -> tuple[AgenticBlueprintPreparation, ...]:
     """Sequentially prepare selected agentic cases at the approval boundary."""
@@ -134,7 +134,7 @@ async def approve_agentic_cases(
     session_factory: sessionmaker[Session],
     gateway: ModelGateway,
     case_ids: tuple[UUID, ...],
-    target_keys: frozenset[str] = AGENTIC_TARGET_KEYS,
+    target_keys: frozenset[str] | None = None,
 ) -> tuple[AgenticBlueprintPreparation, ...]:
     """Apply explicit, idempotent approval to already prepared benchmark cases."""
     if not case_ids:
@@ -209,7 +209,7 @@ async def build_blueprint_review_packet(
     corpus: BenchmarkCorpus,
     database_path: Path,
     session_factory: sessionmaker[Session],
-    target_keys: frozenset[str] = AGENTIC_TARGET_KEYS,
+    target_keys: frozenset[str] | None = None,
 ) -> BlueprintReviewPacket:
     """Load every surviving paused case into a deterministic human-review packet."""
     selected = _selected_agentic_cases(plan, corpus, target_keys)
@@ -283,9 +283,10 @@ async def approve_reviewed_agentic_cases(
     session_factory: sessionmaker[Session],
     packet: BlueprintReviewPacket,
     approvals: BlueprintApprovalBundle,
-    target_keys: frozenset[str] = AGENTIC_TARGET_KEYS,
+    target_keys: frozenset[str] | None = None,
 ) -> tuple[AgenticBlueprintPreparation, ...]:
     """Apply a complete digest-bound human approval form without model access."""
+    target_keys = plan.select_agentic_targets(target_keys)
     _validate_review_documents(
         plan,
         corpus,
@@ -359,7 +360,7 @@ async def run_agentic_cases(
     gateway: ModelGateway,
     prior_report: BenchmarkRunReport | None,
     checkpoint: BenchmarkReportCheckpoint | None,
-    target_keys: frozenset[str] = AGENTIC_TARGET_KEYS,
+    target_keys: frozenset[str] | None = None,
     case_ids: tuple[UUID, ...] | None = None,
     retry_failed: bool = False,
     cost_ceiling_usd: Decimal = Decimal("5.00"),
@@ -385,7 +386,7 @@ async def run_agentic_cases(
         prior_results=_merge_blueprint_failures(prior_report, blueprint_failures),
         checkpoint=checkpoint,
         retry_failed=retry_failed,
-        target_keys=target_keys,
+        target_keys=frozenset(case.target_key for case in cases),
         case_ids=frozenset(case.case_id for case in cases),
     )
 
@@ -393,13 +394,12 @@ async def run_agentic_cases(
 def _selected_agentic_cases(
     plan: BenchmarkPlan,
     corpus: BenchmarkCorpus,
-    target_keys: frozenset[str],
+    target_keys: frozenset[str] | None,
     *,
     case_ids: tuple[UUID, ...] | None = None,
 ) -> tuple[BenchmarkCase, ...]:
     _campaign_prompts(plan, corpus)
-    if not target_keys or not target_keys.issubset(AGENTIC_TARGET_KEYS):
-        raise ValueError("agentic target keys must select Local, Cloud, or Hybrid")
+    target_keys = plan.select_agentic_targets(target_keys)
     selected_ids = set(case_ids) if case_ids is not None else None
     if selected_ids is not None:
         planned_ids = {case.case_id for case in plan.cases}
@@ -420,16 +420,8 @@ def _campaign_prompts(
     plan: BenchmarkPlan,
     corpus: BenchmarkCorpus,
 ) -> dict[tuple[str, str], BenchmarkPrompt]:
-    if (
-        plan.corpus_id != corpus.corpus_id
-        or plan.corpus_version != corpus.corpus_version
-        or plan.corpus_sha256 != corpus.content_sha256
-    ):
-        raise ValueError("benchmark plan does not match the supplied corpus")
-    prompts = {(prompt.prompt_id, prompt.version): prompt for prompt in corpus.prompts}
-    if any((case.prompt_id, case.prompt_version) not in prompts for case in plan.cases):
-        raise ValueError("benchmark plan references an unknown prompt version")
-    return prompts
+    plan.require_matching_corpus(corpus)
+    return {(prompt.prompt_id, prompt.version): prompt for prompt in corpus.prompts}
 
 
 def _require_prepared_runs(

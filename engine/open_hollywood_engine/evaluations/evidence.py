@@ -13,7 +13,9 @@ from zipfile import ZIP_STORED, BadZipFile, ZipFile, ZipInfo
 
 from pydantic import Field, StringConstraints, model_validator
 
+from open_hollywood_engine.evaluations.blind import DEFAULT_COMPARISON_PAIRS
 from open_hollywood_engine.evaluations.contracts import (
+    BenchmarkCaseStatus,
     BenchmarkCorpus,
     BenchmarkPlan,
     BenchmarkRunReport,
@@ -233,12 +235,7 @@ def _validated_documents(
 ) -> dict[EvidenceRole, EvaluationModel]:
     if normal_cloud_run_budget_usd < 0:
         raise ValueError("normal cloud run budget must not be negative")
-    if (
-        plan.corpus_id != corpus.corpus_id
-        or plan.corpus_version != corpus.corpus_version
-        or plan.corpus_sha256 != corpus.content_sha256
-    ):
-        raise ValueError("campaign plan does not match the frozen corpus")
+    plan.require_matching_corpus(corpus)
     if report.campaign_id != plan.campaign_id or report.plan_sha256 != plan.content_sha256:
         raise ValueError("campaign report does not match the plan")
     planned_ids = {case.case_id for case in plan.cases}
@@ -267,6 +264,8 @@ def _validated_documents(
     reviewed_ids = {review.comparison_id for review in reviews.reviews}
     if reviewed_ids != comparison_ids:
         raise ValueError("formal evidence needs at least one human review per comparison")
+    if plan.scope is not None:
+        _require_scoped_comparisons(plan, corpus, report, public_bundle, answer_key)
     expected_summary = summarize_benchmark(
         plan=plan,
         results=report.results,
@@ -285,6 +284,61 @@ def _validated_documents(
         EvidenceRole.REVIEWS: reviews,
         EvidenceRole.SUMMARY: summary,
     }
+
+
+def _require_scoped_comparisons(
+    plan: BenchmarkPlan,
+    corpus: BenchmarkCorpus,
+    report: BenchmarkRunReport,
+    public_bundle: BlindPublicBundle,
+    answer_key: BlindAnswerKey,
+) -> None:
+    """Prevent omitted comparisons or substituted stories in new formal scopes."""
+    cases = {case.case_id: case for case in plan.cases}
+    by_prompt = {
+        (case.prompt_id, case.prompt_version, case.target_key): case for case in plan.cases
+    }
+    successful = {
+        result.case_id: result.output
+        for result in report.results
+        if result.status is BenchmarkCaseStatus.SUCCEEDED
+    }
+    expected: set[frozenset[UUID]] = set()
+    for prompt in corpus.prompts:
+        for left, right in DEFAULT_COMPARISON_PAIRS:
+            left_case = by_prompt.get((prompt.prompt_id, prompt.version, left))
+            right_case = by_prompt.get((prompt.prompt_id, prompt.version, right))
+            if (
+                left_case is not None
+                and right_case is not None
+                and left_case.case_id in successful
+                and right_case.case_id in successful
+            ):
+                expected.add(frozenset((left_case.case_id, right_case.case_id)))
+    actual = [frozenset((a.candidate_a_case_id, a.candidate_b_case_id)) for a in answer_key.answers]
+    if len(actual) != len(set(actual)) or set(actual) != expected:
+        raise ValueError("formal review packet must cover all scoped successful comparisons")
+    comparisons = {comparison.comparison_id: comparison for comparison in public_bundle.comparisons}
+    prompts = {(prompt.prompt_id, prompt.version): prompt for prompt in corpus.prompts}
+    for answer in answer_key.answers:
+        comparison = comparisons[answer.comparison_id]
+        for case_id, document in (
+            (answer.candidate_a_case_id, comparison.candidate_a),
+            (answer.candidate_b_case_id, comparison.candidate_b),
+        ):
+            case = cases[case_id]
+            output = successful[case_id]
+            prompt = prompts[(case.prompt_id, case.prompt_version)]
+            if (
+                output is None
+                or (comparison.prompt_id, comparison.prompt_version)
+                != (prompt.prompt_id, prompt.version)
+                or comparison.prompt != prompt.prompt
+                or document.title != output.title
+                or document.content != output.content
+                or document.content_sha256 != output.content_sha256
+            ):
+                raise ValueError("formal review documents must match exact scoped case outputs")
 
 
 def _manifest(

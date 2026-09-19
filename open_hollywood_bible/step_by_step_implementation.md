@@ -1189,6 +1189,48 @@ evidence and documentation rather than rerunning the application build/test suit
 **Product Step 19 remains IN PROGRESS** pending semantic review, human quality/
 preference, cost acceptance and repeatability; no later product phase is started.
 
+### Cloud-first harness configuration completed - 2026-09-19
+
+Item 1 of the remaining Step 19 engineering work is **COMPLETE**. New campaign
+plans explicitly declare `cloud-first` (12 Cloud + 12 direct baseline cases) or
+`all-profiles` (the existing 48-case default). Cloud-first planning needs only a
+complete Cloud preset and freezes the baseline from its scene-writer selection.
+Execution and approval defaults follow the plan; out-of-scope targets fail.
+
+Plan schema 2 binds the complete declared matrix and seeds to the frozen corpus.
+Summaries omit excluded profiles while retaining missing/failed planned cases in
+the denominator. Sealing requires every terminal result, every eligible successful
+comparison, exact output content, human reviews and a matching summary. Legacy
+schema-1 hashes, summaries and sealing requirements remain intact; old Cloud
+canaries do not become completed formal campaigns. Operator commands and design
+are documented in the [benchmark guide](../benchmarks/README.md) and
+[ADR 0016](../docs/adr/0016-scoped-benchmark-campaigns.md).
+
+Validation passed: 537 Python tests, Ruff lint/format, strict mypy on 160 files,
+frontend format/lint/type checks, 11 Vitest tests and production build. Sixteen new
+cases cover scoped execution/evidence and historical compatibility. All six actual
+v29/v33 campaign plan hashes and report bindings also passed read-only verification.
+Two older operator fixtures now use complete matrices over smaller test corpora.
+An existing parallel Blueprint recovery test failed once in the initial full run,
+then passed isolated and in the final full run without test or workflow changes;
+this intermittent result is retained for item 3, with no asserted root cause.
+
+The user's next-model direction is recorded: after v0.1-alpha, limited evaluation
+of additional models, tentatively GPT and Gemini; exact choices remain undecided.
+Plans remain provider/model-neutral. The CLI still executes through Ollama
+transports; this work adds no native GPT/Gemini adapters or live model runs.
+Production prompt v33, graph v9, runtime limits and approval rules are unchanged.
+
+Remaining engineering/evaluation sequence:
+
+- [x] 1. Make Cloud-first evaluation a supported harness configuration.
+- [ ] 2. Distinguish unknown cost from an actual zero cost.
+- [ ] 3. Complete remaining failure-path verification.
+- [ ] 4. Execute full premise-to-story Cloud evaluation against the direct baseline.
+- [ ] 5. Establish repeatability and seal the formal evidence after human review.
+
+**Product Step 19 remains IN PROGRESS.** No later product phase has started.
+
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 
 21. [ ] **Package the stable system with Tauri** and test crash/restart, offline, missing-model, invalid-key, provider-timeout, and low-disk-space behavior.

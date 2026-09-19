@@ -45,8 +45,7 @@ def summarize_benchmark(
         raise ValueError("benchmark results contain cases outside the plan")
 
     target_metrics = tuple(
-        _target_metrics(target, plan.cases, result_by_id)
-        for target in ("baseline", "local", "cloud", "hybrid")
+        _target_metrics(target, plan.cases, result_by_id) for target in plan.target_keys
     )
     all_reviews = review_bundle.reviews if review_bundle is not None else ()
     human = _human_metrics(

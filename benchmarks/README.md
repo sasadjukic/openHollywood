@@ -12,20 +12,50 @@ Validate it and print its canonical digest:
 uv run --extra api python scripts/evaluation_harness.py validate-corpus
 ```
 
-After all three model presets are completely configured in the local database,
-create a campaign plan:
+## Campaign scope
+
+For the current Cloud-first qualification phase, configure the complete Cloud
+preset in the local database, then create a new campaign plan:
 
 ```powershell
 uv run --extra api python scripts/evaluation_harness.py plan `
+  --scope cloud-first `
   --database data/open_hollywood.db `
   --output data/evaluations/campaign-plan.json
 ```
 
-The plan expands the corpus into 48 cases: one direct single-model baseline and
-Local, Cloud, and Hybrid agentic runs for every prompt. It pins the corpus hash,
-workflow versions, exact secret-free profile configurations, model identifiers,
-and per-prompt seeds. Existing plan files are not overwritten unless
-`--overwrite` is explicit.
+The scope fixes the required matrix for all 12 frozen prompts:
+
+| Scope | Required presets | Cases | Blind pairs when all cases succeed |
+| --- | --- | ---: | ---: |
+| `cloud-first` | Cloud | 24: 12 baseline + 12 Cloud | 12 Cloud/baseline |
+| `all-profiles` (CLI default) | Local, Cloud, Hybrid | 48: 12 per target | 60 across the existing five comparison types |
+
+Pass `--scope all-profiles`, or omit `--scope`, to retain the full matrix.
+Cloud-first does not require Local or Hybrid to be configured. The direct baseline
+uses the frozen Cloud scene-writer selection. Plans pin provider/model identities,
+exact secret-free profile configurations, corpus hash, workflow versions and seeds.
+New schema-2 plans also pin their explicit scope and require one complete,
+consistent matrix across the corpus. Use a new campaign ID and output location for
+a different model or scope. Existing files are protected unless `--overwrite` is
+explicit; do not overwrite historical evidence.
+
+Schema-1 plans remain readable with unchanged canonical hashes and historical
+completion requirements. In particular, the old 48-case v29/v33 canary plans cannot
+be relabeled or sealed as complete Cloud-first campaigns from their Cloud results.
+A new scoped plan starts a new campaign. See
+[ADR 0016](../docs/adr/0016-scoped-benchmark-campaigns.md).
+
+Provider and model choices are independent of scope. The current executable CLI
+uses Ollama transports, including Ollama Cloud; provider-neutral plan support
+does not supply native OpenAI or Gemini adapters. Keep later model comparisons
+in separate campaigns with their exact identities and settings frozen.
+
+The commands below use one campaign plan/report pair throughout. Use your chosen
+isolated campaign database and output directory consistently. Planning is offline;
+`run-baseline`, `prepare-agentic` and `run-agentic` invoke the configured models.
+
+## Execution and review
 
 Run or resume the 12 direct single-model baseline cases:
 
@@ -48,13 +78,20 @@ invocation, and complete story version in SQLite. It assigns only syntactic
 hard gates automatically. Gates requiring literary judgment remain `null`
 until a blind reviewer submits the canonical rubric.
 
-Run or resume agentic Blueprint preparation. The command stops at the mandatory
-human checkpoint and never approves a Blueprint on the operator's behalf:
+Run or resume agentic Blueprint preparation. Preparation, Blueprint review and
+approval, and production default to the agentic targets in the plan: Cloud only
+for `cloud-first`, all three profiles for `all-profiles`. An explicit `--target`
+excluded from the plan is rejected. Existing `run-agentic --batch-size 4
+--batch-number 1` selection still supports three Cloud batches in one campaign;
+use the same report for all batches and the baseline.
+
+Preparation stops at the mandatory human checkpoint and never approves a
+Blueprint on the operator's behalf:
 
 ```powershell
 uv run --extra api python scripts/evaluation_harness.py prepare-agentic `
   --database data/open_hollywood.db `
-  --plan data/benchmarks/v0.1/formal-2026-08-01/plan.json
+  --plan data/evaluations/campaign-plan.json
 ```
 
 Once every selected case has either failed terminally or reached that checkpoint,
@@ -64,11 +101,11 @@ CSV. This step is offline and makes no model calls:
 ```powershell
 uv run --extra api python scripts/evaluation_harness.py package-blueprint-review `
   --database data/open_hollywood.db `
-  --plan data/benchmarks/v0.1/formal-2026-08-01/plan.json `
+  --plan data/evaluations/campaign-plan.json `
   --reviewer-id primary-reviewer `
-  --packet-output data/benchmarks/v0.1/formal-2026-08-01/blueprint-review-packet.json `
-  --guide-output data/benchmarks/v0.1/formal-2026-08-01/blueprint-review-guide.md `
-  --form-output data/benchmarks/v0.1/formal-2026-08-01/blueprint-review.csv
+  --packet-output data/evaluations/blueprint-review-packet.json `
+  --guide-output data/evaluations/blueprint-review-guide.md `
+  --form-output data/evaluations/blueprint-review.csv
 ```
 
 Review every Blueprint in the Markdown dossier. Enter `yes` in `approved` only
@@ -80,9 +117,9 @@ version or digest no longer matches the packet. It is also offline:
 ```powershell
 uv run --extra api python scripts/evaluation_harness.py approve-blueprints `
   --database data/open_hollywood.db `
-  --plan data/benchmarks/v0.1/formal-2026-08-01/plan.json `
-  --packet data/benchmarks/v0.1/formal-2026-08-01/blueprint-review-packet.json `
-  --review-form data/benchmarks/v0.1/formal-2026-08-01/blueprint-review.csv
+  --plan data/evaluations/campaign-plan.json `
+  --packet data/evaluations/blueprint-review-packet.json `
+  --review-form data/evaluations/blueprint-review.csv
 ```
 
 Each applied approval writes a durable human event containing the reviewer ID,
@@ -93,8 +130,8 @@ After all approvals are applied, run or resume autonomous production:
 ```powershell
 uv run --extra api python scripts/evaluation_harness.py run-agentic `
   --database data/open_hollywood.db `
-  --plan data/benchmarks/v0.1/formal-2026-08-01/plan.json `
-  --report data/benchmarks/v0.1/formal-2026-08-01/report.json
+  --plan data/evaluations/campaign-plan.json `
+  --report data/evaluations/campaign-report.json
 ```
 
 Create a private blinding key, then build separate public and private review
@@ -125,8 +162,61 @@ Supplying `--reviews` also requires the separate `--answer-key`. Review files
 use the strict `HumanReviewBundle` contract, including campaign identity and
 unique reviewer/comparison pairs.
 
-The private blinding key and generated answer key must not be distributed with
-the public A/B review packet. None of these files may contain API keys.
+Cloud-first summaries contain only baseline and Cloud metrics. Missing or failed
+Cloud cases remain in the 12-case completion denominator; excluded Local/Hybrid
+targets are neither failures nor passes. Blind packets contain only comparisons
+whose two stories completed, so retain unpaired failures in the technical report.
+
+Create the reviewer form and guide, then import it only after actual human review:
+
+```powershell
+uv run --extra api python scripts/evaluation_harness.py create-review-form `
+  --public-bundle data/evaluations/review-packet.json `
+  --reviewer-id primary-reviewer `
+  --output data/evaluations/review.csv `
+  --guide-output data/evaluations/review-guide.md
+
+uv run --extra api python scripts/evaluation_harness.py import-reviews `
+  --public-bundle data/evaluations/review-packet.json `
+  --input data/evaluations/review.csv `
+  --output data/evaluations/reviews.json
+```
+
+Recompute the summary with those reviews, then seal and verify the evidence:
+
+```powershell
+uv run --extra api python scripts/evaluation_harness.py summarize `
+  --plan data/evaluations/campaign-plan.json `
+  --report data/evaluations/campaign-report.json `
+  --reviews data/evaluations/reviews.json `
+  --answer-key data/evaluations/private-answer-key.json `
+  --output data/evaluations/summary.json `
+  --overwrite
+
+uv run --extra api python scripts/evaluation_harness.py seal-evidence `
+  --plan data/evaluations/campaign-plan.json `
+  --report data/evaluations/campaign-report.json `
+  --public-bundle data/evaluations/review-packet.json `
+  --answer-key data/evaluations/private-answer-key.json `
+  --reviews data/evaluations/reviews.json `
+  --summary data/evaluations/summary.json `
+  --output data/evaluations/evidence.zip
+
+uv run --extra api python scripts/evaluation_harness.py verify-evidence `
+  --archive data/evaluations/evidence.zip
+```
+
+Sealing a scoped campaign requires exactly one terminal result per planned case,
+all eligible successful comparison pairs, exact generated story content, complete
+human-review coverage and a matching recomputed summary. A terminal failure can
+be included in a complete evidence archive; sealing establishes evidence integrity,
+not that the campaign met the acceptance criteria. Partial batches cannot be sealed
+as a completed campaign. Cost accounting and independent live repeatability remain
+separate qualification work; this configuration does not resolve them.
+
+The private blinding key, generated answer key and sealed archive must not be
+distributed with the public A/B review packet. The archive contains private
+provenance. None of these files may contain API keys.
 
 ## Cross-version production canaries
 

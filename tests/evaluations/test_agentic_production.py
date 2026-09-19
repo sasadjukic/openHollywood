@@ -101,7 +101,6 @@ from open_hollywood_engine.evaluations import (
     BenchmarkCase,
     BenchmarkCaseExecutionError,
     BenchmarkCaseStatus,
-    BenchmarkPlan,
     BenchmarkProfileSnapshot,
     BenchmarkSystem,
     HardGate,
@@ -3984,6 +3983,7 @@ async def test_operator_runs_agentic_case_only_after_explicit_approval(
     tmp_path: Path,
 ) -> None:
     corpus = load_benchmark_corpus(CORPUS_PATH)
+    corpus = corpus.model_copy(update={"prompts": corpus.prompts[:1]})
     local = ModelSelection(
         provider="ollama",
         model_identifier="local-fixture",
@@ -3994,7 +3994,7 @@ async def test_operator_runs_agentic_case_only_after_explicit_approval(
         model_identifier="cloud-fixture",
         deployment=ModelDeployment.CLOUD,
     )
-    full_plan = build_benchmark_plan(
+    plan = build_benchmark_plan(
         campaign_id=CAMPAIGN_ID,
         corpus=corpus,
         baseline_model=cloud,
@@ -4024,16 +4024,7 @@ async def test_operator_runs_agentic_case_only_after_explicit_approval(
             "scene_production": SCENE_PRODUCTION_GRAPH_VERSION,
         },
     )
-    local_case = next(case for case in full_plan.cases if case.target_key == "local")
-    plan = BenchmarkPlan(
-        schema_version=full_plan.schema_version,
-        campaign_id=full_plan.campaign_id,
-        corpus_id=full_plan.corpus_id,
-        corpus_version=full_plan.corpus_version,
-        corpus_sha256=full_plan.corpus_sha256,
-        workflow_versions=full_plan.workflow_versions,
-        cases=(local_case,),
-    )
+    local_case = next(case for case in plan.cases if case.target_key == "local")
     session_factory = create_session_factory(database_engine)
     ModelProfileStore(session_factory).configure_profile(
         BUILTIN_PROFILE_IDS[ModelProfileMode.LOCAL],
@@ -4137,6 +4128,7 @@ async def test_operator_isolates_failed_blueprint_and_runs_approved_sibling(
     tmp_path: Path,
 ) -> None:
     corpus = load_benchmark_corpus(CORPUS_PATH)
+    corpus = corpus.model_copy(update={"prompts": corpus.prompts[:2]})
     local = ModelSelection(
         provider="ollama",
         model_identifier="local-fixture",
@@ -4157,7 +4149,7 @@ async def test_operator_isolates_failed_blueprint_and_runs_approved_sibling(
         )
         for mode in ModelProfileMode
     }
-    full_plan = build_benchmark_plan(
+    plan = build_benchmark_plan(
         campaign_id=CAMPAIGN_ID,
         corpus=corpus,
         baseline_model=cloud,
@@ -4167,8 +4159,7 @@ async def test_operator_isolates_failed_blueprint_and_runs_approved_sibling(
             "scene_production": SCENE_PRODUCTION_GRAPH_VERSION,
         },
     )
-    local_cases = tuple(case for case in full_plan.cases if case.target_key == "local")[:2]
-    plan = full_plan.model_copy(update={"cases": local_cases})
+    local_cases = tuple(case for case in plan.cases if case.target_key == "local")
     session_factory = create_session_factory(database_engine)
     ModelProfileStore(session_factory).configure_profile(
         BUILTIN_PROFILE_IDS[ModelProfileMode.LOCAL],

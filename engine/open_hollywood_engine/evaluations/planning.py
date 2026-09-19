@@ -6,21 +6,16 @@ from collections.abc import Mapping
 from uuid import UUID, uuid5
 
 from open_hollywood_engine.evaluations.contracts import (
-    BENCHMARK_SCHEMA_VERSION,
+    BENCHMARK_PLAN_SCHEMA_VERSION,
     BenchmarkCase,
     BenchmarkCorpus,
     BenchmarkModelTarget,
     BenchmarkPlan,
     BenchmarkProfileSnapshot,
+    BenchmarkScope,
     BenchmarkSystem,
 )
 from open_hollywood_engine.models import ModelProfileMode, ModelSelection
-
-_PROFILE_ORDER = (
-    ModelProfileMode.LOCAL,
-    ModelProfileMode.CLOUD,
-    ModelProfileMode.HYBRID,
-)
 
 
 def build_benchmark_plan(
@@ -30,10 +25,11 @@ def build_benchmark_plan(
     baseline_model: ModelSelection,
     profiles: Mapping[ModelProfileMode, BenchmarkProfileSnapshot],
     workflow_versions: Mapping[str, str],
+    scope: BenchmarkScope = BenchmarkScope.ALL_PROFILES,
 ) -> BenchmarkPlan:
-    """Expand every prompt into one baseline and three agentic cases."""
-    if set(profiles) != set(_PROFILE_ORDER):
-        raise ValueError("benchmark plan requires Local, Cloud, and Hybrid profiles")
+    """Expand every prompt into the explicitly selected comparison matrix."""
+    if set(profiles) != set(scope.agentic_modes):
+        raise ValueError(f"benchmark profiles must match the {scope.value} scope")
     if any(snapshot.mode is not mode for mode, snapshot in profiles.items()):
         raise ValueError("benchmark profile keys must match their snapshot modes")
     normalized_versions = {key.strip(): value.strip() for key, value in workflow_versions.items()}
@@ -60,7 +56,7 @@ def build_benchmark_plan(
                 baseline_model=baseline_target,
             )
         )
-        for mode in _PROFILE_ORDER:
+        for mode in scope.agentic_modes:
             cases.append(
                 BenchmarkCase(
                     case_id=_case_id(
@@ -77,7 +73,8 @@ def build_benchmark_plan(
                 )
             )
     return BenchmarkPlan(
-        schema_version=BENCHMARK_SCHEMA_VERSION,
+        schema_version=BENCHMARK_PLAN_SCHEMA_VERSION,
+        scope=scope,
         campaign_id=campaign_id,
         corpus_id=corpus.corpus_id,
         corpus_version=corpus.corpus_version,
