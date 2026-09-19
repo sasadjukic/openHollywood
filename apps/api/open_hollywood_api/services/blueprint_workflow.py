@@ -62,9 +62,11 @@ from open_hollywood_api.services.run_controls import (
     RunControlStore,
     WorkflowPausedSignal,
     WorkflowStoppedSignal,
+    abandon_active_interval,
     finish_active_interval,
     start_active_interval,
 )
+from open_hollywood_api.services.workflow_recovery import reconcile_interrupted_invocations
 
 _MIN_GRAPH_STEPS = 8
 _MAX_GRAPH_STEPS = 64
@@ -320,6 +322,8 @@ class BlueprintWorkflowService:
 
         config = _graph_config(workflow_run_id, max_graph_steps)
         existing = await checkpointer.aget_tuple(config)
+        if status in {RunStatus.RUNNING, RunStatus.FAILED}:
+            await asyncio.to_thread(self._recover_interrupted_run, workflow_run_id)
         queued_retry = self._queued_retry(workflow_run_id)
         graph_input: BlueprintGraphState | None
         if existing is not None:
@@ -346,6 +350,23 @@ class BlueprintWorkflowService:
                 execution.checkpoint_id,
             )
         return execution
+
+    def _recover_interrupted_run(self, workflow_run_id: UUID) -> None:
+        with self._session_factory.begin() as session:
+            run = _require_run(session, workflow_run_id)
+            interrupted = reconcile_interrupted_invocations(session, workflow_run_id)
+            abandon_active_interval(run)
+            if interrupted:
+                _add_event(
+                    session,
+                    workflow_run_id,
+                    "workflow.execution.recovered",
+                    {
+                        "node": run.current_node,
+                        "interrupted_invocation_ids": [str(value) for value in interrupted],
+                    },
+                    source="workflow",
+                )
 
     async def queue_retry_from_node(
         self,

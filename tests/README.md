@@ -13,3 +13,8 @@ order, round cardinality, and termination invariants.
 embedded dialogue passes, exact-version critique targets, bounded revision,
 hard-limit dispositions, isolated retries, incomplete-output rejection, and
 content-free checkpoint state.
+
+The [Step 19 failure-path matrix](../docs/verification/step-19-failure-paths-2026-09-19.md)
+maps injected provider faults, process/cancellation boundaries and report-write
+failures to their regression tests. It also identifies the existing budget,
+adjudication and isolation checks and the limits of synthetic verification.

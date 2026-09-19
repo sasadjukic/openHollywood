@@ -62,11 +62,9 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session, joinedload, sessionmaker
 
 from open_hollywood_api.persistence.models import (
-    AgentInvocation,
     Artifact,
     ArtifactStatus,
     ArtifactVersion,
-    InvocationStatus,
     RunStatus,
     WorkflowEvent,
     WorkflowRun,
@@ -82,6 +80,7 @@ from open_hollywood_api.services.run_controls import (
     finish_active_interval,
     start_active_interval,
 )
+from open_hollywood_api.services.workflow_recovery import reconcile_interrupted_invocations
 
 MAX_PRODUCTION_GRAPH_STEPS = 128
 AGENTIC_BENCHMARK_PRODUCTION_MAX_REVISION_CYCLES = 2
@@ -753,31 +752,7 @@ class SceneProductionService:
     def _recover_interrupted_run(self, workflow_run_id: UUID) -> None:
         with self._session_factory.begin() as session:
             run = _require_run(session, workflow_run_id)
-            interrupted = list(
-                session.scalars(
-                    select(AgentInvocation).where(
-                        AgentInvocation.workflow_run_id == workflow_run_id,
-                        AgentInvocation.status == InvocationStatus.RUNNING,
-                    )
-                )
-            )
-            detected_at = datetime.now(UTC)
-            for invocation in interrupted:
-                invocation.status = InvocationStatus.FAILED
-                invocation.completed_at = detected_at
-                invocation.error_code = "interrupted_execution"
-                invocation.error_message = (
-                    "The previous process ended before recording a terminal result."
-                )
-                invocation.request_settings = {
-                    **invocation.request_settings,
-                    "failure_layer": "interrupted_execution",
-                    "interruption": {
-                        "detected_at": detected_at.isoformat(),
-                        "completed_at_basis": "recovery_detection_not_provider_completion",
-                        "provider_outcome": "unknown",
-                    },
-                }
+            interrupted = reconcile_interrupted_invocations(session, workflow_run_id)
             abandon_active_interval(run)
             run.status = RunStatus.PENDING
             _add_event(
@@ -786,7 +761,7 @@ class SceneProductionService:
                 "workflow.execution.recovered",
                 {
                     "node": run.current_node,
-                    "interrupted_invocation_ids": [str(i.id) for i in interrupted],
+                    "interrupted_invocation_ids": [str(value) for value in interrupted],
                 },
                 source="system",
             )

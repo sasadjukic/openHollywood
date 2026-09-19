@@ -6,10 +6,14 @@ import asyncio
 import hashlib
 import json
 from collections import Counter
+from collections.abc import Sequence
 from pathlib import Path
+from typing import Any
 from uuid import NAMESPACE_URL, UUID, uuid4, uuid5
 
 import pytest
+from langchain_core.runnables import RunnableConfig
+from langgraph.checkpoint.sqlite.aio import AsyncSqliteSaver
 from open_hollywood_api.persistence.database import create_session_factory
 from open_hollywood_api.persistence.models import (
     Artifact,
@@ -69,14 +73,13 @@ class PersistingExecutor(BlueprintNodeExecutor):
         session_factory: sessionmaker[Session],
         *,
         fail_once: dict[BlueprintNode, Exception] | None = None,
-        fail_after_completed: dict[BlueprintNode, BlueprintNode] | None = None,
+        fail_after_checkpoint: asyncio.Event | None = None,
         delays: dict[BlueprintNode, float] | None = None,
     ) -> None:
         self._session_factory = session_factory
         self._fail_once = dict(fail_once or {})
-        self._fail_after_completed = dict(fail_after_completed or {})
+        self._fail_after_checkpoint = fail_after_checkpoint
         self._delays = dict(delays or {})
-        self._completed = {node: asyncio.Event() for node in BlueprintNode}
         self.calls: list[BlueprintNode] = []
         self.tasks: list[BlueprintNodeTask] = []
 
@@ -88,10 +91,8 @@ class PersistingExecutor(BlueprintNodeExecutor):
             await asyncio.sleep(delay)
         failure = self._fail_once.pop(task.node, None)
         if failure is not None:
-            dependency = self._fail_after_completed.get(task.node)
-            if dependency is not None:
-                await self._completed[dependency].wait()
-                await asyncio.sleep(0.01)
+            if self._fail_after_checkpoint is not None:
+                await asyncio.wait_for(self._fail_after_checkpoint.wait(), timeout=10)
             raise failure
 
         output_kinds = _OUTPUT_KINDS[task.node]
@@ -100,7 +101,6 @@ class PersistingExecutor(BlueprintNodeExecutor):
             task,
             output_kinds,
         )
-        self._completed[task.node].set()
         return BlueprintNodeResult(artifacts=references)
 
     def _persist_outputs(
@@ -524,15 +524,29 @@ async def test_fork_creates_child_thread_and_preserves_source_lineage(
 async def test_failed_parallel_superstep_resumes_without_repeating_successful_sibling(
     migrated_database_path: Path,
     database_engine: Engine,
+    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     session_factory = _session_factory(database_engine)
     workflow_run_id = _persist_run(session_factory)
+    world_checkpointed = asyncio.Event()
+    original_write = AsyncSqliteSaver.aput_writes
+
+    async def notify_durable_world(
+        saver: AsyncSqliteSaver,
+        config: RunnableConfig,
+        writes: Sequence[tuple[str, Any]],
+        task_id: str,
+        task_path: str = "",
+    ) -> None:
+        await original_write(saver, config, writes, task_id, task_path)
+        if ("completed_nodes", [BlueprintNode.WORLD_SPECIALIST.value]) in writes:
+            world_checkpointed.set()
+
+    monkeypatch.setattr(AsyncSqliteSaver, "aput_writes", notify_durable_world)
     first_executor = PersistingExecutor(
         session_factory,
         fail_once={BlueprintNode.CHARACTER_SPECIALIST: RuntimeError("character model unavailable")},
-        fail_after_completed={
-            BlueprintNode.CHARACTER_SPECIALIST: BlueprintNode.WORLD_SPECIALIST,
-        },
+        fail_after_checkpoint=world_checkpointed,
     )
 
     async with BlueprintWorkflowService(
@@ -542,6 +556,7 @@ async def test_failed_parallel_superstep_resumes_without_repeating_successful_si
     ) as service:
         with pytest.raises(RuntimeError, match="character model unavailable"):
             await service.execute(workflow_run_id)
+    assert world_checkpointed.is_set()
 
     with session_factory() as session:
         failed_run = session.get(WorkflowRun, workflow_run_id)
