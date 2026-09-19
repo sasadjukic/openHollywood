@@ -1225,7 +1225,7 @@ Remaining engineering/evaluation sequence:
 
 - [x] 1. Make Cloud-first evaluation a supported harness configuration.
 - [x] 2. Distinguish unknown cost from an actual zero cost (completed 2026-09-19 below).
-- [ ] 3. Complete remaining failure-path verification.
+- [x] 3. Complete remaining failure-path verification (completed 2026-09-19 below).
 - [ ] 4. Execute full premise-to-story Cloud evaluation against the direct baseline.
 - [ ] 5. Establish repeatability and seal the formal evidence after human review.
 
@@ -1274,6 +1274,46 @@ an actual billed-spend ceiling; no pricing or subscription allocation is invente
 
 **Product Step 19 remains IN PROGRESS.** Items 3-5, human review and actual cost
 qualification remain outstanding. No later product phase has started.
+
+### Failure-path verification completed - 2026-09-19
+
+Item 3 of the remaining Step 19 engineering work is **COMPLETE** for the
+application/harness paths documented in the
+[failure-path verification matrix](../docs/verification/step-19-failure-paths-2026-09-19.md).
+Twenty-five new parametrized cases exercise Cloud transport faults through
+persisted baseline/Blueprint execution, process loss and committed-output recovery,
+production timeout exhaustion, active-call shutdown/user stop, and failed report
+writes. Existing budget, bounded adjudication and case-isolation tests remain part
+of the verification evidence.
+
+The checks reproduced and fixed two defects. Blueprint recovery could complete
+while leaving a lost provider invocation RUNNING; it now reconciles orphaned calls
+using production's shared recovery routine and preserves unknown outcome/cost.
+Process loss remains in budget/cost accounting but supplies no false response-repair
+instruction. Worker shutdown could cancel the same execution twice and interrupt
+terminal-call cleanup; it now waits for cancellation cleanup before closing the
+claimant, and repeated stop commands avoid a second cancellation.
+
+The intermittent parallel Blueprint recovery test now waits for the successful
+sibling's durable SQLite pending writes, replacing the previous 10 ms timing
+assumption. Its original assertion remains intact. Separate tests verify that
+outputs committed before graph completion are reused without another provider
+call or artifact version. Accepted scenes and prior artifact hashes survive
+production recovery. Failed report writes preserve prior bytes and recover from
+persisted output without another model call.
+
+Validation passed: **585 Python tests**, plus **30 affected tests** after the final
+repair-context adjustment; Ruff lint/format, strict mypy on **165 files**, frontend
+format/lint/type checks, **11 Vitest tests** and production build. No live model
+request, user-database write or historical-evidence rewrite was performed. No
+migration is required. Prompt v33, graph v9, routing, retry/revision allowances and
+budgets remain unchanged.
+
+This is deterministic engineering evidence, not live adjudicator-quality or
+physical OS/disk-failure certification. Packaged desktop failure testing remains
+Step 21 work. **Product Step 19 remains IN PROGRESS**, with items 4-5, real human
+review and actual cost qualification still outstanding. No later product phase
+has started.
 
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 

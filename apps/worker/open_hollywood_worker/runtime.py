@@ -88,10 +88,16 @@ class WorkflowWorker:
     async def stop(self) -> None:
         """Cancel active work and close the claiming loop."""
         self._stopping = True
-        for task in set(self._active_tasks.values()):
-            task.cancel()
+        active_tasks = tuple(set(self._active_tasks.values()))
+        for task in active_tasks:
+            if not task.done() and not task.cancelling():
+                task.cancel()
+        # Let provider cancellation persist its terminal invocation before the
+        # claimant is cancelled; a second cancellation interrupts that cleanup.
+        await asyncio.gather(*active_tasks, return_exceptions=True)
         if self._loop_task is not None:
-            self._loop_task.cancel()
+            if not self._loop_task.done():
+                self._loop_task.cancel()
             with suppress(asyncio.CancelledError):
                 await self._loop_task
         self._loop_task = None
@@ -100,7 +106,7 @@ class WorkflowWorker:
     def cancel_active_run(self, workflow_run_id: UUID) -> None:
         """Cancel an open provider call after a durable stop command is recorded."""
         task = self._active_tasks.get(workflow_run_id)
-        if task is not None:
+        if task is not None and not task.done() and not task.cancelling():
             task.cancel()
         self._wake.set()
 

@@ -621,6 +621,9 @@ def _retry_context(
         invocation
         for invocation in candidates
         if invocation.request_settings.get("task_fingerprint") == task_fingerprint
+        # Process loss supplies no rejected response to repair. The old call
+        # still counts toward the aggregate run budget and cost evidence.
+        and invocation.error_code != "interrupted_execution"
         and invocation.request_settings.get("prompt_template_version")
         == BLUEPRINT_MODEL_PROMPT_VERSION
     )

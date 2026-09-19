@@ -13,6 +13,8 @@ from open_hollywood_api.persistence.database import create_session_factory
 from open_hollywood_api.persistence.models import (
     AgentInvocation,
     Artifact,
+    ArtifactVersion,
+    InvocationStatus,
     RunStatus,
     WorkflowRun,
 )
@@ -32,7 +34,13 @@ from open_hollywood_api.services.workflow_commands import QueuedWorkflowCommandS
 from open_hollywood_api.services.workspace import WorkspaceStore
 from open_hollywood_engine.artifacts import ArtifactKind
 from open_hollywood_engine.evaluations import load_benchmark_corpus
-from open_hollywood_engine.models import ModelDeployment, ModelProfileMode, ModelSelection
+from open_hollywood_engine.models import (
+    ModelDeployment,
+    ModelProfileMode,
+    ModelRequest,
+    ModelResponse,
+    ModelSelection,
+)
 from open_hollywood_engine.workflows import (
     SCENE_PRODUCTION_WORKFLOW_NAME,
     BlueprintDecisionAction,
@@ -202,6 +210,123 @@ async def test_worker_claims_browser_story_and_completes_production(
         )
         assert invocation_count is not None and invocation_count > 0
         assert scene_count is not None and scene_count >= 3
+
+
+@pytest.mark.parametrize("operator_stop", [False, True])
+async def test_worker_cancels_active_call_and_restarts_only_unfinished_work(
+    operator_stop: bool,
+    migrated_database_path: Path,
+    database_engine: Engine,
+) -> None:
+    sessions = create_session_factory(database_engine)
+    prompt = load_benchmark_corpus(CORPUS_PATH).prompts[0]
+    started = asyncio.Event()
+
+    class BlockingGateway(ProductionFixtureGateway):
+        async def generate(self, request: ModelRequest) -> ModelResponse:
+            if request.invocation.specialist_role == "premise_architect" and not started.is_set():
+                started.set()
+                await asyncio.Event().wait()
+            return await super().generate(request)
+
+    gateway = BlockingGateway(prompt.prompt, prompt)
+    profiles = ModelProfileStore(sessions)
+    profile_id = BUILTIN_PROFILE_IDS[ModelProfileMode.CLOUD]
+    profiles.configure_profile(
+        profile_id,
+        local_model=None,
+        cloud_model=ModelSelection(
+            provider="ollama", model_identifier="cloud-fixture", deployment=ModelDeployment.CLOUD
+        ),
+    )
+    profiles.activate_profile(profile_id)
+    workspace = WorkspaceStore(sessions)
+    created = workspace.create_story_project(request_id=uuid4(), premise=prompt.prompt, title=None)
+    async with (
+        BlueprintWorkflowService(
+            migrated_database_path,
+            sessions,
+            ProfileRoutedBlueprintNodeExecutor(session_factory=sessions, gateway=gateway),
+        ) as blueprint,
+        SceneProductionService(
+            database_path=migrated_database_path,
+            session_factory=sessions,
+            executor=ProfileRoutedProductionExecutor(session_factory=sessions, gateway=gateway),
+        ) as production,
+    ):
+        worker = WorkflowWorker(
+            session_factory=sessions,
+            blueprint_service=blueprint,
+            production_service=production,
+            poll_interval_seconds=0.01,
+        )
+        await worker.start()
+        try:
+            await asyncio.wait_for(started.wait(), timeout=10)
+            with sessions() as session:
+                original = {
+                    v.id: v.content_sha256 for v in session.scalars(select(ArtifactVersion))
+                }
+                active = session.scalar(
+                    select(AgentInvocation).where(
+                        AgentInvocation.status == InvocationStatus.RUNNING
+                    )
+                )
+                assert active is not None
+                active_id = active.id
+            if operator_stop:
+                commands = QueuedWorkflowCommandService(
+                    sessions,
+                    blueprint,
+                    production,
+                    wake_worker=worker.wake,
+                    cancel_active_run=worker.cancel_active_run,
+                )
+                command = RunControlCommand(id=uuid4(), action=RunControlAction.STOP)
+                await commands.apply_control(created.workflow_run_id, command)
+                await commands.apply_control(created.workflow_run_id, command)
+        finally:
+            await worker.stop()
+        with sessions() as session:
+            active = session.get(AgentInvocation, active_id)
+            assert active and active.status is not InvocationStatus.RUNNING
+            assert not active.output_versions
+            assert active.completed_at is not None
+
+        # A fresh claimant must recover shutdown work but respect a durable user stop.
+        restarted = WorkflowWorker(
+            session_factory=sessions,
+            blueprint_service=blueprint,
+            production_service=production,
+            poll_interval_seconds=0.01,
+        )
+        sibling = workspace.create_story_project(
+            request_id=uuid4(), premise=prompt.prompt, title=None
+        )
+        await restarted.start()
+        try:
+            await _wait_for(
+                lambda: _run_status(sessions, sibling.workflow_run_id) is RunStatus.PAUSED,
+                timeout_seconds=15,
+            )
+            assert _run_status(sessions, created.workflow_run_id) is (
+                RunStatus.CANCELLED if operator_stop else RunStatus.PAUSED
+            )
+            with sessions() as session:
+                assert (
+                    original.items()
+                    <= {
+                        v.id: v.content_sha256 for v in session.scalars(select(ArtifactVersion))
+                    }.items()
+                )
+                source = session.get(WorkflowRun, created.workflow_run_id)
+                assert source is not None
+                assert not source.child_workflow_runs  # No drafting before approval.
+                assert len(source.control_commands) == (1 if operator_stop else 0)
+                assert not any(i.status is InvocationStatus.RUNNING for i in source.invocations)
+                assert len(source.invocations) == (2 if operator_stop else 7)
+        finally:
+            await restarted.stop()
 
 
 async def test_worker_leaves_story_pending_until_a_complete_profile_is_active(
