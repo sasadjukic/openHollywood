@@ -3,11 +3,14 @@
 from __future__ import annotations
 
 from collections.abc import Iterable
+from decimal import Decimal
+from math import isfinite
 from statistics import fmean, median
 from uuid import UUID
 
 from open_hollywood_engine.evaluations.contracts import (
     BENCHMARK_SCHEMA_VERSION,
+    BENCHMARK_SUMMARY_SCHEMA_VERSION,
     BenchmarkCase,
     BenchmarkCaseResult,
     BenchmarkCaseStatus,
@@ -34,8 +37,27 @@ def summarize_benchmark(
     normal_cloud_run_budget_usd: float = 2.0,
 ) -> BenchmarkSummary:
     """Calculate the accepted v0.1 metrics and threshold outcomes."""
-    if normal_cloud_run_budget_usd < 0:
-        raise ValueError("normal cloud run budget must not be negative")
+    return _summarize_benchmark(
+        plan=plan,
+        results=results,
+        answer_key=answer_key,
+        review_bundle=review_bundle,
+        normal_cloud_run_budget_usd=normal_cloud_run_budget_usd,
+    )
+
+
+def _summarize_benchmark(
+    *,
+    plan: BenchmarkPlan,
+    results: Iterable[BenchmarkCaseResult],
+    answer_key: BlindAnswerKey | None,
+    review_bundle: HumanReviewBundle | None,
+    normal_cloud_run_budget_usd: float,
+    legacy_costs: bool = False,
+) -> BenchmarkSummary:
+    """Legacy cost arithmetic is reserved for verification of existing v1 seals."""
+    if not isfinite(normal_cloud_run_budget_usd) or normal_cloud_run_budget_usd < 0:
+        raise ValueError("normal cloud run budget must be finite and nonnegative")
     cases = {case.case_id: case for case in plan.cases}
     all_results = tuple(results)
     result_by_id = {result.case_id: result for result in all_results}
@@ -45,7 +67,8 @@ def summarize_benchmark(
         raise ValueError("benchmark results contain cases outside the plan")
 
     target_metrics = tuple(
-        _target_metrics(target, plan.cases, result_by_id) for target in plan.target_keys
+        _target_metrics(target, plan.cases, result_by_id, legacy_costs=legacy_costs)
+        for target in plan.target_keys
     )
     all_reviews = review_bundle.reviews if review_bundle is not None else ()
     human = _human_metrics(
@@ -57,15 +80,27 @@ def summarize_benchmark(
     planned_agentic = sum(metric.planned_cases for metric in agentic_metrics)
     succeeded_agentic = sum(metric.succeeded_cases for metric in agentic_metrics)
     completion_rate = succeeded_agentic / planned_agentic if planned_agentic else 0.0
-    cloud_costs = [
-        float(result.output.estimated_cost_usd)
+    cloud_outputs = [
+        result.output
         for case in plan.cases
         if case.target_key in {"cloud", "hybrid"}
         and (result := result_by_id.get(case.case_id)) is not None
         and result.status is BenchmarkCaseStatus.SUCCEEDED
         and result.output is not None
     ]
-    median_cloud_cost = median(cloud_costs) if cloud_costs else None
+    if legacy_costs:
+        cloud_costs = [float(output.estimated_cost_usd) for output in cloud_outputs]
+        cost_accepted = median(cloud_costs) <= normal_cloud_run_budget_usd if cloud_costs else None
+    else:
+        known_costs = [
+            cost for output in cloud_outputs if (cost := output.known_cost_usd) is not None
+        ]
+        expected_costs = sum(case.target_key in {"cloud", "hybrid"} for case in plan.cases)
+        cost_accepted = (
+            median(known_costs) <= Decimal(str(normal_cloud_run_budget_usd))
+            if known_costs and len(known_costs) == expected_costs
+            else None
+        )
     criteria = BenchmarkSuccessCriteria(
         technical_completion_at_least_95_percent=completion_rate >= 0.95,
         severe_continuity_free_at_least_80_percent=(
@@ -80,14 +115,12 @@ def summarize_benchmark(
         agentic_preference_at_least_60_percent=(
             human.preference_rate >= 0.60 if human.preference_rate is not None else None
         ),
-        median_cloud_cost_within_budget=(
-            median_cloud_cost <= normal_cloud_run_budget_usd
-            if median_cloud_cost is not None
-            else None
-        ),
+        median_cloud_cost_within_budget=cost_accepted,
     )
     return BenchmarkSummary(
-        schema_version=BENCHMARK_SCHEMA_VERSION,
+        schema_version=(
+            BENCHMARK_SCHEMA_VERSION if legacy_costs else BENCHMARK_SUMMARY_SCHEMA_VERSION
+        ),
         campaign_id=plan.campaign_id,
         target_metrics=target_metrics,
         human_review_count=len(all_reviews),
@@ -211,6 +244,8 @@ def _target_metrics(
     target: str,
     cases: tuple[BenchmarkCase, ...],
     results: dict[UUID, BenchmarkCaseResult],
+    *,
+    legacy_costs: bool,
 ) -> BenchmarkTargetMetrics:
     target_cases = [case for case in cases if case.target_key == target]
     succeeded = [
@@ -219,13 +254,29 @@ def _target_metrics(
         if (result := results.get(case.case_id)) is not None
         and result.status is BenchmarkCaseStatus.SUCCEEDED
     ]
-    costs = [
-        float(result.output.estimated_cost_usd) for result in succeeded if result.output is not None
-    ]
+    if legacy_costs:
+        costs = [
+            float(result.output.estimated_cost_usd)
+            for result in succeeded
+            if result.output is not None
+        ]
+        median_cost = median(costs) if costs else None
+        known_count = unknown_count = None
+    else:
+        known_costs = [
+            cost
+            for result in succeeded
+            if result.output is not None and (cost := result.output.known_cost_usd) is not None
+        ]
+        known_count = len(known_costs)
+        unknown_count = len(target_cases) - known_count
+        median_cost = float(median(known_costs)) if known_costs and not unknown_count else None
     return BenchmarkTargetMetrics(
         target=target,
         planned_cases=len(target_cases),
         succeeded_cases=len(succeeded),
         technical_success_rate=(len(succeeded) / len(target_cases) if target_cases else 0.0),
-        median_cost_usd=median(costs) if costs else None,
+        median_cost_usd=median_cost,
+        known_cost_cases=known_count,
+        unknown_cost_cases=unknown_count,
     )

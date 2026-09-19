@@ -549,6 +549,7 @@ class ProfileRoutedBlueprintNodeExecutor(BlueprintNodeExecutor):
             invocation.input_tokens = response.usage.input_tokens
             invocation.output_tokens = response.usage.output_tokens
             invocation.estimated_cost_usd = response.estimated_cost_usd
+            invocation.cost_basis = response.cost_basis
             invocation.latency_ms = response.timing.total_ms
             _apply_response_metadata(invocation, response)
             invocation.schema_validation_succeeded = True
@@ -575,6 +576,7 @@ class ProfileRoutedBlueprintNodeExecutor(BlueprintNodeExecutor):
                 invocation.input_tokens = response.usage.input_tokens
                 invocation.output_tokens = response.usage.output_tokens
                 invocation.estimated_cost_usd = response.estimated_cost_usd
+                invocation.cost_basis = response.cost_basis
                 invocation.latency_ms = response.timing.total_ms
                 _apply_response_metadata(invocation, response)
             invocation.completed_at = datetime.now(UTC)

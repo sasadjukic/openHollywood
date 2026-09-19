@@ -37,6 +37,7 @@ from open_hollywood_engine.evaluations import (
     BenchmarkCaseStatus,
     BenchmarkCorpus,
     BenchmarkFailureAttempt,
+    BenchmarkInvocationCost,
     BenchmarkOutput,
     BenchmarkPlan,
     BenchmarkProfileSnapshot,
@@ -70,6 +71,7 @@ from open_hollywood_engine.models import (
     MessageRole,
     ModelCallBudget,
     ModelCapabilities,
+    ModelCostBasis,
     ModelDeployment,
     ModelDescriptor,
     ModelMessage,
@@ -156,6 +158,13 @@ class FixtureExecutor:
             output_tokens=500,
             latency_ms=1_000,
             estimated_cost_usd="1.00",
+            cost_evidence=(
+                BenchmarkInvocationCost(
+                    invocation_id=uuid5(case.case_id, "invocation"),
+                    basis=ModelCostBasis.PROVIDER_REPORTED,
+                    amount_usd="1.00",
+                ),
+            ),
             hard_gates={gate: True for gate in HardGate},
         )
 
@@ -613,6 +622,7 @@ async def test_direct_baseline_persists_idempotent_model_and_artifact_lineage(
             usage=ModelUsage(input_tokens=200, output_tokens=3_000),
             timing=ModelTiming(total_ms=12_345),
             estimated_cost_usd=Decimal("1.25"),
+            cost_basis=ModelCostBasis.PROVIDER_REPORTED,
         )
     )
     executor = DirectBaselineBenchmarkExecutor(
@@ -632,6 +642,7 @@ async def test_direct_baseline_persists_idempotent_model_and_artifact_lineage(
     assert first.word_count_adherence.status is WordCountStatus.WITHIN_TARGET
     assert first.word_count_adherence.deviation_words == 0
     assert first.estimated_cost_usd == "1.250000"
+    assert first.known_cost_usd == Decimal("1.25")
     assert first.hard_gates[HardGate.COMPLETE] is True
     assert first.hard_gates[HardGate.TARGET_FORMAT_VALID] is None
     assert first.hard_gates[HardGate.CENTRAL_FACTS_CONSISTENT] is None
@@ -645,6 +656,7 @@ async def test_direct_baseline_persists_idempotent_model_and_artifact_lineage(
         invocation = session.get(AgentInvocation, first.invocation_ids[0])
         assert invocation is not None
         assert invocation.status is InvocationStatus.SUCCEEDED
+        assert invocation.cost_basis is ModelCostBasis.PROVIDER_REPORTED
         assert invocation.request_settings["provider_response_model_identifier"] == "cloud-fixture"
         assert [version.id for version in invocation.input_versions] != []
         assert [version.id for version in invocation.output_versions] == list(
@@ -679,6 +691,7 @@ async def test_direct_baseline_reconciles_interrupted_attempt_before_retry(
         usage=ModelUsage(input_tokens=200, output_tokens=3_000),
         timing=ModelTiming(total_ms=12_345),
         estimated_cost_usd=Decimal("1.25"),
+        cost_basis=ModelCostBasis.PROVIDER_REPORTED,
     )
     interrupted = DirectBaselineBenchmarkExecutor(
         campaign_id=plan.campaign_id,
@@ -709,7 +722,13 @@ async def test_direct_baseline_reconciles_interrupted_attempt_before_retry(
             InvocationStatus.SUCCEEDED,
         ]
         assert invocations[0].error_code == "interrupted_execution"
-        assert output.invocation_ids == (invocations[1].id,)
+        assert output.invocation_ids == tuple(row.id for row in invocations)
+        assert output.known_cost_usd is None
+        assert output.cost_evidence is not None
+        assert [cost.basis for cost in output.cost_evidence] == [
+            ModelCostBasis.UNKNOWN,
+            ModelCostBasis.PROVIDER_REPORTED,
+        ]
 
 
 @pytest.mark.anyio

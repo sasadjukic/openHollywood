@@ -1309,6 +1309,7 @@ class ProfileRoutedProductionExecutor(SceneProductionExecutor):
             invocation.input_tokens = response.usage.input_tokens
             invocation.output_tokens = response.usage.output_tokens
             invocation.estimated_cost_usd = response.estimated_cost_usd
+            invocation.cost_basis = response.cost_basis
             invocation.latency_ms = response.timing.total_ms
             _apply_response_metadata(invocation, response)
             if operation is _Operation.CRITIC_ADJUDICATION:
@@ -1457,6 +1458,7 @@ class ProfileRoutedProductionExecutor(SceneProductionExecutor):
                 invocation.input_tokens = response.usage.input_tokens
                 invocation.output_tokens = response.usage.output_tokens
                 invocation.estimated_cost_usd = response.estimated_cost_usd
+                invocation.cost_basis = response.cost_basis
                 invocation.latency_ms = response.timing.total_ms
                 _apply_response_metadata(invocation, response)
             elif usage is not None:

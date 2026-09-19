@@ -115,6 +115,7 @@ from open_hollywood_engine.evaluations import (
 from open_hollywood_engine.models import (
     MODEL_PRESETS,
     ModelCallBudget,
+    ModelCostBasis,
     ModelDeployment,
     ModelProfileMode,
     ModelRequest,
@@ -352,6 +353,11 @@ class ProductionFixtureGateway(BlueprintFixtureGateway):
             usage=ModelUsage(input_tokens=400, output_tokens=600),
             timing=ModelTiming(total_ms=120),
             estimated_cost_usd=Decimal("0"),
+            cost_basis=(
+                ModelCostBasis.UNKNOWN
+                if request.model_identifier == "cloud-fixture"
+                else ModelCostBasis.LOCAL_INFERENCE
+            ),
         )
 
 
@@ -3967,12 +3973,43 @@ async def test_approved_blueprint_runs_durable_production_and_replays(
     assert output == legacy_artifact_replay
     assert output.workflow_run_id == execution.workflow_run_id
     assert len(output.invocation_ids) == 19
+    assert output.known_cost_usd == 0
+    assert output.cost_evidence is not None
+    assert len(output.cost_evidence) == 19  # Six Blueprint calls plus 13 production attempts.
+    assert all(cost.basis is ModelCostBasis.LOCAL_INFERENCE for cost in output.cost_evidence)
     assert len(output.artifact_version_ids) == 6
     assert output.content.count("\n\n") == 2
     assert output.word_count_adherence is not None
     assert output.word_count_adherence.status is WordCountStatus.UNDER_TARGET
     assert output.hard_gates[HardGate.COMPLETE] is True
     assert output.hard_gates[HardGate.TARGET_FORMAT_VALID] is None
+    assert len(gateway.requests) == request_count
+
+    # Missing pre-production or recovered-failure cost must spoil the whole total.
+    with session_factory() as session:
+        blueprint_invocation = session.scalar(
+            select(AgentInvocation).where(
+                AgentInvocation.workflow_run_id == prepared.workflow_run_id
+            )
+        )
+        recovered_invocation = session.scalar(
+            select(AgentInvocation).where(
+                AgentInvocation.workflow_run_id == execution.workflow_run_id,
+                AgentInvocation.status == InvocationStatus.FAILED,
+            )
+        )
+        assert blueprint_invocation is not None and recovered_invocation is not None
+        cost_gap_ids = (blueprint_invocation.id, recovered_invocation.id)
+    for cost_gap_id in cost_gap_ids:
+        with session_factory.begin() as session:
+            row = session.get(AgentInvocation, cost_gap_id)
+            assert row is not None
+            row.cost_basis = ModelCostBasis.UNKNOWN
+        assert (await case_executor.execute(case, prompt)).known_cost_usd is None
+        with session_factory.begin() as session:
+            row = session.get(AgentInvocation, cost_gap_id)
+            assert row is not None
+            row.cost_basis = ModelCostBasis.LOCAL_INFERENCE
     assert len(gateway.requests) == request_count
 
 

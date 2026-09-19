@@ -405,6 +405,7 @@ async def run_probe(
                 input_tokens=response.usage.input_tokens,
                 output_tokens=response.usage.output_tokens,
                 estimated_cost_usd=str(response.estimated_cost_usd),
+                cost_basis=response.cost_basis.value,
                 latency_ms=response.timing.total_ms,
             )
             active_secret_guard().ensure_safe(response, destination="isolated_probe_response")

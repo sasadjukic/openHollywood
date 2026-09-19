@@ -12,6 +12,7 @@ import httpx
 
 from open_hollywood_engine.models.contracts import (
     ModelCapabilities,
+    ModelCostBasis,
     ModelDeployment,
     ModelDescriptor,
     ModelRequest,
@@ -388,6 +389,11 @@ class OllamaGateway:
                 ),
             ),
             estimated_cost_usd=Decimal("0"),
+            cost_basis=(
+                ModelCostBasis.LOCAL_INFERENCE
+                if deployment is ModelDeployment.LOCAL
+                else ModelCostBasis.UNKNOWN
+            ),
             provider_model_identifier=provider_model_identifier,
         )
 

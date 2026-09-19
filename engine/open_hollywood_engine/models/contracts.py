@@ -23,6 +23,14 @@ class ModelDeployment(StrEnum):
     CLOUD = "cloud"
 
 
+class ModelCostBasis(StrEnum):
+    """Evidence for a per-call provider charge, excluding local operating costs."""
+
+    UNKNOWN = "unknown"
+    PROVIDER_REPORTED = "provider_reported"
+    LOCAL_INFERENCE = "local_inference"
+
+
 class MessageRole(StrEnum):
     """Provider-neutral chat message role."""
 
@@ -213,6 +221,7 @@ class ModelResponse:
     timing: ModelTiming
     estimated_cost_usd: Decimal
     provider_model_identifier: str | None = None
+    cost_basis: ModelCostBasis = ModelCostBasis.UNKNOWN
 
     def __post_init__(self) -> None:
         if not self.provider or not self.model_identifier:
@@ -223,8 +232,14 @@ class ModelResponse:
             raise ValueError("response content must not be empty")
         if self.created_at.utcoffset() is None:
             raise ValueError("created_at must include a timezone")
-        if self.estimated_cost_usd < 0:
-            raise ValueError("estimated_cost_usd must not be negative")
+        if not self.estimated_cost_usd.is_finite() or self.estimated_cost_usd < 0:
+            raise ValueError("estimated_cost_usd must be finite and nonnegative")
+        if not isinstance(self.cost_basis, ModelCostBasis):
+            raise ValueError("cost_basis must identify the cost evidence")
+        if self.cost_basis is ModelCostBasis.LOCAL_INFERENCE and (
+            self.deployment is not ModelDeployment.LOCAL or self.estimated_cost_usd != 0
+        ):
+            raise ValueError("local inference has zero provider charge and must execute locally")
 
 
 def _freeze_mapping(value: Mapping[str, JsonValue]) -> Mapping[str, JsonValue]:

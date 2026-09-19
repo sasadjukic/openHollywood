@@ -14,6 +14,7 @@ new ADR that supersedes the old one rather than rewriting history.
 
 - [Campaign operator guide: Cloud-first and all-profile scopes](../benchmarks/README.md)
 - [ADR 0016: explicitly scoped benchmark campaigns](adr/0016-scoped-benchmark-campaigns.md)
+- [ADR 0017: evidence-based cost acceptance](adr/0017-evidence-based-cost-acceptance.md)
 - [New-chat handoff: 31B Cloud production, three four-story batches](handoffs/31b-cloud-production-new-chat-2026-09-11.md)
 - [September 11 testing direction and E4B retrospective](benchmark_reports/model-testing-direction-2026-09-11.md)
 - [31B creative-writing evaluation register](benchmark_reports/gemma4-31b-evaluation-register-2026-09-11.md)

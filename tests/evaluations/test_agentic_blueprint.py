@@ -41,6 +41,7 @@ from open_hollywood_engine.evaluations import (
 )
 from open_hollywood_engine.models import (
     ModelCapabilities,
+    ModelCostBasis,
     ModelDeployment,
     ModelDescriptor,
     ModelProfileMode,
@@ -181,6 +182,11 @@ class BlueprintFixtureGateway:
             usage=ModelUsage(input_tokens=300, output_tokens=500),
             timing=ModelTiming(total_ms=100),
             estimated_cost_usd=Decimal("0"),
+            cost_basis=(
+                ModelCostBasis.UNKNOWN
+                if request.model_identifier == "cloud-fixture"
+                else ModelCostBasis.LOCAL_INFERENCE
+            ),
         )
 
     async def list_models(self) -> tuple[ModelDescriptor, ...]:
@@ -400,6 +406,9 @@ async def test_brief_rejects_model_attempt_to_rewrite_authoritative_fields(
         assert all(invocation.schema_validation_succeeded is False for invocation in invocations)
         assert [invocation.retry_count for invocation in invocations] == [0, 1]
         assert all(invocation.output_tokens == 500 for invocation in invocations)
+        assert all(
+            invocation.cost_basis is ModelCostBasis.LOCAL_INFERENCE for invocation in invocations
+        )
         assert all(
             invocation.request_settings["provider_finish_reason"] == "stop"
             for invocation in invocations

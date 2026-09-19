@@ -45,6 +45,7 @@ from open_hollywood_api.persistence.models import (
     WorkflowRun,
     agent_invocation_inputs,
 )
+from open_hollywood_api.services.evaluation_costs import invocation_cost_evidence
 
 DIRECT_STORY_WORKFLOW_NAME = "benchmark_direct_story"
 DIRECT_STORY_GRAPH_VERSION = "2"
@@ -118,6 +119,7 @@ class DirectBaselineBenchmarkExecutor:
                 thinking=False,
             ),
         )
+        response: ModelResponse | None = None
         try:
             response = await self._gateway.generate(request)
             _validate_response(
@@ -143,6 +145,7 @@ class DirectBaselineBenchmarkExecutor:
                 invocation_id=invocation_id,
                 code="cancelled_execution",
                 message="The direct Baseline call was cancelled before completion.",
+                response=response,
             )
             raise
         except BenchmarkCaseExecutionError as error:
@@ -151,6 +154,7 @@ class DirectBaselineBenchmarkExecutor:
                 invocation_id=invocation_id,
                 code=error.code,
                 message=str(error),
+                response=response,
             )
             raise
         except ModelGatewayError as error:
@@ -159,6 +163,7 @@ class DirectBaselineBenchmarkExecutor:
                 invocation_id=invocation_id,
                 code=error.code.value,
                 message=str(error),
+                response=response,
             )
             raise BenchmarkCaseExecutionError(error.code.value, str(error)) from error
         except Exception:
@@ -167,6 +172,7 @@ class DirectBaselineBenchmarkExecutor:
                 invocation_id=invocation_id,
                 code="unexpected_execution_failure",
                 message="The direct baseline failed outside the provider boundary.",
+                response=response,
             )
             raise
 
@@ -314,6 +320,7 @@ class DirectBaselineBenchmarkExecutor:
             invocation.input_tokens = response.usage.input_tokens
             invocation.output_tokens = response.usage.output_tokens
             invocation.estimated_cost_usd = response.estimated_cost_usd
+            invocation.cost_basis = response.cost_basis
             invocation.latency_ms = response.timing.total_ms
             invocation.request_settings = {
                 **invocation.request_settings,
@@ -383,21 +390,10 @@ class DirectBaselineBenchmarkExecutor:
                 )
             )
             session.flush()
-            return BenchmarkOutput(
-                title=title,
-                content=content,
-                content_sha256=content_sha256,
-                word_count=word_count,
-                word_count_adherence=word_count_adherence,
-                workflow_run_id=run.id,
-                artifact_version_ids=(version.id,),
-                invocation_ids=(invocation.id,),
-                input_tokens=response.usage.input_tokens,
-                output_tokens=response.usage.output_tokens,
-                latency_ms=response.timing.total_ms,
-                estimated_cost_usd=format(response.estimated_cost_usd, ".6f"),
-                hard_gates=hard_gates,
-            )
+        output = self._load_succeeded_output(case, prompt)
+        if output is None:
+            raise RuntimeError("completed baseline disappeared before its output was loaded")
+        return output
 
     def _fail_attempt(
         self,
@@ -406,12 +402,19 @@ class DirectBaselineBenchmarkExecutor:
         invocation_id: UUID,
         code: str,
         message: str,
+        response: ModelResponse | None = None,
     ) -> None:
         safe_message = message.strip()[:2_000] or "Benchmark execution failed."
         with self._session_factory.begin() as session:
             run = session.get(WorkflowRun, run_id)
             invocation = session.get(AgentInvocation, invocation_id)
             if invocation is not None:
+                if response is not None:
+                    invocation.input_tokens = response.usage.input_tokens
+                    invocation.output_tokens = response.usage.output_tokens
+                    invocation.estimated_cost_usd = response.estimated_cost_usd
+                    invocation.cost_basis = response.cost_basis
+                    invocation.latency_ms = response.timing.total_ms
                 invocation.status = InvocationStatus.FAILED
                 invocation.completed_at = datetime.now(UTC)
                 invocation.error_code = code
@@ -455,7 +458,6 @@ class DirectBaselineBenchmarkExecutor:
                     select(AgentInvocation)
                     .where(
                         AgentInvocation.workflow_run_id == run.id,
-                        AgentInvocation.status == InvocationStatus.SUCCEEDED,
                     )
                     .order_by(AgentInvocation.started_at, AgentInvocation.id)
                 )
@@ -483,6 +485,7 @@ class DirectBaselineBenchmarkExecutor:
                 workflow_run_id=run.id,
                 artifact_version_ids=(version.id,),
                 invocation_ids=tuple(invocation.id for invocation in invocations),
+                cost_evidence=invocation_cost_evidence(invocations),
                 input_tokens=sum(invocation.input_tokens for invocation in invocations),
                 output_tokens=sum(invocation.output_tokens for invocation in invocations),
                 latency_ms=sum(invocation.latency_ms or 0 for invocation in invocations),
