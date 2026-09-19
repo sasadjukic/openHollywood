@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+from decimal import Decimal
 from enum import StrEnum
 from typing import Annotated, Any, Literal, Self
 from uuid import UUID
@@ -11,6 +12,7 @@ from uuid import UUID
 from pydantic import BaseModel, ConfigDict, Field, StringConstraints, model_validator
 
 from open_hollywood_engine.models import (
+    ModelCostBasis,
     ModelDeployment,
     ModelProfileConfiguration,
     ModelProfileMode,
@@ -22,6 +24,7 @@ Sha256 = Annotated[str, StringConstraints(pattern=r"^[0-9a-f]{64}$")]
 
 BENCHMARK_SCHEMA_VERSION: Literal["1"] = "1"
 BENCHMARK_PLAN_SCHEMA_VERSION: Literal["2"] = "2"
+BENCHMARK_SUMMARY_SCHEMA_VERSION: Literal["2"] = "2"
 HUMAN_REVIEW_SCHEMA_VERSION: Literal["2"] = "2"
 CANONICAL_RUBRIC_NAME = "open-hollywood-story-quality"
 CANONICAL_RUBRIC_VERSION = "1"
@@ -427,6 +430,26 @@ class BenchmarkFailureAttempt(EvaluationModel):
     failure_layer: NonEmptyText | None = None
 
 
+class BenchmarkInvocationCost(EvaluationModel):
+    """Cost evidence for one exact invocation, including recovered attempts."""
+
+    invocation_id: UUID
+    basis: ModelCostBasis
+    amount_usd: Annotated[str, StringConstraints(pattern=r"^\d+(\.\d+)?$")] | None
+
+    @model_validator(mode="after")
+    def validate_cost(self) -> Self:
+        if (self.basis is ModelCostBasis.UNKNOWN) != (self.amount_usd is None):
+            raise ValueError("unknown costs need null amounts; known costs need explicit amounts")
+        if (
+            self.basis is ModelCostBasis.LOCAL_INFERENCE
+            and self.amount_usd is not None
+            and Decimal(self.amount_usd) != 0
+        ):
+            raise ValueError("local inference has zero provider charge")
+        return self
+
+
 class BenchmarkOutput(EvaluationModel):
     """Complete candidate document plus exact durable lineage."""
 
@@ -442,6 +465,9 @@ class BenchmarkOutput(EvaluationModel):
     output_tokens: int = Field(ge=0)
     latency_ms: int = Field(ge=0)
     estimated_cost_usd: Annotated[str, StringConstraints(pattern=r"^\d+(\.\d+)?$")]
+    cost_evidence: tuple[BenchmarkInvocationCost, ...] | None = Field(
+        default=None, exclude_if=lambda value: value is None
+    )
     hard_gates: dict[HardGate, bool | None]
 
     @model_validator(mode="after")
@@ -459,9 +485,31 @@ class BenchmarkOutput(EvaluationModel):
             raise ValueError("benchmark artifact version IDs must be unique")
         if len(set(self.invocation_ids)) != len(self.invocation_ids):
             raise ValueError("benchmark invocation IDs must be unique")
+        if self.cost_evidence is not None:
+            evidence_ids = [cost.invocation_id for cost in self.cost_evidence]
+            if len(set(evidence_ids)) != len(evidence_ids) or set(evidence_ids) != set(
+                self.invocation_ids
+            ):
+                raise ValueError("cost evidence must cover every output invocation exactly once")
         if set(self.hard_gates) != set(HardGate):
             raise ValueError("benchmark output must report every hard gate")
         return self
+
+    @property
+    def known_cost_usd(self) -> Decimal | None:
+        """Return a full provider-charge total only when every call is accounted for."""
+        if self.cost_evidence is None or any(
+            cost.amount_usd is None for cost in self.cost_evidence
+        ):
+            return None
+        return sum(
+            (
+                Decimal(cost.amount_usd)
+                for cost in self.cost_evidence
+                if cost.amount_usd is not None
+            ),
+            start=Decimal("0"),
+        )
 
 
 class BenchmarkCaseResult(EvaluationModel):
@@ -634,10 +682,14 @@ class BenchmarkTargetMetrics(EvaluationModel):
     succeeded_cases: int = Field(ge=0)
     technical_success_rate: float = Field(ge=0, le=1)
     median_cost_usd: float | None = Field(default=None, ge=0)
+    known_cost_cases: int | None = Field(default=None, ge=0, exclude_if=lambda value: value is None)
+    unknown_cost_cases: int | None = Field(
+        default=None, ge=0, exclude_if=lambda value: value is None
+    )
 
 
 class BenchmarkSuccessCriteria(EvaluationModel):
-    """Formal v0.1 thresholds; None means insufficient human data."""
+    """Formal v0.1 thresholds; None means insufficient review or cost evidence."""
 
     technical_completion_at_least_95_percent: bool
     severe_continuity_free_at_least_80_percent: bool | None
@@ -650,7 +702,7 @@ class BenchmarkSuccessCriteria(EvaluationModel):
 class BenchmarkSummary(EvaluationModel):
     """Aggregated campaign evidence without candidate story bodies."""
 
-    schema_version: Literal["1"]
+    schema_version: Literal["1", "2"]
     campaign_id: UUID
     target_metrics: tuple[BenchmarkTargetMetrics, ...]
     human_review_count: int = Field(ge=0)
@@ -663,6 +715,23 @@ class BenchmarkSummary(EvaluationModel):
         le=1,
     )
     criteria: BenchmarkSuccessCriteria
+
+    @model_validator(mode="after")
+    def validate_cost_coverage(self) -> Self:
+        for metric in self.target_metrics:
+            known, unknown = metric.known_cost_cases, metric.unknown_cost_cases
+            if self.schema_version == "1":
+                if known is not None or unknown is not None:
+                    raise ValueError("legacy summaries cannot declare cost coverage")
+            elif (
+                known is None
+                or unknown is None
+                or known + unknown != metric.planned_cases
+                or known > metric.succeeded_cases
+                or ((unknown > 0 or known == 0) != (metric.median_cost_usd is None))
+            ):
+                raise ValueError("cost coverage must account for every planned case")
+        return self
 
 
 def canonical_sha256(value: object) -> str:

@@ -200,8 +200,10 @@ order (for example, Cloud batches 1-3 at size 4). Production wall-clock budgets
 count persisted active node intervals rather than paused downtime, and
 an interrupted open interval is discarded when the durable graph is recovered.
 Cloud and Hybrid stories default to a configurable `$5.00` aggregate ceiling
-(`--cost-ceiling-usd`) while recorded provider cost remains the actual billed or
-reported amount; Local production retains its derived no-cloud ceiling. The
+(`--cost-ceiling-usd`); Local production retains its derived no-cloud ceiling.
+Recorded amounts now carry cost provenance. Ollama Cloud does not supply a dollar
+charge through the current adapter, so its numeric placeholder cannot establish
+cost acceptance or prove a billed-spend ceiling. The
 bounded second production attempt now receives safe structural validation
 diagnostics and records its retry ordinal without application-authored semantic
 repairs. Scene-production prompt contract v8 scopes benchmark requirements
@@ -226,6 +228,15 @@ legacy plan hashes and sealing requirements are preserved. See the
 The current qualification phase is Cloud-first. Formal comparative evaluation,
 actual blind human reviews, cost acceptance and repeatability remain pending, so
 Step 19 is not yet marked complete; Local and Hybrid qualification is deferred.
+
+Cost acceptance now requires explicit evidence for every invocation in every
+planned Cloud/Hybrid story, including Blueprint preparation and recovered attempts.
+Summary schema 2 reports known/unknown case coverage and leaves the median and
+budget criterion `null` when coverage is incomplete. Reported zero charges remain
+valid; unqualified historical amounts remain unknown. New evidence seals use
+schema 2; existing schema-1 archives still verify under their original policy.
+Migration 0008 adds invocation cost provenance without reinterpreting old amounts.
+See [ADR 0017](docs/adr/0017-evidence-based-cost-acceptance.md).
 
 The first Local v8 canary batch completed two of five production-runnable cases.
 Its failed invocations exposed that ordinary application validation messages

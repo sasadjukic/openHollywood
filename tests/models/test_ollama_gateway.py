@@ -13,6 +13,7 @@ from open_hollywood_engine.models import (
     InvocationContext,
     MessageRole,
     ModelCallBudget,
+    ModelCostBasis,
     ModelDeployment,
     ModelGatewayError,
     ModelGatewayErrorCode,
@@ -227,6 +228,7 @@ async def test_generate_maps_portable_settings_budget_schema_and_usage() -> None
     assert response.timing.total_ms == 2_500
     assert response.timing.generation_ms == 1_300
     assert response.estimated_cost_usd == 0
+    assert response.cost_basis is ModelCostBasis.LOCAL_INFERENCE
 
 
 async def test_cloud_response_preserves_requested_alias_and_reported_model() -> None:
@@ -242,6 +244,7 @@ async def test_cloud_response_preserves_requested_alias_and_reported_model() -> 
     assert response.model_identifier == "gemma4:31b-cloud"
     assert response.provider_model_identifier == "gemma4:31b"
     assert response.deployment is ModelDeployment.CLOUD
+    assert response.cost_basis is ModelCostBasis.UNKNOWN
 
 
 async def test_response_from_different_model_is_rejected() -> None:

@@ -27,9 +27,9 @@ from open_hollywood_engine.evaluations.contracts import (
     Sha256,
     canonical_sha256,
 )
-from open_hollywood_engine.evaluations.reporting import summarize_benchmark
+from open_hollywood_engine.evaluations.reporting import _summarize_benchmark
 
-EVIDENCE_SCHEMA_VERSION: Literal["1"] = "1"
+EVIDENCE_SCHEMA_VERSION: Literal["2"] = "2"
 UsdAmount = Annotated[str, StringConstraints(pattern=r"^\d+(\.\d+)?$")]
 
 
@@ -91,7 +91,7 @@ class CampaignEvidenceFile(EvaluationModel):
 class CampaignEvidenceManifest(EvaluationModel):
     """Self-describing seal for a complete formal campaign evidence set."""
 
-    schema_version: Literal["1"]
+    schema_version: Literal["1", "2"]
     campaign_id: UUID
     corpus_id: str
     corpus_version: str
@@ -135,6 +135,32 @@ def build_campaign_evidence_archive(
     normal_cloud_run_budget_usd: Decimal,
 ) -> tuple[CampaignEvidenceManifest, bytes]:
     """Validate, canonically encode, and seal one complete campaign."""
+    return _build_campaign_evidence_archive(
+        corpus=corpus,
+        plan=plan,
+        report=report,
+        public_bundle=public_bundle,
+        answer_key=answer_key,
+        reviews=reviews,
+        summary=summary,
+        normal_cloud_run_budget_usd=normal_cloud_run_budget_usd,
+        schema_version=EVIDENCE_SCHEMA_VERSION,
+    )
+
+
+def _build_campaign_evidence_archive(
+    *,
+    corpus: BenchmarkCorpus,
+    plan: BenchmarkPlan,
+    report: BenchmarkRunReport,
+    public_bundle: BlindPublicBundle,
+    answer_key: BlindAnswerKey,
+    reviews: HumanReviewBundle,
+    summary: BenchmarkSummary,
+    normal_cloud_run_budget_usd: Decimal,
+    schema_version: Literal["1", "2"],
+) -> tuple[CampaignEvidenceManifest, bytes]:
+    """Rebuild legacy archives only when verifying their original policy version."""
     documents = _validated_documents(
         corpus=corpus,
         plan=plan,
@@ -144,6 +170,7 @@ def build_campaign_evidence_archive(
         reviews=reviews,
         summary=summary,
         normal_cloud_run_budget_usd=normal_cloud_run_budget_usd,
+        schema_version=schema_version,
     )
     encoded = {role: _canonical_json_bytes(document) for role, document in documents.items()}
     manifest = _manifest(
@@ -155,6 +182,7 @@ def build_campaign_evidence_archive(
         reviews=reviews,
         normal_cloud_run_budget_usd=normal_cloud_run_budget_usd,
         encoded=encoded,
+        schema_version=schema_version,
     )
     archive = BytesIO()
     with ZipFile(archive, mode="w", compression=ZIP_STORED) as target:
@@ -207,7 +235,7 @@ def verify_campaign_evidence_archive(
     reviews = HumanReviewBundle.model_validate_json(members[EvidenceRole.REVIEWS])
     summary = BenchmarkSummary.model_validate_json(members[EvidenceRole.SUMMARY])
     budget = Decimal(manifest.normal_cloud_run_budget_usd)
-    expected_manifest, expected_archive = build_campaign_evidence_archive(
+    expected_manifest, expected_archive = _build_campaign_evidence_archive(
         corpus=corpus,
         plan=plan,
         report=report,
@@ -216,6 +244,7 @@ def verify_campaign_evidence_archive(
         reviews=reviews,
         summary=summary,
         normal_cloud_run_budget_usd=budget,
+        schema_version=manifest.schema_version,
     )
     if manifest != expected_manifest or archive != expected_archive:
         raise ValueError("campaign evidence archive is not in canonical sealed form")
@@ -232,9 +261,12 @@ def _validated_documents(
     reviews: HumanReviewBundle,
     summary: BenchmarkSummary,
     normal_cloud_run_budget_usd: Decimal,
+    schema_version: Literal["1", "2"],
 ) -> dict[EvidenceRole, EvaluationModel]:
-    if normal_cloud_run_budget_usd < 0:
-        raise ValueError("normal cloud run budget must not be negative")
+    if not normal_cloud_run_budget_usd.is_finite() or normal_cloud_run_budget_usd < 0:
+        raise ValueError("normal cloud run budget must be finite and nonnegative")
+    if summary.schema_version != schema_version:
+        raise ValueError("evidence needs a matching summary schema; regenerate the summary")
     plan.require_matching_corpus(corpus)
     if report.campaign_id != plan.campaign_id or report.plan_sha256 != plan.content_sha256:
         raise ValueError("campaign report does not match the plan")
@@ -266,12 +298,13 @@ def _validated_documents(
         raise ValueError("formal evidence needs at least one human review per comparison")
     if plan.scope is not None:
         _require_scoped_comparisons(plan, corpus, report, public_bundle, answer_key)
-    expected_summary = summarize_benchmark(
+    expected_summary = _summarize_benchmark(
         plan=plan,
         results=report.results,
         answer_key=answer_key,
         review_bundle=reviews,
         normal_cloud_run_budget_usd=float(normal_cloud_run_budget_usd),
+        legacy_costs=schema_version == "1",
     )
     if summary != expected_summary:
         raise ValueError("campaign summary does not match the sealed evidence")
@@ -351,6 +384,7 @@ def _manifest(
     reviews: HumanReviewBundle,
     normal_cloud_run_budget_usd: Decimal,
     encoded: dict[EvidenceRole, bytes],
+    schema_version: Literal["1", "2"],
 ) -> CampaignEvidenceManifest:
     files = tuple(
         CampaignEvidenceFile(
@@ -364,7 +398,7 @@ def _manifest(
     )
     reviewer_ids = {review.reviewer_id for review in reviews.reviews}
     return CampaignEvidenceManifest(
-        schema_version=EVIDENCE_SCHEMA_VERSION,
+        schema_version=schema_version,
         campaign_id=plan.campaign_id,
         corpus_id=corpus.corpus_id,
         corpus_version=corpus.corpus_version,

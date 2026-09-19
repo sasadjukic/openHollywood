@@ -47,6 +47,7 @@ from open_hollywood_api.services.blueprint_model_executor import (
     BenchmarkBlueprintNodeExecutor,
 )
 from open_hollywood_api.services.blueprint_workflow import BlueprintWorkflowService
+from open_hollywood_api.services.evaluation_costs import invocation_cost_evidence
 from open_hollywood_api.services.evaluation_execution import automatic_hard_gates
 from open_hollywood_api.services.production_model_executor import (
     BenchmarkProductionExecutor,
@@ -614,6 +615,7 @@ class AgenticBenchmarkCaseExecutor:
                 workflow_run_id=production_run.id,
                 artifact_version_ids=artifact_version_ids,
                 invocation_ids=tuple(row.id for row in invocation_rows),
+                cost_evidence=invocation_cost_evidence(invocation_rows),
                 input_tokens=sum(row.input_tokens for row in invocation_rows),
                 output_tokens=sum(row.output_tokens for row in invocation_rows),
                 latency_ms=sum(row.latency_ms or 0 for row in invocation_rows),

@@ -1224,12 +1224,56 @@ Production prompt v33, graph v9, runtime limits and approval rules are unchanged
 Remaining engineering/evaluation sequence:
 
 - [x] 1. Make Cloud-first evaluation a supported harness configuration.
-- [ ] 2. Distinguish unknown cost from an actual zero cost.
+- [x] 2. Distinguish unknown cost from an actual zero cost (completed 2026-09-19 below).
 - [ ] 3. Complete remaining failure-path verification.
 - [ ] 4. Execute full premise-to-story Cloud evaluation against the direct baseline.
 - [ ] 5. Establish repeatability and seal the formal evidence after human review.
 
 **Product Step 19 remains IN PROGRESS.** No later product phase has started.
+
+### Evidence-based cost acceptance completed - 2026-09-19
+
+Item 2 of the remaining Step 19 engineering work is **COMPLETE**. Model responses,
+persisted invocations and portable benchmark outputs now distinguish unknown,
+provider-reported and local-inference cost evidence. An explicit reported zero is
+eligible; Ollama Cloud's numeric placeholder is not. Migration 0008 preserves
+historical amounts and assigns unknown provenance without inference or repricing.
+
+Complete story costs require evidence for every invocation, including Blueprint
+preparation and recovered production attempts. Baseline reporting now also retains
+failed attempts and their known response cost/usage when a later attempt succeeds.
+Interrupted calls with unknown outcomes prevent the story total being treated as
+known. Exact invocation IDs bind the evidence across completion and replay.
+
+Summary schema 2 reports known/unknown case coverage and leaves cost acceptance
+`null` until every planned Cloud/Hybrid case has a complete cost total. With full
+coverage, the unchanged median-budget criterion can pass or fail. New seals use
+schema 2 and cannot reuse an old numeric-cost pass. Historical schema-1 archives
+retain exact verification semantics, explicitly identified by the CLI. Sealing
+unknown evidence does not establish cost qualification.
+
+Validation passed: **560 Python tests**, Ruff lint/format, strict mypy on 163
+files, frontend format/lint/type checks, **11 Vitest tests** and production build.
+Twenty-two new cost tests and one populated migration test cover reported zero,
+unknown and over-budget amounts, missing coverage, non-finite values, recovered
+attempts, exact cost lineage, deterministic seals and legacy compatibility.
+Existing production tests also verify that a missing Blueprint or recovered-call
+cost makes the entire story total unknown, without additional model calls.
+
+Read-only reanalysis of all six actual v29/v33 canary reports yields unknown Cloud
+cost acceptance and preserves the source bytes and plan hashes. A fixed synthetic
+archive generated before this change verifies byte for byte. No historical report
+or user database was rewritten or migrated, and no live model call was made.
+
+Before starting the updated application or database-backed harness, apply the
+normal Alembic upgrade to the active database. The [operator guide](../benchmarks/README.md#cost-evidence-and-acceptance)
+and [ADR 0017](../docs/adr/0017-evidence-based-cost-acceptance.md) explain the new
+fields and migration. Prompt v33, graph v9, model routing, retry allowances and
+runtime ceilings remain unchanged. Unknown provider charges still cannot prove
+an actual billed-spend ceiling; no pricing or subscription allocation is invented.
+
+**Product Step 19 remains IN PROGRESS.** Items 3-5, human review and actual cost
+qualification remain outstanding. No later product phase has started.
 
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 

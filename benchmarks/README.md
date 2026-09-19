@@ -211,12 +211,68 @@ all eligible successful comparison pairs, exact generated story content, complet
 human-review coverage and a matching recomputed summary. A terminal failure can
 be included in a complete evidence archive; sealing establishes evidence integrity,
 not that the campaign met the acceptance criteria. Partial batches cannot be sealed
-as a completed campaign. Cost accounting and independent live repeatability remain
-separate qualification work; this configuration does not resolve them.
+as a completed campaign. A sealed archive can retain unknown cost acceptance;
+sealing does not resolve missing billing evidence or establish live repeatability.
 
 The private blinding key, generated answer key and sealed archive must not be
 distributed with the public A/B review packet. The archive contains private
 provenance. None of these files may contain API keys.
+
+## Cost evidence and acceptance
+
+Before running the updated application or database-backed harness, apply migration
+0008 through the usual `uv run alembic upgrade head` command against the intended
+active database. The migration adds `cost_basis` and leaves historical amounts
+unchanged. Existing invocations receive `unknown`; no past zero or positive amount
+is promoted to verified billing evidence. Preserve historical campaign databases.
+
+New responses and invocations distinguish three cost bases:
+
+| Basis | Meaning | Eligible dollar amount |
+| --- | --- | --- |
+| `provider_reported` | The adapter explicitly records a provider-reported charge | Nonnegative amount, including an explicit zero |
+| `local_inference` | Inference executed locally, with zero provider charge | Zero; excludes electricity, hardware and other operating costs |
+| `unknown` | No supported dollar-cost evidence, including interrupted calls | `null` in the portable cost-evidence record |
+
+The existing numeric `estimated_cost_usd` field remains for compatibility and
+runtime accounting. It is not the source of truth for current acceptance. Each
+new benchmark output carries one cost-evidence record for every invocation ID.
+Agentic totals cover both Blueprint and production calls, including recovered
+failures. Baselines also retain failed attempts on the path to a successful story.
+If any invocation is unknown, the complete story cost is unknown.
+
+Summary schema 2 exposes `known_cost_cases` and `unknown_cost_cases` per target.
+Unknown coverage includes missing cases, failed cases without a complete story,
+and successful stories whose invocation costs are incomplete. A target median is
+available only with complete cost coverage. The Cloud/Hybrid budget criterion is:
+
+- `true`: every planned applicable case has complete cost evidence and the median
+  is within the configured acceptance budget.
+- `false`: coverage is complete and the median exceeds that budget.
+- `null`: evidence is insufficient. This is not a zero cost, a pass or a failure.
+
+The baseline has its own cost coverage and median. Its costs do not enter the
+agentic Cloud/Hybrid acceptance criterion. The acceptance budget still defaults
+to `$2.00`; `--normal-cloud-run-budget-usd` must match between summary and sealing.
+Runtime call/production ceilings, token budgets, retries and model routing are
+unchanged. Unknown provider costs cannot substantiate an enforced dollar-spend
+ceiling even though the existing runtime checks continue to operate.
+
+The current Ollama Cloud adapter reports token usage but no dollar charge, so
+current Cloud cost acceptance remains `null`. Subscription capacity, unused quota,
+a zero placeholder or a configured ceiling cannot establish a per-story price.
+This implementation does not invent token rates, allocate subscription fees or
+add pricing/billing integrations. A future pricing estimate would need its own
+explicit, reproducible provenance.
+
+Current `summarize` commands apply these rules even to historical reports and
+plans. Save a new summary separately when inspecting old evidence. Original
+reports, summaries and archives should remain unchanged. New `seal-evidence`
+requires summary schema 2; regenerate an old summary before creating a new seal.
+Existing schema-1 archives still verify byte for byte under their historical
+policy. `verify-evidence` identifies `legacy_numeric_costs` versus
+`explicit_cost_evidence`; historical archive integrity is not current cost
+qualification. See [ADR 0017](../docs/adr/0017-evidence-based-cost-acceptance.md).
 
 ## Cross-version production canaries
 

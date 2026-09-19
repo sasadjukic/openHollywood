@@ -8,6 +8,7 @@ from enum import StrEnum
 from typing import Any
 from uuid import UUID, uuid4
 
+from open_hollywood_engine.models import ModelCostBasis
 from open_hollywood_engine.workflows import (
     RunControlAction,
     RunControlStatus,
@@ -500,6 +501,12 @@ class AgentInvocation(Base):
     output_tokens: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
     estimated_cost_usd: Mapped[Decimal] = mapped_column(
         Numeric(12, 6), default=Decimal("0"), nullable=False
+    )
+    cost_basis: Mapped[ModelCostBasis] = mapped_column(
+        Enum(ModelCostBasis, native_enum=False, validate_strings=True, length=24),
+        default=ModelCostBasis.UNKNOWN,
+        server_default="UNKNOWN",
+        nullable=False,
     )
     latency_ms: Mapped[int | None] = mapped_column(Integer)
     retry_count: Mapped[int] = mapped_column(Integer, default=0, nullable=False)

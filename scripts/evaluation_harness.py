@@ -542,6 +542,11 @@ def main(argv: list[str] | None = None) -> int:
                     "campaign_id": str(manifest.campaign_id),
                     "manifest_sha256": manifest.content_sha256,
                     "verified": True,
+                    "cost_acceptance_policy": (
+                        "legacy_numeric_costs"
+                        if manifest.schema_version == "1"
+                        else "explicit_cost_evidence"
+                    ),
                 },
                 indent=2,
                 sort_keys=True,

@@ -263,6 +263,17 @@ Do not require “best human writer” quality yet. Require:
 
 These are ambitious but measurable.
 
+Cost evidence clarification (2026-09-19): the Cloud/Hybrid cost criterion remains
+unresolved until every planned applicable case has a complete story with dollar
+evidence for all of its invocations, including pre-production and recovered
+attempts. Unknown costs, historical numeric placeholders and missing/failed cases
+must not yield a budget pass. Explicit provider-reported zero charges can qualify;
+local zero provider charges exclude hardware and electricity. The current Ollama
+Cloud transport does not provide per-call dollar evidence. Summary/seal schema 2
+records this distinction without changing the acceptance budget or runtime limits.
+Historical archives retain their original verification semantics. See
+[ADR 0017](../docs/adr/0017-evidence-based-cost-acceptance.md).
+
 ---
 
 ## 6. Hardware profile
