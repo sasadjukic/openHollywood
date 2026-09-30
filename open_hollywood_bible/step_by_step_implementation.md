@@ -167,7 +167,19 @@ qualification reached the mandatory approval interrupt while prompt contracts v6
 without retry. After the operator-level failure-isolation repair was merged, Blueprint staging resumed and settled every agentic case with no open workflow or invocation: Local paused 11 of 12 at approval and retained OH-008 as a terminal integration failure after twice emitting the unknown literal location ID `null`; Cloud paused all 12 at approval; Hybrid paused 7 of 12 and retained terminal failures for OH-006, OH-008, and OH-010 at integration, OH-009 at the World specialist, and OH-012 at the Character specialist after bounded structured-output repair. No Blueprint has been approved on the operator's behalf. The current staging yield is therefore 30 of 36 agentic cases (83.3%), which cannot meet the accepted 95% technical-completion threshold unless failed cases are explicitly rerun successfully or superseded by a new frozen campaign.
 An August 1 frozen replacement campaign changed only the Hybrid cloud model from Nemotron to `gemma4:31b-cloud` while retaining the same accepted graph and prompt-contract versions. Its Baseline completed 12 of 12 after one explicit retry recovered an OH-009 provider HTTP 500; Local paused 11 of 12 at approval and retained OH-006 as a terminal integration failure after invalid cross-specialist character references and missing scene-plan beats exhausted bounded repair; Cloud paused all 12; and Hybrid paused all 12, with one invalid Cloud integration response recovered by bounded repair. All 35 surviving Blueprints remain at the mandatory approval checkpoint and no campaign workflow or invocation remains active. The 35-of-36 Blueprint staging yield is 97.2%, above the accepted 95% technical-completion threshold; final technical completion remains contingent on approved production finishing those cases.
 The approved handoff now materializes exact Scene Plan versions and an initial canonical Story Bible, creates a child production run, and invokes the real SQLite-checkpointed writer, critic, continuity, and bible-maintainer graph. Production nodes reserve durable graph/call/token/cost budgets, profile-routed structured calls persist exact input lineage, accepted scene deltas advance the Story Bible through the deterministic reducer, and successful task fingerprints replay without duplicate calls. A final deterministic assembly persists the complete benchmark story and returns its Blueprint, accepted-scene, final-bible, manuscript, invocation, usage, latency, cost, and hard-gate evidence as `BenchmarkOutput`. The mandatory Blueprint approval remains fail-closed, and production pauses before a call that would exceed its reserved budget. The resumable operator flow now stages all Local, Cloud, and Hybrid Blueprint cases, requires explicit per-case approval, then runs approved production into the same atomically checkpointed report. An offline operator command now packages every surviving paused Blueprint, frozen prompt, and exact automated critique into a deterministic JSON packet plus readable Markdown dossier and reviewer CSV. The completed form must affirm every surviving case and preserve its campaign, plan, packet, workflow, artifact-version, and content-digest fields; approval rejects incomplete or stale review evidence and records the reviewer, packet digest, and exact Blueprint lineage durably before resolving each interrupt without enabling model calls. Frozen Ollama deployment routing supports cloud models through a signed-in local daemon or a runtime-secret-backed direct cloud endpoint, including split local/cloud Hybrid execution. Reviewer-specific CSV forms and provenance-free Markdown guides now carry the canonical rubric, score anchors, and hard gates; strict import merges completed forms while rejecting incomplete, duplicate, foreign-campaign, or unknown-comparison evidence. Review schema v2 binds every submission to the exact public-packet digest, which reporting verifies against the separately stored private answer key. Complete evidence can now be sealed into a deterministic archive only when
-every planned case has a terminal result, every blinded comparison has human review coverage, and the corpus, plan, report, packets, reviews, declared budget, and recomputed summary agree. Its manifest records fixed public/private paths, counts, and per-member SHA-256 digests; independent verification reproduces the canonical archive and rejects tampering or partial evidence. Remaining before completion: run the formal corpus across all three profiles and the single-model baseline within an authorized budget, collect the actual blind human reviews, and seal the resulting evidence. Evidence so far:
+every planned case has a terminal result, every blinded comparison has human review coverage, and the corpus, plan, report, packets, reviews, declared budget, and recomputed summary agree. Its manifest records fixed public/private paths, counts, and per-member SHA-256 digests; independent verification reproduces the canonical archive and rejects tampering or partial evidence.
+
+**Current status — 2026-09-30:** the formal Cloud-versus-baseline campaign has
+completed generation and all eleven eligible human comparisons; its reviewed
+evidence is sealed and verified. All 22 September manual story reviews are also
+complete and stored in the repository. Step 19 remains **IN PROGRESS** for unmet
+technical/quality/preference criteria, unknown cost and independent repeatability.
+Local/Hybrid qualification remains deferred under the adopted Cloud-first scope.
+The dated entries below retain their original checkpoint context; the
+[September 30 completion entry](#human-reviews-recorded-and-formal-evidence-sealed--2026-09-30)
+supersedes earlier pending-review status for these manual and formal outputs.
+
+Evidence so far:
 `benchmarks/v0.1/corpus.json`,
 `engine/open_hollywood_engine/evaluations/`,
 `engine/open_hollywood_engine/evaluations/evidence.py`,
@@ -813,9 +825,10 @@ data/diagnostics/manual-v29-cloud-2026-09-12/. Public results and hashes are in
 the [manual evaluation report](../docs/benchmark_reports/manual-v29-cloud-production-2026-09-12.md).
 
 This manual completion sample is separate from the frozen 12-prompt corpus and
-has no human literary scores or matched direct-model baseline. Step 19 remains
-**IN PROGRESS**; three four-story v29 Cloud canary batches, blind review, budget
-assessment and repeatability remain outstanding. No model call, canary staging,
+had no human literary scores or matched direct-model baseline at this checkpoint.
+Step 19 remained **IN PROGRESS**; the canary batches, blind review, budget
+assessment and repeatability were outstanding. All ten manual literary reviews
+are now complete; see the September 30 entry below. No model call, canary staging,
 production-contract change or later phase began while documenting this evidence.
 
 ### v29 Cloud canary batch 1 completed — 2026-09-12
@@ -1092,8 +1105,10 @@ response captures, but no live adjudication. v33 completed all three stories whi
 still needing four structural response repairs and two prose revisions. Repeated
 time-coverage evidence failures and questionable semantic allegations remain
 visible. Different stories tested each contract, so neither a causal improvement
-percentage nor a new combined canary score is inferred. **Step 19 remains IN
-PROGRESS** pending controlled evaluation and human review; no later phase starts.
+percentage nor a new combined canary score is inferred. At this checkpoint,
+**Step 19 remained IN PROGRESS** pending controlled evaluation and human review.
+All twelve manual literary reviews are now complete; see the September 30 entry
+below. No later phase started.
 
 
 ### v33 Cloud canary batch 1 completed — 2026-09-14
@@ -1226,8 +1241,8 @@ Remaining engineering/evaluation sequence:
 - [x] 1. Make Cloud-first evaluation a supported harness configuration.
 - [x] 2. Distinguish unknown cost from an actual zero cost (completed 2026-09-19 below).
 - [x] 3. Complete remaining failure-path verification (completed 2026-09-19 below).
-- [ ] 4. Execute full premise-to-story Cloud evaluation against the direct baseline.
-- [ ] 5. Establish repeatability and seal the formal evidence after human review.
+- [x] 4. Execute full premise-to-story Cloud evaluation against the direct baseline (execution and human review complete 2026-09-30; acceptance shortfalls recorded below).
+- [ ] 5. Establish repeatability and seal the formal evidence after human review (this campaign's seal is verified; independent repeatability remains outstanding).
 
 **Product Step 19 remains IN PROGRESS.** No later product phase has started.
 
@@ -1314,6 +1329,127 @@ physical OS/disk-failure certification. Packaged desktop failure testing remains
 Step 21 work. **Product Step 19 remains IN PROGRESS**, with items 4-5, real human
 review and actual cost qualification still outstanding. No later product phase
 has started.
+
+### Formal Cloud-versus-baseline evaluation staged - 2026-09-29
+
+At setup, item 4 was **IN PROGRESS: prepared, not launched**. A fresh plan-schema-2
+`cloud-first` campaign covers all twelve frozen premises with twelve agentic Cloud
+cases and twelve direct-model baseline cases. It uses `gemma4:31b-cloud`, prompt
+v33 / graph v9, current Blueprint prompt v9 / graph v4, and the merged failure-path
+fixes at commit `a60f7037367c16b1cdab0bdc55c360caaa22ecde`.
+
+Campaign `042918c2-8a50-49fd-831b-c1a93553d4f6` is staged in
+`data/benchmarks/v0.1/formal-cloud-v33-2026-09-29/`, with an isolated schema-0008
+database, frozen inputs, zero-result report, source/environment/budget receipt,
+read-only verifier and phased PowerShell runner. There are no inherited approvals,
+Blueprints, production outputs or checkpoints. All 123 frozen runtime/configuration
+hashes and SQLite integrity/foreign-key checks passed; all story-state counts are
+zero at setup. Metadata confirmed Ollama 0.34.4 and the existing Cloud model alias.
+No model generation had started at setup, and the source application database
+was read-only. Subsequent execution is recorded below.
+
+The [setup report and runbook](../docs/benchmark_reports/step-19-formal-cloud-v33-setup-2026-09-29.md)
+define fresh Blueprint preparation, mandatory human approval, direct baselines,
+three four-case production batches, blind review and later evidence sealing.
+Retry/revision allowances, budgets and prompt content are unchanged. No migration
+is required for the user's already-updated application database.
+
+At setup, the user reported completing reviews for all **22 manually tested
+stories**; their discussion was deferred as requested. Those reviews remain
+separate from the formal comparisons. Formal human scoring and independent
+repeatability were still outstanding at that checkpoint. Subsequent human review
+and sealing are recorded in the September 30 entry below. Cost acceptance remains
+unknown under Ollama Cloud's current cost evidence. **Product Step 19 remains
+IN PROGRESS.**
+
+### Formal Cloud Blueprint generation - 2026-09-29
+
+At the preparation checkpoint, item 4 was **IN PROGRESS: 12/12 fresh Blueprints awaiting human approval** in
+campaign `042918c2-8a50-49fd-831b-c1a93553d4f6`. Sequential preparation took about
+6 minutes 48 seconds, using 74 model calls: 72 succeeded and two integrator
+responses failed schema validation, then recovered within the existing retry
+allowance. There were no terminal case failures. Token totals, including failed
+attempts, are 197,928 input and 77,883 output.
+
+The [Blueprint generation report](../docs/benchmark_reports/step-19-formal-cloud-v33-blueprints-2026-09-29.md)
+records exact packet lineage, failed-call details and checks. All 123 frozen
+runtime/configuration hashes passed verification; no prompts, limits or
+application source changed. All twelve Blueprint/critique pairs were packaged and
+matched persisted content hashes. No human decision, production run or direct
+baseline run had been recorded at that checkpoint.
+
+The user stated an intention to approve the generated set without editorial review or edits.
+A technical approval manifest identifies exact versions without revealing story
+content. Approval was still pending at that checkpoint; this choice is not a quality
+assessment and does not establish that the user read the Blueprints. The existing
+mandatory checkpoint was preserved. **Product Step 19 remained IN PROGRESS**;
+production, baselines, formal human reviews, cost qualification and independent
+repeatability evidence were outstanding at that checkpoint.
+
+### Formal Cloud approval and execution - 2026-09-29
+
+The user explicitly approved all twelve generated Blueprints without editorial
+review or edits. Their exact packet-bound decisions were imported with zero model
+calls. The twelve direct-model baselines then completed successfully using twelve
+calls. All three production batches have finished under the unchanged v33
+configuration: **11/12 Cloud stories completed, 64/65 scenes accepted**. Batch
+outcomes were 4/4, 4/4 and 3/4. See the
+[execution report](../docs/benchmark_reports/step-19-formal-cloud-v33-execution-2026-09-29.md).
+
+OH-V01-012 failed on the final scene's critic request: the provider reported
+27,542 input tokens against the unchanged 24,000-token per-call cap. Five scenes
+were accepted, and the sixth draft is preserved as partial evidence. The failed
+request's usage is retained. No terminal case was rerun and no limit changed.
+Cloud completion is **91.7%, so the formal 95% technical criterion is not met**.
+
+The full campaign used 382 calls, including two recovered Blueprint validation
+failures, five recovered production validation failures and one terminal budget
+failure. Production used 296 calls and made 11 prose revisions across 10 scenes;
+there were no adjudication calls. All 622 artifact-version hashes passed audit,
+as did exact approval/manuscript lineage, SQLite integrity/foreign keys, budget
+and runtime checks, and the database secret-export audit.
+
+At generation close, eleven eligible randomized A/B pairs and a blank canonical
+review form were ready; the answer key, detailed diagnostics and database snapshot
+remained private. Formal human review, cost qualification and item 5's independent
+repeatability evidence were outstanding. Item 4 and **Product Step 19 remained
+IN PROGRESS** at that checkpoint. The request-size failure still needs investigation
+with the frozen result preserved. Subsequent review and sealing follow below.
+
+### Human reviews recorded and formal evidence sealed — 2026-09-30
+
+- [x] Record literary reviews for all **22 manual stories**: ten from September 12
+  and twelve from September 13.
+- [x] Import all **11 eligible formal A/B comparisons** from the user's completed
+  review CSV, bound to the canonical public packet.
+- [x] Recompute formal acceptance from actual human scores.
+- [x] Seal and verify the reviewed formal campaign evidence.
+
+The [manual review collection](../docs/september_2026_manual_test_reviews/)
+contains 22 individual reviews, the
+[review summary](../docs/september_2026_manual_test_reviews/review-summary.md) and
+[AI-pattern observations](../docs/september_2026_manual_test_reviews/AI-patterns.md).
+All 24 copied documents match the proofread originals. These qualitative manual
+reviews remain separate from formal paired scores.
+
+The [formal execution and review report](../docs/benchmark_reports/step-19-formal-cloud-v33-execution-2026-09-29.md#human-review-completed--2026-09-30)
+records all outcomes. Cloud technical completion is **11/12 (91.7%)**; mean
+weighted human score is **3.4818**; agentic preference is **4/11 (36.4%)**, with
+seven baseline wins and no ties. Those three criteria are **not met**. All reviewed
+candidates pass the hard gates, the Cloud severe-continuity-free rate is **11/11**,
+and the lowest Cloud dimension mean is **3.0**. Cost acceptance remains **unknown**.
+The failed OH-V01-012 stays in the technical denominator. No failed output was
+replaced and no acceptance threshold changed.
+
+The canonical import, reviewed summary, evidence seal and independent archive
+verification passed offline with **zero model calls**. All 123 frozen runtime
+files and database row counts were unchanged. The verified archive is retained
+at `data/benchmarks/v0.1/formal-cloud-v33-2026-09-29/private/evidence.zip`.
+
+**Item 4 is complete as an executed and reviewed evaluation.** Item 5 remains
+open for independent repeatability, although this campaign's seal is complete.
+**Product Step 19 remains IN PROGRESS** for repeatability, cost qualification and
+the unmet acceptance criteria. No later product phase has started.
 
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 

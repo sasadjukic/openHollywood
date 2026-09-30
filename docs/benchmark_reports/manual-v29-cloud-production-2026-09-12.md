@@ -1,5 +1,21 @@
 # Manual v29 Cloud production evaluation — 2026-09-12
 
+## Human review completed — recorded 2026-09-30
+
+- [x] Human literary reviews completed for all **10 stories** from this run.
+
+The reviews are now in the
+[September manual review collection](../september_2026_manual_test_reviews/),
+alongside the [overall review summary](../september_2026_manual_test_reviews/review-summary.md)
+and [AI-pattern observations](../september_2026_manual_test_reviews/AI-patterns.md).
+Together with September 13, all **22 manual stories** have been reviewed. These
+are the user's qualitative assessments, separate from formal paired scores.
+The technical measurements below preserve the original run's evidence.
+
+The separate [formal Cloud-versus-baseline evaluation](step-19-formal-cloud-v33-execution-2026-09-29.md#human-review-completed--2026-09-30)
+has also completed human review. Step 19 remains in progress for its unmet
+acceptance criteria, unknown cost and independent repeatability.
+
 ## Result and scope
 
 **All 10 manually initiated stories completed**, from fresh premise through
@@ -9,8 +25,9 @@ planned scenes accepted** under production **prompt v29 / graph v7**.
 
 This is a retrospective manual completion-and-recovery evaluation of ten
 operator-selected premises. It is not a frozen OH-V01 canary batch, a matched
-contract comparison, or a human literary-quality assessment. Step 19 remains
-**IN PROGRESS**. The three four-story v29 Cloud canary batches remain outstanding;
+contract comparison, or a human literary-quality assessment. At the original
+report checkpoint, Step 19 was **IN PROGRESS** and the three four-story v29 Cloud
+canary batches were outstanding;
 no new model calls or canary staging occurred while documenting this session.
 
 ## Sources and verified conditions
@@ -320,8 +337,10 @@ budgets and availability, and freeze cycle conditions. Compare historical Cloud
 cases only where conditions match. Preserve the old all-profile campaign seals
 and keep this manual sample's denominator separate.
 
-Direct-model baseline, blind human rubric/hard gates, preference, budget and
-repeatability evidence remain outstanding. No production contract changes,
+At that checkpoint, direct-model baseline, blind human rubric/hard gates,
+preference, budget and repeatability evidence were outstanding. The dated review
+update above records subsequent completion without changing this run's evidence.
+No production contract changes,
 diagnostic proofreading promotion or Hybrid testing are made by this report.
 
 ## Exact manual premises

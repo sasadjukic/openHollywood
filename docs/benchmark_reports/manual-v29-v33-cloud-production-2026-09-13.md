@@ -1,5 +1,21 @@
 # Manual Cloud production review, v29–v33 — September 13, 2026
 
+## Human review completed — recorded 2026-09-30
+
+- [x] Human literary reviews completed for all **12 stories** from this run.
+
+The reviews are now in the
+[September manual review collection](../september_2026_manual_test_reviews/),
+alongside the [overall review summary](../september_2026_manual_test_reviews/review-summary.md)
+and [AI-pattern observations](../september_2026_manual_test_reviews/AI-patterns.md).
+Together with September 12, all **22 manual stories** have been reviewed. These
+are the user's qualitative assessments, separate from formal paired scores.
+The technical measurements below preserve the original run's evidence.
+
+The separate [formal Cloud-versus-baseline evaluation](step-19-formal-cloud-v33-execution-2026-09-29.md#human-review-completed--2026-09-30)
+has also completed human review. Step 19 remains in progress for its unmet
+acceptance criteria, unknown cost and independent repeatability.
+
 ## Result and scope
 
 **All 12 stories completed, with 70/70 planned scenes accepted**, across five
@@ -235,8 +251,9 @@ Three observations matter when interpreting the successful outcomes:
 
 No literary scores, preference judgment or SammyAI comparison is assigned here.
 One Bad Year and Lyra reuse SammyAI premises according to the user; no paired
-SammyAI manuscripts or blind comparison were evaluated. There are zero human
-quality-evaluation rows in these projects.
+SammyAI manuscripts or blind comparison were evaluated in this diagnostic report.
+The inspected projects had zero human quality-evaluation rows; the subsequent
+written literary reviews are linked in the dated update above.
 
 ## Windows interruption and recovery
 
@@ -332,8 +349,9 @@ or supernatural-development allegations are not established by their cited suppo
 
 The next evaluation should keep v33 fixed and assess repeatability and disputed
 findings on matched saved inputs or a declared canary. Adjudication still needs
-live coverage. Blind human reading and the direct-model comparison remain
-outstanding. This review records evidence and follow-up candidates; it does not
+live coverage. Blind human reading and the direct-model comparison were
+outstanding at this checkpoint; the dated review update above records subsequent
+completion. This review records evidence and follow-up candidates; it does not
 change prompts, rules, budgets or production behavior.
 
 ## Exact manual premises
