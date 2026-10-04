@@ -337,6 +337,17 @@ These are canary-quality summaries, not completion of the formal Step 19 campaig
 
 ### Repeatability protocol
 
+For the current formal v33 Cloud-first assessment, use the
+[2026-10-02 prospective three-campaign protocol](../docs/benchmark_reports/step-19-v33-cloud-repeatability-2026-10-02.md).
+It declares fresh premise-to-story campaigns and baselines, human review and
+individual seals. The historical Local/Cloud production-canary procedure below
+retains its own scope and does not define the current formal campaign matrix.
+
+The [three-repeat assessment completed on 2026-10-04](../docs/benchmark_reports/step-19-v33-cloud-repeatability-2026-10-02.md#consolidated-three-repeat-assessment--2026-10-04)
+with all 34 eligible pairs reviewed and all three seals verified. It completed
+item 5's evidence work; Step 19 remains open for unmet technical/preference
+acceptance and unknown cost. Do not extend that closed series to replace failures.
+
 1. Predeclare the usual six Local / four Cloud case IDs, approved Blueprint seed,
    frozen corpus/profile/seed, graph/prompt versions, budget, and host/model
    configuration. Use a new named output directory and clean approved-seed copy
