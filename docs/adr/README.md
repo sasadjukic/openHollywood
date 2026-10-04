@@ -20,3 +20,4 @@ tradeoffs. Status values are `Proposed`, `Accepted`, `Superseded`, or `Rejected`
 | 0013 | Version-bound acceptance tests for scene revisions | Accepted |
 | [0016](0016-scoped-benchmark-campaigns.md) | Explicit Cloud-first and all-profile benchmark scopes | Accepted |
 | [0017](0017-evidence-based-cost-acceptance.md) | Evidence-based cost acceptance | Accepted |
+| [0018](0018-current-continuity-rechecks-and-compact-coverage.md) | Current continuity rechecks and compact requirement coverage | Accepted |

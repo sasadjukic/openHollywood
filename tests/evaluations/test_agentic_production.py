@@ -1043,7 +1043,7 @@ def test_v17_keyed_requirement_coverage_materializes_stable_missing_finding() ->
         {
             "requirement_id": "required_element_1",
             "severity": "error",
-            "summary": "The brass key obligation is absent.",
+            "summary": "No draft passage performs the required key action.",
             "coverage_assessment": "No draft passage performs the required key action.",
             "coverage_status": "absent",
             "coverage_evidence": [],
@@ -2301,7 +2301,7 @@ def test_schema_repair_guidance_is_provider_neutral_for_structured_failures(
 
     assert (guidance is not None) is expects_guidance
     if guidance is not None:
-        assert guidance["policy_version"] == "7"
+        assert guidance["policy_version"] == "8"
         assert guidance["mode"] == "repair_only"
         assert guidance["schema_variant"] == "initial_check"
         assert guidance["focus_locations"] == ["findings.0"]
@@ -2780,7 +2780,6 @@ def test_initial_continuity_schema_omits_every_recheck_only_field() -> None:
         "status",
         "coverage_assessment",
         "evidence_refs",
-        "evidence_search_result",
     } <= set(missing["required"])
     assert partial["properties"]["evidence_refs"]["minItems"] == 1
     assert partial["properties"]["evidence_refs"]["items"] == {
@@ -2883,13 +2882,8 @@ def test_continuity_recheck_schema_exposes_recheck_analysis_fields() -> None:
     assert "status" not in blocking_properties
     assert "findings" not in schema["properties"]
     assert "findings" not in schema["required"]
-    assert schema["properties"]["prior_finding_rechecks"] == {
-        "type": "object",
-        "properties": {},
-        "required": [],
-        "additionalProperties": False,
-        "title": "Prior Finding Rechecks",
-    }
+    assert "prior_finding_rechecks" not in schema["properties"]
+    assert "PriorFindingRecheckEntry" not in definitions
     assert schema["properties"]["new_findings"]["items"] == {
         "anyOf": [
             {"$ref": "#/$defs/RecheckBlockingContinuityFinding"},
@@ -3321,10 +3315,10 @@ async def test_same_continuity_finding_inherits_resolution_across_recheck(
     for recheck_contract in gateway.continuity_recheck_contracts:
         assert set(recheck_contract) == {
             "previous_report_version_id",
-            "historical_blocking_finding_ids",
+            "required_prior_finding_ids",
             "recurrence_policy",
         }
-        assert recheck_contract["historical_blocking_finding_ids"]
+        assert recheck_contract["required_prior_finding_ids"]
 
     continuity_requests = [
         request
