@@ -169,11 +169,23 @@ An August 1 frozen replacement campaign changed only the Hybrid cloud model from
 The approved handoff now materializes exact Scene Plan versions and an initial canonical Story Bible, creates a child production run, and invokes the real SQLite-checkpointed writer, critic, continuity, and bible-maintainer graph. Production nodes reserve durable graph/call/token/cost budgets, profile-routed structured calls persist exact input lineage, accepted scene deltas advance the Story Bible through the deterministic reducer, and successful task fingerprints replay without duplicate calls. A final deterministic assembly persists the complete benchmark story and returns its Blueprint, accepted-scene, final-bible, manuscript, invocation, usage, latency, cost, and hard-gate evidence as `BenchmarkOutput`. The mandatory Blueprint approval remains fail-closed, and production pauses before a call that would exceed its reserved budget. The resumable operator flow now stages all Local, Cloud, and Hybrid Blueprint cases, requires explicit per-case approval, then runs approved production into the same atomically checkpointed report. An offline operator command now packages every surviving paused Blueprint, frozen prompt, and exact automated critique into a deterministic JSON packet plus readable Markdown dossier and reviewer CSV. The completed form must affirm every surviving case and preserve its campaign, plan, packet, workflow, artifact-version, and content-digest fields; approval rejects incomplete or stale review evidence and records the reviewer, packet digest, and exact Blueprint lineage durably before resolving each interrupt without enabling model calls. Frozen Ollama deployment routing supports cloud models through a signed-in local daemon or a runtime-secret-backed direct cloud endpoint, including split local/cloud Hybrid execution. Reviewer-specific CSV forms and provenance-free Markdown guides now carry the canonical rubric, score anchors, and hard gates; strict import merges completed forms while rejecting incomplete, duplicate, foreign-campaign, or unknown-comparison evidence. Review schema v2 binds every submission to the exact public-packet digest, which reporting verifies against the separately stored private answer key. Complete evidence can now be sealed into a deterministic archive only when
 every planned case has a terminal result, every blinded comparison has human review coverage, and the corpus, plan, report, packets, reviews, declared budget, and recomputed summary agree. Its manifest records fixed public/private paths, counts, and per-member SHA-256 digests; independent verification reproduces the canonical archive and rejects tampering or partial evidence.
 
-**Current status — 2026-09-30:** the formal Cloud-versus-baseline campaign has
+**Current status — 2026-10-04:** the September formal Cloud-versus-baseline campaign has
 completed generation and all eleven eligible human comparisons; its reviewed
 evidence is sealed and verified. All 22 September manual story reviews are also
-complete and stored in the repository. Step 19 remains **IN PROGRESS** for unmet
-technical/quality/preference criteria, unknown cost and independent repeatability.
+complete and stored in the repository. **Item 5 is COMPLETE as a repeatability
+assessment and evidence-sealing task.** All three prospective campaigns and all
+34 eligible human comparisons are reviewed, sealed and independently verified,
+with a consolidated evidence register. Cloud completion was 12/12, 12/12 and
+10/12; all 36 baselines completed. Weighted Cloud scores were 4.05, 4.1167 and
+4.16, while preference was 54.17%, 37.5% and 45%, below the unchanged 60% threshold
+in every repeat. Repeat 3 failed technical acceptance on OH-V01-002 and OH-V01-010.
+Its reviewed ten-pair score is 4.16 Cloud versus 4.15 baseline. The October 2
+reviewer calibration and authorized Ollama 0.35.1 exception in repeat 3 remain
+explicit; the original 0.35.0 freeze and historical seals are preserved.
+Step 19 remains **IN PROGRESS** for inconsistent technical acceptance, unmet
+preference and unknown monetary cost. Repeated acceptance has not been demonstrated.
+The reviewer's character-depth, recurring-prose and group-dynamics concerns are
+recorded as qualitative evidence without changing scores, criteria or the endpoint.
 Local/Hybrid qualification remains deferred under the adopted Cloud-first scope.
 The dated entries below retain their original checkpoint context; the
 [September 30 completion entry](#human-reviews-recorded-and-formal-evidence-sealed--2026-09-30)
@@ -1242,7 +1254,7 @@ Remaining engineering/evaluation sequence:
 - [x] 2. Distinguish unknown cost from an actual zero cost (completed 2026-09-19 below).
 - [x] 3. Complete remaining failure-path verification (completed 2026-09-19 below).
 - [x] 4. Execute full premise-to-story Cloud evaluation against the direct baseline (execution and human review complete 2026-09-30; acceptance shortfalls recorded below).
-- [ ] 5. Establish repeatability and seal the formal evidence after human review (this campaign's seal is verified; independent repeatability remains outstanding).
+- [ ] 5. Establish repeatability and seal the formal evidence after human review (September campaign sealed; prospective three-repeat series started 2026-10-02, as recorded below).
 
 **Product Step 19 remains IN PROGRESS.** No later product phase has started.
 
@@ -1450,6 +1462,314 @@ at `data/benchmarks/v0.1/formal-cloud-v33-2026-09-29/private/evidence.zip`.
 open for independent repeatability, although this campaign's seal is complete.
 **Product Step 19 remains IN PROGRESS** for repeatability, cost qualification and
 the unmet acceptance criteria. No later product phase has started.
+
+### Formal v33 Cloud repeatability started — 2026-10-02
+
+**Item 5 is IN PROGRESS.** The user authorized the repeatability assessment.
+The [prospective protocol and evidence register](../docs/benchmark_reports/step-19-v33-cloud-repeatability-2026-10-02.md)
+declares three fresh Cloud-first campaigns, each with all twelve frozen premises,
+twelve independent direct baselines, new Blueprints and exact-version human
+approval before production. The September 29 reviewed campaign is a historical
+reference and does not count as one of the three prospective repeats.
+
+All three campaigns have unique identities and case IDs, isolated schema-0008
+databases and matching corpus/profile/seed/limit snapshots. Setup verified zero
+story-state rows and no inherited approvals or outputs. All **123 runtime files**
+match the reference at merged source commit
+`acf97b8087370acb713857e568e59a1722039bbc`. Prompt v33 / graph v9 is unchanged.
+Ollama is now **0.35.0**, compared with 0.34.4 in the reference; all three new
+campaigns use 0.35.0, with the same Cloud model alias digest. Historical comparisons
+retain that environment difference. Remote provider weights are not pinned.
+
+The series register and pre-generation protocol snapshot are under
+`data/benchmarks/v0.1/v33-cloud-repeatability-2026-10-02/`. Repeat 1's Blueprint
+preparation completed: **12/12 awaiting approval, zero terminal failures**,
+74 calls (72 successful and two recovered HTTP 502 service errors), 189,277
+recorded input tokens and 71,889 recorded output tokens in about 7m 18s. Both
+service errors occurred on OH-V01-003 and returned no usage; zero placeholders
+do not prove no provider work. The approval packet and database snapshot are
+preserved, all 155 artifact hashes passed verification, and the secret-export
+audit passed. No approval, baseline or production run has been recorded.
+
+Repeats 2 and 3 remain staged with zero story-state rows and model calls.
+New exact-version approvals, production, baseline generation, actual human
+reviews and the three new evidence seals remain outstanding. All terminal failures
+will be retained. The sequence ends after three campaigns and review, regardless
+of whether the acceptance criteria pass; no extra attempt is added to improve a
+headline result. Cost qualification remains unknown.
+
+The user subsequently approved all twelve repeat-1 Blueprints as generated.
+Verification at 07:05:01 UTC confirmed twelve durable decisions and zero model
+calls added by import. The direct baseline phase began at 07:05:08 UTC, followed
+by the three declared production batches. The blank approval form and
+authorization/import receipts are preserved.
+
+Repeat 1 generation finished at 07:29:01 UTC: **12/12 baselines, 12/12 Cloud
+stories and 64/64 scenes completed**. The full campaign used 376 calls, including
+two recovered Blueprint HTTP 502 failures and one recovered production continuity
+evidence-reference failure. Production used 290 calls, with eleven revisions
+across eleven scenes and no adjudication. All 620 artifact hashes and exact
+manuscript lineages passed verification; the database secret-export audit passed.
+The final OH-V01-012 critic call used 23,515 input tokens, only 485 below the
+unchanged 24,000 cap. The earlier terminal error did not recur; request-size
+reliability remains a concern.
+
+All twelve randomized A/B pairs and a blank canonical review form are packaged.
+The technical criterion passes for this campaign; the five human-quality,
+preference and cost criteria remain unresolved. The generation receipt binds
+81 evidence files, but a reviewed formal seal awaits actual human scoring.
+Reference evidence and all frozen runtime files are unchanged. Repeats 2 and
+3 remain unlaunched; one completed generation does not establish repeatability.
+
+**Product Step 19 remains IN PROGRESS.** No writing-tic changes or later product
+phase has started.
+
+### Repeat 1 reviewed and sealed — 2026-10-02
+
+- [x] Validate all twelve submitted A/B reviews with the canonical parser;
+  preserve every score and preference unchanged.
+- [x] Record the reviewer's originality/dialogue calibration as dated metadata,
+  without changing the frozen protocol, rubric, weights or thresholds.
+- [x] Import reviews, recompute acceptance, seal and independently verify repeat 1.
+
+The [repeatability report](../docs/benchmark_reports/step-19-v33-cloud-repeatability-2026-10-02.md#repeat-1-human-review-and-seal--2026-10-02)
+records **4.05/5 Cloud versus 4.15/5 baseline**, with **5 Cloud wins, 4 baseline
+wins and 3 ties**. Canonical half-credit for ties gives **54.1667% Cloud preference**,
+below 60%. Technical completion, severe-continuity-free assessments, weighted
+quality and the dimension floor pass; cost acceptance remains unknown. All
+24 candidates pass all human hard gates. Character depth and voice/prose remain
+the lowest Cloud dimensions at 3.0.
+
+Originality now assesses generated execution given the supplied premise, and
+occasional dialogue overlength can qualify as a minor editing issue when the
+other canonical qualities meet the score anchor. Carry this interpretation into
+repeats 2 and 3. It differs from September's review calibration, so scores from
+the two periods must not be pooled as identically calibrated quality evidence
+or used to claim an engineering improvement.
+
+The reviewed archive SHA-256 is
+`0d5611771cd993023338039ebb76becea719900f5e9519ae89e8fb63d15ed43d`;
+its manifest SHA-256 is
+`f4391c6ff2778beaa5b5ab53fbe04b07dc4acccf9c9fd2ece2572c6d9ae7abe7`.
+Input digests, the original blank CSV, generation summary and snapshot remain
+preserved, and the dated calibration addendum is bound to the seal by the external
+review-verification receipt. Import and sealing added zero model calls.
+
+Repeat 2 passed empty-database, frozen-input and provider checks, then prepared
+**12/12 fresh Blueprints** in about 8m 01s. All twelve await human approval;
+zero baseline or production runs have started. Preparation used 73 calls
+(72 succeeded, one recovered structured-output failure), 195,649 input tokens
+and 75,262 output tokens. OH-V01-012's first Blueprint integration response
+omitted five required scene numbers and recovered within the existing allowance.
+All 161 artifact hashes, exact packet references, SQLite checks and secret-export
+audit passed. The exact packet SHA-256 is
+`86888a4837922cd88eac4c537c9f30cd3b784048367f214929940306d6a5be87`.
+Its identifier-only approval manifest and source snapshot are preserved. The
+September reference and repeat-1 review/seal remain unchanged. The new generated
+versions require new human approval before production. Repeat 3 remains staged
+with zero model calls.
+
+The user subsequently approved all twelve repeat-2 Blueprints. Verification at
+15:17:36 UTC confirmed twelve durable decisions and zero inference calls added
+by approval import. Baseline generation began at 15:17:36 UTC, followed by the
+three declared sequential production batches. All original forms and approval
+receipts are preserved. **Item 5 and Product Step 19 remain IN PROGRESS.**
+
+### Repeat 2 generation complete — 2026-10-02
+
+The [repeatability report](../docs/benchmark_reports/step-19-v33-cloud-repeatability-2026-10-02.md#repeat-2-generation-results--2026-10-02)
+records **12/12 Cloud stories, 12/12 baselines and 64/64 accepted scenes**.
+The campaign used 368 calls, with four failed structured responses recovered on
+the same task: one Blueprint integration failure and three production failures
+covering critic repair-test coverage, a missing continuity finding summary and
+invalid continuity evidence references. No terminal case was rerun or replaced.
+Production made eight prose revisions across seven scenes and no adjudication
+calls. The whole agentic arm used 356 calls, 3,029,350 input tokens and 309,142
+output tokens. Dollar cost remains unknown.
+
+Production finished at 15:43:08 UTC / 17:43:08 Europe/Belgrade after about 22m 46s;
+baseline generation took about 2m 38s. OH-V01-012 completed without a production
+call failure; its largest input was 20,104 tokens. The largest production input
+overall was 21,042 on OH-V01-009, below the unchanged 24,000 cap. This does not
+establish that request-size reliability is solved.
+
+Verification checked 617 artifact hashes, exact approved/manuscript lineage,
+recorded usage, frozen limits, SQLite integrity/foreign keys and secret-export
+safety. Blind-packet reconstruction and canonical blank-form checks passed.
+The generation receipt binds 84 evidence files; original reference and repeat-1
+review/seal hashes remain unchanged. All completed outputs differ by content hash
+from Repeat 1, and Repeat 3 remains empty.
+
+The **twelve eligible blind pairs await actual human review** using the recorded
+originality/dialogue calibration. The technical criterion passes; four human
+quality/preference criteria and cost remain unresolved. The reviewed summary
+and formal seal must wait for those scores. **Item 5 and Product Step 19 remain
+IN PROGRESS.**
+
+### Repeat 2 reviewed and sealed; repeat 3 preflight stopped — 2026-10-03
+
+- [x] Validate all twelve repeat-2 human comparisons and preserve the submitted
+  CSV unchanged; no corrections were needed.
+- [x] Import the canonical review, recompute acceptance, seal and independently
+  verify repeat 2's evidence.
+- [x] Check repeat 3's frozen inputs, empty database and provider metadata.
+- [x] Resolve Ollama version drift before any repeat-3 model call; the user
+  subsequently authorized 0.35.1 as documented below.
+
+The [repeatability report](../docs/benchmark_reports/step-19-v33-cloud-repeatability-2026-10-02.md#repeat-2-human-review-and-seal--2026-10-03)
+records **4.1167/5 Cloud versus 4.1583/5 baseline**, with **1 Cloud win, 4 baseline
+wins and 7 ties**. Half-credit for ties gives **37.5% Cloud preference**, below
+the unchanged 60% threshold. Technical completion, severe-continuity-free review,
+weighted quality and the dimension floor pass. All 24 candidates pass all gates;
+character depth and voice/prose remain at 3.0 in both arms. Cost remains unknown.
+The October 2 reviewer calibration is retained without a further reported change.
+
+The reviewed archive SHA-256 is
+`669eb4271dede30804419db802a58762ae91bd2f92d03b07e65090a85008bad2`;
+its manifest SHA-256 is
+`4854c81df5265eeac1eb760f8e132eb1ab8a1fb885e27cb22c84ec8e3205bc6c`.
+Import and sealing added zero model calls. Original scores, generation evidence,
+the September reference and repeat 1's reviewed seal remain preserved.
+
+Repeat 3's provider check found **Ollama 0.35.1**, while the frozen series requires
+**0.35.0**. All 123 application runtime hashes, frozen inputs/operator helpers,
+model alias, alias digest and remote-model name still match. Its story-state
+tables are empty; zero inference calls were made. The local
+`preflight-environment-drift-2026-10-03.json` receipt preserves the discrepancy.
+The next decision is restoring the declared environment or explicitly authorizing
+a documented deviation before generation. No frozen check has been bypassed.
+
+Both completed repeats retain their unmet preference criterion and unknown cost.
+The third campaign and consolidated assessment remain outstanding. **Item 5 and
+Product Step 19 remain IN PROGRESS.** No later product phase has begun.
+
+### Repeat 3 environment exception authorized — 2026-10-03
+
+The user explicitly authorized proceeding with **Ollama 0.35.1**. The
+[dated environment addendum](../docs/benchmark_reports/step-19-v33-cloud-repeatability-2026-10-02.md#repeat-3-authorized-environment-addendum--2026-10-03)
+was recorded at 13:07:38 UTC before any repeat-3 generation. The original 0.35.0
+freeze, failed-preflight evidence, all original operators and earlier reviewed
+seals remain intact. Only the expected daemon version changes for this repeat;
+the model/profile/corpus/runtime/prompts/graphs, budgets, retries, checkpoints,
+rubric and fixed three-campaign endpoint are unchanged.
+
+The additional `run-campaign-approved-environment.ps1` and
+`verify_approved_environment.py` preserve the original checks and require exactly
+0.35.1 plus the unchanged alias digest/remote-model name. Their hashes are bound
+by `environment-amendment-2026-10-03.json`, SHA-256
+`4bd2e765ee1089e85c1d3c7b8a7022ef03ed8370ef40dbc9658db3ca72ee8eaa`.
+The approved-environment empty-state/provider verification passed. Blueprint
+preparation has started; exact generated-version approval is still required
+before drafting. The daemon difference must remain explicit in the consolidated
+analysis. **Item 5 and Product Step 19 remain IN PROGRESS.**
+
+### Repeat 3 Blueprints prepared; human approval pending — 2026-10-03
+
+- [x] Prepare all twelve fresh Blueprints under the authorized Ollama 0.35.1
+  environment addendum and unchanged model, runtime, prompts and budgets.
+- [x] Package the exact-version approval manifest, preserve the source database
+  and verify the checkpoint, artifact hashes and earlier reviewed evidence.
+- [x] Obtain human approval for these twelve generated versions; the subsequent
+  authorization and import are recorded below.
+- [x] Run the direct baselines and three production batches; outcomes are
+  recorded in the generation-complete entry below.
+- [ ] Collect fresh human A/B reviews, seal repeat 3 and consolidate the fixed
+  three-repeat assessment.
+
+The [repeat-3 checkpoint](../docs/benchmark_reports/step-19-v33-cloud-repeatability-2026-10-02.md#repeat-3-blueprint-checkpoint--2026-10-03)
+records **12/12 awaiting approval**, **zero terminal failures**, **73 calls**,
+**195,239 input / 75,152 output tokens**, and about **6 minutes 20 seconds**.
+OH-V01-012's Blueprint integration omitted five required scene numbers and
+recovered within the existing retry allowance; no limit or prompt changed.
+All 158 artifact hashes, SQLite integrity/foreign keys, secret-export audit and
+the preserved earlier seals passed verification. The approval packet SHA-256 is
+`c32e2a59867a536d9c6926f7565f5713b515d1f41c8252eda5fb2cb2b5d86c96`.
+Zero human approvals, baseline runs or production runs are recorded for repeat 3.
+The environment exception does not authorize the new Blueprints. **Item 5 and
+Product Step 19 remain IN PROGRESS.**
+
+### Repeat 3 approved; generation underway — 2026-10-03
+
+The user approved all twelve presented Blueprints without editorial changes.
+Canonical import persisted twelve exact-version decisions and completed all
+twelve Blueprint workflows with zero additional model calls, verified at
+13:18:19 UTC. The original blank form, checkpoint and database snapshot remain
+preserved. The [approval record](../docs/benchmark_reports/step-19-v33-cloud-repeatability-2026-10-02.md#repeat-3-approval-and-generation--2026-10-03)
+binds the authorization to the previously presented packet. Baseline generation
+has started after another successful approved-environment check; the three
+production batches and fresh human review follow. **Item 5 and Product Step 19
+remain IN PROGRESS.**
+
+### Repeat 3 generation complete; ten human comparisons pending — 2026-10-03
+
+- [x] Complete all 24 planned attempts: **10/12 Cloud successes**, **12/12 baseline
+  successes**, **56/64 accepted scenes**, with both failed cases retained.
+- [x] Preserve full diagnostics, verify 585 artifact hashes and the completed
+  database snapshot, and retain the original freeze and both prior reviewed seals.
+- [x] Package and independently verify ten eligible blind A/B pairs, the blank
+  canonical review form and unchanged reviewer calibration.
+- [x] Receive and import the ten actual human reviews, seal repeat 3, and finish
+  the consolidated assessment at the predeclared three-campaign endpoint, as
+  recorded in the October 4 completion entry below.
+
+The [generation report](../docs/benchmark_reports/step-19-v33-cloud-repeatability-2026-10-02.md#repeat-3-generation-complete-human-review-pending--2026-10-03)
+records **352 calls**, **2,879,354 input / 330,292 output tokens**, and about
+**18 minutes 37 seconds** for production. Seven calls failed: three recovered
+within existing retries, while four attempts account for the two failed stories.
+OH-V01-002 reintroduced an older, cleared finding into the current continuity
+recheck partition; OH-V01-010 first omitted a finding summary and then supplied
+invalid evidence references. All four terminal responses retain untruncated
+unvalidated review evidence. No manuscript defect is established by those
+invalid responses alone. No retry allowance, prompt or budget changed.
+
+The preserved 82-file generation manifest has SHA-256
+`5304f86eae2321c9b74a0751ef5cd034e719beb9b310a11f58f8750c13f18d44`.
+The public packet SHA-256 is
+`decaaa85f9b65ac389da63697e6b6af74138adae0fb882d2093b9aafa40e6eea`.
+Technical completion is **83.33%**, below the unchanged 95% criterion. Human
+quality/preference results remain pending; cost remains unknown. The technical
+series is **12/12, 12/12, 10/12 Cloud**, with **36/36 baselines**; repeat 3 retains
+its authorized Ollama 0.35.1 qualification. Generation completion does not close
+the reviewed evidence or the full assessment. **Item 5 and Product Step 19
+remain IN PROGRESS.** Step 20 has not started.
+
+### Item 5 complete: reviewed three-repeat assessment sealed — 2026-10-04
+
+- [x] Validate and import Repeat 3's ten comparisons without modifying the CSV:
+  160 scores, 140 true hard-gate answers and ten valid preferences.
+- [x] Recompute results, seal Repeat 3 and independently verify its archive.
+- [x] Reverify all three individual seals, submitted reviews, original generation
+  evidence, database counts, runtime hashes and declared addenda.
+- [x] Consolidate every prompt's three outcomes, technical diagnostics and human
+  results, retaining both failed cases and all cost/environment qualifications.
+- [x] Preserve the reviewer's new qualitative observations and the unchanged
+  manual-review summary separately from the canonical scores.
+
+The [completed assessment](../docs/benchmark_reports/step-19-v33-cloud-repeatability-2026-10-02.md#consolidated-three-repeat-assessment--2026-10-04)
+records **34/36 Cloud completions**, **36/36 baselines**, **184/192 accepted scenes**
+and **34 reviewed pairs**. Reviewed means are **4.1059 Cloud / 4.1529 baseline**;
+preferences are **7 Cloud wins, 10 baseline wins and 17 ties**, or **45.59% Cloud
+preference** with half credit. The report preserves the separate campaign results
+and cohort differences; pooled numbers are descriptive, not new pass criteria.
+
+Repeat 3 scored **4.16 Cloud / 4.15 baseline**, with 1 Cloud win, 2 baseline wins
+and 7 ties. Its reviewed archive SHA-256 is
+`f0f74505f17bd08b0480aa9f675a4a604c0b9f1e27c7208b5ac2e7ff37d907af`;
+canonical manifest SHA-256 is
+`418b578711afc75268d81e1b4936317765323b4b90cd3ca6c5b8948acd23c5c8`.
+The local `consolidated-register-2026-10-04.json` under the series directory binds
+the three seals and all case-level evidence, SHA-256
+`1a15ce8db3619122776c943778c9b0586899c798f970eb44e7c3952293f1876a`.
+Review import and consolidation added **zero model calls**; campaign invocation
+counts remain 376, 368 and 352. No production code, prompt, limit or retry changed.
+
+All eligible human review and formal evidence work is complete. **Item 5 is
+COMPLETE as an assessment; Product Step 19 remains IN PROGRESS.** Technical
+acceptance failed in repeat 3, preference failed in all three repeats, and cost
+is still unknown. The qualitative feedback identifies character depth, prose
+repetition, limited character variety and group dynamics as corrective priorities.
+The proposed work is not implemented, and Step 20 has not started. No fourth
+campaign or terminal-case replacement was added.
 
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 
