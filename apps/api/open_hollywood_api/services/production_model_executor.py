@@ -270,10 +270,10 @@ _CONTINUITY_REQUIREMENT_AUDIT_REQUIREMENT = (
     "exact evidence performs the obligation, 'partial' when exact closest evidence performs "
     "part of it, and 'absent' only after checking the whole candidate draft. Met and partial "
     "results cite exact candidate-draft evidence references. An absent result either cites the "
-    "closest relevant passages or explicitly declares that no related passage exists. Partial "
+    "closest relevant passages or supplies evidence_refs=[] when none exists. Partial "
     "coverage is advisory craft feedback; only complete absence of an application-designated "
-    "hard requirement can block. The application owns severity. Partial and absent results "
-    "supply summary, coverage_assessment, and recommended_resolution. "
+    "hard requirement can block. Partial and absent results "
+    "supply coverage_assessment and recommended_resolution; the assessment becomes the summary. "
     "Evaluate companion_requirement_ids together before deciding. A Scene Plan goal with "
     "satisfaction_mode='pursue' is positive when the character meaningfully pursues or attempts "
     "it; achievement is required only by an outcome, turning point, exit state, or other entry "
@@ -316,9 +316,10 @@ _CONTINUITY_REQUIREMENT_SCOPE = (
     "work early."
 )
 _CONTINUITY_RECHECK_REQUIREMENT = (
-    "When a previous Continuity Report is supplied, audit every prior error or blocking "
-    "finding against the revised draft before reporting anything new. Complete every exact "
-    "schema-required key in prior_finding_rechecks once. Mark it resolved with a concrete "
+    "Recheck only continuity_recheck.required_prior_finding_ids from the latest report. "
+    "Older continuity_history is recurrence context, not a list of active rechecks. "
+    "If the list is empty, omit prior_finding_rechecks; otherwise complete each exact key. "
+    "Mark it resolved with a concrete "
     "resolution_assessment, mark it invalidated if its original claim was unsupported or "
     "contradicted by the plan/accepted prose, or advisory if only craft preference remains. "
     "These outcomes need a concrete resolution_assessment and current evidence. Mark it "
@@ -330,8 +331,7 @@ _CONTINUITY_RECHECK_REQUIREMENT = (
     "only genuinely new defects or advisories in new_findings. Consult continuity_history before "
     "calling a defect new. The same source can support DIFFERENT allegations; source "
     "identity alone is not defect identity. A recurrence of the exact original allegation "
-    "keeps its identity, but obsolete repair directions may be corrected with concrete "
-    "evidence. A new non-world blocker must cite at "
+    "keeps its application-owned identity. A new non-world blocker must cite at "
     "least one exact assertion introduced or changed by the revision. Prior IDs are "
     "application-owned and "
     "are unavailable there. The application owns canonical finding IDs and derives "
@@ -1882,27 +1882,30 @@ def _output_schema(
     if is_recheck:
         report_properties.pop("findings", None)
         schema["required"] = [field for field in schema["required"] if field != "findings"]
-        prior_definition_name = "PriorFindingRecheckEntry"
-        definitions[prior_definition_name] = _continuity_prior_recheck_entry_schema(
-            model_context=continuity_model_context
-        )
         prior_ids = continuity_model_context.prior_model_finding_ids
-        report_properties["prior_finding_rechecks"] = {
-            "type": "object",
-            "properties": {
-                finding_id: {"$ref": f"#/$defs/{prior_definition_name}"} for finding_id in prior_ids
-            },
-            "required": list(prior_ids),
-            "additionalProperties": False,
-            "title": "Prior Finding Rechecks",
-        }
+        if prior_ids:
+            prior_definition_name = "PriorFindingRecheckEntry"
+            definitions[prior_definition_name] = _continuity_prior_recheck_entry_schema(
+                model_context=continuity_model_context
+            )
+            report_properties["prior_finding_rechecks"] = {
+                "type": "object",
+                "properties": {
+                    finding_id: {"$ref": f"#/$defs/{prior_definition_name}"}
+                    for finding_id in prior_ids
+                },
+                "required": list(prior_ids),
+                "additionalProperties": False,
+                "title": "Prior Finding Rechecks",
+            }
+            schema["required"].append("prior_finding_rechecks")
         report_properties["new_findings"] = {
             "type": "array",
             "items": model_finding_items,
             "maxItems": _MAX_CONTINUITY_FINDINGS,
             "title": "New Findings",
         }
-        schema["required"].extend(("prior_finding_rechecks", "new_findings"))
+        schema["required"].append("new_findings")
     else:
         findings_schema["maxItems"] = _MAX_CONTINUITY_FINDINGS
         findings_schema["items"] = model_finding_items
@@ -1954,7 +1957,6 @@ def _continuity_requirement_coverage_entry_schema(
         "additionalProperties": False,
     }
     gap_properties: dict[str, Any] = {
-        "summary": {"type": "string", "minLength": 1},
         "coverage_assessment": {"type": "string", "minLength": 1},
         "recommended_resolution": {"type": "string", "minLength": 1},
     }
@@ -1974,16 +1976,11 @@ def _continuity_requirement_coverage_entry_schema(
             "status": {"type": "string", "const": "absent"},
             **gap_properties,
             "evidence_refs": evidence,
-            "evidence_search_result": {
-                "type": "string",
-                "enum": ["closest_passages_selected", "no_related_passage"],
-            },
         },
         "required": [
             "status",
             *gap_properties,
             "evidence_refs",
-            "evidence_search_result",
         ],
         "additionalProperties": False,
     }
@@ -2396,10 +2393,9 @@ def _schema_repair_guidance(
         elif continuity_schema_variant is _ContinuitySchemaVariant.RECHECK:
             operation_rules.insert(
                 0,
-                "This is a re-check. Complete every exact key in prior_finding_rechecks with "
-                "status resolved, invalidated, advisory, or still_blocking, and put only "
-                "semantically new issues in "
-                "new_findings. Requirement gaps remain exclusively in requirement_coverage.",
+                "Recheck only required_prior_finding_ids; omit prior_finding_rechecks when empty. "
+                "Use resolved, invalidated, advisory, or still_blocking. Put new issues in "
+                "new_findings and requirement gaps in requirement_coverage.",
             )
         else:
             raise ValueError("continuity repair guidance requires a schema variant")
@@ -2474,6 +2470,11 @@ def _schema_repair_guidance(
                     directive["required_prior_finding_ids"] = list(
                         continuity_model_context.prior_model_finding_ids
                     )
+                    if not continuity_model_context.prior_model_finding_ids:
+                        directive["action"] = (
+                            "omit prior_finding_rechecks; the latest report has no active model "
+                            "findings to recheck; historical IDs are not current recheck keys"
+                        )
             elif issue_type in {
                 "invalid_world_rule_id",
                 "world_rule_source_mismatch",
@@ -2518,8 +2519,8 @@ def _schema_repair_guidance(
                 )
             elif issue_type == "requirement_coverage_evidence_invalid":
                 directive["action"] = (
-                    "use met with exact proving evidence, partial with exact closest evidence, "
-                    "or absent with closest passages or an explicit no_related_passage result"
+                    "supply evidence_refs as exact current-draft handles; met/partial require "
+                    "passages; absent uses closest passages or [] when none exists; never omit it"
                 )
             directives.append(directive)
 
@@ -2530,7 +2531,7 @@ def _schema_repair_guidance(
             for location in focus_locations
         ]
     guidance: dict[str, object] = {
-        "policy_version": "7",
+        "policy_version": "8",
         "mode": "repair_only",
         "focus_locations": focus_locations,
         "directives": directives,
@@ -2703,8 +2704,8 @@ def _messages(
                 "previous_report_version_id": continuity_model_context.previous_continuity_report[
                     "artifact_version_id"
                 ],
-                "historical_blocking_finding_ids": list(
-                    continuity_model_context.historical_blocking_finding_ids
+                "required_prior_finding_ids": list(
+                    continuity_model_context.prior_model_finding_ids
                 ),
                 "recurrence_policy": (
                     "Recheck the exact original allegation, not just its source. A different "
@@ -5214,6 +5215,18 @@ def _materialize_requirement_coverage(
                 issue_type="requirement_partition_mismatch",
             )
         status = cast(str, raw["status"])
+        for field in (
+            ("coverage_assessment",)
+            if status == "met"
+            else ("coverage_assessment", "recommended_resolution")
+        ):
+            value = raw.get(field)
+            if not isinstance(value, str) or not value.strip():
+                raise _StructuredOutputContractError(
+                    f"requirement_coverage.{requirement_id}.{field}",
+                    "coverage entry requires a non-empty assessment and gap repair",
+                    issue_type="requirement_coverage_text_missing",
+                )
         raw_evidence_refs = raw.get("evidence_refs")
         if not isinstance(raw_evidence_refs, list) or any(
             not isinstance(reference, str) for reference in raw_evidence_refs
@@ -5236,6 +5249,8 @@ def _materialize_requirement_coverage(
                 issue_type="requirement_coverage_evidence_invalid",
             )
         if status == "absent":
+            # Older response shapes can still echo this redundant selector. Never
+            # accept a selector that contradicts the explicit evidence list.
             search_result = raw.get("evidence_search_result")
             if search_result == "no_related_passage" and evidence_refs:
                 raise _StructuredOutputContractError(
@@ -5269,6 +5284,7 @@ def _materialize_requirement_coverage(
             f"advisory_{status}_{requirement_id}" if is_advisory else f"missing_{requirement_id}"
         )
         finding.update(
+            summary=raw["coverage_assessment"],
             id=finding_id,
             requirement_id=requirement_id,
             category=model_context.requirement_categories[requirement_id],
@@ -5308,9 +5324,11 @@ def _continuity_model_findings(
     """Convert the compact model-only re-check partition into canonical findings."""
     if model_context.previous_continuity_report is None:
         return output_data.get("findings")
-    prior = output_data.get("prior_finding_rechecks")
-    new = output_data.get("new_findings")
     expected_ids = model_context.prior_model_finding_ids
+    # Only an omitted empty partition is application-owned. A supplied stale key
+    # or malformed value still fails, and active findings always require decisions.
+    prior = output_data.get("prior_finding_rechecks", {} if not expected_ids else None)
+    new = output_data.get("new_findings")
     actual_ids = set(prior) if isinstance(prior, dict) else set()
     if not isinstance(prior, dict) or actual_ids != set(expected_ids):
         omitted = sorted(set(expected_ids) - actual_ids)
@@ -6395,8 +6413,12 @@ def _continuity_recheck_decision_audit(
     """
     if model_context.previous_continuity_report is None:
         return ()
-    prior = output_data.get("prior_finding_rechecks") if isinstance(output_data, dict) else None
     expected_ids = model_context.prior_model_finding_ids
+    prior = (
+        output_data.get("prior_finding_rechecks", {} if not expected_ids else None)
+        if isinstance(output_data, dict)
+        else None
+    )
     if not isinstance(prior, dict) or set(prior) != set(expected_ids):
         raise _StructuredOutputContractError(
             "prior_finding_rechecks", "cannot audit an unvalidated prior-finding partition"

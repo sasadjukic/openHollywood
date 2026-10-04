@@ -434,7 +434,17 @@ def test_true_nonworld_contradiction_still_retains_grounded_source_and_identity(
 
 
 def test_recheck_instructions_are_delivered_and_schema_stays_compact() -> None:
-    context = _schema_test_continuity_context(recheck=True)
+    context = replace(
+        _schema_test_continuity_context(recheck=True),
+        previous_continuity_report={
+            "artifact_version_id": str(uuid4()),
+            "content": {
+                "findings": [
+                    {"id": "active_finding", "severity": "blocking", "basis": "contradiction"}
+                ]
+            },
+        },
+    )
     schema = _output_schema(
         _Operation.CONTINUITY,
         continuity_schema_variant=_ContinuitySchemaVariant.RECHECK,

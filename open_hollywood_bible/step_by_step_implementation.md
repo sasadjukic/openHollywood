@@ -187,6 +187,10 @@ preference and unknown monetary cost. Repeated acceptance has not been demonstra
 The reviewer's character-depth, recurring-prose and group-dynamics concerns are
 recorded as qualitative evidence without changing scores, criteria or the endpoint.
 Local/Hybrid qualification remains deferred under the adopted Cloud-first scope.
+The two Repeat 3 continuity response-contract failures have a v34 implementation
+with offline regression evidence and two first-attempt-valid Cloud probes,
+documented in the October 4 entry below. Both probes retained a blocker; semantic
+judgment and full-story recovery remain unqualified. Sealed v33 results are unchanged.
 The dated entries below retain their original checkpoint context; the
 [September 30 completion entry](#human-reviews-recorded-and-formal-evidence-sealed--2026-09-30)
 supersedes earlier pending-review status for these manual and formal outputs.
@@ -1770,6 +1774,63 @@ is still unknown. The qualitative feedback identifies character depth, prose
 repetition, limited character variety and group dynamics as corrective priorities.
 The proposed work is not implemented, and Step 20 has not started. No fourth
 campaign or terminal-case replacement was added.
+
+### Repeat 3 continuity response-contract corrections — 2026-10-04
+
+**v34 / graph v9 implementation and targeted format probes complete; full-story
+qualification pending.**
+[ADR 0018](../docs/adr/0018-current-continuity-rechecks-and-compact-coverage.md)
+records the exact OH-V01-002 and OH-V01-010 failure inputs and the corrections.
+
+- [x] Distinguish the latest report's active finding keys from historical
+  recurrence context; omit an empty model-facing recheck partition while still
+  rejecting stale keys, malformed values and missing active decisions.
+- [x] Derive coverage-gap summaries from the assessment; remove the redundant
+  evidence-search selector and preserve mandatory exact evidence lists, targeted
+  repair suggestions and the existing advisory/blocking rules.
+- [x] Locate coverage text failures at the model's keyed response field and make
+  the existing bounded repair explicit about missing versus empty evidence.
+- [x] Add regression coverage for persisted history, validation, recovery,
+  terminal failure, successful audit and replay without duplicate calls.
+- [x] Reconstruct both original requests read-only, match their recorded v33
+  hashes and verify shorter v34 messages: 41,436 to 39,997 characters for 002;
+  40,738 to 40,495 for 010. System instructions also shrink.
+- [x] Run the two isolated Cloud continuity probes after explicit user approval
+  to send the frozen inputs. Both validated on their first attempts: exactly two
+  calls, 19,665 input tokens and 2,069 output tokens, under unchanged limits.
+- [ ] Resolve the remaining judgment/recurrence concerns and qualify production
+  completion separately. Each valid review still retained one blocking finding.
+
+Offline replay of 010's captured fields reproduces the old missing-summary error
+and validates with v34 while retaining its independent contradiction blocker.
+It does not establish the model's semantic correctness. Local reproduction files
+are in `data/diagnostics/v34-continuity-validation-2026-10-04/`; the source snapshot
+hash is unchanged. Writer/critic instructions, graph, budgets, retries, revision
+limits, canonical schemas and the v33 campaign evidence remain unchanged. No
+migration is required. The literary-quality work has not started.
+
+Verification: **629 Python tests** pass, including **44 new regression cases**;
+Ruff lint/format, strict mypy on 166 files, frontend formatting/lint/type checks,
+all 11 frontend tests, production build and `git diff --check` pass.
+
+The live probes ran at 14:09:53–14:10:04 Europe/Belgrade on October 4 using Ollama
+0.35.1 and the same `gemma4:31b-cloud` alias digest and seeds as the frozen inputs.
+Provider latencies were 4.596 s for 002 and 4.398 s for 010. Monetary cost remains
+unknown. The actual request hashes matched the offline v34 packets and the source
+snapshot hash remained unchanged. Results are stored in the diagnostic directory's
+`live/` subdirectory; no canonical artifacts or campaign results were written.
+
+002's stale-key format error did not recur, but the same handwriting-verification
+allegation returned through the new-findings route and inherited its historical
+ID and `still_blocking` disposition. This exposes a remaining recurrence concern:
+that historical match bypasses the guard restricted to `newly_exposed` findings.
+010's absent time cue became advisory as intended; its separate back-door blocker
+requested a deletion explanation already present in the following sentence.
+These observations warrant semantic and recurrence analysis. Neither scene nor
+story was declared recovered, and no extra writer or adjudicator calls were made.
+
+**Product Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.** Item 5 remains
+complete as an assessment and sealing task, not as demonstrated repeatability.
 
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 
