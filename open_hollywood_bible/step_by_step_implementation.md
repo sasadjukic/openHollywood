@@ -1917,6 +1917,45 @@ from this limited evidence; semantic recovery and repeatability remain open.
 
 **Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
 
+### Controlled inactive-summary experiment begun 2026-10-08
+
+**Diagnostic COMPLETE — no semantic improvement from history removal; stabilization IN PROGRESS.**
+Production remains v36 / graph v9. The
+[experiment record](../docs/benchmark_reports/continuity-summary-experiment-2026-10-08.md)
+fixes three conditions: current history, inactive summaries omitted, and inactive
+findings omitted entirely from model context. Application validation retains the
+complete immutable history in all three.
+
+- [x] Prepare exact matched packets and verify that only the designated history
+  fields change; preserve active repairs, canon, scene assignment, schema and
+  the version label. Check source immutability and saved v36 request hashes.
+- [x] Prespecify three paired original-draft seeds plus one positive control per
+  condition: 12 probes, up to 24 calls, no outcome-dependent rerolls.
+- [x] Obtain explicit permission for this modified private payload set and run it.
+- [x] Assess repeated-verification blockers, other findings and control detection
+  by seed before making any further production-context change.
+
+The maximum published-rate allocation estimate is USD 0.15744 assuming uncached
+input at the dated October 8 rates. The user explicitly approved the set. All
+12 probes validated on their first attempts, using 114,632 input / 12,758 output
+tokens, estimated at USD 0.02115168. Actual charges remain unknown. Prepared and
+live request hashes, response hashes, plan hash and source immutability were
+verified; all projection preflight checks passed. No application code changed.
+
+Each condition reproduced the repetition blocker at all three seeds (3/3 each).
+All three positive controls correctly identified the injected denial; no other
+findings appeared. Historical allegation text is not necessary for this judgment
+in the frozen case. No additional history removal is adopted in production.
+
+Read-only inspection also found that the approved scene 1 ends with a decision
+to verify, but its accepted draft already performs the verification assigned to
+scene 2. The next draft repeats that sequence and two sentences verbatim. The
+next focused target is the acceptance of this premature completion of a later
+scene's work, together with distinguishing dramatic repetition from contradictory
+facts. This experiment does not qualify full-story recovery or repeatability.
+
+**Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
+
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 
 21. [ ] **Package the stable system with Tauri** and test crash/restart, offline, missing-model, invalid-key, provider-timeout, and low-disk-space behavior.
