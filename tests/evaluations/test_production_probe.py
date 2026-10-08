@@ -79,6 +79,18 @@ async def test_frozen_probe_uses_real_boundary_and_preserves_database(
     record = json.loads((output / "attempt-1-result.json").read_text(encoding="utf-8"))
     if operation == "story_bible_update":
         assert record["successor_bible"]["threads"][0]["resolved_scene_id"] == "scene_1"
+    else:
+        audit = record["scene_boundary_audit"]
+        candidate = next(
+            item
+            for item in probe.execution.inputs
+            if item["artifact_kind"] == "scene_draft"
+            and item["content"]["scene_id"] == probe.execution.unit_id
+            and item["content"]["revision_number"] == probe.execution.revision_number
+        )
+        assert audit["candidate_version_id"] == candidate["artifact_version_id"]
+        assert audit["check"]["status"] == "no_overrun"
+        assert audit["check"]["draft_evidence_refs"]
     assert hashlib.sha256(migrated_database_path.read_bytes()).hexdigest() == before
     with pytest.raises(FileExistsError):
         await run_probe(probe, gateway, output)

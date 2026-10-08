@@ -33,6 +33,7 @@ from open_hollywood_api.services.production_model_executor import (
     _Operation,
     _output_schema,
     _require_matching_response,
+    _scene_boundary_audit,
     _source_story_bible,
     _structured_failure_issues,
     _temperature,
@@ -424,6 +425,8 @@ async def run_probe(
             )
             result = _OUTPUT_MODELS[probe.operation].model_validate(materialized)
             _validate_output(probe.operation, probe.task, result)
+            if probe.operation is _Operation.CRITIQUE:
+                record["scene_boundary_audit"] = _scene_boundary_audit(raw_data, execution)
             if probe.operation is _Operation.CRITIQUE and raw_data.get("repair_checks") is not None:
                 record["revision_acceptance_audit"] = {
                     "schema_version": "1",

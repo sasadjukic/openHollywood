@@ -621,7 +621,7 @@ evidence and validation gates remain unchanged. Four live probes validated;
 by this change. Semantic recovery remains unestablished. See
 [ADR 0020](docs/adr/0020-inactive-review-advice-projection.md).
 
-Current prompt v37 / graph v9 gives the existing writer and critic a shared
+Prompt v37 / graph v9 gives the existing writer and critic a shared
 current endpoint and next-scene reservation from exact approved artifact versions.
 It replaces global plot detail in their scoped requests and retains the existing
 assignment gate. Five isolated Cloud critic probes validated, but the original
@@ -629,6 +629,16 @@ premature verification still passed. The shared context is implemented; improved
 overrun detection and writer behavior remain unqualified. See
 [ADR 0021](docs/adr/0021-shared-scene-boundary.md) and the
 [probe report](docs/benchmark_reports/scene-boundary-v37-2026-10-08.md).
+
+Current prompt v38 / graph v9 requires an evidence-backed boundary comparison
+inside the existing critic response and retains it in invocation/probe diagnostics.
+Malformed comparisons use bounded review repair; reported overruns become blocking
+assignment issues. Five live probes validated, but the original overrun still
+passed. Its comparison acknowledges early verification and permits it as a general
+match preceding a particular secret flourish. This exposes the model's stated
+interpretation; improved detection remains unqualified. See
+[ADR 0022](docs/adr/0022-required-critic-boundary-comparison.md) and the
+[probe report](docs/benchmark_reports/critic-boundary-v38-2026-10-08.md).
 
 Benchmark word-count ranges are advisory creative targets. New outputs persist a
 non-gating adherence measurement with the target, actual count, status, and word

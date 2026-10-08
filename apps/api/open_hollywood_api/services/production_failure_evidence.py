@@ -44,6 +44,9 @@ _TEXT_FIELDS = frozenset(
         "disposition",
         "condition_explicitly_authorized",
         "resolution_basis",
+        "achieved_state",
+        "current_endpoint_comparison",
+        "next_scene_comparison",
     }
 )
 _REFERENCE_FIELDS = frozenset(
@@ -215,12 +218,10 @@ def capture_review_failure(
             return evidence
 
         attempted: dict[str, object] = {}
-        for key in ("verdict", "point_of_view_check"):
+        for key in ("verdict", "point_of_view_check", "scene_boundary_check"):
             if key in raw:
                 attempted[key] = (
-                    capture.finding(raw[key])
-                    if key == "point_of_view_check"
-                    else capture.scalar(raw[key])
+                    capture.finding(raw[key]) if key != "verdict" else capture.scalar(raw[key])
                 )
         for key in _LIST_SECTIONS:
             if key not in raw:

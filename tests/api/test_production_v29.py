@@ -49,6 +49,13 @@ def _raw(execution: _Execution, route: str = "none") -> dict[str, Any]:
         "issues": [],
         "assignment_violations": [],
         "point_of_view_check": {"status": "aligned"},
+        "scene_boundary_check": {
+            "achieved_state": "Simulated achieved state.",
+            "current_endpoint_comparison": "Simulated current-assignment comparison.",
+            "next_scene_comparison": "Simulated next-reservation comparison.",
+            "draft_evidence_refs": [_refs(execution)[0]],
+            "status": "no_overrun",
+        },
         "verdict": "pass",
     }
     if route == "assignment":

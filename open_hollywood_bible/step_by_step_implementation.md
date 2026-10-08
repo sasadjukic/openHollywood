@@ -2026,6 +2026,48 @@ the existing critic response; this further change is not implemented.
 
 **Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
 
+### Required critic boundary comparison implemented and probed 2026-10-08
+
+**Implementation COMPLETE — overrun detection still unqualified; stabilization IN PROGRESS.**
+Prompt v38 / graph v9 requires an achieved state, separate current/next comparisons,
+current evidence handles and an overrun status inside the existing critic call.
+Successful comparisons are retained with exact input lineage; malformed responses
+use bounded review repair. A valid reported overrun becomes a blocking assignment
+issue regardless of craft scores. See
+[ADR 0022](../docs/adr/0022-required-critic-boundary-comparison.md) and the
+[implementation/probe report](../docs/benchmark_reports/critic-boundary-v38-2026-10-08.md).
+
+- [x] Require bounded comparisons and exact current evidence in Local/Cloud
+  schemas and application validation; specialize away inapplicable overruns.
+- [x] Preserve independent hard gates, canonical schemas, writer messages,
+  profiles, call/revision budgets and graph routing.
+- [x] Export bounded, redacted successful audits and failed-review diagnostics.
+- [x] Pass 23 new focused cases and complete checks: 688 Python tests, 11 frontend
+  tests, lint/format/type checks and production build.
+- [x] Obtain explicit permission and run the same five v37 frozen inputs under
+  v38; verify exact request/response/source hashes and retain all results.
+- [ ] Demonstrate improved overrun detection and qualify fresh writer behavior.
+
+All five probes validated on their first calls and retained their v37 verdicts.
+The original still passes with three 5/5 scores, but its required comparison now
+explicitly acknowledges verification beyond the decision to verify. It permits
+this as a general match, reserving a particular secret flourish for scene 2.
+The stopping, foreshadowing and assigned-verification controls pass. The
+missing-turn control correctly blocks on assignment but also emits a questionable
+extra plot allegation. The comparison is observable; correctness remains fallible.
+
+Usage was 53,894 input / 3,484 output tokens, estimated at USD 0.00893876 against
+the approved maximum estimate of USD 0.06560. Actual charges are unknown. The five
+initial requests grow by 134 characters each; sampled revision requests grow by
+134–912 characters without increased budgets. No writer call, canonical edit or
+formal rerun occurred.
+
+The next policy question is whether retaining a more specific later detail
+authorizes material advancement beyond the current endpoint. Further changes
+and additional probes are not included in this implementation.
+
+**Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
+
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 
 21. [ ] **Package the stable system with Tauri** and test crash/restart, offline, missing-model, invalid-key, provider-timeout, and low-disk-space behavior.
