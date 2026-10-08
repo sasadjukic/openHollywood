@@ -22,3 +22,4 @@ tradeoffs. Status values are `Proposed`, `Accepted`, `Superseded`, or `Rejected`
 | [0017](0017-evidence-based-cost-acceptance.md) | Evidence-based cost acceptance | Accepted |
 | [0018](0018-current-continuity-rechecks-and-compact-coverage.md) | Current continuity rechecks and compact requirement coverage | Accepted |
 | [0019](0019-inactive-continuity-recurrence-and-counterevidence.md) | Inactive continuity recurrence and counterevidence | Accepted |
+| [0020](0020-inactive-review-advice-projection.md) | Inactive review advice projection | Accepted |

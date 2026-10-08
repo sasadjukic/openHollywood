@@ -1877,6 +1877,46 @@ These results do not support expansion to a full-story run yet.
 
 **Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
 
+### Inactive review advice investigation v36 begun 2026-10-08
+
+**IN PROGRESS — implementation verified; live assessment does not establish semantic recovery.**
+Temporary branch: `codex/continuity-history-v36`.
+[ADR 0020](../docs/adr/0020-inactive-review-advice-projection.md) records the narrow
+context change and comparison against v35.
+
+- [x] Trace old repair instructions reaching the current continuity review after
+  their finding leaves the active set.
+- [x] Omit inactive repair advice and stale dispositions from the supervisor's
+  history projection; preserve allegation identity, authority references,
+  active repairs, full persisted history and all validation gates.
+- [x] Add 11 regression cases, including a complete persisted workflow, and
+  reconstruct all four saved v35 requests with exact matching hashes.
+- [x] Verify that v36 changes only the contract version and inactive history
+  projection: 002 requests shrink by 275 characters; 010 sizes are unchanged.
+- [x] Pass repository checks: 654 Python tests, 11 frontend tests, lint,
+  formatting, strict type checks, production build and clean whitespace checks.
+- [x] Run and assess four explicitly approved live probes, all valid on their
+  first attempt. 002 still blocks; both injected contradictions are caught.
+- [ ] Establish sufficient semantic evidence before a bounded full-story check.
+
+The automatic approval review rejected the v36 cloud launch as a new private
+payload requiring explicit authorization. No call ran in that launch; the user
+then explicitly approved the v36 probes. The experiment used four calls,
+39,300 input / 3,838 output tokens, estimated at USD 0.00703720 with uncached
+input, within the eight-call / USD 0.05248 allocation estimate. Actual charges
+remain unknown. Request/response hashes and the unchanged snapshot were checked.
+
+The model still treats repeated verification as incompatible with its earlier
+occurrence and generates similar repair advice after the original instruction
+is removed. The old allegation summary remains visible; its influence versus
+independent model judgment is the next focused question. 010 clears on one call,
+but it had no historical context affected by this change, so the result cannot
+be credited to the fix. Its contradiction control still uses a confused
+physical/code back-door explanation. No full-story run or formal rerun follows
+from this limited evidence; semantic recovery and repeatability remain open.
+
+**Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
+
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 
 21. [ ] **Package the stable system with Tauri** and test crash/restart, offline, missing-model, invalid-key, provider-timeout, and low-disk-space behavior.
