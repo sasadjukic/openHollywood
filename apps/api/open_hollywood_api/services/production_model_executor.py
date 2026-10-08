@@ -245,13 +245,14 @@ _CONTINUITY_FINDING_BASIS_REQUIREMENT = (
     "evidence handles. A non-world contradiction selects one canonical_claim_id, "
     "conflict_disposition and repair_action. Directly_incompatible requires affirmative "
     "assertions about the SAME subject and applicable time that cannot both be true. "
-    "Explain both assertions, their temporal scope and plan/prior-ending counterevidence. "
-    "A historical event establishes what happened then, not the next scene's time or mood. "
+    "Read adjacent sentences and the whole draft before blocking. In conflict_explanation, "
+    "compare both assertions, their time scopes, and the strongest draft/plan/history "
+    "counterevidence; explain why it cannot reconcile them. Repeating an investigation "
+    "does not deny its earlier result. Do not request an explanation already in the draft. "
     "A state snapshot records the last known condition, not a permanent restriction. "
-    "Later movement, discovery, changed trust, revealed secrets and new objects can develop "
-    "without an explicit transition sentence. Initial/known-fact lists are not exhaustive "
-    "ceilings on later knowledge. A new inference is not omniscience; actual inaccessible "
-    "knowledge, impossible chronology and explicit constraints still block when evidenced. "
+    "Later action, knowledge and relationships can develop without a transition sentence; "
+    "initial facts are non-exhaustive. Inference is not omniscience. Actual inaccessible "
+    "knowledge, impossible chronology and explicit constraints still block. "
     "Use compatible_development for later change that preserves history; craft_preference "
     "for wanting a clearer bridge; insufficient_canonical_support when the source cannot "
     "establish the alleged conflict. These become advisory regardless of severity. "
@@ -330,9 +331,9 @@ _CONTINUITY_RECHECK_REQUIREMENT = (
     "prior finding's identity, basis and provenance; never repeat the complete finding. Put "
     "only genuinely new defects or advisories in new_findings. Consult continuity_history before "
     "calling a defect new. The same source can support DIFFERENT allegations; source "
-    "identity alone is not defect identity. A recurrence of the exact original allegation "
-    "keeps its application-owned identity. A new non-world blocker must cite at "
-    "least one exact assertion introduced or changed by the revision. Prior IDs are "
+    "identity alone is not defect identity. Recurrence keeps its identity, not active status. "
+    "A non-world blocker absent from the latest report must cite an assertion introduced "
+    "or changed by this revision. Prior IDs are "
     "application-owned and "
     "are unavailable there. The application owns canonical finding IDs and derives "
     "recheck_disposition. A new blocking defect must explain in repair_assessment why it was "
@@ -744,8 +745,7 @@ _INSTRUCTIONS: Mapping[_Operation, str] = {
         "source and only the evidence just cited for release. New blockers need a distinct "
         "incompatible assertion; otherwise correct the original prior-finding decision. "
         "Previous review advice never establishes new canonical requirements."
-        " For each non-world blocker, compare ONLY its selected claim's exact assertion "
-        "with the current evidence: both must be unable to hold at once. A location claim "
+        " For non-world blockers, use only the selected claim's assertion. A location claim "
         "cannot certify an unrelated mathematical World Rule. Use the World Rule route for "
         "actual rule breaches, not a more convenient non-world source. Added specificity, "
         "investigation, metaphor, or an approved deduction is not itself a contradiction. "
@@ -2513,9 +2513,9 @@ def _schema_repair_guidance(
                 )
             elif issue_type == "new_contradiction_not_new_to_revision":
                 directive["action"] = (
-                    "remove the newly exposed blocker because all of its cited assertions were "
-                    "already present in the previous candidate; only a still-blocking prior ID "
-                    "or evidence introduced or changed by this revision may block"
+                    "all cited assertions were already in the previous candidate; remove this "
+                    "blocker or cite a changed assertion. Only active latest-report rechecks "
+                    "may retain unchanged evidence; historical identity does not make one active"
                 )
             elif issue_type == "requirement_coverage_evidence_invalid":
                 directive["action"] = (
@@ -2531,7 +2531,7 @@ def _schema_repair_guidance(
             for location in focus_locations
         ]
     guidance: dict[str, object] = {
-        "policy_version": "8",
+        "policy_version": "9",
         "mode": "repair_only",
         "focus_locations": focus_locations,
         "directives": directives,
@@ -5715,7 +5715,7 @@ def _validate_new_recheck_contradiction_evidence(
     findings: list[object],
     model_context: _ContinuityModelContext,
 ) -> None:
-    """Require a newly exposed non-world blocker to cite evidence changed by the revision."""
+    """Require inactive non-world allegations, including recurrences, to cite changed evidence."""
     previous = model_context.previous_candidate_draft
     previous_content = previous.get("content") if isinstance(previous, dict) else None
     previous_prose = previous_content.get("prose") if isinstance(previous_content, dict) else None
@@ -5726,8 +5726,7 @@ def _validate_new_recheck_contradiction_evidence(
             not isinstance(finding, dict)
             or finding.get("basis") != ContinuityFindingBasis.CONTRADICTION.value
             or finding.get("category") == ContinuityCategory.WORLD_RULE.value
-            or finding.get("recheck_disposition")
-            != ContinuityRecheckDisposition.NEWLY_EXPOSED.value
+            or finding.get("id") in model_context.prior_model_finding_ids
         ):
             continue
         evidence = finding.get("revised_evidence") or finding.get("evidence")
