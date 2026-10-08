@@ -683,12 +683,16 @@ _INSTRUCTIONS: Mapping[_Operation, str] = {
         "not a hard per-scene quota."
     ),
     _Operation.CRITIQUE: (
-        "Evaluate the approved assignment and craft rubric. In summary, compare the draft's "
-        "achieved ending with scene_boundary's endpoint and next-scene reservation. "
-        "Report concrete missing/incompatible assignments or premature completion in "
+        "Complete scene_boundary_check before scoring: describe the state established "
+        "by the draft and cite current evidence. Compare it with the current "
+        "endpoint and the next scene's reservation. A decision, an attempt and an established "
+        "result are different states. Use overrun only for premature completion of distinct "
+        "reserved work; otherwise no_overrun. With no next reservation, explain that limit. "
+        "Evidence supports the achieved state, not proof that no violation exists. Report "
+        "overruns only in this check; the application makes them blocking assignment issues. "
+        "Report other concrete missing/incompatible assignments in "
         "assignment_violations; otherwise return []. Select a scene_assignment_contract "
-        "anchor and explain the breach. Anchor overruns to outcome (or turning_point), "
-        "even if the current obligation also occurs. Consider the whole scene: actions, "
+        "anchor and explain the breach. Consider the whole scene: actions, "
         "embodied reactions and indirect realization count. Do not demand unassigned "
         "mechanisms or extra actions. Wanting a stronger or more explicit turn, polish, "
         "POV mentions or next-scene advice is not a hard assignment failure; craft feedback "
@@ -1357,6 +1361,7 @@ class ProfileRoutedProductionExecutor(SceneProductionExecutor):
                     }
                 invocation.request_settings = {
                     **invocation.request_settings,
+                    "scene_boundary_audit": _scene_boundary_audit(raw_review, execution),
                     "viewpoint_audit": {
                         "schema_version": "2",
                         "status": raw_check["status"],
@@ -1726,6 +1731,7 @@ def _output_schema(
             properties.pop("overall_score", None)
             properties["assignment_violations"] = _critic_assignment_violation_schema()
             properties["point_of_view_check"] = _point_of_view_check_schema(critic_evidence_refs)
+            properties["scene_boundary_check"] = _scene_boundary_check_schema()
             definitions = schema["$defs"]
             definitions["CriticDraftEvidenceReference"] = {"type": "string"}
             if critic_evidence_refs is not None:
@@ -1757,7 +1763,17 @@ def _output_schema(
                 ],
                 "assignment_violations",
                 "point_of_view_check",
+                "scene_boundary_check",
             ]
+            # Exact target identity is application-owned on initial and revision calls.
+            for field in (
+                "target_artifact_kind",
+                "target_artifact_key",
+                "target_artifact_version_id",
+            ):
+                properties.pop(field, None)
+                schema["required"].remove(field)
+            definitions.pop("ArtifactKind", None)
             if critic_execution is not None:
                 _bind_critic_assignment_schema(schema, critic_execution)
                 tests = critic_repair_tests(critic_execution.inputs, critic_execution.unit_id)
@@ -1766,15 +1782,6 @@ def _output_schema(
                     definitions.update(checks_schema.pop("$defs"))
                     properties["repair_checks"] = checks_schema
                     schema["required"].append("repair_checks")
-                    # These identifiers are already fixed by exact application inputs.
-                    for field in (
-                        "target_artifact_kind",
-                        "target_artifact_key",
-                        "target_artifact_version_id",
-                    ):
-                        properties.pop(field, None)
-                        schema["required"].remove(field)
-                    definitions.pop("ArtifactKind", None)
         elif operation is _Operation.STORY_BIBLE_UPDATE:
             _story_bible_thread_output_schema(schema)
         return schema
@@ -2379,6 +2386,9 @@ def _schema_repair_guidance(
             "Every assignment/POV/craft finding uses draft_evidence_refs: select 1-3 "
             "distinct current-catalog handles, not prose, old handles, or draft_evidence/evidence. "
             "Do not change the story to fix an evidence-format error.",
+            "Return scene_boundary_check with achieved_state, current_endpoint_comparison, "
+            "next_scene_comparison, status and 1-3 current draft_evidence_refs. "
+            "A missing/invalid check is a review error, not a manuscript defect.",
         ]
     if operation is _Operation.CONTINUITY:
         if continuity_schema_variant is _ContinuitySchemaVariant.INITIAL_CHECK:
@@ -2529,7 +2539,7 @@ def _schema_repair_guidance(
             for location in focus_locations
         ]
     guidance: dict[str, object] = {
-        "policy_version": "9",
+        "policy_version": "10",
         "mode": "repair_only",
         "focus_locations": focus_locations,
         "directives": directives,
@@ -3040,6 +3050,8 @@ def _bind_critic_assignment_schema(schema: dict[str, Any], execution: _Execution
     """Remove inapplicable choices using only the exact approved scene assignment."""
     assignment = _scene_assignment_contract(execution)
     properties = schema["properties"]
+    if _scene_boundary_overrun_anchor(execution) is None:
+        properties["scene_boundary_check"]["properties"]["status"]["enum"] = ["no_overrun"]
     if not assignment.get("point_of_view_character_id"):
         # Applicability is settled by the application, without interpreting prose/style.
         properties["point_of_view_check"] = properties["point_of_view_check"]["anyOf"][0]
@@ -3054,6 +3066,118 @@ def _bind_critic_assignment_schema(schema: dict[str, Any], execution: _Execution
         violations["items"]["properties"]["anchor"]["enum"] = anchors
     else:
         properties["assignment_violations"] = {"type": "array", "maxItems": 0}
+
+
+def _scene_boundary_check_schema() -> dict[str, Any]:
+    properties = {
+        "achieved_state": {"type": "string", "minLength": 1, "maxLength": 600},
+        "current_endpoint_comparison": {"type": "string", "minLength": 1, "maxLength": 600},
+        "next_scene_comparison": {"type": "string", "minLength": 1, "maxLength": 600},
+        "draft_evidence_refs": _critic_evidence_refs_schema(),
+        "status": {"type": "string", "enum": ["no_overrun", "overrun"]},
+    }
+    return {
+        "type": "object",
+        "additionalProperties": False,
+        "properties": properties,
+        "required": list(properties),
+    }
+
+
+def _scene_boundary_overrun_anchor(execution: _Execution) -> str | None:
+    """Only an explicit adjacent reservation can support this narrow overrun route."""
+    reservation = _scene_boundary_contract(execution)["next_scene"]
+    if not isinstance(reservation, dict) or not any(
+        reservation.get(field) for field in ("turning_point", "outcome")
+    ):
+        return None
+    assignment = _scene_assignment_contract(execution)
+    return next((key for key in ("outcome", "turning_point") if assignment.get(key)), None)
+
+
+def _normalize_scene_boundary_check(
+    critique: dict[str, Any], execution: _Execution
+) -> dict[str, Any]:
+    """Validate the comparison; only a valid overrun becomes a manuscript blocker."""
+    check = critique.get("scene_boundary_check")
+    fields = set(_scene_boundary_check_schema()["required"])
+    if (
+        not isinstance(check, dict)
+        or set(check) != fields
+        or check.get("status") not in ("no_overrun", "overrun")
+        or any(
+            not isinstance(check.get(key), str) or not check[key].strip() or len(check[key]) > 600
+            for key in fields - {"draft_evidence_refs", "status"}
+        )
+    ):
+        raise _StructuredOutputContractError(
+            "scene_boundary_check",
+            "provide achieved_state, current_endpoint_comparison, next_scene_comparison "
+            "(each 1-600 characters), current draft_evidence_refs and no_overrun/overrun status",
+            issue_type="invalid_scene_boundary_check",
+        )
+    evidence = _resolve_critic_evidence_refs(
+        check["draft_evidence_refs"],
+        execution,
+        location="scene_boundary_check.draft_evidence_refs",
+    )
+    result = {key: value for key, value in critique.items() if key != "scene_boundary_check"}
+    if check["status"] == "no_overrun":
+        return result
+    anchor = _scene_boundary_overrun_anchor(execution)
+    if anchor is None:
+        raise _StructuredOutputContractError(
+            "scene_boundary_check.status",
+            "overrun requires a current endpoint and an explicit next-scene reservation",
+            issue_type="inapplicable_scene_boundary_overrun",
+        )
+    reservation = cast(dict[str, Any], _scene_boundary_contract(execution)["next_scene"])
+    assignment = _scene_assignment_contract(execution)
+    result["issues"] = [
+        *result.get("issues", []),
+        {
+            "category": f"scene_assignment:{anchor}",
+            "severity": CritiqueSeverity.BLOCKING.value,
+            "description": (
+                f"Assigned {anchor}: {json.dumps(assignment[anchor], ensure_ascii=False)}. "
+                f"Achieved state: {check['achieved_state']}. "
+                f"Current endpoint: {check['current_endpoint_comparison']}. "
+                f"Reserved for {reservation['scene_id']}: {check['next_scene_comparison']}"
+            ),
+            "evidence": evidence,
+            "recommendation": (
+                "Keep the current scene's planned turn, outcome and exit state; "
+                f"reserve {reservation['scene_id']}'s distinct turn/outcome: "
+                f"{reservation.get('turning_point')}; {reservation.get('outcome')}. "
+                "Preserve permitted setup and explicitly approved overlap."
+            ),
+        },
+    ]
+    result["verdict"] = CritiqueVerdict.REVISE.value
+    return result
+
+
+def _scene_boundary_audit(raw: dict[str, Any], execution: _Execution) -> dict[str, object]:
+    """Retain validated, bounded model judgments separately from canonical story content."""
+    check = raw["scene_boundary_check"]
+    candidate = next(
+        item
+        for item in execution.inputs
+        if item.get("artifact_kind") == "scene_draft"
+        and item["content"].get("scene_id") == execution.unit_id
+        and item["content"].get("revision_number") == execution.revision_number
+    )
+    boundary = _scene_boundary_contract(execution)
+    return {
+        "schema_version": "1",
+        "candidate_version_id": candidate["artifact_version_id"],
+        "current_plan_version_id": boundary["current_plan_version_id"],
+        "next_scene": boundary["next_scene"],
+        "check": {
+            key: active_secret_guard().redact_text(value)[:600] if isinstance(value, str) else value
+            for key, value in check.items()
+        },
+    }
 
 
 def _critic_evidence_catalog(execution: _Execution) -> tuple[dict[str, str], ...]:
@@ -4895,6 +5019,7 @@ def _materialize_output_data(
         materialized = _normalize_point_of_view_check(materialized, execution)
         materialized = _normalize_story_length_critique(materialized, execution)
         materialized = _normalize_scene_assignment_critique(materialized, execution)
+        materialized = _normalize_scene_boundary_check(materialized, execution)
         materialized = _normalize_repair_checks(materialized, execution)
         scores = materialized.get("scores")
         if (

@@ -265,6 +265,22 @@ class ProductionFixtureGateway(BlueprintFixtureGateway):
             content["overall_score"] = 999
             content["assignment_violations"] = []
             content["point_of_view_check"] = {"status": "aligned"}
+            candidate = next(
+                item
+                for item in input_items
+                if item["artifact_kind"] == "scene_draft"
+                and item["content"]["scene_id"] == assignment["unit_id"]
+                and item["content"]["revision_number"] == assignment["revision_number"]
+            )
+            content["scene_boundary_check"] = {
+                "achieved_state": "Simulated achieved state, not semantic evidence.",
+                "current_endpoint_comparison": "Simulated comparison with current assignment.",
+                "next_scene_comparison": "Simulated comparison with next reservation.",
+                "draft_evidence_refs": [
+                    candidate["content"]["evidence_catalog"][-1]["evidence_ref"]
+                ],
+                "status": "no_overrun",
+            }
             if payload.get("repair_acceptance_tests"):
                 candidate = next(
                     item
@@ -2301,7 +2317,7 @@ def test_schema_repair_guidance_is_provider_neutral_for_structured_failures(
 
     assert (guidance is not None) is expects_guidance
     if guidance is not None:
-        assert guidance["policy_version"] == "9"
+        assert guidance["policy_version"] == "10"
         assert guidance["mode"] == "repair_only"
         assert guidance["schema_variant"] == "initial_check"
         assert guidance["focus_locations"] == ["findings.0"]
