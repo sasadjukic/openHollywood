@@ -1988,6 +1988,44 @@ No model calls, new inference costs, production changes or formal reruns occurre
 
 **Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
 
+### Shared scene boundary implemented and probed 2026-10-08
+
+**Implementation COMPLETE — semantic detection unqualified; stabilization IN PROGRESS.**
+Prompt v37 / graph v9 adds the same compact current endpoint and immediately next
+scene's reserved turn/outcome to the existing writer and critic. The exact
+current plan and approved Blueprint versions provide provenance. Their scoped
+requests replace global plot prose; all 19 measured historical requests are
+shorter. See [ADR 0021](../docs/adr/0021-shared-scene-boundary.md) and the
+[implementation/probe report](../docs/benchmark_reports/scene-boundary-v37-2026-10-08.md).
+
+- [x] Preserve approved artifacts, current canon and input lineage while sharing
+  the boundary on initial and revision calls, without a new role or model call.
+- [x] Distinguish premature completion from permitted setup, foreshadowing,
+  incidental follow-through and approved overlap; retain existing hard gates.
+- [x] Verify 11 focused offline cases, persisted revision/replay, and final
+  Python/frontend checks (665 Python tests, 11 frontend tests, production build).
+- [x] Prepare five isolated critic probes, obtain explicit permission, and run
+  the frozen original, stopping/foreshadowing controls, assigned scene-2
+  verification and a missing-turn control.
+- [x] Verify prepared/live hashes, source immutability and usage separately from
+  actual billing; retain the unsuccessful overrun result without rerolling.
+- [ ] Demonstrate reliable overrun detection and fresh writer behavior.
+
+All five probes validated on their first attempts. Proper stopping,
+foreshadowing and correctly assigned verification passed; the missing-turn
+control produced a blocking assignment issue. **The original scene-1 overrun
+still passed with three 5/5 scores.** The model praised journal comparison while
+describing the ending as a decision to verify. The context is now available, but
+the requested comparison is not reliably applied.
+
+Usage was 53,809 input / 2,497 output tokens: USD 0.00853206 at dated published
+rates, against an approved maximum estimate of USD 0.06560. Actual charges remain
+unknown. No new writer generation, canonical change or full-story rerun occurred.
+The next proposed target is a small evidence-backed boundary assessment within
+the existing critic response; this further change is not implemented.
+
+**Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
+
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 
 21. [ ] **Package the stable system with Tauri** and test crash/restart, offline, missing-model, invalid-key, provider-timeout, and low-disk-space behavior.

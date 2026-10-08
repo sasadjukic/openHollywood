@@ -23,3 +23,4 @@ tradeoffs. Status values are `Proposed`, `Accepted`, `Superseded`, or `Rejected`
 | [0018](0018-current-continuity-rechecks-and-compact-coverage.md) | Current continuity rechecks and compact requirement coverage | Accepted |
 | [0019](0019-inactive-continuity-recurrence-and-counterevidence.md) | Inactive continuity recurrence and counterevidence | Accepted |
 | [0020](0020-inactive-review-advice-projection.md) | Inactive review advice projection | Accepted |
+| [0021](0021-shared-scene-boundary.md) | Shared scene boundary for writer and critic | Accepted |

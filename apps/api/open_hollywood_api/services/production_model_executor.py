@@ -677,26 +677,24 @@ _INSTRUCTIONS: Mapping[_Operation, str] = {
         "Fix the cited defect, not just a suggested qualifier; repair advice is not canon. "
         "Preserve unrelated prose, "
         "the assigned viewpoint, characters, scene purpose, and scene outcome while repairing "
-        "only the supplied defects. Never draft material assigned to a later scene. Treat "
+        "only the supplied defects. Stop at scene_boundary's current endpoint; reserve the "
+        "next scene's distinct turn/outcome. Treat "
         "length_guidance as a story-wide advisory allocation, "
         "not a hard per-scene quota."
     ),
     _Operation.CRITIQUE: (
-        "Evaluate this draft against its approved plan/Blueprint and craft rubric. "
-        "Put concrete assignment "
-        "violations exclusively in assignment_violations: select an anchor from "
-        "scene_assignment_contract, select draft_evidence_refs, and explain the "
-        "incompatible replacement or missing planned turn/outcome. Return [] when none exist. "
-        "A mention of POV, advice for the next scene, polish, or an achieved turn that could "
-        "be stronger is not an assignment violation. Ordinary craft feedback belongs in issues. "
-        "Use the same draft_evidence_refs field for assignment violations and craft issues; "
-        "select 1-3 distinct handles from the CURRENT draft's evidence_catalog, never quote "
-        "prose or reuse handles from an earlier draft. The application resolves the excerpts. "
-        "Before claiming a missing turn/outcome, consider the whole scene, including actions, "
-        "embodied reactions, and indirect realization of the planned change. Do not demand "
-        "a new mechanism or an extra action unless the approved plan actually requires it. "
-        "An absent or incompatible outcome still blocks; merely wanting a more explicit "
-        "or forceful realization is advisory craft feedback, not a hard assignment failure. "
+        "Evaluate the approved assignment and craft rubric. In summary, compare the draft's "
+        "achieved ending with scene_boundary's endpoint and next-scene reservation. "
+        "Report concrete missing/incompatible assignments or premature completion in "
+        "assignment_violations; otherwise return []. Select a scene_assignment_contract "
+        "anchor and explain the breach. Anchor overruns to outcome (or turning_point), "
+        "even if the current obligation also occurs. Consider the whole scene: actions, "
+        "embodied reactions and indirect realization count. Do not demand unassigned "
+        "mechanisms or extra actions. Wanting a stronger or more explicit turn, polish, "
+        "POV mentions or next-scene advice is not a hard assignment failure; craft feedback "
+        "belongs in issues. For both routes, select 1-3 distinct draft_evidence_refs from "
+        "the CURRENT evidence_catalog; never quote prose or reuse earlier handles. "
+        "The application resolves excerpts. "
         "Score critic_rubric once per dimension; blockers override craft scores. "
         "For repair_acceptance_tests, return repair_checks against the fixed original target, "
         "with current evidence and why it is met/unmet. Qualifier changes alone prove nothing. "
@@ -2719,8 +2717,9 @@ def _messages(
     else:
         payload["frozen_benchmark_constraints"] = execution.constraints
         if operation in {_Operation.WRITE, _Operation.CRITIQUE}:
-            payload["input_artifacts"] = _scene_scoped_prompt_inputs(execution)
+            payload["input_artifacts"] = _scene_scoped_prompt_inputs(execution, boundary=True)
             payload["scene_assignment_contract"] = _scene_assignment_contract(execution)
+            payload["scene_boundary"] = _scene_boundary_contract(execution)
             length_guidance = _story_length_guidance(execution)
             if length_guidance is not None:
                 payload["length_guidance"] = length_guidance
@@ -2759,7 +2758,7 @@ def _messages(
             if revision_contract is not None:
                 payload["revision_contract"] = revision_contract
                 payload["input_artifacts"] = compact_repair_inputs(
-                    _scene_scoped_prompt_inputs(execution),
+                    _scene_scoped_prompt_inputs(execution, boundary=True),
                     scene_id=execution.unit_id,
                     revision=execution.revision_number,
                     critic=False,
@@ -2826,7 +2825,7 @@ def _critic_adjudication_messages(
     source = _critic_adjudication_source(execution)
     prior_inputs = tuple(item for item in execution.inputs if item is not source)
     inputs = compact_repair_inputs(
-        _critic_prompt_inputs(execution),
+        _critic_prompt_inputs(execution, boundary=False),
         scene_id=execution.unit_id,
         revision=execution.revision_number,
         critic=True,
@@ -3379,9 +3378,11 @@ def _critic_requirement_scope(execution: _Execution) -> dict[str, object]:
     }
 
 
-def _critic_prompt_inputs(execution: _Execution) -> tuple[dict[str, Any], ...]:
+def _critic_prompt_inputs(
+    execution: _Execution, *, boundary: bool = True
+) -> tuple[dict[str, Any], ...]:
     """Remove deferred repeated requirements from the current Scene Plan views."""
-    inputs = _scene_scoped_prompt_inputs(execution)
+    inputs = _scene_scoped_prompt_inputs(execution, boundary=boundary)
     for item in inputs:
         content = item.get("content")
         if (
@@ -3451,7 +3452,9 @@ def _continuity_entity_identity_context(execution: _Execution) -> list[dict[str,
     return identities
 
 
-def _scene_scoped_prompt_inputs(execution: _Execution) -> tuple[dict[str, Any], ...]:
+def _scene_scoped_prompt_inputs(
+    execution: _Execution, *, boundary: bool = False
+) -> tuple[dict[str, Any], ...]:
     """Hide future scene assignments while retaining exact persisted input lineage."""
     plan = _continuity_scene_plan(execution)
     scene_id = plan.get("id")
@@ -3489,6 +3492,12 @@ def _scene_scoped_prompt_inputs(execution: _Execution) -> tuple[dict[str, Any], 
             }
         }
         bounded_content = cast(dict[str, Any], bounded["content"])
+        if boundary:
+            # The boundary carries only the next reservation. Global plot prose
+            # otherwise invites later work into this scene's current-only view.
+            bounded_content.pop("story_arc", None)
+            if execution.unit_number != execution.unit_count:
+                bounded_content.pop("proposed_ending", None)
         bounded_content.update(
             characters=selected(
                 content,
@@ -3521,6 +3530,37 @@ def _scene_scoped_prompt_inputs(execution: _Execution) -> tuple[dict[str, Any], 
         )
         scoped.append(bounded)
     return tuple(scoped)
+
+
+def _scene_boundary_contract(execution: _Execution) -> dict[str, object]:
+    """Project the next approved reservation, never inventing a future assignment."""
+    plan = next(item for item in execution.inputs if item.get("artifact_kind") == "scene_plan")
+    next_scenes = [
+        {
+            "blueprint_version_id": item["artifact_version_id"],
+            "scene_id": scene["id"],
+            "turning_point": scene.get("turning_point"),
+            "outcome": scene.get("outcome"),
+        }
+        for item in execution.inputs
+        if item.get("artifact_kind") == "story_blueprint"
+        for scene in item["content"].get("scene_plans", [])
+        if scene.get("scene_number") == execution.unit_number + 1
+        and execution.unit_number < execution.unit_count
+    ]
+    if len(next_scenes) > 1:
+        raise SceneProductionError("scene boundary requires an unambiguous next approved scene")
+    return {
+        "current_plan_version_id": plan["artifact_version_id"],
+        "current_endpoint": "scene_assignment_contract.outcome and exit_state",
+        "next_scene": next_scenes[0] if next_scenes else None,
+        "policy": (
+            "Reserve the next scene's distinct central turn/outcome, not every related action. "
+            "Setup, foreshadowing, guesses and incidental follow-through are allowed. "
+            "The current approved plan governs any overlap or intentional repetition. "
+            "A decision to investigate need not establish the investigation's result."
+        ),
+    }
 
 
 def _scene_assignment_contract(execution: _Execution) -> dict[str, object]:

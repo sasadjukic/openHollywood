@@ -613,13 +613,22 @@ injected contradictions remained blocking, but the original scenes still block;
 semantic recovery and full-story qualification remain unestablished. See
 [ADR 0019](docs/adr/0019-inactive-continuity-recurrence-and-counterevidence.md).
 
-Current prompt v36 / graph v9 omits obsolete repair advice from inactive
+Prompt v36 / graph v9 omits obsolete repair advice from inactive
 historical findings in the continuity supervisor's request, while preserving
 their identities and complete persisted history. Active repairs, canonical
 evidence and validation gates remain unchanged. Four live probes validated;
 002 still blocks and 010 clears on one call despite having no history affected
 by this change. Semantic recovery remains unestablished. See
 [ADR 0020](docs/adr/0020-inactive-review-advice-projection.md).
+
+Current prompt v37 / graph v9 gives the existing writer and critic a shared
+current endpoint and next-scene reservation from exact approved artifact versions.
+It replaces global plot detail in their scoped requests and retains the existing
+assignment gate. Five isolated Cloud critic probes validated, but the original
+premature verification still passed. The shared context is implemented; improved
+overrun detection and writer behavior remain unqualified. See
+[ADR 0021](docs/adr/0021-shared-scene-boundary.md) and the
+[probe report](docs/benchmark_reports/scene-boundary-v37-2026-10-08.md).
 
 Benchmark word-count ranges are advisory creative targets. New outputs persist a
 non-gating adherence measurement with the target, actual count, status, and word

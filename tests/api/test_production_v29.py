@@ -141,8 +141,8 @@ def test_all_three_wire_routes_share_one_version_scoped_reference_enum(
     draft = next(a for a in payload["input_artifacts"] if a["artifact_kind"] == "scene_draft")
     assert draft["content"]["evidence_catalog"] == list(_critic_evidence_catalog(execution))
     assert "prose" not in draft["content"]
-    assert "an extra action unless the approved plan actually requires it" in messages[0].content
-    assert "merely wanting a more explicit" in messages[0].content
+    assert "Do not demand unassigned mechanisms or extra actions" in messages[0].content
+    assert "Wanting a stronger or more explicit turn" in messages[0].content
     assert "A high mean cannot clear a blocking finding" in payload["critic_rubric"]["policy"]
     if deployment is ModelDeployment.CLOUD:
         assert payload["output_schema"] == schema
