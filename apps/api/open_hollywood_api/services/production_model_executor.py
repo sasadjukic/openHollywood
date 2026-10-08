@@ -685,9 +685,9 @@ _INSTRUCTIONS: Mapping[_Operation, str] = {
     _Operation.CRITIQUE: (
         "Complete scene_boundary_check before scoring: describe the state established "
         "by the draft and cite current evidence. Compare it with the current "
-        "endpoint and the next scene's reservation. A decision, an attempt and an established "
-        "result are different states. Use overrun only for premature completion of distinct "
-        "reserved work; otherwise no_overrun. With no next reservation, explain that limit. "
+        "endpoint and next reservation. Use overrun for material advancement beyond the "
+        "current endpoint without explicit current-plan authorization; otherwise no_overrun. "
+        "In current_endpoint_comparison, identify any authorizing plan field and instruction. "
         "Evidence supports the achieved state, not proof that no violation exists. Report "
         "overruns only in this check; the application makes them blocking assignment issues. "
         "Report other concrete missing/incompatible assignments in "
@@ -3085,12 +3085,7 @@ def _scene_boundary_check_schema() -> dict[str, Any]:
 
 
 def _scene_boundary_overrun_anchor(execution: _Execution) -> str | None:
-    """Only an explicit adjacent reservation can support this narrow overrun route."""
-    reservation = _scene_boundary_contract(execution)["next_scene"]
-    if not isinstance(reservation, dict) or not any(
-        reservation.get(field) for field in ("turning_point", "outcome")
-    ):
-        return None
+    """The current endpoint binds independently of any later scene's remaining work."""
     assignment = _scene_assignment_contract(execution)
     return next((key for key in ("outcome", "turning_point") if assignment.get(key)), None)
 
@@ -3128,11 +3123,21 @@ def _normalize_scene_boundary_check(
     if anchor is None:
         raise _StructuredOutputContractError(
             "scene_boundary_check.status",
-            "overrun requires a current endpoint and an explicit next-scene reservation",
+            "overrun requires a populated current outcome or turning point",
             issue_type="inapplicable_scene_boundary_overrun",
         )
-    reservation = cast(dict[str, Any], _scene_boundary_contract(execution)["next_scene"])
+    reservation = _scene_boundary_contract(execution)["next_scene"]
     assignment = _scene_assignment_contract(execution)
+    repair = (
+        "Restore the current scene's planned outcome and exit state: remove unassigned "
+        "material advancement, not merely a later detail of an already established result. "
+        "Preserve setup, inconclusive tests, incidental follow-through and approved overlap."
+    )
+    if isinstance(reservation, dict):
+        repair += (
+            f" Reserve {reservation['scene_id']}'s distinct work: "
+            f"{reservation.get('turning_point')}; {reservation.get('outcome')}."
+        )
     result["issues"] = [
         *result.get("issues", []),
         {
@@ -3142,15 +3147,10 @@ def _normalize_scene_boundary_check(
                 f"Assigned {anchor}: {json.dumps(assignment[anchor], ensure_ascii=False)}. "
                 f"Achieved state: {check['achieved_state']}. "
                 f"Current endpoint: {check['current_endpoint_comparison']}. "
-                f"Reserved for {reservation['scene_id']}: {check['next_scene_comparison']}"
+                f"Next scene comparison: {check['next_scene_comparison']}"
             ),
             "evidence": evidence,
-            "recommendation": (
-                "Keep the current scene's planned turn, outcome and exit state; "
-                f"reserve {reservation['scene_id']}'s distinct turn/outcome: "
-                f"{reservation.get('turning_point')}; {reservation.get('outcome')}. "
-                "Preserve permitted setup and explicitly approved overlap."
-            ),
+            "recommendation": repair,
         },
     ]
     result["verdict"] = CritiqueVerdict.REVISE.value
@@ -3679,10 +3679,13 @@ def _scene_boundary_contract(execution: _Execution) -> dict[str, object]:
         "current_endpoint": "scene_assignment_contract.outcome and exit_state",
         "next_scene": next_scenes[0] if next_scenes else None,
         "policy": (
-            "Reserve the next scene's distinct central turn/outcome, not every related action. "
-            "Setup, foreshadowing, guesses and incidental follow-through are allowed. "
-            "The current approved plan governs any overlap or intentional repetition. "
-            "A decision to investigate need not establish the investigation's result."
+            "The current outcome/exit state bounds substantive plot and knowledge changes, "
+            "even without a next scene. A decision, attempt and established result differ. "
+            "A more specific later detail or stronger proof does not authorize an earlier result. "
+            "Setup, foreshadowing, guesses, inconclusive tests and incidental follow-through are "
+            "allowed when they do not establish a result beyond this endpoint. "
+            "Explicit current-plan instructions can authorize overlap; a broad goal/summary cannot "
+            "override a specific endpoint. Reserve the next scene's distinct turn/outcome."
         ),
     }
 

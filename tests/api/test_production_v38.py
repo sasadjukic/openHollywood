@@ -36,16 +36,17 @@ def anyio_backend() -> str:
 
 
 @pytest.mark.parametrize("deployment", [ModelDeployment.LOCAL, ModelDeployment.CLOUD])
-@pytest.mark.parametrize("has_next", [True, False])
+@pytest.mark.parametrize("has_endpoint", [True, False])
 def test_schema_requires_comparison_and_exact_evidence_even_for_no_overrun(
-    deployment: ModelDeployment, has_next: bool
+    deployment: ModelDeployment, has_endpoint: bool
 ) -> None:
     execution = _fixture()
     execution = replace(
         execution,
         selection=replace(execution.selection, deployment=deployment),
-        unit_count=3 if has_next else 1,
     )
+    if not has_endpoint:
+        execution.inputs[0]["content"].update(outcome=None, turning_point=None)
     schema = _output_schema(
         _Operation.CRITIQUE,
         continuity_schema_variant=None,
@@ -56,7 +57,7 @@ def test_schema_requires_comparison_and_exact_evidence_even_for_no_overrun(
     check = schema["properties"]["scene_boundary_check"]
     assert set(check["required"]) == set(_raw(execution)["scene_boundary_check"])
     assert check["properties"]["status"]["enum"] == (
-        ["no_overrun", "overrun"] if has_next else ["no_overrun"]
+        ["no_overrun", "overrun"] if has_endpoint else ["no_overrun"]
     )
     assert check["properties"]["draft_evidence_refs"]["items"] == {
         "$ref": "#/$defs/CriticDraftEvidenceReference"
@@ -146,17 +147,9 @@ def test_no_overrun_never_clears_other_hard_failures_or_implies_outcome_is_met()
         assert result["issues"][0]["severity"] == "blocking"
 
 
-@pytest.mark.parametrize("condition", ["final", "missing_reservation", "empty_endpoint"])
-def test_inapplicable_overrun_rejected_even_if_provider_ignores_bound_schema(
-    condition: str,
-) -> None:
+def test_inapplicable_overrun_rejected_even_if_provider_ignores_bound_schema() -> None:
     execution = _fixture()
-    if condition == "final":
-        execution = replace(execution, unit_count=1)
-    elif condition == "missing_reservation":
-        execution.inputs[-1]["content"]["scene_plans"] = []
-    else:
-        execution.inputs[0]["content"].update(outcome=None, turning_point=None)
+    execution.inputs[0]["content"].update(outcome=None, turning_point=None)
     raw = _raw(execution)
     raw["scene_boundary_check"]["status"] = "overrun"
     with pytest.raises(_StructuredOutputContractError) as failure:
