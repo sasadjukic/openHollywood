@@ -604,7 +604,7 @@ Cloud probes validated on their first attempts, but each retained a blocking
 finding; semantic judgment and full-story recovery remain unqualified. See
 [ADR 0018](docs/adr/0018-current-continuity-rechecks-and-compact-coverage.md).
 
-Current prompt v35 / graph v9 applies the changed-evidence guard to inactive
+Prompt v35 / graph v9 applies the changed-evidence guard to inactive
 historical allegations as well as new finding IDs. Continuity guidance requires
 consideration of adjacent explanations and other counterevidence. Matched
 requests are shorter; production limits and writer/critic instructions remain
@@ -612,6 +612,14 @@ unchanged. Offline regression checks pass. Four live probes validated and both
 injected contradictions remained blocking, but the original scenes still block;
 semantic recovery and full-story qualification remain unestablished. See
 [ADR 0019](docs/adr/0019-inactive-continuity-recurrence-and-counterevidence.md).
+
+Current prompt v36 / graph v9 omits obsolete repair advice from inactive
+historical findings in the continuity supervisor's request, while preserving
+their identities and complete persisted history. Active repairs, canonical
+evidence and validation gates remain unchanged. Four live probes validated;
+002 still blocks and 010 clears on one call despite having no history affected
+by this change. Semantic recovery remains unestablished. See
+[ADR 0020](docs/adr/0020-inactive-review-advice-projection.md).
 
 Benchmark word-count ranges are advisory creative targets. New outputs persist a
 non-gating adherence measurement with the target, actual count, status, and word

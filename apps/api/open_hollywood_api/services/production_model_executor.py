@@ -2673,7 +2673,10 @@ def _messages(
             )
         if len(continuity_model_context.continuity_history) > 1:
             payload["continuity_history"] = [
-                _bounded_continuity_history_entry(report)
+                _bounded_continuity_history_entry(
+                    report,
+                    active_finding_ids=continuity_model_context.prior_blocking_finding_ids,
+                )
                 for report in continuity_model_context.continuity_history[:-1]
             ]
         payload["output_schema_variant"] = continuity_schema_variant.value
@@ -3708,31 +3711,38 @@ def _original_allegation_ledger(context: _ContinuityModelContext) -> list[dict[s
     return list(originals.values())
 
 
-def _bounded_continuity_history_entry(report: Mapping[str, object]) -> dict[str, object]:
-    """Expose historical semantic identity and repair direction without story excerpts."""
-    findings = _continuity_report_findings(report)
-    return {
-        "artifact_version_id": report.get("artifact_version_id"),
-        "findings": [
-            {
-                key: deepcopy(finding.get(key))
-                for key in (
-                    "id",
-                    "summary",
-                    "category",
-                    "basis",
-                    "requirement_id",
-                    "world_rule_ids",
-                    "canonical_source_refs",
-                    "recommended_resolution",
-                    "recheck_disposition",
-                )
-                if finding.get(key) is not None
-            }
-            for finding in findings
-            if finding.get("severity") in {"error", "blocking"}
-        ],
-    }
+def _bounded_continuity_history_entry(
+    report: Mapping[str, object],
+    *,
+    active_finding_ids: tuple[str, ...] | None = None,
+) -> dict[str, object]:
+    """Keep recurrence identity without presenting inactive repairs as current guidance."""
+    projected: list[dict[str, object]] = []
+    for finding in _continuity_report_findings(report):
+        if finding.get("severity") not in {"error", "blocking"}:
+            continue
+        entry = {
+            key: deepcopy(finding.get(key))
+            for key in (
+                "id",
+                "summary",
+                "category",
+                "basis",
+                "requirement_id",
+                "world_rule_ids",
+                "canonical_source_refs",
+                "recommended_resolution",
+                "recheck_disposition",
+            )
+            if finding.get(key) is not None
+        }
+        # Adjudication omits this filter and retains its existing historical context.
+        if active_finding_ids is not None and finding.get("id") not in active_finding_ids:
+            entry.pop("recommended_resolution", None)
+            entry.pop("recheck_disposition", None)
+            entry["active_in_latest_report"] = False
+        projected.append(entry)
+    return {"artifact_version_id": report.get("artifact_version_id"), "findings": projected}
 
 
 def _continuity_report_findings(report: Mapping[str, object]) -> tuple[dict[str, Any], ...]:
