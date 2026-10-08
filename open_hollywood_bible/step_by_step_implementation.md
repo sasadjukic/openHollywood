@@ -1832,6 +1832,51 @@ story was declared recovered, and no extra writer or adjudicator calls were made
 **Product Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.** Item 5 remains
 complete as an assessment and sealing task, not as demonstrated repeatability.
 
+### Technical stabilization v35 begun 2026-10-08
+
+**IN PROGRESS — offline checks pass; live probes assessed; semantic recovery unqualified.**
+Temporary branch: `codex/continuity-stabilization-v35`. The user authorized the
+short technical stabilization before the creative-quality changes.
+[ADR 0019](../docs/adr/0019-inactive-continuity-recurrence-and-counterevidence.md)
+records the implementation and prepared evaluation.
+
+- [x] Apply the revision evidence guard using the latest report's active finding
+  IDs, so historical identity cannot bypass it. Preserve historical IDs, real
+  blockers, independent hard gates, and the existing repair/revision limits.
+- [x] Replace continuity guidance to consider nearby explanations and the strongest
+  counterevidence before blocking or requesting a repair already present.
+- [x] Add 14 regression cases, including persisted recovery within two review
+  attempts and terminal failure without an extra writer call.
+- [x] Pass repository checks: 643 Python tests, 11 frontend tests, Python and
+  frontend lint/format/type checks, and the production build.
+- [x] Reconstruct the exact v34 inputs read-only and verify shorter v35 requests:
+  39,997 to 39,958 characters for 002; 40,495 to 40,479 for 010.
+- [x] Run and assess four live probes, including two genuine contradiction
+  controls, after explicit cloud-payload approval. All validate in one attempt;
+  both controls catch the injected contradiction, but both original cases block.
+- [ ] Resolve the remaining continuity judgment concern before expanding tests.
+- [ ] Perform a bounded full-story check if probe results support proceeding.
+
+The captured 002 finding cites five rewritten excerpts, so the guard change
+alone does not reject it; its semantic judgment still needs evaluation.
+The four probes used four of the maximum eight calls: 39,384 input / 4,467 output
+tokens, with a published-rate estimate of USD 0.00730056 assuming uncached input
+(the allocation estimate was USD 0.05248). Actual charges remain unknown.
+Historical costs and formal cost-acceptance rules are unchanged. Automatic
+approval review initially rejected the cloud launch; it ran only after the user
+explicitly approved these private inputs, controls, and destination. The frozen
+database and canonical artifacts are unchanged; no formal campaign rerun occurred.
+
+002 still treats repeated verification as a contradiction despite the current
+scene assignment requiring verification. Historical advice to remove it remains
+in context and is the next focused investigation target. 010 now raises the
+current-system flag rather than demanding the deletion explanation already
+present; its timing still needs assessment. The 010 positive control catches the
+injected denial but mixes physical and code back-doors in its repair explanation.
+These results do not support expansion to a full-story run yet.
+
+**Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
+
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 
 21. [ ] **Package the stable system with Tauri** and test crash/restart, offline, missing-model, invalid-key, provider-timeout, and low-disk-space behavior.

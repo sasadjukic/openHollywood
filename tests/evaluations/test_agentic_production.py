@@ -2301,7 +2301,7 @@ def test_schema_repair_guidance_is_provider_neutral_for_structured_failures(
 
     assert (guidance is not None) is expects_guidance
     if guidance is not None:
-        assert guidance["policy_version"] == "8"
+        assert guidance["policy_version"] == "9"
         assert guidance["mode"] == "repair_only"
         assert guidance["schema_variant"] == "initial_check"
         assert guidance["focus_locations"] == ["findings.0"]

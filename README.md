@@ -595,7 +595,7 @@ also close interrupted calls with an explicit unknown provider outcome. Offline
 checks passed; live semantic validation remains pending. See
 [ADR 0015](docs/adr/0015-scoped-continuity-development.md).
 
-Current prompt v34 / graph v9 separates active continuity rechecks from historical
+Prompt v34 / graph v9 separates active continuity rechecks from historical
 findings and removes duplicate requirement-coverage fields. Gap summaries come
 from the coverage assessment; exact evidence and existing blocking rules remain
 mandatory. Response errors point to the model's keyed coverage fields. Matched
@@ -603,6 +603,15 @@ requests are shorter, with no increase in retries or limits. Two frozen-input
 Cloud probes validated on their first attempts, but each retained a blocking
 finding; semantic judgment and full-story recovery remain unqualified. See
 [ADR 0018](docs/adr/0018-current-continuity-rechecks-and-compact-coverage.md).
+
+Current prompt v35 / graph v9 applies the changed-evidence guard to inactive
+historical allegations as well as new finding IDs. Continuity guidance requires
+consideration of adjacent explanations and other counterevidence. Matched
+requests are shorter; production limits and writer/critic instructions remain
+unchanged. Offline regression checks pass. Four live probes validated and both
+injected contradictions remained blocking, but the original scenes still block;
+semantic recovery and full-story qualification remain unestablished. See
+[ADR 0019](docs/adr/0019-inactive-continuity-recurrence-and-counterevidence.md).
 
 Benchmark word-count ranges are advisory creative targets. New outputs persist a
 non-gating adherence measurement with the target, actual count, status, and word
