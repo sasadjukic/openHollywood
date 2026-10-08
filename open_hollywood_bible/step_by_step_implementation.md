@@ -1956,6 +1956,38 @@ facts. This experiment does not qualify full-story recovery or repeatability.
 
 **Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
 
+### Scene-1 acceptance trace completed 2026-10-08
+
+**Diagnostic COMPLETE — scene-endpoint detection gap identified; stabilization IN PROGRESS.**
+The [acceptance trace](../docs/benchmark_reports/scene-one-acceptance-trace-2026-10-08.md)
+follows OH-V01-002's original v33 writer, critic, continuity and Bible-update
+invocations through the recorded scene-1 accept event.
+
+- [x] Verify exact artifact provenance and the unchanged read-only snapshot.
+- [x] Establish normal first-draft acceptance: critic PASS, no issues, three 5/5
+  scores; continuity has one informational observation and no blocker.
+- [x] Confirm that writer and critic saw the current "decides to verify" outcome,
+  while future scene assignments were hidden and the overall story arc's later
+  verification action remained visible.
+- [x] Locate explicit critic praise for the overrun and the missing dedicated
+  endpoint/next-scene-reservation assessment.
+- [x] Reconstruct an identical critic message hash under current v36 and verify
+  that a synthetic reported outcome violation forces revise despite 5/5 scores.
+
+The Bible update accurately recorded the verification already performed in the
+accepted prose. The failure was detection of the scene-boundary overrun before
+acceptance, not a reported blocker being discarded, a cost/retry limit, or lost
+canonical memory. Contextual influence on the model remains an interpretation;
+the records cannot reveal unretained internal reasoning.
+
+The next proposed implementation is a compact, version-bound scene endpoint and
+immediately subsequent reserved turn/outcome for the existing writer and critic,
+with controls for proper stopping, permitted foreshadowing, the original overrun
+and correctly assigned verification. It is not implemented by this investigation.
+No model calls, new inference costs, production changes or formal reruns occurred.
+
+**Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
+
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 
 21. [ ] **Package the stable system with Tauri** and test crash/restart, offline, missing-model, invalid-key, provider-timeout, and low-disk-space behavior.
