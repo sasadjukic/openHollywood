@@ -25,3 +25,4 @@ tradeoffs. Status values are `Proposed`, `Accepted`, `Superseded`, or `Rejected`
 | [0020](0020-inactive-review-advice-projection.md) | Inactive review advice projection | Accepted |
 | [0021](0021-shared-scene-boundary.md) | Shared scene boundary for writer and critic | Accepted |
 | [0022](0022-required-critic-boundary-comparison.md) | Required evidence-backed critic boundary comparison | Accepted |
+| [0023](0023-binding-current-scene-endpoint.md) | Binding current scene endpoint | Accepted |

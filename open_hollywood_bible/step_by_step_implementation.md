@@ -2068,6 +2068,51 @@ and additional probes are not included in this implementation.
 
 **Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
 
+### Current scene endpoint made independently binding and probed 2026-10-08
+
+**Implementation COMPLETE — original overrun still missed; stabilization IN PROGRESS.**
+Prompt v39 / graph v9 tells writer and critic that retaining a more specific later
+detail does not authorize an earlier result beyond the current endpoint.
+Inconclusive tests, setup and incidental follow-through remain allowed within
+that endpoint; explicit current-plan instructions can authorize overlap. See
+[ADR 0023](../docs/adr/0023-binding-current-scene-endpoint.md) and the
+[implementation/probe report](../docs/benchmark_reports/binding-endpoint-v39-2026-10-08.md).
+
+- [x] Share the revised policy and request the authorizing current-plan field
+  and instruction within the existing five-field critic comparison.
+- [x] Permit an overrun with a current outcome/turning-point anchor independently
+  of a next reservation, including final scenes; preserve other hard gates.
+- [x] Route reported overruns through existing blocking issues and revision,
+  with repair guidance that removes the unassigned result rather than one detail.
+- [x] Preserve schemas, profiles, budgets, repair guidance v10 and graph routing.
+- [x] Pass 11 new cases and full checks: 697 Python tests, 11 frontend tests,
+  lint/format/type checks and production build.
+- [x] Run seven explicitly approved, hash-frozen Cloud critic probes: the same
+  five v38 inputs plus an inconclusive test and synthetic authorized overlap.
+- [ ] Demonstrate semantic overrun detection, fresh writer compliance and
+  full-story recovery.
+
+All seven probes validated on their first calls and returned `no_overrun`.
+The original still passes with perfect scores: the critic acknowledges an
+identical handwriting match but labels the comparison preliminary, treats the
+current outcome as satisfied and relies on the later stronger revelation.
+The five legitimate-progress controls pass without boundary false positives,
+but this does not establish discrimination when the positive case is missed.
+The missing-turn control correctly blocks on assignment and retains an extra
+overbroad plot allegation. No semantic rerolls or writer calls occurred.
+
+Usage was 74,937 input / 4,778 output tokens, estimated at USD 0.01240238 against
+the approved maximum estimate of USD 0.09184. Actual charges are unknown. The
+seven critic requests grow by 251 characters; corresponding writer requests grow
+by 254, with unchanged budgets. Source/request/response hashes verified and
+canonical stories, sealed benchmarks and historical results remain unchanged.
+
+The next diagnostic question is whether next-scene context still anchors this
+judgment or the current outcome is independently treated as a minimum achievement.
+No additional ablation or response-contract change is included here.
+
+**Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
+
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 
 21. [ ] **Package the stable system with Tauri** and test crash/restart, offline, missing-model, invalid-key, provider-timeout, and low-disk-space behavior.

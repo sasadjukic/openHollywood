@@ -200,7 +200,10 @@ def test_verification_moves_into_current_assignment_and_explicit_overlap_is_pres
         overlap["scene_boundary"]["next_scene"]["outcome"]
         == overlap["scene_assignment_contract"]["outcome"]
     )
-    assert "current approved plan governs any overlap" in overlap["scene_boundary"]["policy"]
+    assert (
+        "Explicit current-plan instructions can authorize overlap"
+        in overlap["scene_boundary"]["policy"]
+    )
 
 
 class BoundaryGateway(V26Gateway):

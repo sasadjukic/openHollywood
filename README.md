@@ -630,7 +630,7 @@ overrun detection and writer behavior remain unqualified. See
 [ADR 0021](docs/adr/0021-shared-scene-boundary.md) and the
 [probe report](docs/benchmark_reports/scene-boundary-v37-2026-10-08.md).
 
-Current prompt v38 / graph v9 requires an evidence-backed boundary comparison
+Prompt v38 / graph v9 requires an evidence-backed boundary comparison
 inside the existing critic response and retains it in invocation/probe diagnostics.
 Malformed comparisons use bounded review repair; reported overruns become blocking
 assignment issues. Five live probes validated, but the original overrun still
@@ -639,6 +639,16 @@ match preceding a particular secret flourish. This exposes the model's stated
 interpretation; improved detection remains unqualified. See
 [ADR 0022](docs/adr/0022-required-critic-boundary-comparison.md) and the
 [probe report](docs/benchmark_reports/critic-boundary-v38-2026-10-08.md).
+
+Current prompt v39 / graph v9 makes the current endpoint independently binding:
+retaining a more specific later detail does not authorize an earlier result.
+Writer and critic share the policy; reported overruns can now block even without
+a next reservation. Seven live probes validated, but the original overrun still
+passes while being described as preliminary verification. The five legitimate
+progress controls pass and the missing-turn control still blocks. Improved
+semantic detection remains unqualified. See
+[ADR 0023](docs/adr/0023-binding-current-scene-endpoint.md) and the
+[probe report](docs/benchmark_reports/binding-endpoint-v39-2026-10-08.md).
 
 Benchmark word-count ranges are advisory creative targets. New outputs persist a
 non-gating adherence measurement with the target, actual count, status, and word
