@@ -233,7 +233,7 @@ def test_link_field_is_only_in_repair_schema_and_does_not_expand_initial_reviews
     schema = _output_schema(
         _Operation.CRITIQUE, continuity_schema_variant=None, critic_execution=execution
     )
-    check = schema["$defs"]["RepairAcceptanceCheck"]
+    check = schema["$defs"]["RepairAcceptanceCheck"]["anyOf"][1]
     assert "current_finding_refs" in check["required"]
     assert check["properties"]["current_finding_refs"]["maxItems"] == 16
     initial = _output_schema(

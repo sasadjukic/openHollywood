@@ -80,6 +80,7 @@ from open_hollywood_api.services.run_controls import (
     finish_active_interval,
     start_active_interval,
 )
+from open_hollywood_api.services.workflow_cancellation import run_with_invocation_cleanup
 from open_hollywood_api.services.workflow_recovery import reconcile_interrupted_invocations
 
 MAX_PRODUCTION_GRAPH_STEPS = 128
@@ -307,7 +308,7 @@ class SceneProductionService:
         existing = await checkpointer.aget_tuple(config)
         graph_input = None if existing is not None else initial_production_state(production)
         try:
-            await graph.ainvoke(graph_input, config=config)
+            await run_with_invocation_cleanup(graph.ainvoke(graph_input, config=config))
             self._run_controls.execution_boundary(production.workflow_run_id)
         except (WorkflowPausedSignal, WorkflowStoppedSignal):
             await self._sync_checkpoint(production.workflow_run_id, graph, config)

@@ -28,3 +28,5 @@ tradeoffs. Status values are `Proposed`, `Accepted`, `Superseded`, or `Rejected`
 | [0023](0023-binding-current-scene-endpoint.md) | Binding current scene endpoint | Accepted |
 | [0024](0024-consolidated-scene-overrun-reporting.md) | Consolidate overlapping current-review assignment routes | Accepted |
 | [0025](0025-linked-historical-repair-findings.md) | Link current findings to original repair obligations | Accepted |
+| [0026](0026-durable-worker-cancellation-cleanup.md) | Join specialist cleanup before closing a workflow | Accepted |
+| [0027](0027-satisfied-repair-schema-and-independent-findings.md) | Separate satisfied repair checks from independent current defects | Accepted |

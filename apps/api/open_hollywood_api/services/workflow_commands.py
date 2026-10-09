@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 from collections.abc import Callable
 from typing import Protocol, runtime_checkable
 from uuid import UUID
@@ -64,21 +65,24 @@ class QueuedWorkflowCommandService:
         command: RunControlCommand,
     ) -> RunControlResult:
         """Apply a command while keeping execution ownership in the worker loop."""
+        # SQLite may be waiting for an async checkpoint commit on this same loop.
+        # Keep each store transaction off the loop; notify the worker after commit.
         if command.action is RunControlAction.PAUSE:
-            return self._controls.request_pause(workflow_run_id, command)
+            return await asyncio.to_thread(self._controls.request_pause, workflow_run_id, command)
         if command.action is RunControlAction.STOP:
-            result = self._controls.stop(workflow_run_id, command)
+            result = await asyncio.to_thread(self._controls.stop, workflow_run_id, command)
             if self._cancel_active_run is not None:
                 self._cancel_active_run(workflow_run_id)
             return result
         if command.action is RunControlAction.UPDATE_BUDGET:
-            return self._controls.update_budget(
+            return await asyncio.to_thread(
+                self._controls.update_budget,
                 workflow_run_id,
                 command,
                 default_max_graph_steps=DEFAULT_MAX_GRAPH_STEPS,
             )
         if command.action is RunControlAction.RESUME:
-            result = self._controls.begin_resume(workflow_run_id, command)
+            result = await asyncio.to_thread(self._controls.begin_resume, workflow_run_id, command)
             if self._wake_worker is not None:
                 self._wake_worker()
             return result

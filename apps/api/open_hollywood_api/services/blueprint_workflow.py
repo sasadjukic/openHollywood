@@ -66,6 +66,7 @@ from open_hollywood_api.services.run_controls import (
     finish_active_interval,
     start_active_interval,
 )
+from open_hollywood_api.services.workflow_cancellation import run_with_invocation_cleanup
 from open_hollywood_api.services.workflow_recovery import reconcile_interrupted_invocations
 
 _MIN_GRAPH_STEPS = 8
@@ -557,7 +558,7 @@ class BlueprintWorkflowService:
     ) -> BlueprintWorkflowExecution:
         graph, _ = self._require_open()
         try:
-            await graph.ainvoke(graph_input, config=config)
+            await run_with_invocation_cleanup(graph.ainvoke(graph_input, config=config))
             self._run_controls.execution_boundary(workflow_run_id)
         except (WorkflowPausedSignal, WorkflowStoppedSignal):
             await self._sync_checkpoint_id(workflow_run_id, graph, config)

@@ -5,6 +5,8 @@ from __future__ import annotations
 import asyncio
 from collections.abc import Callable
 from pathlib import Path
+from threading import Event
+from typing import Any
 from uuid import uuid4
 
 import pytest
@@ -213,18 +215,35 @@ async def test_worker_claims_browser_story_and_completes_production(
 
 
 @pytest.mark.parametrize("operator_stop", [False, True])
+@pytest.mark.parametrize("delayed_cleanup", [False, True])
 async def test_worker_cancels_active_call_and_restarts_only_unfinished_work(
     operator_stop: bool,
+    delayed_cleanup: bool,
     migrated_database_path: Path,
     database_engine: Engine,
 ) -> None:
     sessions = create_session_factory(database_engine)
     prompt = load_benchmark_corpus(CORPUS_PATH).prompts[0]
     started = asyncio.Event()
+    cleanup_started = asyncio.Event()
+    release_cleanup = Event()
+    provider_tasks: list[asyncio.Task[Any]] = []
+    loop = asyncio.get_running_loop()
+
+    class ControlledExecutor(ProfileRoutedBlueprintNodeExecutor):
+        def _fail_invocation(self, *args: Any, **kwargs: Any) -> None:
+            if delayed_cleanup and kwargs.get("code") == "cancelled_execution":
+                loop.call_soon_threadsafe(cleanup_started.set)
+                if not release_cleanup.wait(timeout=5):
+                    raise TimeoutError("test did not release invocation cleanup")
+            super()._fail_invocation(*args, **kwargs)
 
     class BlockingGateway(ProductionFixtureGateway):
         async def generate(self, request: ModelRequest) -> ModelResponse:
             if request.invocation.specialist_role == "premise_architect" and not started.is_set():
+                task = asyncio.current_task()
+                assert task is not None
+                provider_tasks.append(task)
                 started.set()
                 await asyncio.Event().wait()
             return await super().generate(request)
@@ -246,7 +265,7 @@ async def test_worker_cancels_active_call_and_restarts_only_unfinished_work(
         BlueprintWorkflowService(
             migrated_database_path,
             sessions,
-            ProfileRoutedBlueprintNodeExecutor(session_factory=sessions, gateway=gateway),
+            ControlledExecutor(session_factory=sessions, gateway=gateway),
         ) as blueprint,
         SceneProductionService(
             database_path=migrated_database_path,
@@ -286,7 +305,16 @@ async def test_worker_cancels_active_call_and_restarts_only_unfinished_work(
                 await commands.apply_control(created.workflow_run_id, command)
                 await commands.apply_control(created.workflow_run_id, command)
         finally:
-            await worker.stop()
+            stopping = asyncio.create_task(worker.stop())
+            try:
+                if delayed_cleanup:
+                    await asyncio.wait_for(cleanup_started.wait(), timeout=5)
+                    provider_tasks[0].cancel()  # Repeated graph cancellation during persistence.
+                    with pytest.raises(TimeoutError):
+                        await asyncio.wait_for(asyncio.shield(stopping), timeout=0.05)
+            finally:
+                release_cleanup.set()
+                await asyncio.wait_for(stopping, timeout=5)
         with sessions() as session:
             active = session.get(AgentInvocation, active_id)
             assert active and active.status is not InvocationStatus.RUNNING

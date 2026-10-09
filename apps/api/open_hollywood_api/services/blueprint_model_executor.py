@@ -70,6 +70,7 @@ from open_hollywood_api.persistence.models import (
 )
 from open_hollywood_api.persistence.secret_policy import active_secret_guard
 from open_hollywood_api.services.structured_output import normalize_json_document
+from open_hollywood_api.services.workflow_cancellation import finish_cleanup, tracked_invocation
 
 BLUEPRINT_MODEL_PROMPT_VERSION = "9"
 
@@ -193,6 +194,7 @@ class ProfileRoutedBlueprintNodeExecutor(BlueprintNodeExecutor):
         self._session_factory = session_factory
         self._gateway = gateway
 
+    @tracked_invocation
     async def execute(self, task: BlueprintNodeTask) -> BlueprintNodeResult:
         """Run, validate, and persist one idempotent specialist task."""
         try:
@@ -275,12 +277,14 @@ class ProfileRoutedBlueprintNodeExecutor(BlueprintNodeExecutor):
                 outputs=_artifact_outputs(task.node, output),
             )
         except asyncio.CancelledError:
-            await asyncio.to_thread(
-                self._fail_invocation,
-                invocation_id,
-                code="cancelled_execution",
-                message="The Blueprint specialist call was cancelled before completion.",
-                schema_valid=None,
+            await finish_cleanup(
+                asyncio.to_thread(
+                    self._fail_invocation,
+                    invocation_id,
+                    code="cancelled_execution",
+                    message="The Blueprint specialist call was cancelled before completion.",
+                    schema_valid=None,
+                )
             )
             raise
         except ModelGatewayError as error:
