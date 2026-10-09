@@ -2113,6 +2113,48 @@ No additional ablation or response-contract change is included here.
 
 **Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
 
+### Controlled next scene reservation comparison completed 2026-10-09
+
+**Diagnostic comparison COMPLETE — overrun detection unresolved; stabilization IN PROGRESS.**
+Production remains prompt v39 / graph v9. Twelve approved isolated probes compare
+the same request with its explicit next-scene reservation present or projected
+as absent. Three paired seeds test the original OH-V01-002 overrun; one pair each
+tests an inconclusive attempt, explicitly authorized verification and a missing
+required turn. See the
+[comparison report](../docs/benchmark_reports/reservation-context-comparison-2026-10-09.md).
+
+- [x] Freeze exact inputs, unchanged system/schema/settings and a single-field
+  projection; balance pair order and predeclare the stopping rule.
+- [x] Verify that both conditions retain the overrun route and that request,
+  materialized guidance and diagnostic audit use the same projected boundary.
+- [x] Run the approved twelve probes, preserving all fourteen calls including
+  two bounded structural repairs for invalid evidence-handle ordinals.
+- [x] Reconstruct every request, replay validated materialization and verify
+  source/request/response hashes; pass 36 focused probe/endpoint tests.
+- [ ] Establish correct overrun detection and full-story recovery.
+
+The original passes with `no_overrun` under every tested seed in both conditions.
+All three no-reservation reviews explicitly recognize completed verification,
+then treat the assigned decision to verify as achieved. Two reservation-present
+reviews require structural repairs, so only one original pair consists of two
+validated first calls. The rejected responses also propose no-overrun, but are
+not counted as accepted critiques. The legitimate controls pass and the missing
+turn blocks independently in both conditions.
+
+The explicit reservation is not necessary for this failure. Broader creative-brief,
+location and premise guidance still describes verification in both conditions;
+its influence versus interpreting the endpoint as a minimum remains unresolved.
+The next diagnostic target is this distinction between story-wide goals and
+current-scene obligations, before further production changes.
+
+Usage was 146,702 input / 9,643 output tokens, estimated at USD 0.02439548 using
+the recorded October 8 rates, within the approved USD 0.15744 allocation estimate.
+Actual charges remain unknown. Production source, canonical stories, sealed
+benchmarks and historical results are unchanged; no writer or full-story run
+occurred. Full application gates were not repeated for this diagnostic/docs change.
+
+**Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
+
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 
 21. [ ] **Package the stable system with Tauri** and test crash/restart, offline, missing-model, invalid-key, provider-timeout, and low-disk-space behavior.
