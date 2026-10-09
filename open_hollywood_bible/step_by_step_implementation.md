@@ -2244,6 +2244,58 @@ occurred; full application gates were not repeated for this diagnostic/docs chan
 
 **Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
 
+### Consolidated overrun reporting and writer repair completed 2026-10-09
+
+**Current-review consolidation and bounded experiment COMPLETE — stabilization IN PROGRESS.**
+New executions use production contract v40 / graph v9. Boundary and assignment
+reports with the same anchor and exact evidence-handle set become one blocking
+issue, preserving both explanations and repairs. Independent anchors/evidence,
+craft/POV blockers and malformed-response validation remain intact. No new model
+call, instruction, schema, migration or revision allowance is added. See
+[ADR 0024](../docs/adr/0024-consolidated-scene-overrun-reporting.md) and the
+[implementation/live report](../docs/benchmark_reports/consolidated-overrun-writer-repair-2026-10-09.md).
+
+- [x] Consolidate the observed current boundary/assignment duplicate route without
+  losing either assessment or bypassing validation.
+- [x] Replay all twelve saved reviews: three duplicate pairs consolidate;
+  nine other results remain exactly equal.
+- [x] Add 13 regression cases including persisted shared writer/critic repair
+  tests and replay; pass full Python/frontend quality gates.
+- [x] Run three explicitly approved isolated writer/critic pairs and an
+  unchanged-draft control; audit exact requests, responses and artifact lineage.
+- [x] Inspect full revised prose and preserve exact diffs, distinguishing model
+  verdicts from observed changes.
+- [ ] Address overlap between current findings and unmet historical repair tests
+  without erasing independent obligations or source-test identity.
+- [ ] Establish broader endpoint reliability, full-story recovery, technical
+  repeatability, preference and cost acceptance before closing Step 19.
+
+Two revisions clearly leave the match unresolved and pass; the third keeps
+apparent identity and forgery doubts entangled and requires revision. The control
+correctly rejects unchanged prose. All three writers validate on their first
+calls; two critics need one structural retry for mistyped evidence handles.
+Seven probes use nine calls. Each writer changes four relevant paragraphs and
+preserves nine exactly, including the warning and ten-year-future realization.
+No second writer revision, continuity or full-story run occurs. The explicit
+endpoint remains a synthetic plan, not an automatic Blueprint-generation change.
+
+The two blocked live reviews confirm current-route consolidation but expose
+another duplicate path: an unmet historical repair is appended beside a current
+finding, with different evidence sets. This is recorded for follow-up; duplicate
+reporting is not claimed solved throughout the revision loop. The remaining
+semantic target is a clear distinction between an unestablished handwriting
+match and uncertain authorship of a likeness already recognized as matching.
+
+Verification: Ruff, strict mypy (172 files), all 710 Python tests, frontend
+format/lint/types, 11 frontend tests and production build. The initial full Python
+run had one SQLite-lock worker failure; the five worker tests and a second full
+suite passed unchanged. The live estimate is USD 0.01559182 for 85,693 input /
+8,987 output tokens, within the approved 14-call / USD 0.09184 allocation.
+Actual charges remain unknown. Canonical stories, sealed benchmarks and prior
+evidence are unchanged.
+
+**Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
+
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 
 21. [ ] **Package the stable system with Tauri** and test crash/restart, offline, missing-model, invalid-key, provider-timeout, and low-disk-space behavior.

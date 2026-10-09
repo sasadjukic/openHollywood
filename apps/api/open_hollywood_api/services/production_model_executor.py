@@ -3118,7 +3118,7 @@ def _normalize_scene_boundary_check(
     )
     result = {key: value for key, value in critique.items() if key != "scene_boundary_check"}
     if check["status"] == "no_overrun":
-        return result
+        return _normalize_scene_assignment_critique(result, execution)
     anchor = _scene_boundary_overrun_anchor(execution)
     if anchor is None:
         raise _StructuredOutputContractError(
@@ -3138,9 +3138,10 @@ def _normalize_scene_boundary_check(
             f" Reserve {reservation['scene_id']}'s distinct work: "
             f"{reservation.get('turning_point')}; {reservation.get('outcome')}."
         )
-    result["issues"] = [
-        *result.get("issues", []),
-        {
+    return _normalize_scene_assignment_critique(
+        result,
+        execution,
+        boundary_issue={
             "category": f"scene_assignment:{anchor}",
             "severity": CritiqueSeverity.BLOCKING.value,
             "description": (
@@ -3152,9 +3153,8 @@ def _normalize_scene_boundary_check(
             "evidence": evidence,
             "recommendation": repair,
         },
-    ]
-    result["verdict"] = CritiqueVerdict.REVISE.value
-    return result
+        boundary_refs=check["draft_evidence_refs"],
+    )
 
 
 def _scene_boundary_audit(raw: dict[str, Any], execution: _Execution) -> dict[str, object]:
@@ -5021,7 +5021,6 @@ def _materialize_output_data(
         materialized = _normalize_critic_craft_issues(materialized, execution)
         materialized = _normalize_point_of_view_check(materialized, execution)
         materialized = _normalize_story_length_critique(materialized, execution)
-        materialized = _normalize_scene_assignment_critique(materialized, execution)
         materialized = _normalize_scene_boundary_check(materialized, execution)
         materialized = _normalize_repair_checks(materialized, execution)
         scores = materialized.get("scores")
@@ -5246,8 +5245,11 @@ def _normalize_story_length_critique(
 def _normalize_scene_assignment_critique(
     critique: dict[str, Any],
     execution: _Execution,
+    *,
+    boundary_issue: dict[str, Any] | None = None,
+    boundary_refs: tuple[str, ...] | list[str] = (),
 ) -> dict[str, Any]:
-    """Materialize only typed, exact-evidence assignment violations as hard issues."""
+    """Validate every route, consolidating exact anchor/evidence overlap losslessly."""
     violations = critique.get("assignment_violations")
     if not isinstance(violations, list) or len(violations) > len(_CRITIC_ASSIGNMENT_ANCHORS):
         raise _StructuredOutputContractError(
@@ -5256,7 +5258,7 @@ def _normalize_scene_assignment_critique(
             issue_type="invalid_assignment_violation",
         )
     normalized = {key: value for key, value in critique.items() if key != "assignment_violations"}
-    if not violations:
+    if not violations and boundary_issue is None:
         return normalized
     issues = critique.get("issues")
     if issues is not None and not isinstance(issues, list):
@@ -5300,6 +5302,25 @@ def _normalize_scene_assignment_critique(
             location=f"{location}.draft_evidence_refs",
         )
         seen.add(anchor)
+        if (
+            boundary_issue is not None
+            and boundary_issue["category"] == f"scene_assignment:{anchor}"
+            and set(violation["draft_evidence_refs"]) == set(boundary_refs)
+        ):
+            # Shared evidence is not proof of semantic equivalence: retain both
+            # assessments and repairs in one obligation, never discard a claim.
+            boundary_issue = {
+                **boundary_issue,
+                "description": (
+                    f"{boundary_issue['description']} "
+                    f"Assignment assessment: {violation['explanation']}"
+                ),
+                "recommendation": (
+                    f"{boundary_issue['recommendation']} "
+                    f"Assignment repair: {violation['recommended_resolution']}"
+                ),
+            }
+            continue
         normalized_issues.append(
             {
                 "category": f"scene_assignment:{anchor}",
@@ -5312,6 +5333,8 @@ def _normalize_scene_assignment_critique(
                 "recommendation": violation["recommended_resolution"],
             }
         )
+    if boundary_issue is not None:
+        normalized_issues.append(boundary_issue)
     return {
         **normalized,
         "issues": normalized_issues,

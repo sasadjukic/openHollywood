@@ -640,7 +640,7 @@ interpretation; improved detection remains unqualified. See
 [ADR 0022](docs/adr/0022-required-critic-boundary-comparison.md) and the
 [probe report](docs/benchmark_reports/critic-boundary-v38-2026-10-08.md).
 
-Current prompt v39 / graph v9 makes the current endpoint independently binding:
+Prompt v39 / graph v9 makes the current endpoint independently binding:
 retaining a more specific later detail does not authorize an earlier result.
 Writer and critic share the policy; reported overruns can now block even without
 a next reservation. Seven live probes validated, but the original overrun still
@@ -674,6 +674,16 @@ remains allowed and the missing turn still blocks. All twelve first calls
 validate, but positive detections produce duplicate blocking issues and writer
 repair remains untested. See the
 [explicit-endpoint report](docs/benchmark_reports/explicit-endpoint-comparison-2026-10-09.md).
+
+Current production contract v40 / graph v9 consolidates boundary and assignment
+reports that share an anchor and exact evidence handles into one blocker,
+preserving both assessments and repairs. Independent findings remain intact.
+Three isolated writer/critic pairs under the explicit synthetic endpoint yield
+two accepted repairs and one unresolved match/authenticity ambiguity; the unchanged
+control still blocks. Two critic reviews require evidence-format retries. Unmet
+historical repair checks can still repeat current findings through a separate
+route. See [ADR 0024](docs/adr/0024-consolidated-scene-overrun-reporting.md) and the
+[writer-repair report](docs/benchmark_reports/consolidated-overrun-writer-repair-2026-10-09.md).
 
 Benchmark word-count ranges are advisory creative targets. New outputs persist a
 non-gating adherence measurement with the target, actual count, status, and word
