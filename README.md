@@ -650,6 +650,14 @@ semantic detection remains unqualified. See
 [ADR 0023](docs/adr/0023-binding-current-scene-endpoint.md) and the
 [probe report](docs/benchmark_reports/binding-endpoint-v39-2026-10-08.md).
 
+The October 9 controlled reservation comparison leaves production at v39.
+The original overrun passes under three paired seeds both with and without the
+explicit next-scene reservation. Removing it changes the explanation but does
+not recover detection; broader story guidance remains a possible influence.
+The inconclusive and authorized-verification controls pass, and the missing-turn
+control blocks in both conditions. See the
+[comparison report](docs/benchmark_reports/reservation-context-comparison-2026-10-09.md).
+
 Benchmark word-count ranges are advisory creative targets. New outputs persist a
 non-gating adherence measurement with the target, actual count, status, and word
 deviation. Automatic completion reflects a finished, non-truncated document,
