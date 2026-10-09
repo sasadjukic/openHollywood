@@ -96,8 +96,28 @@ def repair_checks_schema(tests: list[dict[str, Any]]) -> dict[str, Any]:
                 "maxItems": 3,
                 "items": {"$ref": "#/$defs/CriticDraftEvidenceReference"},
             },
+            "current_finding_refs": {
+                "type": "array",
+                "maxItems": 16,
+                "uniqueItems": True,
+                "items": {
+                    "type": "string",
+                    "pattern": r"^(boundary|viewpoint|assignment:[a-z_]+|issue:(0|[1-9][0-9]*))$",
+                },
+                "description": (
+                    "Current findings in THIS response repeating this exact original obligation: "
+                    "boundary (overrun), viewpoint (violation), assignment:<anchor>, "
+                    "or issue:<zero-based "
+                    "issues index>. Use [] when met or none repeat it. Link only the same claim, "
+                    "category and severity; different current evidence is allowed. Same category "
+                    "alone is insufficient. New defects or changed severity remain independent. "
+                    "Explain the equivalence in assessment. Include all linked reporting routes, "
+                    "including both boundary and assignment when they repeat it. A finding may "
+                    "belong to only one repair test."
+                ),
+            },
         },
-        "required": ["status", "assessment", "draft_evidence_refs"],
+        "required": ["status", "assessment", "draft_evidence_refs", "current_finding_refs"],
     }
     return {
         "type": "object",

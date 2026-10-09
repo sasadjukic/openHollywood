@@ -23,6 +23,7 @@ from open_hollywood_engine.artifacts import (
     ContinuityRecheckDisposition,
     ContinuityReport,
     Critique,
+    CritiqueIssue,
     CritiqueSeverity,
     CritiqueVerdict,
     SceneDraft,
@@ -1342,22 +1343,9 @@ class ProfileRoutedProductionExecutor(SceneProductionExecutor):
                 if raw_review.get("repair_checks") is not None:
                     invocation.request_settings = {
                         **invocation.request_settings,
-                        "revision_acceptance_audit": {
-                            "schema_version": "1",
-                            "tests": critic_repair_tests(execution.inputs, execution.unit_id),
-                            "checks": {
-                                key: {
-                                    **value,
-                                    "assessment": active_secret_guard().redact_text(
-                                        value["assessment"]
-                                    )[:1000],
-                                }
-                                for key, value in raw_review["repair_checks"].items()
-                            },
-                            "candidate_version_id": str(
-                                cast(SceneCritiqueTask, task).draft.version_id
-                            ),
-                        },
+                        "revision_acceptance_audit": _revision_acceptance_audit(
+                            raw_review, execution
+                        ),
                     }
                 invocation.request_settings = {
                     **invocation.request_settings,
@@ -3091,7 +3079,7 @@ def _scene_boundary_overrun_anchor(execution: _Execution) -> str | None:
 
 
 def _normalize_scene_boundary_check(
-    critique: dict[str, Any], execution: _Execution
+    critique: dict[str, Any], execution: _Execution, *, track_findings: bool = False
 ) -> dict[str, Any]:
     """Validate the comparison; only a valid overrun becomes a manuscript blocker."""
     check = critique.get("scene_boundary_check")
@@ -3118,7 +3106,9 @@ def _normalize_scene_boundary_check(
     )
     result = {key: value for key, value in critique.items() if key != "scene_boundary_check"}
     if check["status"] == "no_overrun":
-        return _normalize_scene_assignment_critique(result, execution)
+        return _normalize_scene_assignment_critique(
+            result, execution, track_findings=track_findings
+        )
     anchor = _scene_boundary_overrun_anchor(execution)
     if anchor is None:
         raise _StructuredOutputContractError(
@@ -3142,6 +3132,7 @@ def _normalize_scene_boundary_check(
         result,
         execution,
         boundary_issue={
+            **({"_current_finding_refs": ["boundary"]} if track_findings else {}),
             "category": f"scene_assignment:{anchor}",
             "severity": CritiqueSeverity.BLOCKING.value,
             "description": (
@@ -3154,6 +3145,7 @@ def _normalize_scene_boundary_check(
             "recommendation": repair,
         },
         boundary_refs=check["draft_evidence_refs"],
+        track_findings=track_findings,
     )
 
 
@@ -3226,6 +3218,8 @@ def _resolve_critic_evidence_refs(
 def _normalize_critic_craft_issues(
     critique: dict[str, Any],
     execution: _Execution,
+    *,
+    track_findings: bool = False,
 ) -> dict[str, Any]:
     """Resolve model-only craft references before adding application-owned hard issues."""
     issues = critique.get("issues", [])
@@ -3233,7 +3227,7 @@ def _normalize_critic_craft_issues(
         raise _StructuredOutputContractError("issues", "critique issues must be an array")
     normalized = []
     for index, issue in enumerate(issues):
-        if not isinstance(issue, dict) or "evidence" in issue:
+        if not isinstance(issue, dict) or "evidence" in issue or "_current_finding_refs" in issue:
             raise _StructuredOutputContractError(
                 f"issues.{index}",
                 "craft findings require draft_evidence_refs, not evidence",
@@ -3248,6 +3242,7 @@ def _normalize_critic_craft_issues(
             {
                 **{key: value for key, value in issue.items() if key != "draft_evidence_refs"},
                 "evidence": evidence,
+                **({"_current_finding_refs": [f"issue:{index}"]} if track_findings else {}),
             }
         )
     result = {**critique, "issues": normalized}
@@ -3344,6 +3339,8 @@ def _point_of_view_check_schema(evidence_refs: tuple[str, ...] | None = None) ->
 def _normalize_point_of_view_check(
     critique: dict[str, Any],
     execution: _Execution,
+    *,
+    track_findings: bool = False,
 ) -> dict[str, Any]:
     check = critique.get("point_of_view_check")
     if not isinstance(check, dict):
@@ -3420,6 +3417,7 @@ def _normalize_point_of_view_check(
         *issues,
         {
             "category": "scene_assignment:point_of_view_character_id",
+            **({"_current_finding_refs": ["viewpoint"]} if track_findings else {}),
             "severity": CritiqueSeverity.BLOCKING.value,
             "description": (
                 f"Assigned point_of_view_character_id: {json.dumps(assigned)}. "
@@ -3433,11 +3431,26 @@ def _normalize_point_of_view_check(
     return result
 
 
+def _normalize_current_critic_findings(
+    critique: dict[str, Any], execution: _Execution
+) -> dict[str, Any]:
+    """Carry application-owned wire provenance until repair links are validated."""
+    result = _normalize_critic_craft_issues(critique, execution, track_findings=True)
+    result = _normalize_point_of_view_check(result, execution, track_findings=True)
+    result = _normalize_story_length_critique(result, execution)
+    return _normalize_scene_boundary_check(result, execution, track_findings=True)
+
+
 def _normalize_repair_checks(critique: dict[str, Any], execution: _Execution) -> dict[str, Any]:
     tests = critic_repair_tests(execution.inputs, execution.unit_id)
     checks = critique.get("repair_checks")
+    current_issues = critique.get("issues", [])
+    issues = [
+        {key: value for key, value in issue.items() if key != "_current_finding_refs"}
+        for issue in current_issues
+    ]
     if not tests and checks is None:
-        return critique
+        return {**critique, "issues": issues}
     if (
         not tests
         or not isinstance(checks, dict)
@@ -3449,20 +3462,37 @@ def _normalize_repair_checks(critique: dict[str, Any], execution: _Execution) ->
             issue_type="repair_test_coverage_invalid",
         )
     result = {key: value for key, value in critique.items() if key != "repair_checks"}
-    issues = list(result.get("issues", []))
+    # Linked findings leave the canonical issues array. Validate them before
+    # consolidation so malformed fields cannot disappear or break the audit.
+    for index, issue in enumerate(issues):
+        try:
+            CritiqueIssue.model_validate(issue)
+        except ValidationError as error:
+            raise _StructuredOutputContractError(
+                f"issues.{index}",
+                "current findings must satisfy the issue contract before repair linking",
+                issue_type="invalid_critic_issue",
+            ) from error
+    owners: dict[str, str] = {}
+    current_refs = {
+        ref: index
+        for index, issue in enumerate(current_issues)
+        for ref in issue.get("_current_finding_refs", [])
+    }
+    carried: list[dict[str, Any]] = []
     for test in tests:
         check = checks[test["test_id"]]
         location = f"repair_checks.{test['test_id']}"
         if (
             not isinstance(check, dict)
-            or set(check) != {"status", "assessment", "draft_evidence_refs"}
+            or set(check) != {"status", "assessment", "draft_evidence_refs", "current_finding_refs"}
             or check.get("status") not in {"met", "unmet"}
             or not isinstance(check.get("assessment"), str)
             or not check["assessment"].strip()
         ):
             raise _StructuredOutputContractError(
                 location,
-                "report met/unmet, an assessment and current draft evidence",
+                "report met/unmet, an assessment, current draft evidence and current_finding_refs",
                 issue_type="repair_test_assessment_invalid",
             )
         evidence = _resolve_critic_evidence_refs(
@@ -3471,7 +3501,38 @@ def _normalize_repair_checks(critique: dict[str, Any], execution: _Execution) ->
             location=f"{location}.draft_evidence_refs",
             issue_type="repair_test_evidence_invalid",
         )
+        refs = check["current_finding_refs"]
+        if (
+            not isinstance(refs, list)
+            or len(refs) > 16
+            or any(not isinstance(ref, str) or ref not in current_refs for ref in refs)
+            or len(set(refs)) != len(refs)
+            or (check["status"] == "met" and refs)
+        ):
+            raise _StructuredOutputContractError(
+                f"{location}.current_finding_refs",
+                "link distinct existing current findings only for an unmet repair; otherwise []",
+                issue_type="repair_test_links_invalid",
+            )
+        for ref in refs:
+            issue = issues[current_refs[ref]]
+            if (
+                ref in owners
+                or issue["category"] != test["category"]
+                or issue["severity"] != test["severity"]
+            ):
+                raise _StructuredOutputContractError(
+                    f"{location}.current_finding_refs",
+                    "each finding has one source test with the same category and severity; "
+                    "independent findings and severity changes must remain unlinked",
+                    issue_type="repair_test_link_conflict",
+                )
+            owners[ref] = test["test_id"]
         if check["status"] == "unmet":
+            # Keep the original identity/text, not a newly worded allegation. Preserve
+            # all linked current evidence; its interpretation is retained in the audit.
+            for index in dict.fromkeys(current_refs[ref] for ref in refs):
+                evidence = list(dict.fromkeys([*evidence, *issues[index]["evidence"]]))
             issue = {
                 "category": test["category"],
                 "severity": test["severity"],
@@ -3479,11 +3540,62 @@ def _normalize_repair_checks(critique: dict[str, Any], execution: _Execution) ->
                 "evidence": evidence,
                 "recommendation": test["requested_change"],
             }
-            if issue not in issues:
-                issues.append(issue)
+            carried.append(issue)
             result["verdict"] = CritiqueVerdict.REVISE.value
-    result["issues"] = issues
+    retained = []
+    for issue, current in zip(issues, current_issues, strict=True):
+        refs = current.get("_current_finding_refs", [])
+        linked = {owners[ref] for ref in refs if ref in owners}
+        if linked and (len(linked) != 1 or any(ref not in owners for ref in refs)):
+            raise _StructuredOutputContractError(
+                "repair_checks",
+                "all routes of a consolidated current finding must link to the same source test",
+                issue_type="repair_test_link_conflict",
+            )
+        if not linked:
+            retained.append(issue)
+    # Separate original repair IDs remain separate even when their text coincides.
+    result["issues"] = [*retained, *carried]
     return result
+
+
+def _revision_acceptance_audit(raw: dict[str, Any], execution: _Execution) -> dict[str, Any]:
+    """Keep linked current assessments inspectable without rewriting the original target."""
+    current = _normalize_current_critic_findings(raw, execution)
+    _normalize_repair_checks(current, execution)
+    linked = {
+        ref for check in raw["repair_checks"].values() for ref in check["current_finding_refs"]
+    }
+    findings = []
+    for issue in current["issues"]:
+        refs = issue.get("_current_finding_refs", [])
+        if not linked.intersection(refs):
+            continue
+        findings.append(
+            {
+                "finding_refs": refs,
+                "category": issue["category"],
+                "severity": issue["severity"],
+                "description": active_secret_guard().redact_text(issue["description"])[:1000],
+                "recommendation": active_secret_guard().redact_text(issue["recommendation"])[:1000],
+                "evidence": [
+                    active_secret_guard().redact_text(text)[:1000] for text in issue["evidence"]
+                ],
+            }
+        )
+    return {
+        "schema_version": "2",
+        "candidate_version_id": _scene_boundary_audit(raw, execution)["candidate_version_id"],
+        "tests": critic_repair_tests(execution.inputs, execution.unit_id),
+        "checks": {
+            key: {
+                **value,
+                "assessment": active_secret_guard().redact_text(value["assessment"])[:1000],
+            }
+            for key, value in raw["repair_checks"].items()
+        },
+        "linked_current_findings": findings,
+    }
 
 
 def _critic_requirement_scope(execution: _Execution) -> dict[str, object]:
@@ -5018,10 +5130,7 @@ def _materialize_output_data(
         return materialized
     if operation is _Operation.CRITIQUE:
         critique_task = cast(SceneCritiqueTask, task)
-        materialized = _normalize_critic_craft_issues(materialized, execution)
-        materialized = _normalize_point_of_view_check(materialized, execution)
-        materialized = _normalize_story_length_critique(materialized, execution)
-        materialized = _normalize_scene_boundary_check(materialized, execution)
+        materialized = _normalize_current_critic_findings(materialized, execution)
         materialized = _normalize_repair_checks(materialized, execution)
         scores = materialized.get("scores")
         if (
@@ -5248,6 +5357,7 @@ def _normalize_scene_assignment_critique(
     *,
     boundary_issue: dict[str, Any] | None = None,
     boundary_refs: tuple[str, ...] | list[str] = (),
+    track_findings: bool = False,
 ) -> dict[str, Any]:
     """Validate every route, consolidating exact anchor/evidence overlap losslessly."""
     violations = critique.get("assignment_violations")
@@ -5311,6 +5421,16 @@ def _normalize_scene_assignment_critique(
             # assessments and repairs in one obligation, never discard a claim.
             boundary_issue = {
                 **boundary_issue,
+                **(
+                    {
+                        "_current_finding_refs": [
+                            *boundary_issue["_current_finding_refs"],
+                            f"assignment:{anchor}",
+                        ]
+                    }
+                    if track_findings
+                    else {}
+                ),
                 "description": (
                     f"{boundary_issue['description']} "
                     f"Assignment assessment: {violation['explanation']}"
@@ -5324,6 +5444,7 @@ def _normalize_scene_assignment_critique(
         normalized_issues.append(
             {
                 "category": f"scene_assignment:{anchor}",
+                **({"_current_finding_refs": [f"assignment:{anchor}"]} if track_findings else {}),
                 "severity": CritiqueSeverity.BLOCKING.value,
                 "description": (
                     f"Assigned {anchor}: {json.dumps(assignment[anchor], ensure_ascii=False)}. "

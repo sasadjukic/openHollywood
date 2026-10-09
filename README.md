@@ -675,7 +675,7 @@ validate, but positive detections produce duplicate blocking issues and writer
 repair remains untested. See the
 [explicit-endpoint report](docs/benchmark_reports/explicit-endpoint-comparison-2026-10-09.md).
 
-Current production contract v40 / graph v9 consolidates boundary and assignment
+Production contract v40 / graph v9 consolidates boundary and assignment
 reports that share an anchor and exact evidence handles into one blocker,
 preserving both assessments and repairs. Independent findings remain intact.
 Three isolated writer/critic pairs under the explicit synthetic endpoint yield
@@ -684,6 +684,19 @@ control still blocks. Two critic reviews require evidence-format retries. Unmet
 historical repair checks can still repeat current findings through a separate
 route. See [ADR 0024](docs/adr/0024-consolidated-scene-overrun-reporting.md) and the
 [writer-repair report](docs/benchmark_reports/consolidated-overrun-writer-repair-2026-10-09.md).
+
+Current production contract v41 / graph v9 adds explicit links between current
+findings and original repair tests. Valid links preserve one original obligation
+with current evidence; independent findings remain separate. The unchanged-draft
+probe now retains two original repairs instead of four repeated issues. Of five
+live critic probes, four validate; one supplies invalid links on met checks on
+both attempts. A missing-turn control notices the omission without reporting a
+separate repair, and an ambiguous saved revision changes from REVISE to PASS.
+The 28 focused cases and other quality gates pass, but the final full Python
+suite has 737 passes and one recurring worker shutdown failure. Candidate
+verification and reviewer qualification remain open. See
+[ADR 0025](docs/adr/0025-linked-historical-repair-findings.md) and the
+[v41 diagnostic report](docs/benchmark_reports/linked-repair-findings-v41-2026-10-09.md).
 
 Benchmark word-count ranges are advisory creative targets. New outputs persist a
 non-gating adherence measurement with the target, actual count, status, and word
