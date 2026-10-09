@@ -2354,6 +2354,64 @@ merge. Worker cleanup is the immediate offline stabilization target.
 
 **Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
 
+### Worker cleanup and critic v42 implemented 2026-10-09
+
+**Local implementation, verification and fixed diagnostic COMPLETE — reviewer qualification IN PROGRESS.**
+Production contract v42 / graph v9 gives satisfied repair checks an empty-link
+schema alternative and requires independent assignment defects to be reported
+separately. Original repair identity and guarded consolidation remain intact.
+The recurring worker failure is reproduced by delaying cancellation persistence:
+the graph wrapper previously returned before its specialist's cleanup finished.
+Workflow-scoped task tracking and protected persistence now join that work before
+closure. See [ADR 0026](../docs/adr/0026-durable-worker-cancellation-cleanup.md),
+[ADR 0027](../docs/adr/0027-satisfied-repair-schema-and-independent-findings.md),
+and the [v42 report](../docs/benchmark_reports/worker-cleanup-critic-v42-2026-10-09.md).
+
+- [x] Reproduce the cleanup ordering locally and verify that repeated cancellation
+  cannot end stop before the gated persistence operation finishes.
+- [x] Cover Blueprint worker stop/restart, real production-service cleanup,
+  graph/leaf cancellation, failure propagation and concurrent-workflow isolation.
+- [x] Reproduce the separate SQLite stop-command lock failure; move generic
+  control-store writes off the event loop and test real checkpoint contention,
+  post-commit worker notification and idempotency for all four mutations.
+- [x] Encode met checks with empty links while retaining invalid-response rejection.
+- [x] Verify an independent turn reaches the next writer and critic with its own
+  source-bound test, whether the original outcome repair is met or unmet.
+- [x] Replay all six saved v41 raw responses unchanged: four identical valid
+  critiques and the same two rejected attempts.
+- [x] Freeze the same five diagnostic cases with exact source/request/code hashes,
+  unchanged inputs/settings and a ten-call / USD 0.06560 maximum rate estimate.
+- [x] Pass all 758 Python tests, Ruff lint/format, strict mypy (177 files),
+  frontend format/lint/types, 11 frontend tests and production build.
+- [x] Run the approved five probes in six calls; reconstruct every request and
+  replay every valid/failed response and its audit exactly.
+- [x] Observe valid satisfied checks and independent missing-turn reporting on
+  their frozen controls, keeping the original outcome repair met.
+- [ ] Resolve incompatible links from original repairs and duplicate reporting
+  of the new turn as a generic plot blocker; qualify the same controls again.
+- [ ] Resolve the ambiguous match-versus-authorship judgment and broader reviewer
+  reliability; the unchanged negative control remains a failed review.
+- [ ] Establish broader technical repeatability, full-story recovery, preference
+  and cost acceptance before closing Step 19.
+
+Four live probes validate on their first calls. The unchanged draft fails both
+attempts because its major tension repair links a blocking outcome finding also
+claimed by the original outcome repair. The missing-turn control now preserves
+the repaired outcome and reports the new turn separately, but adds a second
+generic plot blocker for the same defect; offline reconstruction yields two new
+repair tests. Saved repair 19102 passes with empty met links, where v41 failed
+twice. Repairs 19103 and 19104 also pass; the latter's semantic ambiguity remains.
+
+The six calls use 72,298 input / 6,296 output tokens, estimated at USD 0.01264012
+against the approved USD 0.06560 allocation at recorded October 8 rates. Actual
+charges remain unknown. No writer call or full-story run occurs. Diagnostics
+retain the synthetic explicit endpoint; canonical stories, sealed benchmarks and
+prior evidence remain unchanged. No role, inference allowance, canonical field
+or migration is added. Worker verification is complete for the tested local
+paths; narrative reviewer qualification remains open.
+
+**Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
+
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 
 21. [ ] **Package the stable system with Tauri** and test crash/restart, offline, missing-model, invalid-key, provider-timeout, and low-disk-space behavior.

@@ -102,6 +102,7 @@ from open_hollywood_api.services.production_revision_acceptance import (
     repair_checks_schema,
 )
 from open_hollywood_api.services.structured_output import normalize_json_document
+from open_hollywood_api.services.workflow_cancellation import finish_cleanup, tracked_invocation
 
 
 class _Operation(StrEnum):
@@ -684,28 +685,29 @@ _INSTRUCTIONS: Mapping[_Operation, str] = {
         "not a hard per-scene quota."
     ),
     _Operation.CRITIQUE: (
-        "Complete scene_boundary_check before scoring: describe the state established "
-        "by the draft and cite current evidence. Compare it with the current "
-        "endpoint and next reservation. Use overrun for material advancement beyond the "
-        "current endpoint without explicit current-plan authorization; otherwise no_overrun. "
-        "In current_endpoint_comparison, identify any authorizing plan field and instruction. "
-        "Evidence supports the achieved state, not proof that no violation exists. Report "
-        "overruns only in this check; the application makes them blocking assignment issues. "
-        "Report other concrete missing/incompatible assignments in "
-        "assignment_violations; otherwise return []. Select a scene_assignment_contract "
-        "anchor and explain the breach. Consider the whole scene: actions, "
-        "embodied reactions and indirect realization count. Do not demand unassigned "
-        "mechanisms or extra actions. Wanting a stronger or more explicit turn, polish, "
-        "POV mentions or next-scene advice is not a hard assignment failure; craft feedback "
-        "belongs in issues. For both routes, select 1-3 distinct draft_evidence_refs from "
-        "the CURRENT evidence_catalog; never quote prose or reuse earlier handles. "
+        "Complete scene_boundary_check before scoring: cite the draft's achieved state "
+        "and compare it with the current endpoint and next reservation. Use overrun for "
+        "material advancement beyond the current endpoint without explicit current-plan "
+        "authorization; otherwise no_overrun. Identify any authorizing plan field and "
+        "instruction in current_endpoint_comparison. Evidence supports the achieved state, "
+        "not proof of non-violation. Report overruns only here; they become blocking issues. "
+        "Report every other concrete missing/incompatible assignment separately in "
+        "assignment_violations; otherwise []. A missing turning_point needs its own finding "
+        "even when an outcome repair is unmet. Mentions in boundary/repair assessments are "
+        "not findings. Select a scene_assignment_contract anchor and explain the breach. "
+        "Consider the whole scene: actions, embodied reactions and indirect realization "
+        "count. Do not demand unassigned mechanisms/actions. Stronger or more explicit "
+        "turns, polish, POV mentions and next-scene advice are craft feedback for issues, "
+        "not hard assignment failures. Both routes need 1-3 distinct draft_evidence_refs "
+        "from the CURRENT evidence_catalog; never quote prose or reuse earlier handles. "
         "The application resolves excerpts. "
         "Score critic_rubric once per dimension; blockers override craft scores. "
         "For repair_acceptance_tests, return repair_checks against the fixed original target, "
-        "with current evidence and why it is met/unmet. Qualifier changes alone prove nothing. "
-        "Complete point_of_view_check independently of the overall score: return only "
-        "{status: aligned} when there is no demonstrated violation, including when no "
-        "viewpoint is assigned. No quotation or proof of non-violation is required. "
+        "with current evidence and why that original claim is met/unmet. A different defect "
+        "cannot reopen a satisfied repair. Qualifier changes alone prove nothing. "
+        "Complete point_of_view_check separately: return only {status: aligned} when no "
+        "violation is demonstrated or no viewpoint is assigned; no proof of non-violation "
+        "required. "
         "Report viewpoint violations ONLY in point_of_view_check, not assignment_violations "
         "or issues. Select exact draft_evidence_refs from the current draft's evidence_catalog. "
         "A violation must identify a DIFFERENT subject_character_id and either an actual "
@@ -731,9 +733,8 @@ _INSTRUCTIONS: Mapping[_Operation, str] = {
         "repair the response without inventing a story defect or requesting prose changes. "
         "Use critic_requirement_scope as the exclusive due-now obligation list; do not demand "
         "story-wide requirements before their due scene. "
-        "The target word-count range is story-wide and advisory. Use length_guidance for "
-        "context, but never revise or reject a scene solely because that scene is under or "
-        "over a proportional word allocation."
+        "Word-count targets are story-wide and advisory. Use length_guidance as context; "
+        "never revise or reject solely for a scene's proportional word allocation."
     ),
     _Operation.CONTINUITY: (
         "Check the exact scene draft against the exact canonical Story Bible and Scene "
@@ -865,6 +866,7 @@ class ProfileRoutedProductionExecutor(SceneProductionExecutor):
             story_bible_artifact=bible_reference,
         )
 
+    @tracked_invocation
     async def _execute(
         self,
         operation: _Operation,
@@ -963,13 +965,15 @@ class ProfileRoutedProductionExecutor(SceneProductionExecutor):
                 response,
             )
         except asyncio.CancelledError:
-            await asyncio.to_thread(
-                self._fail_invocation,
-                invocation_id,
-                "cancelled_execution",
-                "The production specialist call was cancelled before completion.",
-                None,
-                failure_layer="cancelled_execution",
+            await finish_cleanup(
+                asyncio.to_thread(
+                    self._fail_invocation,
+                    invocation_id,
+                    "cancelled_execution",
+                    "The production specialist call was cancelled before completion.",
+                    None,
+                    failure_layer="cancelled_execution",
+                )
             )
             raise
         except ModelGatewayError as error:

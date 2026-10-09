@@ -84,7 +84,7 @@ def critic_repair_tests(inputs: tuple[dict[str, Any], ...], scene_id: str) -> li
 
 
 def repair_checks_schema(tests: list[dict[str, Any]]) -> dict[str, Any]:
-    decision = {
+    decision: dict[str, Any] = {
         "type": "object",
         "additionalProperties": False,
         "properties": {
@@ -119,10 +119,24 @@ def repair_checks_schema(tests: list[dict[str, Any]]) -> dict[str, Any]:
         },
         "required": ["status", "assessment", "draft_evidence_refs", "current_finding_refs"],
     }
+    decision["properties"]["assessment"]["description"] = (
+        "Assess only this original claim against the current draft. A different current "
+        "defect cannot make this repair unmet. Report each independent defect through its "
+        "own current finding, with its own evidence and repair; mentioning it here is not "
+        "an actionable finding."
+    )
+    met = deepcopy(decision)
+    met["properties"]["status"] = {"type": "string", "const": "met"}
+    met["properties"]["current_finding_refs"] = {
+        "type": "array",
+        "maxItems": 0,
+        "description": "A satisfied original repair has no repeated current findings: always [].",
+    }
+    decision["properties"]["status"] = {"type": "string", "const": "unmet"}
     return {
         "type": "object",
         "additionalProperties": False,
-        "$defs": {"RepairAcceptanceCheck": decision},
+        "$defs": {"RepairAcceptanceCheck": {"anyOf": [met, decision]}},
         "properties": {
             test["test_id"]: {"$ref": "#/$defs/RepairAcceptanceCheck"} for test in tests
         },

@@ -92,9 +92,9 @@ class WorkflowWorker:
         for task in active_tasks:
             if not task.done() and not task.cancelling():
                 task.cancel()
-        # Let provider cancellation persist its terminal invocation before the
-        # claimant is cancelled; a second cancellation interrupts that cleanup.
-        await asyncio.gather(*active_tasks, return_exceptions=True)
+        # Workflow services join specialist cleanup before returning; keep them
+        # open until every active execution has finished that durable work.
+        results = await asyncio.gather(*active_tasks, return_exceptions=True)
         if self._loop_task is not None:
             if not self._loop_task.done():
                 self._loop_task.cancel()
@@ -102,6 +102,13 @@ class WorkflowWorker:
                 await self._loop_task
         self._loop_task = None
         self._active_tasks.clear()
+        failures = [
+            result
+            for result in results
+            if isinstance(result, BaseException) and not isinstance(result, asyncio.CancelledError)
+        ]
+        if failures:
+            raise BaseExceptionGroup("Workflow shutdown cleanup failed", failures)
 
     def cancel_active_run(self, workflow_run_id: UUID) -> None:
         """Cancel an open provider call after a durable stop command is recorded."""
@@ -142,6 +149,8 @@ class WorkflowWorker:
                     "Interactive workflow execution failed for %s",
                     candidate.workflow_run_id,
                 )
+                if self._stopping:
+                    return
             finally:
                 for run_id in candidate.control_run_ids:
                     if self._active_tasks.get(run_id) is execution:

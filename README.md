@@ -685,7 +685,7 @@ historical repair checks can still repeat current findings through a separate
 route. See [ADR 0024](docs/adr/0024-consolidated-scene-overrun-reporting.md) and the
 [writer-repair report](docs/benchmark_reports/consolidated-overrun-writer-repair-2026-10-09.md).
 
-Current production contract v41 / graph v9 adds explicit links between current
+Production contract v41 / graph v9 adds explicit links between current
 findings and original repair tests. Valid links preserve one original obligation
 with current evidence; independent findings remain separate. The unchanged-draft
 probe now retains two original repairs instead of four repeated issues. Of five
@@ -697,6 +697,23 @@ suite has 737 passes and one recurring worker shutdown failure. Candidate
 verification and reviewer qualification remain open. See
 [ADR 0025](docs/adr/0025-linked-historical-repair-findings.md) and the
 [v41 diagnostic report](docs/benchmark_reports/linked-repair-findings-v41-2026-10-09.md).
+
+Current production contract v42 / graph v9 separates met/unmet repair schema
+alternatives: satisfied repairs require empty current-finding links. The critic
+must report an independent missing turn separately and keep original repair
+assessments tied to their original claims. The worker cleanup race is reproduced
+locally and corrected by joining specialist persistence before workflow closure,
+including repeated cancellation. A separate SQLite stop-command stall is fixed
+by keeping generic control-store writes off the event loop. Six saved responses
+replay unchanged. All 758 Python tests and the other local quality gates pass.
+The approved five-case diagnostic uses six calls: satisfied repairs now have
+valid empty links and the missing turn is reported independently, but also as a
+duplicate plot issue. The unchanged control fails both attempts through
+incompatible original-repair links. Reviewer reliability and Step 19 acceptance
+remain open. See
+[ADR 0026](docs/adr/0026-durable-worker-cancellation-cleanup.md),
+[ADR 0027](docs/adr/0027-satisfied-repair-schema-and-independent-findings.md) and the
+[v42 implementation report](docs/benchmark_reports/worker-cleanup-critic-v42-2026-10-09.md).
 
 Benchmark word-count ranges are advisory creative targets. New outputs persist a
 non-gating adherence measurement with the target, actual count, status, and word
