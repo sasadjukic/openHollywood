@@ -2155,6 +2155,48 @@ occurred. Full application gates were not repeated for this diagnostic/docs chan
 
 **Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
 
+### Broader context and current scene obligation comparison completed 2026-10-09
+
+**Diagnostic comparison COMPLETE — overrun detection unresolved; stabilization IN PROGRESS.**
+Production remains prompt v39 / graph v9. Twelve approved isolated probes compare
+the full no-reservation request with a projection that retains only the current
+plan and style guide in the Blueprint view. The exact draft, current obligations,
+identity/viewpoint context, empty initial Bible, review policy and model settings
+remain unchanged. See the
+[comparison report](../docs/benchmark_reports/broader-context-comparison-2026-10-09.md).
+
+- [x] Freeze three paired seeds for the original overrun and one pair each for
+  inconclusive investigation, authorized verification and a missing turn.
+- [x] Verify the Blueprint-only reduction, exact source inputs and unchanged
+  schema/current obligations/evidence; retain the overrun route in both conditions.
+- [x] Run the twelve approved probes once; all validate on their first calls.
+- [x] Verify request/response/source hashes and exact materialization replay;
+  pass 36 focused probe/endpoint tests.
+- [ ] Demonstrate faithful endpoint enforcement and full-story recovery.
+
+The original passes with `no_overrun` for all three seeds in both conditions.
+Every reduced-context original review recognizes completed verification; one
+restates the assigned decision-to-verify outcome as verification itself. The
+inconclusive and authorized controls pass, while the missing turn correctly
+blocks independently. All boundary statuses are no-overrun, so the legitimate
+controls do not establish discrimination. Broad plot allegations also persist.
+
+The omitted guidance is not necessary for the observed failure under the
+no-reservation condition. This does not establish that context never influences
+judgment. The next target is explicit terminal-state interpretation: a synthetic
+plan control stating that no handwriting match is established by scene end,
+compared with the existing wording and authorized verification. That stronger
+instruction has not been tested or adopted in production.
+
+Each reduced request removes 7,521 characters and 1,520 reported input tokens.
+Total usage was 114,884 input / 8,325 output tokens, estimated at USD 0.01941376
+using recorded October 8 rates against the approved USD 0.15744 allocation.
+Actual charges remain unknown. Production code, canonical stories, sealed
+benchmarks and historical results are unchanged; no writer or full-story calls
+occurred. Full application gates were not repeated for this diagnostic/docs change.
+
+**Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
+
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 
 21. [ ] **Package the stable system with Tauri** and test crash/restart, offline, missing-model, invalid-key, provider-timeout, and low-disk-space behavior.

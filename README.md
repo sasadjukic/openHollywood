@@ -658,6 +658,14 @@ The inconclusive and authorized-verification controls pass, and the missing-turn
 control blocks in both conditions. See the
 [comparison report](docs/benchmark_reports/reservation-context-comparison-2026-10-09.md).
 
+The subsequent broader-context comparison also leaves production at v39.
+Removing broader Blueprint guidance while retaining the complete current scene
+plan does not recover detection: the original overrun passes under all three
+paired seeds in both conditions, with all twelve reviews valid on their first
+calls. One reduced-context review restates the assigned decision as completed
+verification. Endpoint interpretation remains unresolved. See the
+[broader-context report](docs/benchmark_reports/broader-context-comparison-2026-10-09.md).
+
 Benchmark word-count ranges are advisory creative targets. New outputs persist a
 non-gating adherence measurement with the target, actual count, status, and word
 deviation. Automatic completion reflects a finished, non-truncated document,
