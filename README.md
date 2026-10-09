@@ -666,6 +666,15 @@ calls. One reduced-context review restates the assigned decision as completed
 verification. Endpoint interpretation remains unresolved. See the
 [broader-context report](docs/benchmark_reports/broader-context-comparison-2026-10-09.md).
 
+The explicit-endpoint comparison retains full story context and production v39.
+Adding a synthetic requirement that no handwriting match is established by scene
+end makes the original overrun require revision under all three seeds; original
+decision wording and authorized verification still pass. Inconclusive action
+remains allowed and the missing turn still blocks. All twelve first calls
+validate, but positive detections produce duplicate blocking issues and writer
+repair remains untested. See the
+[explicit-endpoint report](docs/benchmark_reports/explicit-endpoint-comparison-2026-10-09.md).
+
 Benchmark word-count ranges are advisory creative targets. New outputs persist a
 non-gating adherence measurement with the target, actual count, status, and word
 deviation. Automatic completion reflects a finished, non-truncated document,

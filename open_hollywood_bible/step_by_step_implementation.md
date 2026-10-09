@@ -2197,6 +2197,53 @@ occurred. Full application gates were not repeated for this diagnostic/docs chan
 
 **Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
 
+### Explicit unresolved endpoint comparison completed 2026-10-09
+
+**Diagnostic comparison COMPLETE — explicit endpoint detected; stabilization IN PROGRESS.**
+Production remains prompt v39 / graph v9. Twelve approved isolated probes retain
+standard story context and the later-scene reservation. The same original draft
+is reviewed under three outcome wordings at three seeds: original decision,
+explicitly unverified at scene end, and authorized verification. Three further
+probes cover inconclusive investigation under the first two wordings and a
+missing required turn under the explicit endpoint. See the
+[comparison report](../docs/benchmark_reports/explicit-endpoint-comparison-2026-10-09.md).
+
+- [x] Freeze the twelve requests and rotated condition order before inference;
+  validate synthetic plan/Blueprint/Bible lineage and all outcome copies.
+- [x] Verify only outcome wording and associated version references differ;
+  preserve exact drafts, evidence, broader context, schema and settings.
+- [x] Run all twelve approved probes once; all validate on their first calls.
+- [x] Verify request/response/source hashes and exact materialization replay;
+  pass 36 focused probe/endpoint tests.
+- [ ] Consolidate duplicate overrun findings without losing independent issues.
+- [ ] Demonstrate actual writer repair, broader endpoint reliability and
+  full-story recovery before technical acceptance.
+
+The explicit no-match endpoint produces REVISE / overrun for all three original
+draft seeds, using the same exact conclusive-match evidence. Original decision
+wording and explicit permission to verify both produce PASS / no-overrun, 3/3.
+Inconclusive investigation passes under both tested wordings; the missing turn
+correctly blocks independently. These are normalized critic verdicts, not
+executed writer revisions. Enforcement of the original implicit boundary remains
+unresolved; the positive result applies to a stronger synthetic instruction.
+
+Each positive response reports the same overrun through both boundary and
+assignment routes, producing two blocking outcome issues. This needs a focused
+normalization fix before testing the full repair loop. Repair advice about a
+suspected forgery also needs scrutiny: uncertainty about authorship does not
+erase an already established match. The proposed planning owner is the existing
+Blueprint integrator, with coherence checked by the Blueprint critic and exact
+approved endpoints shared by writer and critic; that planning change is not
+implemented here. Useful story context remains intact.
+
+Usage was 126,270 input / 8,853 output tokens, estimated at USD 0.021219 using
+recorded October 8 rates, within the approved USD 0.15744 allocation estimate.
+Actual charges remain unknown. Production source, canonical stories, sealed
+benchmarks and historical results are unchanged. No writer or full-story calls
+occurred; full application gates were not repeated for this diagnostic/docs change.
+
+**Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
+
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 
 21. [ ] **Package the stable system with Tauri** and test crash/restart, offline, missing-model, invalid-key, provider-timeout, and low-disk-space behavior.
