@@ -27,3 +27,4 @@ tradeoffs. Status values are `Proposed`, `Accepted`, `Superseded`, or `Rejected`
 | [0022](0022-required-critic-boundary-comparison.md) | Required evidence-backed critic boundary comparison | Accepted |
 | [0023](0023-binding-current-scene-endpoint.md) | Binding current scene endpoint | Accepted |
 | [0024](0024-consolidated-scene-overrun-reporting.md) | Consolidate overlapping current-review assignment routes | Accepted |
+| [0025](0025-linked-historical-repair-findings.md) | Link current findings to original repair obligations | Accepted |

@@ -52,6 +52,7 @@ _TEXT_FIELDS = frozenset(
 _REFERENCE_FIELDS = frozenset(
     {
         "draft_evidence_refs",
+        "current_finding_refs",
         "evidence_refs",
         "canonical_claim_ids",
         "canonical_source_refs",

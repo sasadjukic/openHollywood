@@ -292,6 +292,7 @@ class ProductionFixtureGateway(BlueprintFixtureGateway):
                 content["repair_checks"] = {
                     test["test_id"]: {
                         "status": "met",
+                        "current_finding_refs": [],
                         "assessment": "Simulated repair decision, not semantic evidence.",
                         "draft_evidence_refs": [
                             candidate["content"]["evidence_catalog"][0]["evidence_ref"]

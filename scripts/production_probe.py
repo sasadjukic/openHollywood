@@ -33,13 +33,13 @@ from open_hollywood_api.services.production_model_executor import (
     _Operation,
     _output_schema,
     _require_matching_response,
+    _revision_acceptance_audit,
     _scene_boundary_audit,
     _source_story_bible,
     _structured_failure_issues,
     _temperature,
     _validate_output,
 )
-from open_hollywood_api.services.production_revision_acceptance import critic_repair_tests
 from open_hollywood_api.services.structured_output import normalize_json_document
 from open_hollywood_engine.artifacts import ArtifactKind, StoryBibleUpdate, apply_story_bible_update
 from open_hollywood_engine.evaluations import canonical_sha256
@@ -428,19 +428,9 @@ async def run_probe(
             if probe.operation is _Operation.CRITIQUE:
                 record["scene_boundary_audit"] = _scene_boundary_audit(raw_data, execution)
             if probe.operation is _Operation.CRITIQUE and raw_data.get("repair_checks") is not None:
-                record["revision_acceptance_audit"] = {
-                    "schema_version": "1",
-                    "tests": critic_repair_tests(execution.inputs, execution.unit_id),
-                    "checks": {
-                        key: {
-                            **value,
-                            "assessment": active_secret_guard().redact_text(value["assessment"])[
-                                :1000
-                            ],
-                        }
-                        for key, value in raw_data["repair_checks"].items()
-                    },
-                }
+                record["revision_acceptance_audit"] = _revision_acceptance_audit(
+                    raw_data, execution
+                )
             if isinstance(result, StoryBibleUpdate):
                 successor = apply_story_bible_update(_source_story_bible(execution), result)
                 record["successor_bible"] = successor.model_dump(mode="json")

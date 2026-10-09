@@ -2296,6 +2296,64 @@ evidence are unchanged.
 
 **Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
 
+### Linked historical repair findings evaluated 2026-10-09
+
+**Fixed diagnostic COMPLETE — candidate verification and stabilization IN PROGRESS.**
+Production contract v41 / graph v9 adds explicit current-finding links to existing
+repair checks. Valid links retain the original claim, repair and test identity
+with current evidence. Independent findings and distinct original IDs remain;
+invalid or partial links cannot bypass response validation. Current wording is
+preserved in the audit. No new role, call, canonical schema or migration is added.
+See [ADR 0025](../docs/adr/0025-linked-historical-repair-findings.md) and the
+[v41 report](../docs/benchmark_reports/linked-repair-findings-v41-2026-10-09.md).
+
+- [x] Implement explicit provenance links, guarded consolidation and shared audit
+  evidence without fuzzy matching or category-only suppression.
+- [x] Add and pass 28 regression cases, including two persisted revisions and
+  replay; pass lint/types and frontend quality gates.
+- [x] Replay four prior responses with explicitly labeled manual link annotations;
+  preserve verdicts and original targets. These are offline wiring tests.
+- [x] Run the approved five critic probes once; replay every valid/failed response
+  and verify frozen requests, evidence and original repair lineage.
+- [ ] Resolve invalid links on satisfied repairs, then qualify the revised protocol.
+- [ ] Resolve the recurring worker shutdown test failure and pass the full Python
+  gate before merging the candidate or running further cloud probes.
+- [ ] Establish reliable independent reporting of the missing-turn control and
+  resolve unstable match-versus-authorship interpretation.
+- [ ] Establish broader technical repeatability, full-story recovery, preference
+  and cost acceptance before closing Step 19.
+
+The unchanged draft now reports its two original obligations once each. Four
+probes validate on their first calls. Revision 19102 instead fails both attempts
+because met checks link nonexistent current findings; its proposed PASS is not
+accepted. Revision 19103 passes. The ambiguous 19104 revision changes from v40's
+REVISE to PASS without prose changes. The missing-turn control requires revision
+but notices the omitted turn only in assessment text, reopens the old outcome
+repair and creates no independent turn target. That control fails its intended
+expectation; no emitted turn finding was removed by consolidation.
+
+The six calls consume 71,252 input / 6,353 output tokens, estimated at USD
+0.01251648 using recorded October 8 rates, within the approved ten-call /
+USD 0.06560 allocation. Actual charges remain unknown. No writer, canonical
+change or full-story run occurs. The source snapshot and prior evidence retain
+their frozen hashes. The initial 732-test suite, Ruff, strict mypy (173 files),
+frontend format/lint/types, 11 frontend tests and production build pass. Deterministic
+checks do not establish the critic's semantic reliability. Final code review also
+adds complete issue-field validation before linked craft findings can be removed;
+six new cases reproduce then verify that correction. The tested executor is
+archived, the final hash is recorded separately, and all saved responses replay
+identically under the correction without additional cloud calls.
+
+Final validation also exposes an intermittent worker shutdown failure, with an
+invocation remaining marked running. The worker group reproduces it once, then
+passes unchanged; a limited in-memory HEAD-source comparison also passes. Its
+cause remains unestablished, and no worker change is included in this slice.
+Both final full 738-test runs report 737 passed / 1 failed on that same shutdown
+assertion. The full gate remains failed; this candidate is not marked ready to
+merge. Worker cleanup is the immediate offline stabilization target.
+
+**Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
+
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 
 21. [ ] **Package the stable system with Tauri** and test crash/restart, offline, missing-model, invalid-key, provider-timeout, and low-disk-space behavior.

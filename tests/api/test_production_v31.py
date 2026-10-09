@@ -70,6 +70,7 @@ def _review(execution: _Execution, status: str = "met") -> dict[str, Any]:
     raw["repair_checks"] = {
         test["test_id"]: {
             "status": status,
+            "current_finding_refs": [],
             "assessment": "The current passage was compared with the original condition.",
             "draft_evidence_refs": [_critic_evidence_catalog(execution)[0]["evidence_ref"]],
         }
