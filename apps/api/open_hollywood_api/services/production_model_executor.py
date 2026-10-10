@@ -1731,10 +1731,31 @@ def _output_schema(
             issue_schema = definitions["CritiqueIssue"]
             issue_schema["properties"].pop("evidence")
             issue_schema["properties"]["draft_evidence_refs"] = _critic_evidence_refs_schema()
+            issue_schema["properties"]["assignment_finding_ref"] = {
+                "type": ["string", "null"],
+                "enum": [
+                    None,
+                    "boundary",
+                    "viewpoint",
+                    *[
+                        f"assignment:{anchor}"
+                        for anchor in _CRITIC_ASSIGNMENT_ANCHORS
+                        if anchor != "point_of_view_character_id"
+                    ],
+                ],
+                "description": (
+                    "Prefer reporting assignment defects only through their dedicated route. "
+                    "If this blocking issue repeats that same current assignment finding, "
+                    "select its exact ref; its text/evidence/repair will be combined there. "
+                    "Use null for an independent craft defect, even with shared evidence. "
+                    "The target must actually be reported in this response."
+                ),
+            }
             issue_schema["required"] = [
                 "draft_evidence_refs" if field == "evidence" else field
                 for field in issue_schema["required"]
             ]
+            issue_schema["required"].append("assignment_finding_ref")
             properties["point_of_view_check"]["anyOf"][1]["properties"]["draft_evidence_refs"] = (
                 _critic_evidence_refs_schema()
             )
@@ -1770,7 +1791,9 @@ def _output_schema(
                 _bind_critic_assignment_schema(schema, critic_execution)
                 tests = critic_repair_tests(critic_execution.inputs, critic_execution.unit_id)
                 if tests:
-                    checks_schema = repair_checks_schema(tests)
+                    checks_schema = repair_checks_schema(
+                        tests, assignment_routes=_critic_assignment_routes(critic_execution)
+                    )
                     definitions.update(checks_schema.pop("$defs"))
                     properties["repair_checks"] = checks_schema
                     schema["required"].append("repair_checks")
@@ -3041,6 +3064,10 @@ def _critic_assignment_violation_schema() -> dict[str, Any]:
 def _bind_critic_assignment_schema(schema: dict[str, Any], execution: _Execution) -> None:
     """Remove inapplicable choices using only the exact approved scene assignment."""
     assignment = _scene_assignment_contract(execution)
+    schema["$defs"]["CritiqueIssue"]["properties"]["assignment_finding_ref"]["enum"] = [
+        None,
+        *_critic_assignment_routes(execution),
+    ]
     properties = schema["properties"]
     if _scene_boundary_overrun_anchor(execution) is None:
         properties["scene_boundary_check"]["properties"]["status"]["enum"] = ["no_overrun"]
@@ -3058,6 +3085,22 @@ def _bind_critic_assignment_schema(schema: dict[str, Any], execution: _Execution
         violations["items"]["properties"]["anchor"]["enum"] = anchors
     else:
         properties["assignment_violations"] = {"type": "array", "maxItems": 0}
+
+
+def _critic_assignment_routes(execution: _Execution) -> dict[str, str]:
+    """Applicability and category are application facts, not model judgments."""
+    assignment = _scene_assignment_contract(execution)
+    routes = {
+        (
+            "viewpoint" if anchor == "point_of_view_character_id" else f"assignment:{anchor}"
+        ): f"scene_assignment:{anchor}"
+        for anchor in _CRITIC_ASSIGNMENT_ANCHORS
+        if assignment.get(anchor)
+    }
+    boundary = _scene_boundary_overrun_anchor(execution)
+    if boundary is not None:
+        routes["boundary"] = f"scene_assignment:{boundary}"
+    return routes
 
 
 def _scene_boundary_check_schema() -> dict[str, Any]:
@@ -3164,7 +3207,7 @@ def _scene_boundary_audit(raw: dict[str, Any], execution: _Execution) -> dict[st
         and item["content"].get("revision_number") == execution.revision_number
     )
     boundary = _scene_boundary_contract(execution)
-    return {
+    audit: dict[str, object] = {
         "schema_version": "1",
         "candidate_version_id": candidate["artifact_version_id"],
         "current_plan_version_id": boundary["current_plan_version_id"],
@@ -3174,6 +3217,35 @@ def _scene_boundary_audit(raw: dict[str, Any], execution: _Execution) -> dict[st
             for key, value in check.items()
         },
     }
+    repetitions = [
+        (index, issue)
+        for index, issue in enumerate(raw.get("issues", []))
+        if issue.get("assignment_finding_ref") is not None
+    ]
+    if repetitions:
+        _normalize_current_critic_findings(raw, execution)
+        audit.update(
+            schema_version="2",
+            assignment_restatements_total=len(repetitions),
+            assignment_restatements=[
+                {
+                    "raw_issue_index": index,
+                    **{
+                        key: active_secret_guard().redact_text(issue[key])[:1000]
+                        for key in (
+                            "category",
+                            "severity",
+                            "description",
+                            "recommendation",
+                            "assignment_finding_ref",
+                        )
+                    },
+                    "draft_evidence_refs": issue["draft_evidence_refs"],
+                }
+                for index, issue in repetitions[:16]
+            ],
+        )
+    return audit
 
 
 def _critic_evidence_catalog(execution: _Execution) -> tuple[dict[str, str], ...]:
@@ -3231,11 +3303,29 @@ def _normalize_critic_craft_issues(
         raise _StructuredOutputContractError("issues", "critique issues must be an array")
     normalized = []
     for index, issue in enumerate(issues):
-        if not isinstance(issue, dict) or "evidence" in issue or "_current_finding_refs" in issue:
+        if (
+            not isinstance(issue, dict)
+            or "evidence" in issue
+            or "_current_finding_refs" in issue
+            or "_assignment_finding_ref" in issue
+        ):
             raise _StructuredOutputContractError(
                 f"issues.{index}",
                 "craft findings require draft_evidence_refs, not evidence",
                 issue_type="invalid_critic_issue",
+            )
+        if "assignment_finding_ref" not in issue or (
+            issue["assignment_finding_ref"] is not None
+            and (
+                not isinstance(issue["assignment_finding_ref"], str)
+                or issue["assignment_finding_ref"] not in _critic_assignment_routes(execution)
+            )
+        ):
+            raise _StructuredOutputContractError(
+                f"issues.{index}.assignment_finding_ref",
+                "select a populated assignment route for a repetition, "
+                "or null for independent craft",
+                issue_type="invalid_assignment_restatement",
             )
         evidence = _resolve_critic_evidence_refs(
             issue.get("draft_evidence_refs"),
@@ -3244,8 +3334,17 @@ def _normalize_critic_craft_issues(
         )
         normalized.append(
             {
-                **{key: value for key, value in issue.items() if key != "draft_evidence_refs"},
+                **{
+                    key: value
+                    for key, value in issue.items()
+                    if key not in {"draft_evidence_refs", "assignment_finding_ref"}
+                },
                 "evidence": evidence,
+                **(
+                    {"_assignment_finding_ref": issue["assignment_finding_ref"]}
+                    if issue["assignment_finding_ref"] is not None
+                    else {}
+                ),
                 **({"_current_finding_refs": [f"issue:{index}"]} if track_findings else {}),
             }
         )
@@ -3442,7 +3541,51 @@ def _normalize_current_critic_findings(
     result = _normalize_critic_craft_issues(critique, execution, track_findings=True)
     result = _normalize_point_of_view_check(result, execution, track_findings=True)
     result = _normalize_story_length_critique(result, execution)
-    return _normalize_scene_boundary_check(result, execution, track_findings=True)
+    result = _normalize_scene_boundary_check(result, execution, track_findings=True)
+    return _normalize_assignment_restatements(result)
+
+
+def _normalize_assignment_restatements(critique: dict[str, Any]) -> dict[str, Any]:
+    """Fold only explicit repetitions into validated hard findings, retaining all advice."""
+    issues = deepcopy(critique.get("issues", []))
+    for index, issue in enumerate(issues):
+        try:
+            CritiqueIssue.model_validate(
+                {
+                    key: value
+                    for key, value in issue.items()
+                    if key not in {"_assignment_finding_ref", "_current_finding_refs"}
+                }
+            )
+        except ValidationError as error:
+            raise _StructuredOutputContractError(
+                f"issues.{index}",
+                "validate every issue before combining assignment restatements",
+                issue_type="invalid_critic_issue",
+            ) from error
+    targets = {
+        ref: issue
+        for issue in issues
+        if issue["category"].startswith("scene_assignment:")
+        for ref in issue.get("_current_finding_refs", [])
+    }
+    retained = []
+    for index, issue in enumerate(issues):
+        ref = issue.pop("_assignment_finding_ref", None)
+        if ref is None:
+            retained.append(issue)
+            continue
+        target = targets.get(ref)
+        if target is None or issue["severity"] != "blocking" or target["severity"] != "blocking":
+            raise _StructuredOutputContractError(
+                f"issues.{index}.assignment_finding_ref",
+                "a restatement needs a current blocking assignment finding and blocking severity",
+                issue_type="invalid_assignment_restatement",
+            )
+        target["description"] += f" Restatement ({issue['category']}): {issue['description']}"
+        target["recommendation"] += f" Restatement repair: {issue['recommendation']}"
+        target["evidence"] = list(dict.fromkeys([*target["evidence"], *issue["evidence"]]))
+    return {**critique, "issues": retained}
 
 
 def _normalize_repair_checks(critique: dict[str, Any], execution: _Execution) -> dict[str, Any]:

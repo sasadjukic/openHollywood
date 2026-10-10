@@ -30,3 +30,4 @@ tradeoffs. Status values are `Proposed`, `Accepted`, `Superseded`, or `Rejected`
 | [0025](0025-linked-historical-repair-findings.md) | Link current findings to original repair obligations | Accepted |
 | [0026](0026-durable-worker-cancellation-cleanup.md) | Join specialist cleanup before closing a workflow | Accepted |
 | [0027](0027-satisfied-repair-schema-and-independent-findings.md) | Separate satisfied repair checks from independent current defects | Accepted |
+| [0028](0028-eligible-repair-links-and-assignment-restatements.md) | Constrain original repair links and consolidate declared assignment restatements | Accepted |

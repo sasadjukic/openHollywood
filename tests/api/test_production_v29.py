@@ -71,6 +71,7 @@ def _raw(execution: _Execution, route: str = "none") -> dict[str, Any]:
         raw["issues"] = [
             {
                 "category": "pacing",
+                "assignment_finding_ref": None,
                 "severity": "blocking" if route == "blocking_craft" else "minor",
                 "description": "The already achieved turn could be dramatized more strongly.",
                 "draft_evidence_refs": [ref],

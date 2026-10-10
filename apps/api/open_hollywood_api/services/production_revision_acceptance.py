@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+from collections.abc import Mapping
 from copy import deepcopy
 from typing import Any
 
@@ -83,7 +84,9 @@ def critic_repair_tests(inputs: tuple[dict[str, Any], ...], scene_id: str) -> li
     return tests
 
 
-def repair_checks_schema(tests: list[dict[str, Any]]) -> dict[str, Any]:
+def repair_checks_schema(
+    tests: list[dict[str, Any]], *, assignment_routes: Mapping[str, str]
+) -> dict[str, Any]:
     decision: dict[str, Any] = {
         "type": "object",
         "additionalProperties": False,
@@ -133,13 +136,44 @@ def repair_checks_schema(tests: list[dict[str, Any]]) -> dict[str, Any]:
         "description": "A satisfied original repair has no repeated current findings: always [].",
     }
     decision["properties"]["status"] = {"type": "string", "const": "unmet"}
+    definitions: dict[str, Any] = {}
+    properties: dict[str, Any] = {}
+    groups: dict[tuple[str, str], str] = {}
+    for test in tests:
+        category, severity = test["category"], test["severity"]
+        group = (category, severity)
+        if group not in groups:
+            name = "RepairAcceptanceCheck" + (str(len(groups) + 1) if groups else "")
+            groups[group] = name
+            unmet = deepcopy(decision)
+            links = unmet["properties"]["current_finding_refs"]
+            links["description"] = (
+                f"Only current {category}/{severity} findings repeating this original claim. "
+                "Use [] if none repeat it; an unmet repair remains actionable without links. "
+                "Same category alone is insufficient. Explain equivalence in assessment. "
+                "Include every consolidated reporting route; each finding has one owner. "
+                "A generic issue marked as an assignment restatement is not a separate finding."
+            )
+            if category.startswith("scene_assignment:"):
+                eligible = [
+                    ref
+                    for ref, target in assignment_routes.items()
+                    if target == category and severity == "blocking"
+                ]
+                if eligible:
+                    links["items"] = {"type": "string", "enum": eligible}
+                else:
+                    links = {"type": "array", "maxItems": 0, "description": links["description"]}
+            else:
+                links["items"] = {"type": "string", "pattern": r"^issue:(0|[1-9][0-9]*)$"}
+            unmet["properties"]["current_finding_refs"] = links
+            definitions[name] = {"anyOf": [deepcopy(met), unmet]}
+        properties[test["test_id"]] = {"$ref": f"#/$defs/{groups[group]}"}
     return {
         "type": "object",
         "additionalProperties": False,
-        "$defs": {"RepairAcceptanceCheck": {"anyOf": [met, decision]}},
-        "properties": {
-            test["test_id"]: {"$ref": "#/$defs/RepairAcceptanceCheck"} for test in tests
-        },
+        "$defs": definitions,
+        "properties": properties,
         "required": [test["test_id"] for test in tests],
     }
 

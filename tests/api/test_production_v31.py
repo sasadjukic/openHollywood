@@ -194,6 +194,7 @@ class RepairGateway(V26Gateway):
             raw["issues"] = [
                 {
                     "category": "pacing",
+                    "assignment_finding_ref": None,
                     "severity": "blocking",
                     "description": "Offline fixture: the opening turn is obscured.",
                     "draft_evidence_refs": [

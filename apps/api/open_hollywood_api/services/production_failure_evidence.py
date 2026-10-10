@@ -28,6 +28,7 @@ _TEXT_FIELDS = frozenset(
         "anchor",
         "explanation",
         "category",
+        "assignment_finding_ref",
         "severity",
         "description",
         "summary",
