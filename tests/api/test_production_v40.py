@@ -118,6 +118,11 @@ def test_craft_pov_and_missing_turn_survive_consolidation() -> None:
     execution = _fixture("Elara matched it. Cora privately knew it was forged.")
     raw = _duplicate(execution)
     raw["issues"] = _raw(execution, "blocking_craft")["issues"]
+    raw["issues"][0]["assignment_comparison"] = {
+        "finding_refs": ["viewpoint", "assignment:outcome", "assignment:turning_point"],
+        "assessment": "Simulated independent craft defect remains after correcting the "
+        "viewpoint, outcome and missing turn; it requires separate prose work.",
+    }
     raw["point_of_view_check"] = _raw(execution, "pov")["point_of_view_check"]
     raw["assignment_violations"].append(
         {**raw["assignment_violations"][0], "anchor": "turning_point"}

@@ -2506,6 +2506,50 @@ hints are not manuscript evidence and do not establish narrative equivalence.
 
 **Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
 
+### Explicit assignment versus craft comparison v45: 2026-10-10
+
+Implementation, local verification and the approved diagnostic campaign are
+**COMPLETE**; semantic qualification remains outstanding. Production contract v45 / graph v9 requires
+an explicit comparison for generic critic issues and permits declared repetitions
+at any severity. See [ADR 0030](../docs/adr/0030-explicit-assignment-and-craft-comparison.md)
+and the [v45 report](../docs/benchmark_reports/claim-comparison-v45-2026-10-10.md).
+
+- [x] Require current finding references and an explanation of the same defect
+  or the distinct craft problem remaining after a minimal assignment correction.
+- [x] Validate comparison coverage and preserve original repair identities;
+  retain declared repetitions without promoting independent craft severity.
+- [x] Persist bounded/redacted comparisons in invocation audits, with precise
+  structural retry guidance that excludes rejected review prose.
+- [x] Add 23 regressions, including two persisted workflows with one new
+  assignment repair and one independent craft repair passed to writer and critic.
+- [x] Replay eight saved v44 responses and two labeled offline annotations;
+  three valid reviews are unchanged, and the duplicate-bearing response now
+  requires the comparison. Edited responses are not live model successes.
+- [x] Freeze the same five private requests/settings at ten calls maximum and
+  USD 0.06560 recorded-rate estimate; initial schema growth is 1,242 characters.
+- [x] Pass all 829 Python tests, Ruff lint/format, strict mypy (182 files), frontend
+  formatting/lint/types, 11 frontend tests and production build. The first full
+  run's old v40 fixture was corrected to supply required comparison coverage;
+  no production validation was weakened.
+- [x] Run the five explicitly approved probes: six calls, four valid reviews,
+  one failed unchanged control; 75,950 input / 6,581 output tokens and
+  USD 0.0132654 recorded-rate estimate; actual charges unknown.
+- [x] Reconstruct all requests and responses, verify frozen hashes and original
+  repair lineage, and retain the first-response/retry classification change.
+- [x] Compare the missing-turn control with accepted repair 19103: identical
+  verification text and noncandidate inputs/settings, but an extra outcome
+  complaint. Preserve this contextual variation without claiming its cause.
+- [ ] Stabilize claim classification through structural repair; no successfully
+  validated generic comparison occurred in this campaign.
+- [ ] Investigate the additional decision-to-verify complaint separately from
+  generic craft deduplication.
+- [ ] Qualify model accuracy, broader recovery, human preference and cost
+  acceptance before closing Step 19.
+
+No new role, writer change, extra call allowance, canonical field or migration
+is introduced. Comparison text is a model judgment, not verified story truth.
+**Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
+
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 
 21. [ ] **Package the stable system with Tauri** and test crash/restart, offline, missing-model, invalid-key, provider-timeout, and low-disk-space behavior.

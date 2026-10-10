@@ -195,6 +195,10 @@ class RepairGateway(V26Gateway):
                 {
                     "category": "pacing",
                     "assignment_finding_ref": None,
+                    "assignment_comparison": {
+                        "finding_refs": [],
+                        "assessment": "No current assignment findings.",
+                    },
                     "severity": "blocking",
                     "description": "Offline fixture: the opening turn is obscured.",
                     "draft_evidence_refs": [

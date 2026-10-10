@@ -95,6 +95,11 @@ from open_hollywood_api.services.production_critic_adjudication import (
     disputed_critic_issues,
     materialize_critic_adjudication,
 )
+from open_hollywood_api.services.production_critic_comparison import (
+    assignment_comparison_schema,
+    assignment_finding_groups,
+    comparison_error,
+)
 from open_hollywood_api.services.production_critic_retry import (
     critic_link_diagnostics,
     critic_link_directive,
@@ -1750,10 +1755,11 @@ def _output_schema(
                 ],
                 "description": (
                     "Prefer reporting assignment defects only through their dedicated route. "
-                    "If this blocking issue repeats that same current assignment finding, "
+                    "If this issue repeats that same current assignment finding, "
                     "select its exact ref; its text/evidence/repair will be combined there. "
                     "Use null for an independent craft defect, even with shared evidence. "
-                    "The target must actually be reported in this response."
+                    "The target must actually be reported in this response. Any severity may "
+                    "declare repetition; a null ref requires an explicit independence comparison."
                 ),
             }
             issue_schema["required"] = [
@@ -1761,21 +1767,10 @@ def _output_schema(
                 for field in issue_schema["required"]
             ]
             issue_schema["required"].append("assignment_finding_ref")
-            issue_schema["anyOf"] = [
-                {"properties": {"severity": {"const": "blocking"}}},
-                {
-                    "properties": {
-                        "severity": {
-                            "enum": [
-                                s.value
-                                for s in CritiqueSeverity
-                                if s is not CritiqueSeverity.BLOCKING
-                            ]
-                        },
-                        "assignment_finding_ref": {"type": "null"},
-                    }
-                },
-            ]
+            issue_schema["properties"]["assignment_comparison"] = assignment_comparison_schema(
+                [ref for ref in issue_schema["properties"]["assignment_finding_ref"]["enum"] if ref]
+            )
+            issue_schema["required"].append("assignment_comparison")
             properties["point_of_view_check"]["anyOf"][1]["properties"]["draft_evidence_refs"] = (
                 _critic_evidence_refs_schema()
             )
@@ -2592,7 +2587,7 @@ def _schema_repair_guidance(
                         precise[link_directive["location"]] = link_directive
             directives = [precise.get(str(d["location"]), d) for d in directives]
     guidance: dict[str, object] = {
-        "policy_version": "11" if operation is _Operation.CRITIQUE else "10",
+        "policy_version": "12" if operation is _Operation.CRITIQUE else "10",
         "mode": "repair_only",
         "focus_locations": focus_locations,
         "directives": directives,
@@ -3107,6 +3102,8 @@ def _bind_critic_assignment_schema(schema: dict[str, Any], execution: _Execution
         None,
         *_critic_assignment_routes(execution),
     ]
+    comparison = assignment_comparison_schema(list(_critic_assignment_routes(execution)))
+    schema["$defs"]["CritiqueIssue"]["properties"]["assignment_comparison"] = comparison
     properties = schema["properties"]
     if _scene_boundary_overrun_anchor(execution) is None:
         properties["scene_boundary_check"]["properties"]["status"]["enum"] = ["no_overrun"]
@@ -3284,6 +3281,24 @@ def _scene_boundary_audit(raw: dict[str, Any], execution: _Execution) -> dict[st
                 for index, issue in repetitions[:16]
             ],
         )
+    if raw.get("issues"):
+        _normalize_current_critic_findings(raw, execution)
+        audit.update(
+            schema_version="3",
+            assignment_comparisons_total=len(raw["issues"]),
+            assignment_comparisons=[
+                {
+                    "raw_issue_index": index,
+                    "assignment_finding_ref": issue["assignment_finding_ref"],
+                    "severity": issue["severity"],
+                    "finding_refs": issue["assignment_comparison"]["finding_refs"],
+                    "assessment": active_secret_guard().redact_text(
+                        issue["assignment_comparison"]["assessment"]
+                    )[:1000],
+                }
+                for index, issue in enumerate(raw["issues"][:16])
+            ],
+        )
     return audit
 
 
@@ -3347,6 +3362,7 @@ def _normalize_critic_craft_issues(
             or "evidence" in issue
             or "_current_finding_refs" in issue
             or "_assignment_finding_ref" in issue
+            or "_assignment_comparison" in issue
         ):
             raise _StructuredOutputContractError(
                 f"issues.{index}",
@@ -3356,15 +3372,14 @@ def _normalize_critic_craft_issues(
         if "assignment_finding_ref" not in issue or (
             issue["assignment_finding_ref"] is not None
             and (
-                issue.get("severity") != "blocking"
-                or not isinstance(issue["assignment_finding_ref"], str)
+                not isinstance(issue["assignment_finding_ref"], str)
                 or issue["assignment_finding_ref"] not in _critic_assignment_routes(execution)
             )
         ):
             raise _StructuredOutputContractError(
                 f"issues.{index}.assignment_finding_ref",
                 "select a populated assignment route for a repetition, "
-                "or null for independent craft; nonblocking issues require null",
+                "or null for independently compared craft at any severity",
                 issue_type="invalid_assignment_restatement",
             )
         evidence = _resolve_critic_evidence_refs(
@@ -3377,9 +3392,15 @@ def _normalize_critic_craft_issues(
                 **{
                     key: value
                     for key, value in issue.items()
-                    if key not in {"draft_evidence_refs", "assignment_finding_ref"}
+                    if key
+                    not in {
+                        "draft_evidence_refs",
+                        "assignment_finding_ref",
+                        "assignment_comparison",
+                    }
                 },
                 "evidence": evidence,
+                "_assignment_comparison": issue.get("assignment_comparison"),
                 **(
                     {"_assignment_finding_ref": issue["assignment_finding_ref"]}
                     if issue["assignment_finding_ref"] is not None
@@ -3638,7 +3659,12 @@ def _normalize_assignment_restatements(critique: dict[str, Any]) -> dict[str, An
                 {
                     key: value
                     for key, value in issue.items()
-                    if key not in {"_assignment_finding_ref", "_current_finding_refs"}
+                    if key
+                    not in {
+                        "_assignment_finding_ref",
+                        "_current_finding_refs",
+                        "_assignment_comparison",
+                    }
                 }
             )
         except ValidationError as error:
@@ -3654,16 +3680,29 @@ def _normalize_assignment_restatements(critique: dict[str, Any]) -> dict[str, An
         for ref in issue.get("_current_finding_refs", [])
     }
     retained = []
+    groups = assignment_finding_groups(issues)
     for index, issue in enumerate(issues):
         ref = issue.pop("_assignment_finding_ref", None)
+        if not issue["category"].startswith("scene_assignment:"):
+            comparison_failure = comparison_error(
+                issue.pop("_assignment_comparison", None),
+                restatement_ref=ref,
+                finding_groups=groups,
+            )
+            if comparison_failure:
+                raise _StructuredOutputContractError(
+                    f"issues.{index}.assignment_comparison",
+                    comparison_failure,
+                    issue_type="invalid_assignment_comparison",
+                )
         if ref is None:
             retained.append(issue)
             continue
         target = targets.get(ref)
-        if target is None or issue["severity"] != "blocking" or target["severity"] != "blocking":
+        if target is None or target["severity"] != "blocking":
             raise _StructuredOutputContractError(
                 f"issues.{index}.assignment_finding_ref",
-                "a restatement needs a current blocking assignment finding and blocking severity",
+                "a restatement needs a current blocking assignment finding",
                 issue_type="invalid_assignment_restatement",
             )
         target["description"] += f" Restatement ({issue['category']}): {issue['description']}"

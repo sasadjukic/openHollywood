@@ -37,6 +37,13 @@ def _refs(execution: _Execution) -> list[str]:
     return [entry["evidence_ref"] for entry in _critic_evidence_catalog(execution)]
 
 
+def _comparison(*refs: str) -> dict[str, Any]:
+    return {
+        "finding_refs": list(refs),
+        "assessment": "Offline simulated claim comparison, not live semantic evidence.",
+    }
+
+
 def _raw(execution: _Execution, route: str = "none") -> dict[str, Any]:
     ref = _refs(execution)[-1] if route == "pov" else _refs(execution)[0]
     raw: dict[str, Any] = {
@@ -72,6 +79,7 @@ def _raw(execution: _Execution, route: str = "none") -> dict[str, Any]:
             {
                 "category": "pacing",
                 "assignment_finding_ref": None,
+                "assignment_comparison": _comparison(),
                 "severity": "blocking" if route == "blocking_craft" else "minor",
                 "description": "The already achieved turn could be dramatized more strongly.",
                 "draft_evidence_refs": [ref],
