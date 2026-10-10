@@ -2550,6 +2550,45 @@ No new role, writer change, extra call allowance, canonical field or migration
 is introduced. Comparison text is a model judgment, not verified story truth.
 **Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
 
+### Preserve critic classification during structural repair v46: 2026-10-10
+
+Implementation, all local verification and the approved diagnostic campaign are
+**COMPLETE**; reviewer qualification remains open. Production contract v46 / graph v9,
+critic retry policy 13. See [ADR 0031](../docs/adr/0031-preserve-critic-classification-during-structural-repair.md)
+and the [v46 report](../docs/benchmark_reports/retry-classification-v46-2026-10-10.md).
+
+- [x] Retain valid classification choices with candidate/task binding and bounded
+  category, severity and exact current evidence metadata; exclude rejected prose.
+- [x] Reject changed classifications, missing complaints and duplicate counts
+  while allowing reordered issues and evidence. Preserve counts for complaints
+  sharing metadata without claiming semantic identity.
+- [x] Cover materialization and later domain-validation failures; preserve
+  original repair IDs and current-finding validation without an extra model call.
+- [x] Add 33 regressions, including a persisted structural retry on the same draft
+  with the same original repair tests and writer count.
+- [x] Replay six saved v45 outputs: four valid results unchanged, both failures
+  retained. Reject the manually coverage-corrected retry's classification drift;
+  accept the manually format-corrected first response with no new repair target.
+- [x] Verify all five initial messages/settings unchanged and freeze three
+  retry-only requests at three calls maximum / USD 0.01968 recorded-rate estimate.
+- [x] Pass all 862 Python tests, Ruff lint/format, strict mypy (184 files), frontend
+  formatting/lint/types, all 11 frontend tests, production build and diff checks.
+- [x] Run the three explicitly approved private retries: 3/3 preserve classification,
+  repair comparison structure and complete the boundary/outcome links. All three
+  still fail after newly linking the original tension repair to a generic issue
+  that has been consolidated. No valid live review is claimed.
+- [x] Inspect each raw claim/comparison, verify all frozen hashes and isolate the
+  remaining error in three labeled offline copies. Changing only the ineligible
+  link to [] preserves both original repair IDs and introduces zero new targets.
+- [x] Record three calls, 41,832 input / 4,225 output tokens and USD 0.00754648
+  recorded-rate estimate; actual charges remain unknown. No writer or canonical edits.
+- [ ] Distinguish retained raw complaints from separately linkable current findings
+  before emission; exclude consolidated repetitions from original craft links.
+- [ ] Qualify semantic accuracy and investigate the separate decision-to-verify
+  complaint before claiming wider critic reliability.
+
+**Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
+
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 
 21. [ ] **Package the stable system with Tauri** and test crash/restart, offline, missing-model, invalid-key, provider-timeout, and low-disk-space behavior.

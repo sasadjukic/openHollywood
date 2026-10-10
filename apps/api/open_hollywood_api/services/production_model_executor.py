@@ -95,6 +95,12 @@ from open_hollywood_api.services.production_critic_adjudication import (
     disputed_critic_issues,
     materialize_critic_adjudication,
 )
+from open_hollywood_api.services.production_critic_classification import (
+    PRESERVATION_RULE,
+    classification_diagnostics,
+    classification_drift,
+    retained_classifications,
+)
 from open_hollywood_api.services.production_critic_comparison import (
     assignment_comparison_schema,
     assignment_finding_groups,
@@ -951,6 +957,7 @@ class ProfileRoutedProductionExecutor(SceneProductionExecutor):
             ),
         )
         response: ModelResponse | None = None
+        output_data: object = None
         failure_layer = "provider_transport"
         try:
             response = await self._gateway.generate(request)
@@ -1010,6 +1017,8 @@ class ProfileRoutedProductionExecutor(SceneProductionExecutor):
             )
             raise
         except (ValueError, json.JSONDecodeError, StoryBibleInvariantError) as error:
+            if operation is _Operation.CRITIQUE and isinstance(output_data, dict):
+                error = _critic_link_failure_details(output_data, execution, error) or error
             diagnostic = _structured_failure_message(error, response)
             validation_issues = _structured_failure_issues(error)
             error_code = (
@@ -2392,6 +2401,12 @@ def _schema_repair_guidance(
 
     focus_locations: list[str] = []
     validation_issues = previous_failure.get("validation_issues")
+    if operation is _Operation.CRITIQUE and isinstance(validation_issues, list):
+        validation_issues = [
+            issue
+            for issue in validation_issues
+            if not isinstance(issue, dict) or issue.get("type") != "critic_classification_preserved"
+        ]
     if isinstance(validation_issues, list):
         for issue in validation_issues:
             if not isinstance(issue, dict):
@@ -2587,7 +2602,7 @@ def _schema_repair_guidance(
                         precise[link_directive["location"]] = link_directive
             directives = [precise.get(str(d["location"]), d) for d in directives]
     guidance: dict[str, object] = {
-        "policy_version": "12" if operation is _Operation.CRITIQUE else "10",
+        "policy_version": "13" if operation is _Operation.CRITIQUE else "10",
         "mode": "repair_only",
         "focus_locations": focus_locations,
         "directives": directives,
@@ -2596,6 +2611,11 @@ def _schema_repair_guidance(
     }
     if continuity_schema_variant is not None:
         guidance["schema_variant"] = continuity_schema_variant.value
+    if operation is _Operation.CRITIQUE and critic_execution is not None:
+        retained = _critic_retained_classifications(critic_execution)
+        if retained:
+            guidance["preserved_classifications"] = retained
+            guidance["classification_preservation_rule"] = PRESERVATION_RULE
     return guidance
 
 
@@ -3618,6 +3638,16 @@ def _critic_candidate_version_id(execution: _Execution) -> str:
     )
 
 
+def _critic_retained_classifications(execution: _Execution) -> list[dict[str, Any]]:
+    return retained_classifications(
+        execution.previous_failure,
+        candidate=_critic_candidate_version_id(execution),
+        context=execution.task_fingerprint,
+        evidence_refs=[entry["evidence_ref"] for entry in _critic_evidence_catalog(execution)],
+        assignment_routes=_critic_assignment_routes(execution),
+    )
+
+
 def _critic_link_failure_details(
     raw: dict[str, Any], execution: _Execution, error: ValueError
 ) -> _StructuredOutputContractError | None:
@@ -3628,19 +3658,60 @@ def _critic_link_failure_details(
         hard = _normalize_point_of_view_check({**raw, "issues": []}, execution, track_findings=True)
         hard = _normalize_scene_boundary_check(hard, execution, track_findings=True)
     except ValueError:
-        return None
-    hints = critic_link_diagnostics(
-        raw,
-        candidate_version_id=_critic_candidate_version_id(execution),
-        tests=critic_repair_tests(execution.inputs, execution.unit_id),
-        assignment_routes=_critic_assignment_routes(execution),
-        hard_findings=hard.get("issues", []),
+        hard = None
+    hints = (
+        critic_link_diagnostics(
+            raw,
+            candidate_version_id=_critic_candidate_version_id(execution),
+            tests=critic_repair_tests(execution.inputs, execution.unit_id),
+            assignment_routes=_critic_assignment_routes(execution),
+            hard_findings=hard.get("issues", []),
+        )
+        if hard is not None
+        else []
     )
+    # Only capture first-response choices. A failed retry cannot replace its own
+    # retention contract with the drifted choice it was rejected for making.
+    if execution.previous_failure is None and hard is not None:
+        hints.extend(
+            classification_diagnostics(
+                raw,
+                candidate=_critic_candidate_version_id(execution),
+                context=execution.task_fingerprint,
+                evidence_catalog={
+                    e["evidence_ref"]: e["exact_excerpt"]
+                    for e in _critic_evidence_catalog(execution)
+                },
+                reported_refs=[
+                    ref
+                    for finding in hard.get("issues", [])
+                    for ref in finding["_current_finding_refs"]
+                    if ref in _critic_assignment_routes(execution)
+                ],
+            )
+        )
+    elif execution.previous_failure is not None and _critic_retained_classifications(execution):
+        previous_issues = execution.previous_failure.get("validation_issues")
+        if isinstance(previous_issues, list):
+            hints.extend(
+                record
+                for record in previous_issues
+                if isinstance(record, dict)
+                and record.get("type") == "critic_classification_preserved"
+            )
     if not hints:
         return None
     issues = list(_structured_failure_issues(error))
     for hint in hints:
-        original = next((i for i in issues if i["location"] == hint["location"]), None)
+        original = next(
+            (
+                i
+                for i in issues
+                if i["location"] == hint["location"]
+                and (hint["type"] != "critic_classification_preserved" or i["type"] == hint["type"])
+            ),
+            None,
+        )
         if original is not None:
             original["repair_hint"] = hint["repair_hint"]
         elif len(issues) < _MAX_SAFE_STRUCTURED_FAILURE_ISSUES:
@@ -5355,6 +5426,33 @@ def _materialize_output_data(
     execution: _Execution,
     output_data: object,
 ) -> dict[str, Any]:
+    try:
+        if (
+            operation is _Operation.CRITIQUE
+            and isinstance(output_data, dict)
+            and classification_drift(output_data, _critic_retained_classifications(execution))
+        ):
+            raise _StructuredOutputContractError(
+                "issues",
+                "preserve retained classification choices and their metadata counts "
+                "during structural repair",
+                issue_type="critic_classification_drift",
+            )
+        return _materialize_output_data_unchecked(operation, task, execution, output_data)
+    except ValueError as error:
+        if operation is _Operation.CRITIQUE and isinstance(output_data, dict):
+            detailed = _critic_link_failure_details(output_data, execution, error)
+            if detailed is not None:
+                raise detailed from error
+        raise
+
+
+def _materialize_output_data_unchecked(
+    operation: _Operation,
+    task: object,
+    execution: _Execution,
+    output_data: object,
+) -> dict[str, Any]:
     """Attach application-owned identity and lineage to model-authored output."""
     if not isinstance(output_data, dict):
         raise ValueError("production specialist output must be a JSON object")
@@ -5400,14 +5498,8 @@ def _materialize_output_data(
         return materialized
     if operation is _Operation.CRITIQUE:
         critique_task = cast(SceneCritiqueTask, task)
-        try:
-            materialized = _normalize_current_critic_findings(materialized, execution)
-            materialized = _normalize_repair_checks(materialized, execution)
-        except ValueError as error:
-            detailed = _critic_link_failure_details(output_data, execution, error)
-            if detailed is not None:
-                raise detailed from error
-            raise
+        materialized = _normalize_current_critic_findings(materialized, execution)
+        materialized = _normalize_repair_checks(materialized, execution)
         scores = materialized.get("scores")
         if (
             not isinstance(scores, list)

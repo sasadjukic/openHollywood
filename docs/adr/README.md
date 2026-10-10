@@ -33,3 +33,4 @@ tradeoffs. Status values are `Proposed`, `Accepted`, `Superseded`, or `Rejected`
 | [0028](0028-eligible-repair-links-and-assignment-restatements.md) | Constrain original repair links and consolidate declared assignment restatements | Accepted |
 | [0029](0029-severity-bound-restatements-and-precise-retries.md) | Severity-bound restatements and precise structural retries | Accepted |
 | [0030](0030-explicit-assignment-and-craft-comparison.md) | Explicit comparison of assignment and craft claims | Accepted |
+| [0031](0031-preserve-critic-classification-during-structural-repair.md) | Preserve critic classification during structural repair | Accepted |

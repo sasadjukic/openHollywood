@@ -745,7 +745,7 @@ retains an initial frontend worker startup timeout before the passing rerun. See
 [ADR 0029](docs/adr/0029-severity-bound-restatements-and-precise-retries.md) and the
 [v44 report](docs/benchmark_reports/restatement-retries-v44-2026-10-10.md).
 
-Current production contract v45 / graph v9 requires each generic critic issue to
+Production contract v45 / graph v9 requires each generic critic issue to
 compare its claim and remedy with reported assignment findings. Independent
 craft must explain the separate defect that survives the assignment correction;
 declared repetitions at any severity consolidate without losing advice or source
@@ -760,6 +760,22 @@ semantic performance remains unqualified.
 All 829 Python tests, 11 frontend tests and final quality gates pass.
 See [ADR 0030](docs/adr/0030-explicit-assignment-and-craft-comparison.md) and the
 [v45 report](docs/benchmark_reports/claim-comparison-v45-2026-10-10.md).
+
+Current production contract v46 / graph v9 preserves structurally valid critic
+classification choices during a review-format retry. Bounded metadata identifies
+category, severity, exact current evidence and reference counts; runtime validation
+rejects silent reclassification, dropping or duplicating retained complaints.
+Reordering is allowed. Rejected allegation prose is not replayed, original repair
+IDs stay unchanged, and retention does not establish semantic correctness.
+Initial requests are unchanged. Local replay preserves four valid v45 reviews
+and rejects its retry's reclassification even when comparison coverage is fixed.
+All three approved controlled retries preserved classification and corrected the
+comparison, but failed after linking an original repair to a generic complaint
+already consolidated into an assignment finding. Offline one-field corrections
+isolate that failure without counting it as live success. All 862 Python tests,
+11 frontend tests and required quality gates pass.
+See [ADR 0031](docs/adr/0031-preserve-critic-classification-during-structural-repair.md)
+and the [v46 report](docs/benchmark_reports/retry-classification-v46-2026-10-10.md).
 
 Benchmark word-count ranges are advisory creative targets. New outputs persist a
 non-gating adherence measurement with the target, actual count, status, and word
