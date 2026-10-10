@@ -2610,7 +2610,7 @@ def _schema_repair_guidance(
                         precise[link_directive["location"]] = link_directive
             directives = [precise.get(str(d["location"]), d) for d in directives]
     guidance: dict[str, object] = {
-        "policy_version": "14" if operation is _Operation.CRITIQUE else "10",
+        "policy_version": "15" if operation is _Operation.CRITIQUE else "10",
         "mode": "repair_only",
         "focus_locations": focus_locations,
         "directives": directives,

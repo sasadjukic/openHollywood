@@ -2618,10 +2618,41 @@ and the [v47 report](../docs/benchmark_reports/independent-repair-links-v47-2026
 - [x] Isolate the remaining comparison-format failure locally: wrapping only its
   existing comparison text and reference validates with the same original tests.
   The actual response stays failed; no additional model attempt is granted.
-- [ ] Strengthen exact comparison-object instructions in structural retries and
-  qualify the remaining failure without relaxing validation or classification.
+- [x] Strengthen exact comparison-object instructions in v48 and qualify the
+  remaining failure on the same three controlled retries: all validate without
+  relaxing validation or classification (see the v48 record below).
 - [ ] Qualify broader reviewer accuracy and investigate the separate
   decision-to-verify complaint before closing Step 19.
+
+**Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
+
+### Explicit comparison retry shape v48: 2026-10-10
+
+**Focused change COMPLETE**: implementation, required local quality checks and
+three approved controlled retries complete. All three validate; broader Step 19
+qualification remains IN PROGRESS. Production contract v48 / graph v9, critic
+retry policy 15. See the [v48 report](../docs/benchmark_reports/comparison-shape-v48-2026-10-10.md).
+
+- [x] State both required comparison fields, object shape and bounds in the
+  targeted retry directive, deriving structure from the existing schema.
+- [x] Preserve comparison semantics, classification, original repair links and
+  existing call allowances without replaying rejected prose or changing schemas.
+- [x] Add eight regressions, including two persisted retries retaining independent
+  craft and consolidated assignment complaints without extra writer work.
+- [x] Replay all three v47 responses with unchanged outcomes and verify the prior
+  labeled offline correction produces the same canonical result.
+- [x] Prepare the same three saved-first-failure retries: only comparison guidance
+  and policy version change, maximum three calls / USD 0.01968 estimated.
+- [x] Pass required quality gates: 892 Python tests, 11 frontend tests, Ruff,
+  strict mypy, frontend formatting/lint/types and production build.
+- [x] Obtain explicit approval and run exactly three retries: all return valid
+  comparison objects, retain classification, exclude invalid craft links and
+  preserve exactly two original repairs with no new target. Inspect the claims
+  and replay all responses without edits; verify frozen evidence and database.
+- [x] Record 43,581 input / 4,244 output tokens, USD 0.00779894 estimated at the
+  recorded October 8 rates; actual charges remain unknown.
+- [ ] Qualify broader reliability and the separate decision-to-verify complaint
+  before closing Step 19.
 
 **Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
 

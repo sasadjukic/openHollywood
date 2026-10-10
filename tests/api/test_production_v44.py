@@ -70,7 +70,7 @@ def _retry(execution: _Execution, raw: dict[str, Any]) -> dict[str, Any]:
         },
     )
     packet = _payload(_Operation.CRITIQUE, retry)
-    assert packet["schema_repair"]["policy_version"] == "14"
+    assert packet["schema_repair"]["policy_version"] == "15"
     assert packet["retry_context"]["manuscript_defect_established"] is False
     return packet
 
