@@ -777,7 +777,7 @@ isolate that failure without counting it as live success. All 862 Python tests,
 See [ADR 0031](docs/adr/0031-preserve-critic-classification-during-structural-repair.md)
 and the [v46 report](docs/benchmark_reports/retry-classification-v46-2026-10-10.md).
 
-Current production contract v47 / graph v9 allows only independent craft issues
+Production contract v47 / graph v9 allows only independent craft issues
 to select an original craft `repair_test_id`. Schema alternatives bind that choice
 to null assignment classification and exact category/severity. Original craft
 checks require empty link arrays; consolidated complaints cannot be separate
@@ -790,6 +790,16 @@ two fully validate with the same two original repairs and no new targets. One
 still returns its comparison as text instead of the required object.
 See [ADR 0032](docs/adr/0032-independent-craft-owns-original-repair-links.md) and the
 [v47 report](docs/benchmark_reports/independent-repair-links-v47-2026-10-10.md).
+
+Current production contract v48 / graph v9 restates the required comparison object
+in structural retries: `finding_refs` is a distinct-reference array and
+`assessment` is bounded nonblank text. The targeted directive includes the exact
+shape derived from the existing schema, limited to reported assignment references.
+Classification retention, repair-link restrictions and retry allowances are
+unchanged. Eight local regressions and saved-response replays pass. All three
+approved controlled retries validate with correct comparison objects, retained
+classification and exactly the two original repairs without duplicates. See the
+[v48 report](docs/benchmark_reports/comparison-shape-v48-2026-10-10.md).
 
 Benchmark word-count ranges are advisory creative targets. New outputs persist a
 non-gating adherence measurement with the target, actual count, status, and word
