@@ -86,6 +86,9 @@ def test_exact_assignment_removes_impossible_choices_without_growing_requests(
     generic_repeat = generic["$defs"]["CritiqueIssue"]["properties"]["assignment_finding_ref"]
     assert set(bound_repeat["enum"]) <= set(generic_repeat["enum"])
     bound_repeat["enum"] = generic_repeat["enum"]
+    projected_definitions["CritiqueIssue"]["properties"]["assignment_comparison"] = generic[
+        "$defs"
+    ]["CritiqueIssue"]["properties"]["assignment_comparison"]
     assert projected_definitions == generic["$defs"]
     assert len(json.dumps(bound)) <= len(json.dumps(generic))
     for schema in (generic, bound):
@@ -139,7 +142,7 @@ class AssignmentSchemaGateway(V26Gateway):
         payload = json.loads(request.messages[-1].content)
         if payload.get("assignment", {}).get("operation") == "critique":
             self.critic_calls += 1
-            assert request.invocation.prompt_template_version == "44"
+            assert request.invocation.prompt_template_version == "45"
             assert request.response_schema is not None
             assignment = payload["scene_assignment_contract"]
             properties = cast(dict[str, Any], request.response_schema["properties"])

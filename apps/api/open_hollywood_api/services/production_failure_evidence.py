@@ -54,6 +54,7 @@ _REFERENCE_FIELDS = frozenset(
     {
         "draft_evidence_refs",
         "current_finding_refs",
+        "finding_refs",
         "evidence_refs",
         "canonical_claim_ids",
         "canonical_source_refs",
@@ -62,7 +63,7 @@ _REFERENCE_FIELDS = frozenset(
         "revised_draft_evidence_refs",
     }
 )
-_OBJECT_FIELDS = frozenset({"basis_details"})
+_OBJECT_FIELDS = frozenset({"basis_details", "assignment_comparison"})
 _LIST_SECTIONS = ("assignment_violations", "issues", "findings", "new_findings")
 _MAP_SECTIONS = ("requirement_coverage", "prior_finding_rechecks", "decisions", "repair_checks")
 

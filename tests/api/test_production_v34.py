@@ -253,6 +253,10 @@ class ContinuityContractGateway(V26Gateway):
                         "description": "The conflict needs one more consequential exchange.",
                         "recommendation": "Make the exchange change the decision.",
                         "assignment_finding_ref": None,
+                        "assignment_comparison": {
+                            "finding_refs": [],
+                            "assessment": "No current assignment findings.",
+                        },
                         "draft_evidence_refs": [
                             next(
                                 item
@@ -320,7 +324,7 @@ async def test_durable_continuity_contract_replay_and_bounded_repair(
                 ]
                 == 2
             )
-            assert final_call.request_settings["prompt_template_version"] == "44"
+            assert final_call.request_settings["prompt_template_version"] == "45"
         elif mode != "invalid_always":
             reports = session.scalars(select(ArtifactVersion)).all()
             gap = next(

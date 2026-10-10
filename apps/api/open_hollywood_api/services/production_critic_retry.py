@@ -7,6 +7,12 @@ import re
 from collections.abc import Mapping, Sequence
 from typing import Any
 
+from open_hollywood_api.services.production_critic_comparison import (
+    COMPARISON_RULE,
+    assignment_finding_groups,
+    comparison_error,
+)
+
 MAX_HINT_CHARS = 500
 MAX_DIAGNOSTICS = 12
 _SEVERITIES = {"note", "minor", "major", "blocking"}
@@ -40,6 +46,7 @@ def critic_link_diagnostics(
         ref: finding for finding in hard_findings for ref in finding["_current_finding_refs"]
     }
     reported = [ref for ref in assignment_routes if ref in findings]
+    groups = assignment_finding_groups(hard_findings)
     issues = raw.get("issues", [])
     if isinstance(issues, list):
         for index, issue in enumerate(issues[:64]):
@@ -51,15 +58,22 @@ def critic_link_diagnostics(
                 continue
             severity = issue["severity"]
             ref = issue.get("assignment_finding_ref")
-            allowed = [None, *reported] if severity == "blocking" else [None]
+            allowed = [None, *reported]
             if "assignment_finding_ref" not in issue or ref not in allowed:
                 add(
                     f"issues.{index}.assignment_finding_ref",
                     {"kind": "restatement", "severity": severity, "allowed_refs": allowed},
                 )
-            # Nonblocking findings cannot be restatements. These facts apply if
-            # the reviewer retains them as independent craft with a null ref.
-            if (ref is None or severity != "blocking") and isinstance(issue.get("category"), str):
+            if comparison_error(
+                issue.get("assignment_comparison"),
+                restatement_ref=ref if ref in allowed else None,
+                finding_groups=groups,
+            ):
+                add(
+                    f"issues.{index}.assignment_comparison",
+                    {"kind": "comparison", "finding_groups": groups},
+                )
+            if (ref is None or ref not in allowed) and isinstance(issue.get("category"), str):
                 findings[f"issue:{index}"] = {
                     "category": issue["category"],
                     "severity": severity,
@@ -178,16 +192,37 @@ def critic_link_directive(
             or not isinstance(hint.get("severity"), str)
             or hint["severity"] not in _SEVERITIES
             or not refs("allowed_refs", nullable=True)
-            or (hint["severity"] != "blocking" and hint["allowed_refs"] != [None])
         ):
             return None
         return {
             "location": location,
-            "action": "Nonblocking issues require null. For a blocking issue use null for "
-            "independent craft, or an exact reported assignment ref only for the same defect. "
-            "Do not escalate severity to make a link legal.",
+            "action": "At any severity, use null only for independently compared craft, "
+            "or an exact reported assignment ref for the same defect. Do not escalate severity "
+            "to make a link legal. Explain the distinction in assignment_comparison.",
             "reported_severity": hint["severity"],
             "allowed_assignment_finding_refs": hint["allowed_refs"],
+        }
+    if hint.get("kind") == "comparison":
+        groups = hint.get("finding_groups")
+        if (
+            re.fullmatch(r"issues\.(0|[1-9][0-9]{0,3})\.assignment_comparison", location) is None
+            or not isinstance(groups, list)
+            or len(groups) > 8
+            or any(
+                not isinstance(group, list)
+                or not 1 <= len(group) <= 8
+                or any(not isinstance(ref, str) or ref not in assignment_routes for ref in group)
+                for group in groups
+            )
+        ):
+            return None
+        return {
+            "location": location,
+            "action": COMPARISON_RULE,
+            "reported_assignment_finding_groups": groups,
+            "coverage_rule": "For independent craft compare every group using at least one "
+            "listed alias each; for repetition include its selected target. Never invent a "
+            "finding from this review-format error.",
         }
     test = next(
         (t for t in tests if location == f"repair_checks.{t['test_id']}.current_finding_refs"), None

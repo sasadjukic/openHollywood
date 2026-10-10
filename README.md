@@ -730,7 +730,7 @@ remains open. See
 [ADR 0028](docs/adr/0028-eligible-repair-links-and-assignment-restatements.md) and the
 [v43 report](docs/benchmark_reports/eligible-repair-links-v43-2026-10-10.md).
 
-Current production contract v44 / graph v9 makes nonblocking restatement
+Production contract v44 / graph v9 made nonblocking restatement
 references null-only and gives critic structural retries precise, version-bound
 link corrections. Rejected allegations remain excluded from retry input. The
 two saved v43 failures receive the missing reference/category/route information
@@ -744,6 +744,22 @@ All 806 Python tests and final local quality gates pass; the report
 retains an initial frontend worker startup timeout before the passing rerun. See
 [ADR 0029](docs/adr/0029-severity-bound-restatements-and-precise-retries.md) and the
 [v44 report](docs/benchmark_reports/restatement-retries-v44-2026-10-10.md).
+
+Current production contract v45 / graph v9 requires each generic critic issue to
+compare its claim and remedy with reported assignment findings. Independent
+craft must explain the separate defect that survives the assignment correction;
+declared repetitions at any severity consolidate without losing advice or source
+severity in the audit. Original repair identities remain separate. The 23 new
+regressions include durable propagation of distinct assignment and craft repairs.
+Saved v44 responses and labeled offline annotations exercise both paths. The five
+approved live probes used six calls: four valid reviews and one failed unchanged
+control. That control recognized repetition, but its malformed comparison was
+reclassified during retry and still failed. All valid responses had no generic
+issues; the missing-turn control gained an additional outcome complaint. Live
+semantic performance remains unqualified.
+All 829 Python tests, 11 frontend tests and final quality gates pass.
+See [ADR 0030](docs/adr/0030-explicit-assignment-and-craft-comparison.md) and the
+[v45 report](docs/benchmark_reports/claim-comparison-v45-2026-10-10.md).
 
 Benchmark word-count ranges are advisory creative targets. New outputs persist a
 non-gating adherence measurement with the target, actual count, status, and word

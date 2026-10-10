@@ -25,7 +25,7 @@ from open_hollywood_engine.models import ModelRequest, ModelResponse
 from sqlalchemy import Engine, select
 
 from tests.api.test_production_v26 import _run_gateway
-from tests.api.test_production_v29 import _materialize, _raw, _refs
+from tests.api.test_production_v29 import _comparison, _materialize, _raw, _refs
 from tests.api.test_production_v31 import _review
 from tests.api.test_production_v37 import _fixture
 from tests.api.test_production_v41 import _linked, _revision
@@ -109,6 +109,7 @@ def test_declared_repetition_preserves_both_claims_repairs_and_all_evidence(ref:
     raw["repair_checks"] = _review(execution)["repair_checks"]
     repeat = _raw(execution, "blocking_craft")["issues"][0]
     repeat.update(assignment_finding_ref=ref, draft_evidence_refs=[_refs(execution)[1]])
+    repeat["assignment_comparison"] = _comparison(ref)
     raw["issues"] = [repeat]
     before = deepcopy(raw)
     result = _materialize(raw, execution)
@@ -120,7 +121,7 @@ def test_declared_repetition_preserves_both_claims_repairs_and_all_evidence(ref:
     assert "The date was today." in target["evidence"]
     assert "assignment_finding_ref" not in json.dumps(result)
     audit = _scene_boundary_audit(raw, execution)
-    assert audit["schema_version"] == "2"
+    assert audit["schema_version"] == "3"
     repetitions = audit["assignment_restatements"]
     assert isinstance(repetitions, list)
     assert repetitions[0]["assignment_finding_ref"] == ref
@@ -132,6 +133,7 @@ def test_restatement_can_join_original_assignment_without_becoming_a_craft_link_
     raw = _linked(execution)
     repeat = _raw(execution, "blocking_craft")["issues"][0]
     repeat["assignment_finding_ref"] = "assignment:outcome"
+    repeat["assignment_comparison"] = _comparison("assignment:outcome")
     raw["issues"] = [repeat]
     result = _materialize(raw, execution)
     assert len(result["issues"]) == 1
@@ -149,6 +151,7 @@ def test_unlinked_independent_issues_survive_repetition_consolidation(mode: str)
     raw = _raw(execution, "assignment")
     repeated = _raw(execution, "blocking_craft")["issues"][0]
     repeated["assignment_finding_ref"] = "assignment:outcome"
+    repeated["assignment_comparison"] = _comparison("assignment:outcome")
     independent = {
         **repeated,
         "description": "A distinct pacing problem.",
@@ -160,6 +163,9 @@ def test_unlinked_independent_issues_survive_repetition_consolidation(mode: str)
     if mode == "separate_turn":
         raw["assignment_violations"].append(
             {**raw["assignment_violations"][0], "anchor": "turning_point"}
+        )
+        independent["assignment_comparison"] = _comparison(
+            "assignment:outcome", "assignment:turning_point"
         )
     result = _materialize(raw, execution)
     assert len(result["issues"]) == (3 if mode == "separate_turn" else 2)
@@ -175,6 +181,7 @@ def test_invalid_restatement_is_rejected_before_any_finding_can_disappear(bad: s
     raw = _raw(execution, "assignment")
     repeated = _raw(execution, "blocking_craft")["issues"][0]
     repeated["assignment_finding_ref"] = "assignment:outcome"
+    repeated["assignment_comparison"] = _comparison("assignment:outcome")
     raw["issues"] = [repeated]
     if bad == "missing_field":
         repeated.pop("assignment_finding_ref")
@@ -183,7 +190,7 @@ def test_invalid_restatement_is_rejected_before_any_finding_can_disappear(bad: s
     elif bad == "inactive":
         repeated["assignment_finding_ref"] = "boundary"
     elif bad == "severity":
-        repeated["severity"] = "major"
+        repeated["severity"] = "invalid-severity"
     elif bad == "evidence":
         repeated["draft_evidence_refs"] = ["stale"]
     elif bad == "extra":
@@ -210,6 +217,7 @@ def test_restatement_audit_and_rejected_response_evidence_redact_secrets(
             **_raw(execution, "blocking_craft")["issues"][0],
             "description": secret,
             "assignment_finding_ref": "assignment:outcome",
+            "assignment_comparison": _comparison("assignment:outcome"),
         }
     ]
     audit = _scene_boundary_audit(raw, execution)
@@ -241,6 +249,7 @@ class RepeatedAssignmentGateway(IndependentRepairGateway):
                 "recommendation": "Retain this additional repair advice.",
                 "draft_evidence_refs": turn["draft_evidence_refs"],
                 "assignment_finding_ref": "assignment:turning_point",
+                "assignment_comparison": _comparison("assignment:turning_point"),
             }
         ]
         return replace(response, content=json.dumps(raw))

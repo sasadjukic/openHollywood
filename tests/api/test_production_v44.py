@@ -27,7 +27,7 @@ from open_hollywood_engine.models import ModelDeployment, ModelRequest, ModelRes
 from sqlalchemy import Engine, select
 
 from tests.api.test_production_v26 import _run_gateway
-from tests.api.test_production_v29 import _materialize, _raw
+from tests.api.test_production_v29 import _comparison, _materialize, _raw
 from tests.api.test_production_v37 import _fixture, _payload
 from tests.api.test_production_v41 import LinkedRepairGateway, _linked, _revision
 from tests.evaluations.test_agentic_blueprint import CORPUS_PATH
@@ -39,7 +39,7 @@ def anyio_backend() -> str:
 
 
 @pytest.mark.parametrize("deployment", [ModelDeployment.LOCAL, ModelDeployment.CLOUD])
-def test_restatement_schema_excludes_nonblocking_links_in_both_delivery_modes(
+def test_restatement_schema_uses_explicit_comparison_in_both_delivery_modes(
     deployment: ModelDeployment,
 ) -> None:
     execution = _fixture()
@@ -48,10 +48,8 @@ def test_restatement_schema_excludes_nonblocking_links_in_both_delivery_modes(
         _Operation.CRITIQUE, continuity_schema_variant=None, critic_execution=execution
     )
     issue = schema["$defs"]["CritiqueIssue"]
-    blocking, craft = issue["anyOf"]
-    assert blocking == {"properties": {"severity": {"const": "blocking"}}}
-    assert craft["properties"]["severity"]["enum"] == ["note", "minor", "major"]
-    assert craft["properties"]["assignment_finding_ref"] == {"type": "null"}
+    assert "anyOf" not in issue
+    assert "assignment_comparison" in issue["required"]
     assert None in issue["properties"]["assignment_finding_ref"]["enum"]
     assert "assignment:outcome" in issue["properties"]["assignment_finding_ref"]["enum"]
     assert {"severity", "assignment_finding_ref"} <= set(issue["required"])
@@ -72,21 +70,25 @@ def _retry(execution: _Execution, raw: dict[str, Any]) -> dict[str, Any]:
         },
     )
     packet = _payload(_Operation.CRITIQUE, retry)
-    assert packet["schema_repair"]["policy_version"] == "11"
+    assert packet["schema_repair"]["policy_version"] == "12"
     assert packet["retry_context"]["manuscript_defect_established"] is False
     return packet
 
 
 @pytest.mark.parametrize("severity", ["note", "minor", "major"])
-def test_nonblocking_link_is_rejected_with_exact_null_directive(severity: str) -> None:
+def test_invalid_nonblocking_link_gets_exact_reported_choices(severity: str) -> None:
     execution = _fixture()
     raw = _raw(execution, "assignment")
     raw["issues"] = _raw(execution, "craft")["issues"]
-    raw["issues"][0].update(severity=severity, assignment_finding_ref="assignment:outcome")
+    raw["issues"][0].update(
+        severity=severity,
+        assignment_finding_ref="outcome",
+        assignment_comparison=_comparison("assignment:outcome"),
+    )
     before = deepcopy(raw)
     packet = _retry(execution, raw)
     directive = packet["schema_repair"]["directives"][0]
-    assert directive["allowed_assignment_finding_refs"] == [None]
+    assert directive["allowed_assignment_finding_refs"] == [None, "assignment:outcome"]
     assert directive["reported_severity"] == severity
     assert "Do not escalate severity" in directive["action"]
     assert raw == before
@@ -105,7 +107,8 @@ def test_blocking_restatement_retry_lists_only_reported_valid_assignment_routes(
         raw["issues"][0].pop("assignment_finding_ref")
     else:
         raw["issues"][0]["assignment_finding_ref"] = bad_ref
-    directive = _retry(execution, raw)["schema_repair"]["directives"][0]
+    directives = _retry(execution, raw)["schema_repair"]["directives"]
+    directive = next(d for d in directives if "allowed_assignment_finding_refs" in d)
     assert directive["allowed_assignment_finding_refs"] == [None, "assignment:outcome"]
 
 
@@ -127,6 +130,7 @@ def _two_repairs() -> tuple[_Execution, dict[str, Any]]:
         category="dramatic tension",
         severity="major",
         assignment_finding_ref="outcome",
+        assignment_comparison=_comparison("assignment:outcome"),
         description="Rejected allegation must not enter retry guidance.",
     )
     tests = critic_repair_tests(execution.inputs, execution.unit_id)
@@ -142,7 +146,11 @@ def test_one_rejection_reports_null_category_and_missing_route_without_rejected_
     directives = packet["schema_repair"]["directives"]
     assert len(directives) == 3
     restatement, outcome, tension = directives
-    assert restatement["allowed_assignment_finding_refs"] == [None]
+    assert set(restatement["allowed_assignment_finding_refs"]) == {
+        None,
+        "boundary",
+        "assignment:outcome",
+    }
     assert outcome["expected_category"] == "scene_assignment:outcome"
     assert outcome["expected_severity"] == "blocking"
     assert outcome["all_routes_for_selected_findings"] == ["boundary", "assignment:outcome"]
@@ -257,6 +265,7 @@ class LinkRetryGateway(LinkedRepairGateway):
                     "category": "tension",
                     "severity": "major",
                     "assignment_finding_ref": "outcome",
+                    "assignment_comparison": _comparison("assignment:outcome"),
                     "draft_evidence_refs": raw["scene_boundary_check"]["draft_evidence_refs"],
                     "description": "Rejected reviewer allegation.",
                     "recommendation": "Keep as craft.",
@@ -266,7 +275,11 @@ class LinkRetryGateway(LinkedRepairGateway):
                 check["current_finding_refs"] = ["assignment:outcome"]
         else:
             directives = payload["schema_repair"]["directives"]
-            assert any(d.get("allowed_assignment_finding_refs") == [None] for d in directives)
+            assert any(
+                set(d.get("allowed_assignment_finding_refs", []))
+                == {None, "boundary", "assignment:outcome"}
+                for d in directives
+            )
             assert any(d.get("missing_routes") == ["boundary"] for d in directives)
             assert "Rejected reviewer allegation" not in json.dumps(payload)
         return replace(response, content=json.dumps(raw))
