@@ -31,3 +31,4 @@ tradeoffs. Status values are `Proposed`, `Accepted`, `Superseded`, or `Rejected`
 | [0026](0026-durable-worker-cancellation-cleanup.md) | Join specialist cleanup before closing a workflow | Accepted |
 | [0027](0027-satisfied-repair-schema-and-independent-findings.md) | Separate satisfied repair checks from independent current defects | Accepted |
 | [0028](0028-eligible-repair-links-and-assignment-restatements.md) | Constrain original repair links and consolidate declared assignment restatements | Accepted |
+| [0029](0029-severity-bound-restatements-and-precise-retries.md) | Severity-bound restatements and precise structural retries | Accepted |

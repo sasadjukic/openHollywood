@@ -210,7 +210,7 @@ class ComparisonGateway(V26Gateway):
                 del raw["scene_boundary_check"]
             else:
                 assert payload["retry_context"]["manuscript_defect_established"] is False
-                assert payload["schema_repair"]["policy_version"] == "10"
+                assert payload["schema_repair"]["policy_version"] == "11"
             response = replace(response, content=json.dumps(raw))
         return response
 

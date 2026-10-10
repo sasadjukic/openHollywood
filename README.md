@@ -715,7 +715,7 @@ remain open. See
 [ADR 0027](docs/adr/0027-satisfied-repair-schema-and-independent-findings.md) and the
 [v42 implementation report](docs/benchmark_reports/worker-cleanup-critic-v42-2026-10-09.md).
 
-Current production contract v43 / graph v9 constrains each original repair's
+Production contract v43 / graph v9 constrains each original repair's
 eligible links by category, severity and populated scene assignment. Generic
 issues explicitly identify whether they repeat a current assignment finding;
 declared repetitions consolidate with their text, evidence and repair advice
@@ -729,6 +729,21 @@ further link-coverage and category errors isolated offline. Reviewer qualificati
 remains open. See
 [ADR 0028](docs/adr/0028-eligible-repair-links-and-assignment-restatements.md) and the
 [v43 report](docs/benchmark_reports/eligible-repair-links-v43-2026-10-10.md).
+
+Current production contract v44 / graph v9 makes nonblocking restatement
+references null-only and gives critic structural retries precise, version-bound
+link corrections. Rejected allegations remain excluded from retry input. The
+two saved v43 failures receive the missing reference/category/route information
+while all four valid responses materialize identically. The 22 new local cases
+include persisted retry propagation with no extra writer call. The approved five
+probes used eight calls: four valid reviews and one failed unchanged control.
+Both missing boundary links were corrected on retry, but the unchanged retry
+introduced an invalid reference. The ambiguous revision recovered structurally
+while retaining a generic pacing duplicate. Reviewer qualification remains open.
+All 806 Python tests and final local quality gates pass; the report
+retains an initial frontend worker startup timeout before the passing rerun. See
+[ADR 0029](docs/adr/0029-severity-bound-restatements-and-precise-retries.md) and the
+[v44 report](docs/benchmark_reports/restatement-retries-v44-2026-10-10.md).
 
 Benchmark word-count ranges are advisory creative targets. New outputs persist a
 non-gating adherence measurement with the target, actual count, status, and word

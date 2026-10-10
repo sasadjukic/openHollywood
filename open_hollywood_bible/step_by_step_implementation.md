@@ -2462,6 +2462,50 @@ allowance, canonical schema field or migration is added.
 
 **Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
 
+### Severity-bound restatements and precise critic retries v44: 2026-10-10
+
+Implementation, local verification and the approved five-probe campaign are
+**COMPLETE**; reviewer qualification remains open. Production contract v44 /
+graph v9 adds severity
+branches for generic restatement references and precise structural metadata for
+the existing critic retry. See
+[ADR 0029](../docs/adr/0029-severity-bound-restatements-and-precise-retries.md) and
+the [v44 report](../docs/benchmark_reports/restatement-retries-v44-2026-10-10.md).
+
+- [x] Require null restatement references for nonblocking issues in schema and
+  materialization; retain explicit valid blocking repetitions.
+- [x] Provide candidate-bound allowed references, original category/severity,
+  complete/missing routes and competing owners without rejected allegations.
+- [x] Collect independent link errors after rejection without repairing or
+  accepting the rejected response; keep existing limits and fallback guidance.
+- [x] Add 22 regressions, including persisted retry with unchanged candidate,
+  input artifacts and writer count.
+- [x] Replay six unmodified v43 responses: four identical valid critiques and
+  two rejected responses producing precise offline retry packets.
+- [x] Freeze five requests with identical inputs/settings and a ten-call /
+  USD 0.06560 maximum recorded-rate estimate; initial schema growth is 162 chars.
+- [x] Pass all 806 Python tests, Ruff lint/format, strict mypy (180 files),
+  frontend format/lint/types, 11 frontend tests and production build. Record the
+  initial Vitest worker startup timeout and unchanged isolated passing rerun.
+- [x] Run all five explicitly approved probes: eight calls, four valid reviews,
+  one failed unchanged control; 100,171 input / 8,463 output tokens,
+  USD 0.01740914 at recorded rates; actual charges unknown.
+- [x] Reconstruct every request and response, verify original repair lineage and
+  unchanged frozen hashes, and retain failures plus labeled offline diagnostics.
+- [x] Record that both missing boundary links were corrected, but the unchanged
+  retry introduced an invalid reference and the ambiguous revision retained a
+  generic pacing duplicate despite structural recovery.
+- [ ] Distinguish repeated assignment allegations from independent craft claims
+  without treating null or category/severity differences as proof of independence.
+- [ ] Establish reviewer reliability, resolve semantic ambiguity and demonstrate
+  full-story recovery, preference and cost acceptance before closing Step 19.
+
+No writer call, canonical edit, migration, new specialist or inference allowance
+is introduced. Story context and system instructions remain unchanged. Structural
+hints are not manuscript evidence and do not establish narrative equivalence.
+
+**Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
+
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 
 21. [ ] **Package the stable system with Tauri** and test crash/restart, offline, missing-model, invalid-key, provider-timeout, and low-disk-space behavior.
