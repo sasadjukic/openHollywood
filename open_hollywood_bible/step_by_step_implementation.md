@@ -2589,6 +2589,42 @@ and the [v46 report](../docs/benchmark_reports/retry-classification-v46-2026-10-
 
 **Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
 
+### Independent craft owns original repair links v47: 2026-10-10
+
+**IN PROGRESS**: implementation and required local quality checks complete.
+All three live retries exclude the invalid link; two fully validate, and one
+retains a comparison-format failure. Production contract v47 / graph v9,
+critic retry policy 14. See [ADR 0032](../docs/adr/0032-independent-craft-owns-original-repair-links.md)
+and the [v47 report](../docs/benchmark_reports/independent-repair-links-v47-2026-10-10.md).
+
+- [x] Permit original craft IDs only on independent issues with exact original
+  category/severity; require empty craft-check link arrays and reject legacy indexes.
+- [x] Validate explicit ownership and translate it to internal routes without
+  merging original IDs, dropping obligations or weakening evidence validation.
+- [x] Preserve classification during retries; provide eligible ID hints and
+  separate wire/effective links in audits, without replaying rejected prose.
+- [x] Add 22 regressions, including durable writer/critic propagation of the same
+  two originals with independent craft and a consolidated assignment repetition.
+- [x] Replay three v46 failures unchanged and reproduce their three labeled
+  one-field counterfactuals without changing canonical outcomes.
+- [x] Prepare three matching controlled retries: same saved failure, inputs,
+  settings and seeds; maximum three calls / USD 0.01968 recorded-rate estimate.
+- [x] Pass required quality gates: 884 Python tests, 11 frontend tests, Ruff,
+  strict mypy, frontend formatting/lint/types and production build.
+- [x] Obtain explicit approval, run exactly three private retries and inspect
+  both structure and claims: classification and link exclusion hold in 3/3;
+  2/3 validate with the same two originals and zero new targets. Recorded-rate
+  estimate USD 0.00770396; actual charges unknown.
+- [x] Isolate the remaining comparison-format failure locally: wrapping only its
+  existing comparison text and reference validates with the same original tests.
+  The actual response stays failed; no additional model attempt is granted.
+- [ ] Strengthen exact comparison-object instructions in structural retries and
+  qualify the remaining failure without relaxing validation or classification.
+- [ ] Qualify broader reviewer accuracy and investigate the separate
+  decision-to-verify complaint before closing Step 19.
+
+**Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
+
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 
 21. [ ] **Package the stable system with Tauri** and test crash/restart, offline, missing-model, invalid-key, provider-timeout, and low-disk-space behavior.

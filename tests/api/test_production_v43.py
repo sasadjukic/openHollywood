@@ -63,7 +63,7 @@ def test_repair_choices_follow_original_category_severity_and_populated_plan(
     links = unmet["properties"]["current_finding_refs"]
     assert category in links["description"] and severity in links["description"]
     if expected is None:
-        assert links["items"] == {"type": "string", "pattern": r"^issue:(0|[1-9][0-9]*)$"}
+        assert links["maxItems"] == 0 and "repair_test_id" in links["description"]
     elif expected:
         assert links["items"]["enum"] == expected
     else:

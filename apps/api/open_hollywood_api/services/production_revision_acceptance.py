@@ -105,13 +105,13 @@ def repair_checks_schema(
                 "uniqueItems": True,
                 "items": {
                     "type": "string",
-                    "pattern": r"^(boundary|viewpoint|assignment:[a-z_]+|issue:(0|[1-9][0-9]*))$",
+                    "pattern": r"^(boundary|viewpoint|assignment:[a-z_]+)$",
                 },
                 "description": (
                     "Current findings in THIS response repeating this exact original obligation: "
-                    "boundary (overrun), viewpoint (violation), assignment:<anchor>, "
-                    "or issue:<zero-based "
-                    "issues index>. Use [] when met or none repeat it. Link only the same claim, "
+                    "boundary (overrun), viewpoint (violation), or assignment:<anchor>. "
+                    "Never issue:N; independent craft links belong on that issue's repair_test_id. "
+                    "Use [] when met or none repeat it. Link only the same claim, "
                     "category and severity; different current evidence is allowed. Same category "
                     "alone is insufficient. New defects or changed severity remain independent. "
                     "Explain the equivalence in assessment. Include all linked reporting routes, "
@@ -165,7 +165,13 @@ def repair_checks_schema(
                 else:
                     links = {"type": "array", "maxItems": 0, "description": links["description"]}
             else:
-                links["items"] = {"type": "string", "pattern": r"^issue:(0|[1-9][0-9]*)$"}
+                links = {
+                    "type": "array",
+                    "maxItems": 0,
+                    "description": links["description"] + " Always [] for craft repairs. "
+                    "Only an independent issue may select this original via repair_test_id; "
+                    "a consolidated repetition cannot. Unmet does not require a current link.",
+                }
             unmet["properties"]["current_finding_refs"] = links
             definitions[name] = {"anyOf": [deepcopy(met), unmet]}
         properties[test["test_id"]] = {"$ref": f"#/$defs/{groups[group]}"}

@@ -106,6 +106,12 @@ from open_hollywood_api.services.production_critic_comparison import (
     assignment_finding_groups,
     comparison_error,
 )
+from open_hollywood_api.services.production_critic_links import (
+    CRAFT_LINK_RULE,
+    CraftRepairLinkError,
+    bind_craft_repair_schema,
+    project_craft_repair_links,
+)
 from open_hollywood_api.services.production_critic_retry import (
     critic_link_diagnostics,
     critic_link_directive,
@@ -1811,9 +1817,11 @@ def _output_schema(
                 properties.pop(field, None)
                 schema["required"].remove(field)
             definitions.pop("ArtifactKind", None)
+            bind_craft_repair_schema(issue_schema, [])
             if critic_execution is not None:
                 _bind_critic_assignment_schema(schema, critic_execution)
                 tests = critic_repair_tests(critic_execution.inputs, critic_execution.unit_id)
+                bind_craft_repair_schema(issue_schema, tests)
                 if tests:
                     checks_schema = repair_checks_schema(
                         tests, assignment_routes=_critic_assignment_routes(critic_execution)
@@ -2602,7 +2610,7 @@ def _schema_repair_guidance(
                         precise[link_directive["location"]] = link_directive
             directives = [precise.get(str(d["location"]), d) for d in directives]
     guidance: dict[str, object] = {
-        "policy_version": "13" if operation is _Operation.CRITIQUE else "10",
+        "policy_version": "14" if operation is _Operation.CRITIQUE else "10",
         "mode": "repair_only",
         "focus_locations": focus_locations,
         "directives": directives,
@@ -2612,6 +2620,7 @@ def _schema_repair_guidance(
     if continuity_schema_variant is not None:
         guidance["schema_variant"] = continuity_schema_variant.value
     if operation is _Operation.CRITIQUE and critic_execution is not None:
+        guidance["craft_repair_link_rule"] = CRAFT_LINK_RULE
         retained = _critic_retained_classifications(critic_execution)
         if retained:
             guidance["preserved_classifications"] = retained
@@ -3619,6 +3628,14 @@ def _normalize_current_critic_findings(
     critique: dict[str, Any], execution: _Execution
 ) -> dict[str, Any]:
     """Carry application-owned wire provenance until repair links are validated."""
+    try:
+        critique = project_craft_repair_links(
+            critique, critic_repair_tests(execution.inputs, execution.unit_id)
+        )
+    except CraftRepairLinkError as error:
+        raise _StructuredOutputContractError(
+            error.location, str(error), issue_type="invalid_craft_repair_link"
+        ) from error
     result = _normalize_critic_craft_issues(critique, execution, track_findings=True)
     result = _normalize_point_of_view_check(result, execution, track_findings=True)
     result = _normalize_story_length_critique(result, execution)
@@ -3905,7 +3922,7 @@ def _revision_acceptance_audit(raw: dict[str, Any], execution: _Execution) -> di
     current = _normalize_current_critic_findings(raw, execution)
     _normalize_repair_checks(current, execution)
     linked = {
-        ref for check in raw["repair_checks"].values() for ref in check["current_finding_refs"]
+        ref for check in current["repair_checks"].values() for ref in check["current_finding_refs"]
     }
     findings = []
     for issue in current["issues"]:
@@ -3924,7 +3941,7 @@ def _revision_acceptance_audit(raw: dict[str, Any], execution: _Execution) -> di
                 ],
             }
         )
-    return {
+    audit = {
         "schema_version": "2",
         "candidate_version_id": _scene_boundary_audit(raw, execution)["candidate_version_id"],
         "tests": critic_repair_tests(execution.inputs, execution.unit_id),
@@ -3933,10 +3950,29 @@ def _revision_acceptance_audit(raw: dict[str, Any], execution: _Execution) -> di
                 **value,
                 "assessment": active_secret_guard().redact_text(value["assessment"])[:1000],
             }
-            for key, value in raw["repair_checks"].items()
+            for key, value in current["repair_checks"].items()
         },
         "linked_current_findings": findings,
     }
+    declared = [
+        {"raw_issue_index": index, "repair_test_id": issue["repair_test_id"]}
+        for index, issue in enumerate(raw.get("issues", []))
+        if issue.get("repair_test_id") is not None
+    ]
+    if declared:
+        audit.update(
+            schema_version="3",
+            declared_craft_repair_links_total=len(declared),
+            declared_craft_repair_links=declared[:16],
+            wire_checks={
+                key: {
+                    **value,
+                    "assessment": active_secret_guard().redact_text(value["assessment"])[:1000],
+                }
+                for key, value in raw["repair_checks"].items()
+            },
+        )
+    return audit
 
 
 def _critic_requirement_scope(execution: _Execution) -> dict[str, object]:

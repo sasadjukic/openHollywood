@@ -48,7 +48,7 @@ def test_restatement_schema_uses_explicit_comparison_in_both_delivery_modes(
         _Operation.CRITIQUE, continuity_schema_variant=None, critic_execution=execution
     )
     issue = schema["$defs"]["CritiqueIssue"]
-    assert "anyOf" not in issue
+    assert issue["anyOf"] == [{"properties": {"repair_test_id": {"type": "null"}}}]
     assert "assignment_comparison" in issue["required"]
     assert None in issue["properties"]["assignment_finding_ref"]["enum"]
     assert "assignment:outcome" in issue["properties"]["assignment_finding_ref"]["enum"]
@@ -70,7 +70,7 @@ def _retry(execution: _Execution, raw: dict[str, Any]) -> dict[str, Any]:
         },
     )
     packet = _payload(_Operation.CRITIQUE, retry)
-    assert packet["schema_repair"]["policy_version"] == "13"
+    assert packet["schema_repair"]["policy_version"] == "14"
     assert packet["retry_context"]["manuscript_defect_established"] is False
     return packet
 
@@ -145,7 +145,11 @@ def test_one_rejection_reports_null_category_and_missing_route_without_rejected_
     packet = _retry(execution, raw)
     directives = packet["schema_repair"]["directives"]
     assert len(directives) == 3
-    restatement, outcome, tension = directives
+    restatement = next(d for d in directives if "allowed_assignment_finding_refs" in d)
+    outcome = next(
+        d for d in directives if d.get("expected_category") == "scene_assignment:outcome"
+    )
+    tension = next(d for d in directives if d.get("expected_category") == "dramatic_tension")
     assert set(restatement["allowed_assignment_finding_refs"]) == {
         None,
         "boundary",
@@ -161,6 +165,9 @@ def test_one_rejection_reports_null_category_and_missing_route_without_rejected_
     assert (execution.inputs, raw) == before
     # Corrections are made by the simulated reviewer, never by validation.
     raw["issues"][0].update(category="dramatic_tension", assignment_finding_ref=None)
+    tension_test = critic_repair_tests(execution.inputs, execution.unit_id)[1]
+    raw["issues"][0]["repair_test_id"] = tension_test["test_id"]
+    raw["repair_checks"][tension_test["test_id"]]["current_finding_refs"] = []
     test = critic_repair_tests(execution.inputs, execution.unit_id)[0]
     raw["repair_checks"][test["test_id"]]["current_finding_refs"] = [
         "boundary",
