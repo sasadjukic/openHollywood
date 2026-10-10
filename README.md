@@ -698,7 +698,7 @@ verification and reviewer qualification remain open. See
 [ADR 0025](docs/adr/0025-linked-historical-repair-findings.md) and the
 [v41 diagnostic report](docs/benchmark_reports/linked-repair-findings-v41-2026-10-09.md).
 
-Current production contract v42 / graph v9 separates met/unmet repair schema
+Production contract v42 / graph v9 separates met/unmet repair schema
 alternatives: satisfied repairs require empty current-finding links. The critic
 must report an independent missing turn separately and keep original repair
 assessments tied to their original claims. The worker cleanup race is reproduced
@@ -714,6 +714,21 @@ remain open. See
 [ADR 0026](docs/adr/0026-durable-worker-cancellation-cleanup.md),
 [ADR 0027](docs/adr/0027-satisfied-repair-schema-and-independent-findings.md) and the
 [v42 implementation report](docs/benchmark_reports/worker-cleanup-critic-v42-2026-10-09.md).
+
+Current production contract v43 / graph v9 constrains each original repair's
+eligible links by category, severity and populated scene assignment. Generic
+issues explicitly identify whether they repeat a current assignment finding;
+declared repetitions consolidate with their text, evidence and repair advice
+preserved. Independent issues and original repair identities remain separate.
+The 26 new local cases cover eligibility, rejection, consolidation, audit and
+persisted repair propagation. All 784 Python tests and other local quality gates
+pass. The approved five-case diagnostic uses six calls: the missing turn now
+creates one repair instead of two and three saved revisions pass. The unchanged
+control still fails both attempts through invalid restatement metadata, with
+further link-coverage and category errors isolated offline. Reviewer qualification
+remains open. See
+[ADR 0028](docs/adr/0028-eligible-repair-links-and-assignment-restatements.md) and the
+[v43 report](docs/benchmark_reports/eligible-repair-links-v43-2026-10-10.md).
 
 Benchmark word-count ranges are advisory creative targets. New outputs persist a
 non-gating adherence measurement with the target, actual count, status, and word

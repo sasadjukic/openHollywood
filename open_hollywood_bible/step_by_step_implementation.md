@@ -2412,6 +2412,56 @@ paths; narrative reviewer qualification remains open.
 
 **Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
 
+### Eligible repair links and assignment restatements v43: 2026-10-10
+
+Implementation, local verification and the approved diagnostic are **COMPLETE**;
+live reviewer qualification remains **IN PROGRESS**. Production contract v43 / graph v9 constrains
+eligible original-repair links before inference and adds an explicit reference
+for generic issues that repeat current assignment findings. See
+[ADR 0028](../docs/adr/0028-eligible-repair-links-and-assignment-restatements.md) and
+the [v43 report](../docs/benchmark_reports/eligible-repair-links-v43-2026-10-10.md).
+
+- [x] Bind eligible links by original category/severity and populated current
+  assignment, including boundary fallback and satisfied empty-link checks.
+- [x] Keep runtime existence, category/severity, ownership and complete-route
+  validation; preserve original repair IDs and independent defects.
+- [x] Validate explicit generic assignment repetitions before combining them;
+  preserve their descriptions, evidence and advice in one assignment finding.
+- [x] Retain bounded, redacted repetition audits and rejection evidence.
+- [x] Add 26 local cases, including persisted writer/critic repair propagation.
+- [x] Replay all six unmodified v42 responses; label protocol annotations
+  separately and verify one new turn target from an explicit restatement.
+- [x] Freeze five requests with identical source inputs/settings, unchanged
+  system instructions, and a ten-call / USD 0.06560 maximum rate estimate.
+- [x] Pass all 784 Python tests, Ruff lint/format, strict mypy (178 files),
+  frontend format/lint/types, 11 frontend tests and production build.
+- [x] Run the five revised probes with explicit approval; inspect raw responses,
+  validation, canonical findings and resulting repair identities.
+- [x] Observe one independent turn repair on the missing-turn control, while
+  retaining its satisfied original outcome repair and empty links.
+- [ ] Resolve invalid restatement metadata, incomplete consolidated-route links
+  and exact-category drift on the unchanged control; qualify it again.
+- [ ] Resolve remaining semantic ambiguity and establish broader repeatability,
+  full-story recovery, preference and cost acceptance.
+
+Six approved calls yield four valid reviews and one failed probe. The missing
+turn is now reported only through its dedicated route and creates one new repair
+target; this live case avoids duplication rather than exercising non-null
+consolidation. Three saved revisions pass with empty met links; the ambiguous
+match/authorship interpretation remains unresolved. The unchanged draft fails
+both attempts on an invalid generic assignment reference. Manual counterfactuals
+also expose a severity mismatch, omitted boundary link and category spelling
+drift. These annotations do not convert the live failure into a pass.
+
+Every request, response, validation result and audit reconstructs exactly. The
+six calls use 73,892 input / 6,363 output tokens, estimated at USD 0.01289008 within
+the approved USD 0.06560 allocation at recorded October 8 rates. Actual charges
+remain unknown. There are no writer calls or full-story runs. Source database,
+canonical stories and sealed benchmarks are unchanged. No role, inference
+allowance, canonical schema field or migration is added.
+
+**Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
+
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 
 21. [ ] **Package the stable system with Tauri** and test crash/restart, offline, missing-model, invalid-key, provider-timeout, and low-disk-space behavior.
