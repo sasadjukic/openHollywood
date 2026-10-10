@@ -2656,6 +2656,39 @@ retry policy 15. See the [v48 report](../docs/benchmark_reports/comparison-shape
 
 **Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
 
+### Decision versus inconclusive attempt investigation: 2026-10-10
+
+**Focused investigation COMPLETE**: historical inspection and twelve approved
+probes complete; production follow-up remains. Production v48 / graph v9 unchanged.
+See the [investigation report](../docs/benchmark_reports/decision-vs-attempt-v48-2026-10-10.md).
+
+- [x] Verify identical handwriting verification passages and shared noncandidate
+  context/settings in the v45 repaired draft and missing-turn control.
+- [x] Inspect ten saved v41–v45 responses: the repaired draft passes throughout;
+  extra outcome allegations on the control vary and concern different defects.
+- [x] Separate the actual outcome requirement from the critic's additional demand
+  for a future decision to verify; retain uncertainty about its cause.
+- [x] Prepare date-present/absent crossed with implicit, explicit prior decision
+  and explicit future decision, at two paired seeds: twelve probes, maximum
+  24 calls / USD 0.15744 recorded-rate estimate.
+- [x] Verify exact synthetic edits, unchanged verification prose, shared context,
+  original repair identity and four unchanged historical response replays.
+- [x] Execute the approved fixed comparison: twelve first-call valid responses,
+  six correct future-date passes; two unmodified missing-turn revisions (one with
+  an extra outcome complaint); four incorrect missing-turn passes after explicit
+  decision sentences. Original no-match repair remains met in all cases.
+- [x] Inspect claim text and exact source evidence; record partial recurrence of
+  the extra-demand pattern with a changed rationale, not a stable future-decision
+  requirement. Verify all receipts, canonical replays, audits and frozen inputs.
+- [x] Record 148,812 input / 11,062 output tokens, USD 0.02525848 estimated at
+  recorded October 8 rates; actual charges unknown, no writer or production changes.
+- [x] Select the next focused candidate: separate evidence-backed turning-point
+  and outcome checks within the existing critic, with consistent blocker routing.
+- [ ] Implement and qualify that candidate without requiring explicit decision
+  prose or conflating distinct obligations. Broader Step 19 acceptance remains open.
+
+**Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
+
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 
 21. [ ] **Package the stable system with Tauri** and test crash/restart, offline, missing-model, invalid-key, provider-timeout, and low-disk-space behavior.
