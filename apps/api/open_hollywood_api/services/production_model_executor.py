@@ -95,6 +95,10 @@ from open_hollywood_api.services.production_critic_adjudication import (
     disputed_critic_issues,
     materialize_critic_adjudication,
 )
+from open_hollywood_api.services.production_critic_retry import (
+    critic_link_diagnostics,
+    critic_link_directive,
+)
 from open_hollywood_api.services.production_failure_evidence import capture_review_failure
 from open_hollywood_api.services.production_revision_acceptance import (
     compact_repair_inputs,
@@ -1617,6 +1621,7 @@ def _structured_failure_issues(
                     "message",
                     "expected_value",
                     "received_value",
+                    "repair_hint",
                 }
                 and (value := _safe_structured_failure_detail(raw_value)) is not None
             }
@@ -1756,6 +1761,21 @@ def _output_schema(
                 for field in issue_schema["required"]
             ]
             issue_schema["required"].append("assignment_finding_ref")
+            issue_schema["anyOf"] = [
+                {"properties": {"severity": {"const": "blocking"}}},
+                {
+                    "properties": {
+                        "severity": {
+                            "enum": [
+                                s.value
+                                for s in CritiqueSeverity
+                                if s is not CritiqueSeverity.BLOCKING
+                            ]
+                        },
+                        "assignment_finding_ref": {"type": "null"},
+                    }
+                },
+            ]
             properties["point_of_view_check"]["anyOf"][1]["properties"]["draft_evidence_refs"] = (
                 _critic_evidence_refs_schema()
             )
@@ -2365,6 +2385,7 @@ def _schema_repair_guidance(
     previous_failure: Mapping[str, object] | None,
     continuity_schema_variant: _ContinuitySchemaVariant | None = None,
     continuity_model_context: _ContinuityModelContext | None = None,
+    critic_execution: _Execution | None = None,
 ) -> dict[str, object] | None:
     """Build one provider-neutral repair packet without replaying global catalogs."""
     if previous_failure is None or previous_failure.get("error_code") not in {
@@ -2553,8 +2574,25 @@ def _schema_repair_guidance(
             {"location": location, "action": "repair this review-response field only"}
             for location in focus_locations
         ]
+        if operation is _Operation.CRITIQUE and critic_execution is not None:
+            precise: dict[str, dict[str, Any]] = {}
+            if isinstance(validation_issues, list):
+                for issue in validation_issues[:_MAX_SAFE_STRUCTURED_FAILURE_ISSUES]:
+                    if not isinstance(issue, dict):
+                        continue
+                    link_directive = critic_link_directive(
+                        issue,
+                        candidate_version_id=_critic_candidate_version_id(critic_execution),
+                        tests=critic_repair_tests(
+                            critic_execution.inputs, critic_execution.unit_id
+                        ),
+                        assignment_routes=_critic_assignment_routes(critic_execution),
+                    )
+                    if link_directive is not None:
+                        precise[link_directive["location"]] = link_directive
+            directives = [precise.get(str(d["location"]), d) for d in directives]
     guidance: dict[str, object] = {
-        "policy_version": "10",
+        "policy_version": "11" if operation is _Operation.CRITIQUE else "10",
         "mode": "repair_only",
         "focus_locations": focus_locations,
         "directives": directives,
@@ -2648,6 +2686,7 @@ def _messages(
         previous_failure=execution.previous_failure,
         continuity_schema_variant=continuity_schema_variant,
         continuity_model_context=continuity_model_context,
+        critic_execution=execution if operation is _Operation.CRITIQUE else None,
     )
     system = (
         "You are a registered Open Hollywood scene-production specialist. "
@@ -3317,14 +3356,15 @@ def _normalize_critic_craft_issues(
         if "assignment_finding_ref" not in issue or (
             issue["assignment_finding_ref"] is not None
             and (
-                not isinstance(issue["assignment_finding_ref"], str)
+                issue.get("severity") != "blocking"
+                or not isinstance(issue["assignment_finding_ref"], str)
                 or issue["assignment_finding_ref"] not in _critic_assignment_routes(execution)
             )
         ):
             raise _StructuredOutputContractError(
                 f"issues.{index}.assignment_finding_ref",
                 "select a populated assignment route for a repetition, "
-                "or null for independent craft",
+                "or null for independent craft; nonblocking issues require null",
                 issue_type="invalid_assignment_restatement",
             )
         evidence = _resolve_critic_evidence_refs(
@@ -3543,6 +3583,50 @@ def _normalize_current_critic_findings(
     result = _normalize_story_length_critique(result, execution)
     result = _normalize_scene_boundary_check(result, execution, track_findings=True)
     return _normalize_assignment_restatements(result)
+
+
+def _critic_candidate_version_id(execution: _Execution) -> str:
+    return str(
+        next(
+            item["artifact_version_id"]
+            for item in execution.inputs
+            if item.get("artifact_kind") == "scene_draft"
+            and item["content"].get("scene_id") == execution.unit_id
+            and item["content"].get("revision_number") == execution.revision_number
+        )
+    )
+
+
+def _critic_link_failure_details(
+    raw: dict[str, Any], execution: _Execution, error: ValueError
+) -> _StructuredOutputContractError | None:
+    """Add independent structural errors after rejection, never repair the response."""
+    # Reuse the actual validators and consolidation rules for hard routes. The
+    # empty craft projection is diagnostic-only and can never become an output.
+    try:
+        hard = _normalize_point_of_view_check({**raw, "issues": []}, execution, track_findings=True)
+        hard = _normalize_scene_boundary_check(hard, execution, track_findings=True)
+    except ValueError:
+        return None
+    hints = critic_link_diagnostics(
+        raw,
+        candidate_version_id=_critic_candidate_version_id(execution),
+        tests=critic_repair_tests(execution.inputs, execution.unit_id),
+        assignment_routes=_critic_assignment_routes(execution),
+        hard_findings=hard.get("issues", []),
+    )
+    if not hints:
+        return None
+    issues = list(_structured_failure_issues(error))
+    for hint in hints:
+        original = next((i for i in issues if i["location"] == hint["location"]), None)
+        if original is not None:
+            original["repair_hint"] = hint["repair_hint"]
+        elif len(issues) < _MAX_SAFE_STRUCTURED_FAILURE_ISSUES:
+            issues.append(hint)
+    return _StructuredOutputContractError(
+        issues[0]["location"], str(error), issue_type=issues[0]["type"], issues=tuple(issues)
+    )
 
 
 def _normalize_assignment_restatements(critique: dict[str, Any]) -> dict[str, Any]:
@@ -5277,8 +5361,14 @@ def _materialize_output_data(
         return materialized
     if operation is _Operation.CRITIQUE:
         critique_task = cast(SceneCritiqueTask, task)
-        materialized = _normalize_current_critic_findings(materialized, execution)
-        materialized = _normalize_repair_checks(materialized, execution)
+        try:
+            materialized = _normalize_current_critic_findings(materialized, execution)
+            materialized = _normalize_repair_checks(materialized, execution)
+        except ValueError as error:
+            detailed = _critic_link_failure_details(output_data, execution, error)
+            if detailed is not None:
+                raise detailed from error
+            raise
         scores = materialized.get("scores")
         if (
             not isinstance(scores, list)
