@@ -29,6 +29,7 @@ _TEXT_FIELDS = frozenset(
         "explanation",
         "category",
         "assignment_finding_ref",
+        "repair_test_id",
         "severity",
         "description",
         "summary",

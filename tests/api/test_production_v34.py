@@ -324,7 +324,7 @@ async def test_durable_continuity_contract_replay_and_bounded_repair(
                 ]
                 == 2
             )
-            assert final_call.request_settings["prompt_template_version"] == "46"
+            assert final_call.request_settings["prompt_template_version"] == "47"
         elif mode != "invalid_always":
             reports = session.scalars(select(ArtifactVersion)).all()
             gap = next(

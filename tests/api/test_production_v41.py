@@ -142,7 +142,10 @@ def test_explicit_links_cover_craft_and_viewpoint_without_new_canonical_fields(
     execution = _revision(route)
     raw = _raw(execution, route)
     raw["repair_checks"] = _review(execution, "unmet")["repair_checks"]
-    next(iter(raw["repair_checks"].values()))["current_finding_refs"] = [ref]
+    if route == "blocking_craft":
+        raw["issues"][0]["repair_test_id"] = next(iter(raw["repair_checks"]))
+    else:
+        next(iter(raw["repair_checks"].values()))["current_finding_refs"] = [ref]
     result = _materialize(raw, execution)
     assert len(result["issues"]) == 1 and result["verdict"] == "revise"
     assert _revision_acceptance_audit(raw, execution)["linked_current_findings"][0][
@@ -157,7 +160,7 @@ def test_linked_craft_finding_is_validated_before_it_can_be_consolidated(bad: st
     execution = _revision("blocking_craft")
     raw = _raw(execution, "blocking_craft")
     raw["repair_checks"] = _review(execution, "unmet")["repair_checks"]
-    next(iter(raw["repair_checks"].values()))["current_finding_refs"] = ["issue:0"]
+    raw["issues"][0]["repair_test_id"] = next(iter(raw["repair_checks"]))
     if bad == "blank":
         raw["issues"][0]["description"] = " "
     elif bad == "extra":

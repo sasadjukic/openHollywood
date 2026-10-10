@@ -18,7 +18,12 @@ from open_hollywood_api.persistence.secret_policy import active_secret_guard
 from open_hollywood_api.services.production_critic_retry import MAX_DIAGNOSTICS, MAX_HINT_CHARS
 
 _FIELDS = {"category", "severity", "description", "recommendation"}
-_WIRE_FIELDS = {"draft_evidence_refs", "assignment_finding_ref", "assignment_comparison"}
+_WIRE_FIELDS = {
+    "draft_evidence_refs",
+    "assignment_finding_ref",
+    "assignment_comparison",
+    "repair_test_id",
+}
 _SEVERITIES = {"note", "minor", "major", "blocking"}
 PRESERVATION_RULE = (
     "These are structurally valid choices from your rejected review, not established story "

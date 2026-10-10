@@ -12,6 +12,10 @@ from open_hollywood_api.services.production_critic_comparison import (
     assignment_finding_groups,
     comparison_error,
 )
+from open_hollywood_api.services.production_critic_links import (
+    CRAFT_LINK_RULE,
+    eligible_craft_repairs,
+)
 
 MAX_HINT_CHARS = 500
 MAX_DIAGNOSTICS = 12
@@ -73,12 +77,20 @@ def critic_link_diagnostics(
                     f"issues.{index}.assignment_comparison",
                     {"kind": "comparison", "finding_groups": groups},
                 )
-            if (ref is None or ref not in allowed) and isinstance(issue.get("category"), str):
-                findings[f"issue:{index}"] = {
-                    "category": issue["category"],
-                    "severity": severity,
-                    "_current_finding_refs": [f"issue:{index}"],
-                }
+            checks = raw.get("repair_checks")
+            eligible_tests = [
+                test_id
+                for test_id in eligible_craft_repairs(issue, tests)
+                if isinstance(checks, dict)
+                and isinstance(checks.get(test_id), dict)
+                and checks[test_id].get("status") == "unmet"
+            ]
+            target = issue.get("repair_test_id")
+            if target is not None and (not isinstance(target, str) or target not in eligible_tests):
+                add(
+                    f"issues.{index}.repair_test_id",
+                    {"kind": "craft_link", "allowed_tests": eligible_tests},
+                )
 
     checks = raw.get("repair_checks")
     if not isinstance(checks, dict):
@@ -186,6 +198,24 @@ def critic_link_directive(
             )
         )
 
+    if hint.get("kind") == "craft_link":
+        eligible = hint.get("allowed_tests")
+        known_craft = {
+            t["test_id"] for t in tests if not t["category"].startswith("scene_assignment:")
+        }
+        if (
+            re.fullmatch(r"issues\.(0|[1-9][0-9]{0,3})\.repair_test_id", location) is None
+            or not isinstance(eligible, list)
+            or len(eligible) > 16
+            or any(not isinstance(key, str) or key not in known_craft for key in eligible)
+        ):
+            return None
+        return {
+            "location": location,
+            "action": CRAFT_LINK_RULE,
+            "eligible_repair_test_ids": eligible,
+        }
+
     if hint.get("kind") == "restatement":
         if (
             re.fullmatch(r"issues\.(0|[1-9][0-9]{0,3})\.assignment_finding_ref", location) is None
@@ -247,7 +277,9 @@ def critic_link_directive(
         return None
     return {
         "location": location,
-        "action": "Met checks require []. For an unmet check, link only the same original "
+        "action": CRAFT_LINK_RULE
+        if not test["category"].startswith("scene_assignment:")
+        else "Met checks require []. For an unmet check, link only the same original "
         "claim with its exact category and severity; otherwise leave that finding independent. "
         "An unmet check may use []. A retained link must cover every consolidated route with "
         "one owner. Do not rename or escalate a different defect merely to match this repair.",

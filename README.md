@@ -761,7 +761,7 @@ All 829 Python tests, 11 frontend tests and final quality gates pass.
 See [ADR 0030](docs/adr/0030-explicit-assignment-and-craft-comparison.md) and the
 [v45 report](docs/benchmark_reports/claim-comparison-v45-2026-10-10.md).
 
-Current production contract v46 / graph v9 preserves structurally valid critic
+Production contract v46 / graph v9 preserves structurally valid critic
 classification choices during a review-format retry. Bounded metadata identifies
 category, severity, exact current evidence and reference counts; runtime validation
 rejects silent reclassification, dropping or duplicating retained complaints.
@@ -776,6 +776,20 @@ isolate that failure without counting it as live success. All 862 Python tests,
 11 frontend tests and required quality gates pass.
 See [ADR 0031](docs/adr/0031-preserve-critic-classification-during-structural-repair.md)
 and the [v46 report](docs/benchmark_reports/retry-classification-v46-2026-10-10.md).
+
+Current production contract v47 / graph v9 allows only independent craft issues
+to select an original craft `repair_test_id`. Schema alternatives bind that choice
+to null assignment classification and exact category/severity. Original craft
+checks require empty link arrays; consolidated complaints cannot be separate
+repair links. Runtime validation rejects invalid links before translating explicit
+ownership into internal routes, preserving original obligations and evidence.
+Canonical artifacts and writer inputs are unchanged. The 22 new regressions and
+saved-response replays cover exclusion and legitimate independent links. All three
+approved controlled retries exclude the invalid link and retain classification;
+two fully validate with the same two original repairs and no new targets. One
+still returns its comparison as text instead of the required object.
+See [ADR 0032](docs/adr/0032-independent-craft-owns-original-repair-links.md) and the
+[v47 report](docs/benchmark_reports/independent-repair-links-v47-2026-10-10.md).
 
 Benchmark word-count ranges are advisory creative targets. New outputs persist a
 non-gating adherence measurement with the target, actual count, status, and word
