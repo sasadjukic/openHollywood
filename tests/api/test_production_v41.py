@@ -103,7 +103,7 @@ def test_linked_different_evidence_keeps_one_original_target_through_next_revisi
     assert audit["candidate_version_id"] != tests[0]["source_draft_version_id"]
     assert audit["linked_current_findings"][0]["finding_refs"] == ["boundary", "assignment:outcome"]
     assert (
-        raw["assignment_violations"][0]["explanation"]
+        raw["assignment_checks"]["outcome"]["assessment"]
         in audit["linked_current_findings"][0]["description"]
     )
     assert "_current_finding_refs" not in json.dumps(result)
@@ -124,7 +124,7 @@ def test_unlinked_same_category_and_new_blocker_survive_even_with_met_original()
 def test_linking_one_finding_does_not_hide_different_evidence_for_same_anchor() -> None:
     execution = _revision()
     raw = _linked(execution)
-    raw["assignment_violations"][0]["draft_evidence_refs"] = [_refs(execution)[-1]]
+    raw["assignment_checks"]["outcome"]["draft_evidence_refs"] = [_refs(execution)[-1]]
     next(iter(raw["repair_checks"].values()))["current_finding_refs"] = ["assignment:outcome"]
     result = _materialize(raw, execution)
     assert len(result["issues"]) == 2
@@ -211,9 +211,9 @@ def test_invalid_links_cannot_remove_or_create_findings(bad: str) -> None:
     elif bad == "inactive":
         raw["scene_boundary_check"]["status"] = "no_overrun"
     elif bad == "bad_evidence":
-        raw["assignment_violations"][0]["draft_evidence_refs"] = ["stale"]
+        raw["assignment_checks"]["outcome"]["draft_evidence_refs"] = ["stale"]
     elif bad == "malformed_route":
-        raw["assignment_violations"][0]["explanation"] = " "
+        raw["assignment_checks"]["outcome"]["assessment"] = " "
     with pytest.raises(_StructuredOutputContractError):
         _materialize(raw, execution)
 
@@ -252,7 +252,7 @@ def test_audit_redacts_current_feedback_and_failure_capture_retains_links(
     monkeypatch.setenv("OLLAMA_API_KEY", secret)
     execution = _revision()
     raw = _linked(execution)
-    raw["assignment_violations"][0]["explanation"] = f"Duplicate finding {secret}"
+    raw["assignment_checks"]["outcome"]["assessment"] = f"Duplicate finding {secret}"
     audit = _revision_acceptance_audit(raw, execution)
     assert secret not in json.dumps(audit)
     assert "[REDACTED" in json.dumps(audit)
@@ -283,16 +283,14 @@ class LinkedRepairGateway(V26Gateway):
             return response
         raw = json.loads(response.content)
         if assignment["revision_number"] < 2:
-            raw["assignment_violations"] = [
-                {
-                    "anchor": "outcome",
-                    "draft_evidence_refs": raw["scene_boundary_check"]["draft_evidence_refs"],
-                    "explanation": (
-                        f"Simulated outcome breach at revision {assignment['revision_number']}."
-                    ),
-                    "recommended_resolution": "Restore the original outcome.",
-                }
-            ]
+            raw["assignment_checks"]["outcome"] = {
+                "status": "unmet",
+                "draft_evidence_refs": raw["scene_boundary_check"]["draft_evidence_refs"],
+                "assessment": (
+                    f"Simulated outcome breach at revision {assignment['revision_number']}."
+                ),
+                "recommended_resolution": "Restore the original outcome.",
+            }
         if assignment["revision_number"] == 1:
             self.revision_one_reviews += 1
             raw["scene_boundary_check"]["status"] = "overrun"

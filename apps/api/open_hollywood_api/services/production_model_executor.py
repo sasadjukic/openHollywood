@@ -112,6 +112,13 @@ from open_hollywood_api.services.production_critic_links import (
     bind_craft_repair_schema,
     project_craft_repair_links,
 )
+from open_hollywood_api.services.production_critic_obligations import (
+    MANDATORY_ANCHORS,
+    OBLIGATION_RULE,
+    AssignmentCheckError,
+    assignment_checks_schema,
+    validated_assignment_checks,
+)
 from open_hollywood_api.services.production_critic_retry import (
     critic_link_diagnostics,
     critic_link_directive,
@@ -395,7 +402,9 @@ _SCHEMA_REPAIR_OPERATION_RULES: Mapping[_Operation, tuple[str, ...]] = {
         "Keep rubric score values numeric, use only declared verdict and severity literals, "
         "and never combine a passing verdict with a blocking issue. The application derives "
         "overall_score; do not add it.",
-        "Return assignment_violations=[] if no concrete assignment failure remains. Otherwise "
+        OBLIGATION_RULE,
+        "Return assignment_violations=[] if no other concrete assignment failure remains. "
+        "Otherwise "
         "each violation needs one populated scene_assignment_contract anchor, an exact "
         "current-draft excerpt, a direct mismatch explanation, and a targeted repair. "
         "Advice about POV polish or a future scene is not an assignment failure.",
@@ -706,16 +715,17 @@ _INSTRUCTIONS: Mapping[_Operation, str] = {
         "not a hard per-scene quota."
     ),
     _Operation.CRITIQUE: (
+        OBLIGATION_RULE + " "
         "Complete scene_boundary_check before scoring: cite the draft's achieved state "
         "and compare it with the current endpoint and next reservation. Use overrun for "
         "material advancement beyond the current endpoint without explicit current-plan "
         "authorization; otherwise no_overrun. Identify any authorizing plan field and "
         "instruction in current_endpoint_comparison. Evidence supports the achieved state, "
-        "not proof of non-violation. Report overruns only here; they become blocking issues. "
-        "Report every other concrete missing/incompatible assignment separately in "
-        "assignment_violations; otherwise []. A missing turning_point needs its own finding "
-        "even when an outcome repair is unmet. Mentions in boundary/repair assessments are "
-        "not findings. Select a scene_assignment_contract anchor and explain the breach. "
+        "not proof of non-violation. Overruns become blockers; still assess the complete "
+        "assigned outcome independently in assignment_checks. "
+        "Report other concrete missing/incompatible assignment anchors separately in "
+        "assignment_violations; otherwise []. Select a scene_assignment_contract anchor "
+        "and explain the breach. "
         "Consider the whole scene: actions, embodied reactions and indirect realization "
         "count. Do not demand unassigned mechanisms/actions. Stronger or more explicit "
         "turns, polish, POV mentions and next-scene advice are craft feedback for issues, "
@@ -1747,6 +1757,9 @@ def _output_schema(
                 raise SceneProductionError("critique schema is invalid")
             properties.pop("overall_score", None)
             properties["assignment_violations"] = _critic_assignment_violation_schema()
+            properties["assignment_checks"] = assignment_checks_schema(
+                dict.fromkeys(MANDATORY_ANCHORS, True)
+            )
             properties["point_of_view_check"] = _point_of_view_check_schema(critic_evidence_refs)
             properties["scene_boundary_check"] = _scene_boundary_check_schema()
             definitions = schema["$defs"]
@@ -1805,6 +1818,7 @@ def _output_schema(
                     if field not in {"overall_score", "rubric_name", "rubric_version"}
                 ],
                 "assignment_violations",
+                "assignment_checks",
                 "point_of_view_check",
                 "scene_boundary_check",
             ]
@@ -2428,6 +2442,7 @@ def _schema_repair_guidance(
     operation_rules = list(_SCHEMA_REPAIR_OPERATION_RULES[operation])
     if operation is _Operation.CRITIQUE:
         operation_rules = [
+            OBLIGATION_RULE,
             "Repair only your review JSON. This is not a new draft or a story revision request.",
             "A failure to format a review proves NO manuscript defect. Never put a reviewer "
             "schema, quotation, evidence-handle, or metadata error in issues "
@@ -2609,8 +2624,16 @@ def _schema_repair_guidance(
                     if link_directive is not None:
                         precise[link_directive["location"]] = link_directive
             directives = [precise.get(str(d["location"]), d) for d in directives]
+            for directive in directives:
+                if str(directive["location"]).startswith("assignment_checks"):
+                    directive["action"] = OBLIGATION_RULE
+                    directive["required_checks"] = list(
+                        assignment_checks_schema(_scene_assignment_contract(critic_execution))[
+                            "required"
+                        ]
+                    )
     guidance: dict[str, object] = {
-        "policy_version": "15" if operation is _Operation.CRITIQUE else "10",
+        "policy_version": "16" if operation is _Operation.CRITIQUE else "10",
         "mode": "repair_only",
         "focus_locations": focus_locations,
         "directives": directives,
@@ -3107,7 +3130,7 @@ def _critic_assignment_violation_schema() -> dict[str, Any]:
                     "enum": [
                         anchor
                         for anchor in _CRITIC_ASSIGNMENT_ANCHORS
-                        if anchor != "point_of_view_character_id"
+                        if anchor not in (*MANDATORY_ANCHORS, "point_of_view_character_id")
                     ],
                 },
                 "draft_evidence_refs": _critic_evidence_refs_schema(),
@@ -3134,6 +3157,7 @@ def _bind_critic_assignment_schema(schema: dict[str, Any], execution: _Execution
     comparison = assignment_comparison_schema(list(_critic_assignment_routes(execution)))
     schema["$defs"]["CritiqueIssue"]["properties"]["assignment_comparison"] = comparison
     properties = schema["properties"]
+    properties["assignment_checks"] = assignment_checks_schema(assignment)
     if _scene_boundary_overrun_anchor(execution) is None:
         properties["scene_boundary_check"]["properties"]["status"]["enum"] = ["no_overrun"]
     if not assignment.get("point_of_view_character_id"):
@@ -3142,7 +3166,8 @@ def _bind_critic_assignment_schema(schema: dict[str, Any], execution: _Execution
     anchors = [
         anchor
         for anchor in _CRITIC_ASSIGNMENT_ANCHORS
-        if anchor != "point_of_view_character_id" and assignment.get(anchor)
+        if anchor not in (*MANDATORY_ANCHORS, "point_of_view_character_id")
+        and assignment.get(anchor)
     ]
     if anchors:
         violations = properties["assignment_violations"]
@@ -3328,6 +3353,19 @@ def _scene_boundary_audit(raw: dict[str, Any], execution: _Execution) -> dict[st
                 for index, issue in enumerate(raw["issues"][:16])
             ],
         )
+    checks = _validated_critic_assignment_checks(raw, execution)
+    audit.update(
+        schema_version="4",
+        assignment_checks={
+            anchor: {
+                key: active_secret_guard().redact_text(value)[:600]
+                if isinstance(value, str)
+                else value
+                for key, value in check.items()
+            }
+            for anchor, check in checks.items()
+        },
+    )
     return audit
 
 
@@ -5755,6 +5793,26 @@ def _normalize_story_length_critique(
     return normalized
 
 
+def _validated_critic_assignment_checks(
+    critique: dict[str, Any], execution: _Execution
+) -> dict[str, dict[str, Any]]:
+    try:
+        checks = validated_assignment_checks(
+            critique.get("assignment_checks"), _scene_assignment_contract(execution)
+        )
+    except AssignmentCheckError as error:
+        raise _StructuredOutputContractError(
+            error.location, str(error), issue_type="invalid_assignment_check"
+        ) from error
+    for anchor, check in checks.items():
+        _resolve_critic_evidence_refs(
+            check["draft_evidence_refs"],
+            execution,
+            location=f"assignment_checks.{anchor}.draft_evidence_refs",
+        )
+    return checks
+
+
 def _normalize_scene_assignment_critique(
     critique: dict[str, Any],
     execution: _Execution,
@@ -5771,7 +5829,33 @@ def _normalize_scene_assignment_critique(
             "assignment violations must be a bounded array; use [] when none exist",
             issue_type="invalid_assignment_violation",
         )
-    normalized = {key: value for key, value in critique.items() if key != "assignment_violations"}
+    if any(
+        isinstance(item, dict) and item.get("anchor") in MANDATORY_ANCHORS for item in violations
+    ):
+        raise _StructuredOutputContractError(
+            "assignment_violations",
+            "report turning_point and outcome only in assignment_checks",
+            issue_type="duplicate_assignment_check_route",
+        )
+    checks = _validated_critic_assignment_checks(critique, execution)
+    violations = [
+        *violations,
+        *[
+            {
+                "anchor": anchor,
+                "draft_evidence_refs": check["draft_evidence_refs"],
+                "explanation": check["assessment"],
+                "recommended_resolution": check["recommended_resolution"],
+            }
+            for anchor, check in checks.items()
+            if check["status"] == "unmet"
+        ],
+    ]
+    normalized = {
+        key: value
+        for key, value in critique.items()
+        if key not in ("assignment_violations", "assignment_checks")
+    }
     if not violations and boundary_issue is None:
         return normalized
     issues = critique.get("issues")

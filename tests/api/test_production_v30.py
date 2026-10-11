@@ -80,7 +80,10 @@ def test_exact_assignment_removes_impossible_choices_without_growing_requests(
     assert all(assignment[anchor] for anchor in anchors)
     assert "point_of_view_character_id" not in anchors
     assert "location_id" not in anchors
-    assert ("outcome" in anchors) == bool(plan.get("outcome"))
+    assert not {"turning_point", "outcome"} & set(anchors)
+    assert ("outcome" in bound["properties"]["assignment_checks"]["required"]) == bool(
+        plan.get("outcome")
+    )
     projected_definitions = deepcopy(bound["$defs"])
     bound_repeat = projected_definitions["CritiqueIssue"]["properties"]["assignment_finding_ref"]
     generic_repeat = generic["$defs"]["CritiqueIssue"]["properties"]["assignment_finding_ref"]
@@ -129,7 +132,14 @@ def test_populated_assignments_and_real_private_access_still_block() -> None:
         assert result["verdict"] == "revise"
         assert result["issues"][0]["severity"] == "blocking"
     invalid = _raw(execution, "assignment")
-    invalid["assignment_violations"][0]["anchor"] = "location_id"
+    invalid["assignment_violations"] = [
+        {
+            "anchor": "location_id",
+            "draft_evidence_refs": invalid["assignment_checks"]["outcome"]["draft_evidence_refs"],
+            "explanation": "Simulated unassigned location.",
+            "recommended_resolution": "Do not invent a location requirement.",
+        }
+    ]
     with pytest.raises(_StructuredOutputContractError) as failure:
         _materialize(invalid, execution)
     assert failure.value.issue_type == "invalid_assignment_anchor"
@@ -142,7 +152,7 @@ class AssignmentSchemaGateway(V26Gateway):
         payload = json.loads(request.messages[-1].content)
         if payload.get("assignment", {}).get("operation") == "critique":
             self.critic_calls += 1
-            assert request.invocation.prompt_template_version == "48"
+            assert request.invocation.prompt_template_version == "49"
             assert request.response_schema is not None
             assignment = payload["scene_assignment_contract"]
             properties = cast(dict[str, Any], request.response_schema["properties"])

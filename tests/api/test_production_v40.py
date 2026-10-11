@@ -33,16 +33,18 @@ def anyio_backend() -> str:
 
 
 def _duplicate(execution: _Execution) -> dict[str, Any]:
-    raw = _raw(execution, "assignment")
+    raw = _raw(execution)
+    anchor = "outcome" if "outcome" in raw["assignment_checks"] else "turning_point"
     refs = _refs(execution)[:2]
     raw["scene_boundary_check"].update(
         status="overrun",
         draft_evidence_refs=refs,
         current_endpoint_comparison="The draft establishes a result reserved by the endpoint.",
     )
-    raw["assignment_violations"][0].update(
+    raw["assignment_checks"][anchor].update(
+        status="unmet",
         draft_evidence_refs=list(reversed(refs)),
-        explanation="The result exceeds the current outcome; retain this assessment.",
+        assessment="The result exceeds the current outcome; retain this assessment.",
         recommended_resolution="Keep the result unresolved; retain this targeted advice.",
     )
     return raw
@@ -54,7 +56,6 @@ def test_same_anchor_and_handle_set_produces_one_lossless_blocker(anchor: str) -
     if anchor == "turning_point":
         execution.inputs[0]["content"]["outcome"] = None
     raw = _duplicate(execution)
-    raw["assignment_violations"][0]["anchor"] = anchor
     before = deepcopy((raw, execution.inputs))
     result = _materialize(raw, execution)
     assert result["verdict"] == "revise" and result["overall_score"] == 5.0
@@ -64,9 +65,9 @@ def test_same_anchor_and_handle_set_produces_one_lossless_blocker(anchor: str) -
     assert issue["severity"] == "blocking"
     assert issue["evidence"] == ["She matched the writing.", "She accepted the match."]
     assert raw["scene_boundary_check"]["current_endpoint_comparison"] in issue["description"]
-    assert raw["assignment_violations"][0]["explanation"] in issue["description"]
+    assert raw["assignment_checks"][anchor]["assessment"] in issue["description"]
     assert "remove unassigned material advancement" in issue["recommendation"]
-    assert raw["assignment_violations"][0]["recommended_resolution"] in issue["recommendation"]
+    assert raw["assignment_checks"][anchor]["recommended_resolution"] in issue["recommendation"]
     assert _scene_boundary_audit(raw, execution)["check"] == raw["scene_boundary_check"]
     assert (raw, execution.inputs) == before
 
@@ -75,9 +76,10 @@ def test_same_anchor_and_handle_set_produces_one_lossless_blocker(anchor: str) -
 def test_distinct_obligations_or_evidence_are_not_consolidated(difference: str) -> None:
     execution = _fixture("The writing matched. The date was wrong. The writing matched.")
     raw = _duplicate(execution)
-    violation = raw["assignment_violations"][0]
+    violation = raw["assignment_checks"]["outcome"]
     if difference == "anchor":
-        violation["anchor"] = "turning_point"
+        raw["assignment_checks"]["turning_point"] = deepcopy(violation)
+        raw["assignment_checks"]["outcome"] = _raw(execution)["assignment_checks"]["outcome"]
     elif difference == "subset":
         violation["draft_evidence_refs"] = [_refs(execution)[0]]
     else:
@@ -103,13 +105,20 @@ def test_consolidation_never_bypasses_route_validation(invalid: str) -> None:
     execution = _fixture()
     raw = _duplicate(execution)
     if invalid == "assignment_evidence":
-        raw["assignment_violations"][0]["draft_evidence_refs"] = ["stale_handle"]
+        raw["assignment_checks"]["outcome"]["draft_evidence_refs"] = ["stale_handle"]
     elif invalid == "boundary_evidence":
         raw["scene_boundary_check"]["draft_evidence_refs"] = ["stale_handle"]
     elif invalid == "blank":
-        raw["assignment_violations"][0]["explanation"] = " "
+        raw["assignment_checks"]["outcome"]["assessment"] = " "
     else:
-        raw["assignment_violations"] *= 2
+        raw["assignment_violations"] = [
+            {
+                "anchor": "outcome",
+                "explanation": "Duplicate route must fail.",
+                "draft_evidence_refs": _refs(execution)[:1],
+                "recommended_resolution": "Restore the outcome.",
+            }
+        ]
     with pytest.raises(_StructuredOutputContractError):
         _materialize(raw, execution)
 
@@ -124,9 +133,7 @@ def test_craft_pov_and_missing_turn_survive_consolidation() -> None:
         "viewpoint, outcome and missing turn; it requires separate prose work.",
     }
     raw["point_of_view_check"] = _raw(execution, "pov")["point_of_view_check"]
-    raw["assignment_violations"].append(
-        {**raw["assignment_violations"][0], "anchor": "turning_point"}
-    )
+    raw["assignment_checks"]["turning_point"] = deepcopy(raw["assignment_checks"]["outcome"])
     result = _materialize(raw, execution)
     assert result["verdict"] == "revise"
     assert {issue["category"] for issue in result["issues"]} == {
@@ -151,15 +158,15 @@ class ConsolidationGateway(V26Gateway):
         ):
             raw = json.loads(response.content)
             raw["scene_boundary_check"]["status"] = "overrun"
-            raw["assignment_violations"] = [
-                {
-                    "anchor": anchor,
+            raw["assignment_checks"] = {
+                anchor: {
+                    "status": "unmet",
                     "draft_evidence_refs": raw["scene_boundary_check"]["draft_evidence_refs"],
-                    "explanation": f"Simulated {anchor} mismatch.",
+                    "assessment": f"Simulated {anchor} mismatch.",
                     "recommended_resolution": f"Restore the assigned {anchor}.",
                 }
                 for anchor in ("outcome", "turning_point")
-            ]
+            }
             return replace(response, content=json.dumps(raw))
         return response
 

@@ -154,14 +154,12 @@ def test_reported_overrun_blocks_despite_achieved_current_outcome_and_perfect_sc
         "Elara decided to verify the writing. The private flourish proved a match."
     )
     raw = _raw(execution)
-    raw["assignment_violations"] = [
-        {
-            "anchor": "outcome",
-            "draft_evidence_refs": [_refs(execution)[-1]],
-            "explanation": "The decision occurs, but so does scene 2's conclusive verification.",
-            "recommended_resolution": "Stop at the decision; reserve verification for scene 2.",
-        }
-    ]
+    raw["assignment_checks"]["outcome"] = {
+        "status": "unmet",
+        "draft_evidence_refs": [_refs(execution)[-1]],
+        "assessment": "The decision occurs, but so does scene 2's conclusive verification.",
+        "recommended_resolution": "Stop at the decision; reserve verification for scene 2.",
+    }
     result = _materialize(raw, execution)
     assert result["overall_score"] == 5.0
     assert result["verdict"] == "revise"
@@ -220,16 +218,12 @@ class BoundaryGateway(V26Gateway):
             draft = next(
                 a for a in payload["input_artifacts"] if a["artifact_kind"] == "scene_draft"
             )
-            raw["assignment_violations"] = [
-                {
-                    "anchor": "outcome",
-                    "draft_evidence_refs": [
-                        draft["content"]["evidence_catalog"][-1]["evidence_ref"]
-                    ],
-                    "explanation": "Synthetic boundary overrun for routing verification.",
-                    "recommended_resolution": "Reserve the next scene's central turn.",
-                }
-            ]
+            raw["assignment_checks"]["outcome"] = {
+                "status": "unmet",
+                "draft_evidence_refs": [draft["content"]["evidence_catalog"][-1]["evidence_ref"]],
+                "assessment": "Synthetic boundary overrun for routing verification.",
+                "recommended_resolution": "Reserve the next scene's central turn.",
+            }
             response = replace(response, content=json.dumps(raw))
         return response
 

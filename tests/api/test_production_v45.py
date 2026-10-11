@@ -79,7 +79,7 @@ def test_same_defect_at_any_severity_consolidates_without_promoting_the_craft_is
     assert result["issues"][0]["severity"] == "blocking"  # Native assignment severity retained.
     assert raw["issues"][0]["description"] in result["issues"][0]["description"]
     audit = _scene_boundary_audit(raw, execution)
-    assert audit["schema_version"] == "3"
+    assert audit["schema_version"] == "4"
     comparisons, repetitions = audit["assignment_comparisons"], audit["assignment_restatements"]
     assert isinstance(comparisons, list) and isinstance(repetitions, list)
     assert comparisons[0]["severity"] == repetitions[0]["severity"] == severity
@@ -115,9 +115,7 @@ def test_independence_compares_consolidated_finding_once_but_does_not_skip_separ
     raw["issues"][0]["draft_evidence_refs"] = raw["scene_boundary_check"]["draft_evidence_refs"]
     raw["issues"][0]["assignment_comparison"]["finding_refs"] = [alias]
     assert len(_materialize(raw, execution)["issues"]) == 2
-    raw["assignment_violations"].append(
-        {**raw["assignment_violations"][0], "anchor": "turning_point"}
-    )
+    raw["assignment_checks"]["turning_point"] = deepcopy(raw["assignment_checks"]["outcome"])
     with pytest.raises(_StructuredOutputContractError, match="every reported"):
         _materialize(raw, execution)
     packet = _retry(execution, raw)
@@ -264,7 +262,11 @@ class ComparedClaimsGateway(RepeatedAssignmentGateway):
             "Both reports concern the absent turn and require restoring that turn."
         )
         distinct = deepcopy(raw["issues"][0])
-        refs = [f"assignment:{v['anchor']}" for v in raw["assignment_violations"]]
+        refs = [
+            f"assignment:{anchor}"
+            for anchor, check in raw["assignment_checks"].items()
+            if check["status"] == "unmet"
+        ]
         distinct.update(
             category="prose",
             assignment_finding_ref=None,

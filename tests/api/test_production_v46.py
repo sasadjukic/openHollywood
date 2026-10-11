@@ -140,7 +140,7 @@ def test_disappearing_target_stays_invalid_and_a_later_retry_keeps_original_choi
     raw["issues"][0]["assignment_comparison"] = _claim(execution, repeated=True)[
         "assignment_comparison"
     ]
-    raw["assignment_violations"] = []
+    raw["assignment_checks"]["outcome"].update(status="met", recommended_resolution=None)
     with pytest.raises(_StructuredOutputContractError):
         _materialize(raw, retry)
     raw["scene_boundary_check"] = "invalid hard metadata"

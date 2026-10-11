@@ -206,16 +206,12 @@ class AdjudicationGateway(V26Gateway):
                 and a["content"]["scene_id"] == assignment["unit_id"]
                 and a["content"]["revision_number"] == assignment["revision_number"]
             )
-            raw["assignment_violations"] = [
-                {
-                    "anchor": "outcome",
-                    "draft_evidence_refs": [
-                        draft["content"]["evidence_catalog"][0]["evidence_ref"]
-                    ],
-                    "explanation": "Fixture dispute: the planned outcome is only implicit.",
-                    "recommended_resolution": "State the planned outcome more explicitly.",
-                }
-            ]
+            raw["assignment_checks"]["outcome"] = {
+                "status": "unmet",
+                "draft_evidence_refs": [draft["content"]["evidence_catalog"][0]["evidence_ref"]],
+                "assessment": "Fixture dispute: the planned outcome is only implicit.",
+                "recommended_resolution": "State the planned outcome more explicitly.",
+            }
             for check in raw.get("repair_checks", {}).values():
                 check["status"] = "unmet"
         elif operation == "critic_adjudication":

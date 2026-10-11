@@ -49,7 +49,12 @@ def test_canary_polish_notes_do_not_become_hard_revisions(category: str, descrip
         "evidence": ["The scene achieves its intended outcome."],
         "recommendation": "Retain this scene; consider this advice for later polish.",
     }
-    critique = {"issues": [issue], "verdict": "pass", "assignment_violations": []}
+    critique = {
+        "issues": [issue],
+        "verdict": "pass",
+        "assignment_violations": [],
+        "assignment_checks": {},
+    }
 
     result = _normalize_scene_assignment_critique(critique, execution)
 
@@ -81,6 +86,7 @@ def test_assignment_violation_binds_exact_draft_and_plan_before_promotion() -> N
                     draft_evidence_refs=[_critic_evidence_catalog(execution)[0]["evidence_ref"]]
                 )
             ],
+            "assignment_checks": {},
         },
         execution,
     )
@@ -99,7 +105,7 @@ def test_assignment_violation_binds_exact_draft_and_plan_before_promotion() -> N
     [
         (_violation(draft_evidence_refs=["Mara ran away."]), "critic_evidence_reference_invalid"),
         (_violation(anchor="future_scene"), "invalid_assignment_anchor"),
-        (_violation(anchor="turning_point"), "invalid_assignment_anchor"),
+        (_violation(anchor="turning_point"), "duplicate_assignment_check_route"),
         (_violation(explanation=""), "invalid_assignment_violation"),
     ],
 )
@@ -113,7 +119,8 @@ def test_assignment_violation_rejects_invented_evidence_or_unassigned_anchors(
 
     with pytest.raises(_StructuredOutputContractError) as failure:
         _normalize_scene_assignment_critique(
-            {"verdict": "pass", "assignment_violations": [violation]}, execution
+            {"verdict": "pass", "assignment_violations": [violation], "assignment_checks": {}},
+            execution,
         )
 
     assert failure.value.issue_type == error_type
@@ -137,6 +144,7 @@ def test_wrong_location_has_an_explicit_assignment_route() -> None:
     )
     result = _normalize_scene_assignment_critique(
         {
+            "assignment_checks": {},
             "issues": [],
             "verdict": "pass",
             "assignment_violations": [
