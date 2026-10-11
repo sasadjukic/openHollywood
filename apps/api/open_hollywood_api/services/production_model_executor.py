@@ -117,6 +117,7 @@ from open_hollywood_api.services.production_critic_obligations import (
     MANDATORY_ANCHORS,
     MINIMUM_REPAIR_RULE,
     OBLIGATION_RULE,
+    REQUIREMENT_BASIS_RULE,
     AssignmentCheckError,
     assignment_checks_schema,
     validated_assignment_checks,
@@ -718,6 +719,8 @@ _INSTRUCTIONS: Mapping[_Operation, str] = {
     ),
     _Operation.CRITIQUE: (
         OBLIGATION_RULE
+        + " "
+        + REQUIREMENT_BASIS_RULE
         + " "
         + MINIMUM_REPAIR_RULE
         + " For every generic issues entry: "

@@ -6,6 +6,17 @@ from collections.abc import Mapping
 from typing import Any
 
 MANDATORY_ANCHORS = ("turning_point", "outcome")
+REQUIREMENT_BASIS_RULE = (
+    "In current assignment assessments/comparisons, separate assigned facts from inferred "
+    "causal, temporal or completion relations. Before treating such a relation as mandatory, "
+    "name the current assignment field or supplied canonical artifact version/field, quote "
+    "the exact source words, and explain why they require that relation here. If no source "
+    "requires it, say so and assess the assigned facts without it. 'And', prose order, genre "
+    "convention or a plausible mechanism alone do not establish a requirement. Carry only "
+    "supported requirements into unmet judgments and all mandatory repair/restatement advice. "
+    "Source quotations establish obligations, not a wording test for the draft: actions, "
+    "embodied reactions and indirect narration can fulfill them. Do not add output fields."
+)
 MINIMUM_REPAIR_RULE = (
     "For current assignment defects, keep recommended_resolution and every restatement "
     "recommendation limited to the missing assigned fact, preserving fulfilled facts and the "
