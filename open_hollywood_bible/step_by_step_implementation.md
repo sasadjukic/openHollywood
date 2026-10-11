@@ -2947,11 +2947,68 @@ See the [implementation and diagnostic report](../docs/benchmark_reports/require
   18,707 output tokens and USD 0.03644460 at recorded October 8 rates, below the
   USD 0.20992 cap. Actual charges unknown. No writer/full-story calls or canonical
   changes. Four new controls have no historical v52 live arm.
-- [ ] Hold v53 stable and isolate assignment wording: original conjunction versus
+- [x] Hold v53 stable and isolate assignment wording: original conjunction versus
   separately expressed facts and explicitly unassigned relationships, retaining
-  explicit-relation and indirect-fulfillment controls. This next diagnostic is
-  not prepared or authorized for additional live calls. Source quotation alone
-  does not prove entailment; broader reliability remains unqualified.
+  explicit-relation and indirect-fulfillment controls. The subsequent approved
+  diagnostic is completed in the section below. Source quotation alone does not
+  prove entailment; broader reliability remains unqualified.
+
+**Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
+
+### Assignment wording comparison under stable v53: 2026-10-11
+
+**Preparation, local verification and bounded comparison COMPLETE; remedy NOT QUALIFIED.**
+See the [diagnostic results and frozen design](../docs/benchmark_reports/assignment-wording-v53-2026-10-11.md).
+
+- [x] Keep production prompt v53, graph v9, critic retry policy 17 and all runtime
+  code unchanged. Verify the sealed v53 code hashes at current merge `f5a665b`.
+- [x] Freeze a three-wording comparison: original conjunction, separate fact
+  statements and an explicit clarification that the turning point imposes no
+  order/causal relation while applicable canon still binds. Change only the
+  synthetic turning-point fields and coherent artifact lineage, outside canon.
+- [x] Prepare 24 probes at two paired seeds: three wordings crossed with the
+  pull-before-touch, both-missing and valid action-decision drafts (18), plus
+  explicit cause, order-only and applicable-canon controls (6). Ten requests match
+  prior v53 requests exactly; fourteen are new. Preserve system messages, schemas,
+  drafts, settings, budgets and all unrelated model context.
+- [x] Replay all sixteen saved v53 responses with identical requests, results and
+  audits. Verify all 108 sealed evidence files, prior report and source database.
+  Pass 20 relevant offline regressions and `git diff --check`. The prior full v53
+  build checks remain recorded evidence; no new full-suite run is claimed.
+- [x] Obtain explicit approval bound to the frozen plan and complete 24 probes in
+  25 calls, below the 48-call ceiling. Record 324,585 input / 30,306 output tokens
+  and USD 0.05756430 at recorded October 8 rates, below the USD 0.31488 cap. Actual
+  charges unknown. No writer/full-story calls or canonical changes.
+- [x] Inspect all final native checks, generic complaints and complete repairs,
+  plus the one rejected first response. All ten historical matched status pairs
+  remain unchanged. Original and separate wordings both falsely block the valid
+  pull-before-touch draft at both seeds; clarification produces one correct
+  assignment judgment out of two. That review still returns revise for a minor
+  craft issue; no pull-before-touch review cleanly passes. Overall 19/24 native
+  pairs match the inspected obligations, with five false assignment blockers.
+- [x] Retain correct two-blocker detection in all six both-missing cases, but record
+  that all six consolidated repair sets add an unsupported temporal/causal demand.
+  One clarified native touch repair is minimal while its generic restatement
+  reintroduces a trigger. Decision repairs remain within scope; no unconditional
+  completed-entry requirement recurs. All six action-decision baselines pass.
+- [x] Inspect all six explicit cause/order/canon controls: correct statuses and
+  appropriate relation-specific repairs. Both canon controls now cite and quote
+  the real Bible clause and require first-onset causation, but neither supplies
+  its artifact-version ID. Better source grounding does not qualify the remedy.
+- [x] Record 23 first-valid and 24 final-valid reviews. The single retry fixes a
+  reference to a nonexistent assignment finding, preserving met/met and minor
+  independent classification. Its advice loses the Optional label; revise was
+  already present. All 23 final comparison objects validate: 22 consolidate,
+  one remains minor craft. The 23 mandatory repair targets include five false
+  native blockers; none is an extra duplicate. Verify response replay, source
+  hashes and local evidence closure. No new full-suite run is claimed.
+- [ ] Test the symmetric compliance/craft boundary inside the existing critic:
+  established assigned facts and supported relationships suffice for met; a
+  preferred dramatic mechanism must not turn them into unmet. Keep optional
+  craft advice out of mandatory repairs and inspect verdict/routing as well as
+  classification. Preserve genuine omissions, explicit relations, applicable
+  canon and indirect fulfillment. This next remedy is not implemented or
+  live-qualified. Production stays v53; broader acceptance remains open.
 
 **Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
 
