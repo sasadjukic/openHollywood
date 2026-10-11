@@ -19,6 +19,7 @@ from open_hollywood_api.services.production_model_executor import (
     _messages,
     _Operation,
     _output_schema,
+    _scene_assignment_contract,
     _StructuredOutputContractError,
 )
 from open_hollywood_engine.artifacts import ContinuityCategory, ContinuityReport, Critique
@@ -55,6 +56,16 @@ def _raw(execution: _Execution, route: str = "none") -> dict[str, Any]:
         ],
         "issues": [],
         "assignment_violations": [],
+        "assignment_checks": {
+            anchor: {
+                "status": "met",
+                "assessment": "Simulated fulfilled obligation, not semantic evidence.",
+                "draft_evidence_refs": [_refs(execution)[0]],
+                "recommended_resolution": None,
+            }
+            for anchor in ("turning_point", "outcome")
+            if _scene_assignment_contract(execution).get(anchor)
+        },
         "point_of_view_check": {"status": "aligned"},
         "scene_boundary_check": {
             "achieved_state": "Simulated achieved state.",
@@ -66,14 +77,12 @@ def _raw(execution: _Execution, route: str = "none") -> dict[str, Any]:
         "verdict": "pass",
     }
     if route == "assignment":
-        raw["assignment_violations"] = [
-            {
-                "anchor": "outcome",
-                "draft_evidence_refs": [ref],
-                "explanation": "The gate-opening outcome is replaced by leaving it closed.",
-                "recommended_resolution": "Realize the planned outcome without unrelated changes.",
-            }
-        ]
+        raw["assignment_checks"]["outcome"] = {
+            "status": "unmet",
+            "draft_evidence_refs": [ref],
+            "assessment": "The gate-opening outcome is replaced by leaving it closed.",
+            "recommended_resolution": "Realize the planned outcome without unrelated changes.",
+        }
     elif route in {"craft", "blocking_craft"}:
         raw["issues"] = [
             {
@@ -225,7 +234,7 @@ def test_no_invalid_reference_can_create_an_accepted_finding(route: str, bad_kin
     finding = (
         raw["point_of_view_check"]
         if route == "pov"
-        else raw["assignment_violations"][0]
+        else raw["assignment_checks"]["outcome"]
         if route == "assignment"
         else raw["issues"][0]
     )
@@ -241,7 +250,7 @@ def test_no_invalid_reference_can_create_an_accepted_finding(route: str, bad_kin
 def test_legacy_wire_fields_are_not_silently_reinterpreted(route: str, old_field: str) -> None:
     execution = _fixture()
     raw = _raw(execution, route)
-    finding = raw["assignment_violations"][0] if route == "assignment" else raw["issues"][0]
+    finding = raw["assignment_checks"]["outcome"] if route == "assignment" else raw["issues"][0]
     finding.pop("draft_evidence_refs")
     finding[old_field] = "draft_evidence_0001" if route == "assignment" else ["draft_evidence_0001"]
     with pytest.raises(_StructuredOutputContractError):

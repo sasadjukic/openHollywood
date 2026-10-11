@@ -2684,8 +2684,48 @@ See the [investigation report](../docs/benchmark_reports/decision-vs-attempt-v48
   recorded October 8 rates; actual charges unknown, no writer or production changes.
 - [x] Select the next focused candidate: separate evidence-backed turning-point
   and outcome checks within the existing critic, with consistent blocker routing.
-- [ ] Implement and qualify that candidate without requiring explicit decision
-  prose or conflating distinct obligations. Broader Step 19 acceptance remains open.
+- [x] Implement that candidate without requiring explicit decision prose; see v49
+  below. Live semantic qualification remains open.
+
+**Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
+
+### Independent mandatory scene checks v49: 2026-10-11
+
+**Focused implementation and controlled probes COMPLETE; semantic qualification
+remains IN PROGRESS.** Production prompt v49 / graph v9, critic retry policy 16. See
+[ADR 0033](../docs/adr/0033-independent-mandatory-scene-checks.md) and the
+[v49 report](../docs/benchmark_reports/mandatory-assignment-checks-v49-2026-10-11.md).
+
+- [x] Require independent evidence-backed met/unmet checks for each populated
+  current turning point and outcome; preserve action-based evidence of intent.
+- [x] Route unmet checks into existing blocking assignment findings regardless
+  of other satisfied checks, scores or historical repairs.
+- [x] Preserve boundary consolidation, generic craft comparisons and original
+  repair identity. Reject duplicate legacy reporting of the two mandatory anchors.
+- [x] Reject malformed checks as review errors; retain the existing call limits,
+  precise structural retries and bounded/redacted diagnostic evidence.
+- [x] Pass 34 new local regressions including durable writer-versus-review retry
+  behavior; explicitly port existing synthetic fixtures to the new wire contract.
+- [x] Pass all required checks: 926 Python tests, 11 frontend tests, Ruff,
+  strict mypy (189 files), frontend formatting/lint/types and production build.
+- [x] Prepare the exact twelve v48 date/decision cases with unchanged artifacts,
+  context, settings and budgets. Pin all requests, sources and candidate code.
+  Twelve saved raw reviews correctly fail the new wire contract; four labeled
+  human-authored annotations test deterministic blocker routing only.
+- [x] Execute the twelve approved probes in 15 calls: 9/12 first-attempt valid,
+  all twelve valid after three bounded structural retries. Verify exact request
+  replays, output materialization, audits, original repair lineage and source hashes.
+- [x] Record six correct future-date passes, two turn-only control revisions and
+  four unchanged false passes now explicitly marking the turn met. The prior extra
+  outcome complaint does not recur; all original no-match repairs remain met.
+- [x] Record 199,327 input / 19,501 output tokens, USD 0.03570618 estimated at
+  recorded October 8 rates, within the USD 0.15744 approval; actual charges unknown.
+  No writer calls, full-story runs or canonical changes.
+- [ ] Test a stricter full-proposition meaning of met: a similar dramatic function
+  cannot replace the specifically assigned fact, while indirect/action-based
+  realization remains acceptable.
+- [ ] Qualify independent semantic judgments before making broader reliability
+  claims. Full-story repeatability, preference and cost acceptance remain open.
 
 **Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
 

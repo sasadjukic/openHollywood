@@ -70,7 +70,7 @@ def test_satisfied_repair_schema_has_no_nonempty_link_branch(deployment: ModelDe
         assert packet["output_schema"] == schema
     else:
         assert "output_schema" not in packet
-    assert "missing turning_point needs its own" in _INSTRUCTIONS[_Operation.CRITIQUE]
+    assert "A failed turn does not prove a failed outcome" in _INSTRUCTIONS[_Operation.CRITIQUE]
 
 
 def test_met_repair_links_are_rejected_instead_of_silently_cleared() -> None:
@@ -90,16 +90,14 @@ def test_missing_turn_is_an_independent_target_with_either_old_repair_status(
 ) -> None:
     execution = _revision()
     raw = _review(execution, old_status)
-    raw["assignment_violations"] = [
-        {
-            "anchor": "turning_point",
-            "draft_evidence_refs": [_refs(execution)[1]],
-            "explanation": "The required future-date realization is missing.",
-            "recommended_resolution": (
-                "Restore the future-date realization while keeping the comparison inconclusive."
-            ),
-        }
-    ]
+    raw["assignment_checks"]["turning_point"] = {
+        "status": "unmet",
+        "draft_evidence_refs": [_refs(execution)[1]],
+        "assessment": "The required future-date realization is missing.",
+        "recommended_resolution": (
+            "Restore the future-date realization while keeping the comparison inconclusive."
+        ),
+    }
     result = _materialize(raw, execution)
     assert result["verdict"] == "revise"
     assert [i["category"] for i in result["issues"]] == (
@@ -136,15 +134,13 @@ class IndependentRepairGateway(LinkedRepairGateway):
         raw = json.loads(response.content)
         raw["scene_boundary_check"]["status"] = "no_overrun"
         if not self.original_unmet:
-            raw["assignment_violations"] = []
-        raw["assignment_violations"].append(
-            {
-                "anchor": "turning_point",
-                "draft_evidence_refs": raw["scene_boundary_check"]["draft_evidence_refs"],
-                "explanation": "Simulated independent missing current turn.",
-                "recommended_resolution": "Restore only the missing turn.",
-            }
-        )
+            raw["assignment_checks"]["outcome"].update(status="met", recommended_resolution=None)
+        raw["assignment_checks"]["turning_point"] = {
+            "status": "unmet",
+            "draft_evidence_refs": raw["scene_boundary_check"]["draft_evidence_refs"],
+            "assessment": "Simulated independent missing current turn.",
+            "recommended_resolution": "Restore only the missing turn.",
+        }
         for check in raw["repair_checks"].values():
             check.update(
                 status="unmet" if self.original_unmet else "met",

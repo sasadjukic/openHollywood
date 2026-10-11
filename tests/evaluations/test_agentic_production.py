@@ -281,6 +281,16 @@ class ProductionFixtureGateway(BlueprintFixtureGateway):
                 ],
                 "status": "no_overrun",
             }
+            content["assignment_checks"] = {
+                anchor: {
+                    "status": "met",
+                    "assessment": "Simulated fulfilled obligation, not semantic evidence.",
+                    "draft_evidence_refs": content["scene_boundary_check"]["draft_evidence_refs"],
+                    "recommended_resolution": None,
+                }
+                for anchor in ("turning_point", "outcome")
+                if payload["scene_assignment_contract"].get(anchor)
+            }
             if payload.get("repair_acceptance_tests"):
                 candidate = next(
                     item
@@ -2565,6 +2575,7 @@ def test_v25_explicit_wrong_pov_cannot_remain_a_minor_pass() -> None:
         draft_prose="Sylvie listened to the wall.",
     )
     critique = {
+        "assignment_checks": {},
         "issues": [
             {
                 "category": "POV Consistency",

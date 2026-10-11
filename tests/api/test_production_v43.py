@@ -104,7 +104,7 @@ def test_declared_repetition_preserves_both_claims_repairs_and_all_evidence(ref:
     execution = _revision()
     raw = _raw(execution, "pov" if ref == "viewpoint" else "assignment")
     if ref == "boundary":
-        raw["assignment_violations"] = []
+        raw["assignment_checks"]["outcome"].update(status="met", recommended_resolution=None)
         raw["scene_boundary_check"]["status"] = "overrun"
     raw["repair_checks"] = _review(execution)["repair_checks"]
     repeat = _raw(execution, "blocking_craft")["issues"][0]
@@ -121,7 +121,7 @@ def test_declared_repetition_preserves_both_claims_repairs_and_all_evidence(ref:
     assert "The date was today." in target["evidence"]
     assert "assignment_finding_ref" not in json.dumps(result)
     audit = _scene_boundary_audit(raw, execution)
-    assert audit["schema_version"] == "3"
+    assert audit["schema_version"] == "4"
     repetitions = audit["assignment_restatements"]
     assert isinstance(repetitions, list)
     assert repetitions[0]["assignment_finding_ref"] == ref
@@ -161,9 +161,7 @@ def test_unlinked_independent_issues_survive_repetition_consolidation(mode: str)
         independent["draft_evidence_refs"] = [_refs(execution)[-1]]
     raw["issues"] = [repeated, independent]
     if mode == "separate_turn":
-        raw["assignment_violations"].append(
-            {**raw["assignment_violations"][0], "anchor": "turning_point"}
-        )
+        raw["assignment_checks"]["turning_point"] = deepcopy(raw["assignment_checks"]["outcome"])
         independent["assignment_comparison"] = _comparison(
             "assignment:outcome", "assignment:turning_point"
         )
@@ -240,7 +238,7 @@ class RepeatedAssignmentGateway(IndependentRepairGateway):
         if assignment.get("operation") != "critique" or assignment["revision_number"] != 1:
             return response
         raw = json.loads(response.content)
-        turn = next(v for v in raw["assignment_violations"] if v["anchor"] == "turning_point")
+        turn = raw["assignment_checks"]["turning_point"]
         raw["issues"] = [
             {
                 "category": "plot",

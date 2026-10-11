@@ -62,7 +62,7 @@ def test_retry_explains_both_fields_without_replaying_prose_or_changing_output_c
     }
     assert "exactly two required fields" in directive["action"]
     assert "nonblank" in directive["action"] and "same defect and repair" in directive["action"]
-    assert packet["schema_repair"]["policy_version"] == "15"
+    assert packet["schema_repair"]["policy_version"] == "16"
     assert packet["schema_repair"]["preserved_classifications"][0]["assignment_finding_refs"] == [
         "assignment:outcome" if repeated else None
     ]
@@ -100,9 +100,8 @@ def test_no_reported_assignment_findings_still_requires_assessment_and_empty_arr
 def test_shape_limits_references_to_reported_groups_without_choosing_the_comparison() -> None:
     execution, raw = _broken(repeated=False)
     raw["scene_boundary_check"]["status"] = "overrun"
-    other = deepcopy(raw["assignment_violations"][0])
-    other["anchor"] = "turning_point"
-    raw["assignment_violations"].append(other)
+    other = deepcopy(raw["assignment_checks"]["outcome"])
+    raw["assignment_checks"]["turning_point"] = other
     retry = _retry_execution(execution, raw)
     directive = _comparison_directive(_payload(_Operation.CRITIQUE, retry))
     groups = directive["reported_assignment_finding_groups"]

@@ -66,7 +66,13 @@ _REFERENCE_FIELDS = frozenset(
 )
 _OBJECT_FIELDS = frozenset({"basis_details", "assignment_comparison"})
 _LIST_SECTIONS = ("assignment_violations", "issues", "findings", "new_findings")
-_MAP_SECTIONS = ("requirement_coverage", "prior_finding_rechecks", "decisions", "repair_checks")
+_MAP_SECTIONS = (
+    "requirement_coverage",
+    "prior_finding_rechecks",
+    "decisions",
+    "repair_checks",
+    "assignment_checks",
+)
 
 
 @dataclass

@@ -328,6 +328,7 @@ def test_viewpoint_audit_cannot_be_overruled_by_a_high_overall_score(status: str
                 "overall_score": 5.0,
                 "issues": [],
                 "assignment_violations": [],
+                "assignment_checks": {},
                 "point_of_view_check": check,
             },
             execution,
