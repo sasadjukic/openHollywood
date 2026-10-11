@@ -2764,8 +2764,47 @@ IN PROGRESS.** Production prompt v50 / graph v9, critic retry policy 17. See the
   No writer calls, full-story runs or canonical changes.
 - [ ] Qualify transfer to a separate scene with complete indirect/action-based
   fulfillment, a similar dramatic effect with a wrong/missing fact, and a genuinely
-  missing decision. Keep v50 stable pending that evidence; no further calls
-  authorized here. Broader Step 19 acceptance remains open.
+  missing decision. The comparison below qualifies these distinctions on one new
+  scene with v50 unchanged; broader semantic and Step 19 acceptance remain open.
+
+**Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
+
+### Assignment transfer with unchanged v50: 2026-10-11
+
+**Bounded comparison COMPLETE; broader qualification IN PROGRESS.** See the
+[transfer report](../docs/benchmark_reports/assignment-transfer-v50-2026-10-11.md).
+
+- [x] Select OH-V01-001 scene 1's existing approved touch-plus-psychic-pull turning
+  point and decision-to-enter outcome. Preserve all source context and production
+  prompt v50 / graph v9 / critic retry policy 17.
+- [x] Prepare four diagnostic variants: touch present/absent crossed with an entry
+  decision shown through action or an explicitly unresolved choice. Preserve the
+  same indirect psychic pull and other prose between paired conditions. Include
+  the both-missing case to test independent reporting.
+- [x] Freeze twelve requests at three paired seeds with opaque draft identifiers,
+  exact source lineage, no condition/expectation labels in model messages and no
+  synthetic plan or repair history. Verify reconstruction and hashes locally;
+  all eight existing v50 delivery/retry regressions pass.
+- [x] Obtain explicit approval and complete twelve probes in 21 calls. All first
+  mandatory check pairs match the inspected facts; all twelve final reviews are
+  valid and correct on those checks. Six valid indirect turns and six action-based
+  decisions are accepted; six missing touches and six missing decisions are found.
+  Both-missing cases retain two independent blockers; no extra repair targets.
+- [x] Inspect all passages and nine failed first responses. All negative reviews
+  repeat a complaint with a comparison string instead of the required object;
+  only 3/12 complete first responses validate. All retries preserve the native
+  checks and valid classification and consolidate repeated complaints. The first
+  schema already supplies the object; this is not missing schema delivery.
+- [x] Replay all 21 responses and reconstruct requests; verify exact source/code
+  and database hashes. Record 275,139 input / 24,356 output tokens and
+  USD 0.04826186 at recorded October 8 rates, below the USD 0.15744 cap. Actual
+  charges unknown. No production changes, writer/full-story calls or canonical changes.
+- [ ] Test a compact first-review comparison-object clarification while retaining
+  v50 met semantics and existing schema/consolidation. No further calls authorized
+  here. Separately retain the observed concern about repair advice demanding
+  immediate causality or completed entry beyond the literal assigned minimum.
+- [ ] Establish broader reliability; this one-scene transfer does not qualify
+  other models, writer repairs, full-story repeatability, preference or cost acceptance.
 
 **Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
 
