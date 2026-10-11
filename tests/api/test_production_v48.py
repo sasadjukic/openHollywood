@@ -62,7 +62,7 @@ def test_retry_explains_both_fields_without_replaying_prose_or_changing_output_c
     }
     assert "exactly two required fields" in directive["action"]
     assert "nonblank" in directive["action"] and "same defect and repair" in directive["action"]
-    assert packet["schema_repair"]["policy_version"] == "16"
+    assert packet["schema_repair"]["policy_version"] == "17"
     assert packet["schema_repair"]["preserved_classifications"][0]["assignment_finding_refs"] == [
         "assignment:outcome" if repeated else None
     ]
