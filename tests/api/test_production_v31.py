@@ -280,12 +280,15 @@ def test_revision_instructions_do_not_grow_and_schema_shares_one_check_definitio
     from open_hollywood_api.services.production_critic_obligations import (
         MINIMUM_REPAIR_RULE,
         OBLIGATION_RULE,
+        REQUIREMENT_BASIS_RULE,
     )
 
     clarification = "For every generic issues entry: " + COMPARISON_OBJECT_RULE + " "
     assert len(clarification) <= 291
     assert len(MINIMUM_REPAIR_RULE) <= 675
+    assert len(REQUIREMENT_BASIS_RULE) <= 800
     existing_guidance = len(_INSTRUCTIONS[_Operation.CRITIQUE]) - len(OBLIGATION_RULE)
+    existing_guidance -= len(REQUIREMENT_BASIS_RULE) + 1
     assert existing_guidance - len(clarification) - len(MINIMUM_REPAIR_RULE) - 1 <= 3887
     execution = _revision()
     schema = _output_schema(

@@ -2904,6 +2904,57 @@ NOT QUALIFIED.** See the
 
 **Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
 
+### Source-backed assignment requirements v53: 2026-10-11
+
+**Local implementation and bounded comparison COMPLETE; remedy NOT QUALIFIED.**
+See the [implementation and diagnostic report](../docs/benchmark_reports/requirement-basis-v53-2026-10-11.md).
+
+- [x] Add a critic instruction requiring the assignment field or canonical artifact
+  version/field, exact source words and applicability before treating causal,
+  temporal or completion relations as mandatory. Carry only supported requirements
+  into judgments and native/repeated repair advice. Retain action and indirect
+  narration as valid fulfillment evidence; source quotation is not a prose test.
+- [x] Preserve the exact met/minimum-repair rules, comparison-object clarification,
+  schemas, validators, consolidation, writer contract and retry policy 17. Prompt
+  v53 / graph v9. Support is a model instruction, not a semantic guarantee enforced
+  by the application; false or inapplicable quotations still require inspection.
+- [x] Pass 42 focused regressions, Ruff formatting/lint and strict mypy across 193
+  files. Replay all twelve v52 responses to identical canonical results/audits;
+  retain all 97 sealed v52 evidence files, its report and source database hashes.
+- [x] Freeze sixteen probes at two seeds: twelve matched v52 requests and four
+  new controls isolating explicit noncausal order or a synthetic applicable Bible
+  rule. Verify exact paired drafts, single-clause context changes, schemas,
+  coherent artifact lineage and canon-rule delivery. No canonical writes.
+- [x] Complete the full Python suite: 954 tests pass. Required frontend
+  formatting/lint/type checks, 11 frontend tests, production build and
+  `git diff --check` also pass.
+- [x] Obtain explicit approval and complete sixteen probes in sixteen calls, all
+  first responses valid. All thirteen generic comparisons validate and consolidate;
+  no independent craft, viewpoint or boundary blocker and no structural retries.
+- [x] Inspect all 32 native checks, source claims, draft evidence and complete
+  repairs. All twelve matched v52 status pairs are unchanged. Both unsupported
+  causal blockers persist despite quoting the correct conjunction; neither
+  both-missing repair set stays within the assigned minimum. Native decision
+  repairs remain appropriate, and the unconditional completed-entry demand does
+  not recur; avoid treating that wording difference as broad qualification.
+- [x] Inspect new controls separately: both order-only repairs avoid demanding
+  causation. Both canon-control verdicts are correct, but neither quotes/identifies
+  the exact supporting Bible version/rule. One mentions its field only in generic
+  advice and permits an insufficient intensification alternative in the native
+  repair. Correct verdicts do not prove correct grounding or sufficient advice.
+- [x] Replay all sixteen responses and reconstruct requests; verify and seal
+  frozen code, source database, prior evidence and inputs. Record 206,870 input /
+  18,707 output tokens and USD 0.03644460 at recorded October 8 rates, below the
+  USD 0.20992 cap. Actual charges unknown. No writer/full-story calls or canonical
+  changes. Four new controls have no historical v52 live arm.
+- [ ] Hold v53 stable and isolate assignment wording: original conjunction versus
+  separately expressed facts and explicitly unassigned relationships, retaining
+  explicit-relation and indirect-fulfillment controls. This next diagnostic is
+  not prepared or authorized for additional live calls. Source quotation alone
+  does not prove entailment; broader reliability remains unqualified.
+
+**Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
+
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 
 21. [ ] **Package the stable system with Tauri** and test crash/restart, offline, missing-model, invalid-key, provider-timeout, and low-disk-space behavior.
