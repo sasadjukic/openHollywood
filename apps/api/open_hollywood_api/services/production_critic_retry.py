@@ -8,6 +8,7 @@ from collections.abc import Mapping, Sequence
 from typing import Any
 
 from open_hollywood_api.services.production_critic_comparison import (
+    COMPARISON_OBJECT_RULE,
     COMPARISON_RULE,
     assignment_comparison_schema,
     assignment_finding_groups,
@@ -253,10 +254,7 @@ def critic_link_directive(
         shape.pop("description")  # The semantic rule stays in the adjacent action.
         return {
             "location": location,
-            "action": "Return assignment_comparison as a JSON object with exactly two required "
-            "fields: finding_refs (an array of distinct reported-reference strings) and "
-            "assessment (a nonblank string, at most 1000 characters). A string, null, missing "
-            "field or extra key is invalid. " + COMPARISON_RULE,
+            "action": COMPARISON_OBJECT_RULE + " " + COMPARISON_RULE,
             "required_shape": shape,
             "reported_assignment_finding_groups": groups,
             "coverage_rule": "For independent craft compare every group using at least one "

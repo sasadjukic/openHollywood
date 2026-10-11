@@ -275,10 +275,18 @@ async def test_real_revision_workflow_lineage_audit_and_existing_limits(
 
 def test_revision_instructions_do_not_grow_and_schema_shares_one_check_definition() -> None:
     assert len(_INSTRUCTIONS[_Operation.WRITE]) <= 638
-    # v49 adds required independent obligations; preserve the bound on existing guidance.
-    from open_hollywood_api.services.production_critic_obligations import OBLIGATION_RULE
+    # Bound the focused additions separately; retain the limit on the prior guidance.
+    from open_hollywood_api.services.production_critic_comparison import COMPARISON_OBJECT_RULE
+    from open_hollywood_api.services.production_critic_obligations import (
+        MINIMUM_REPAIR_RULE,
+        OBLIGATION_RULE,
+    )
 
-    assert len(_INSTRUCTIONS[_Operation.CRITIQUE]) - len(OBLIGATION_RULE) <= 3887
+    clarification = "For every generic issues entry: " + COMPARISON_OBJECT_RULE + " "
+    assert len(clarification) <= 291
+    assert len(MINIMUM_REPAIR_RULE) <= 675
+    existing_guidance = len(_INSTRUCTIONS[_Operation.CRITIQUE]) - len(OBLIGATION_RULE)
+    assert existing_guidance - len(clarification) - len(MINIMUM_REPAIR_RULE) - 1 <= 3887
     execution = _revision()
     schema = _output_schema(
         _Operation.CRITIQUE,

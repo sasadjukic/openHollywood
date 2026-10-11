@@ -6,6 +6,16 @@ from collections.abc import Mapping
 from typing import Any
 
 MANDATORY_ANCHORS = ("turning_point", "outcome")
+MINIMUM_REPAIR_RULE = (
+    "For current assignment defects, keep recommended_resolution and every restatement "
+    "recommendation limited to the missing assigned fact, preserving fulfilled facts and the "
+    "scene endpoint. Do not infer order, immediacy or causality from 'and', or require completed "
+    "action when only a decision or attempt is assigned, unless an explicit applicable "
+    "assignment or canonical rule requires it. Apply this limit to assessments and comparisons "
+    "too. State the minimum sufficient repair without prescribing an unassigned mechanism. "
+    "Keep optional staging, motivation or craft suggestions out of mandatory repair text; "
+    "label them optional and never use them as acceptance conditions."
+)
 OBLIGATION_RULE = (
     "Complete assignment_checks independently for every supplied turning_point and outcome. "
     "Each check requires status (met/unmet), assessment (1-600 nonblank characters comparing "

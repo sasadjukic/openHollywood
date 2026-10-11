@@ -11,6 +11,10 @@ from typing import Any
 import pytest
 from open_hollywood_api.persistence.database import create_session_factory
 from open_hollywood_api.persistence.models import AgentInvocation
+from open_hollywood_api.services.production_critic_comparison import (
+    COMPARISON_OBJECT_RULE,
+    COMPARISON_RULE,
+)
 from open_hollywood_api.services.production_model_executor import (
     _Operation,
     _output_schema,
@@ -61,6 +65,7 @@ def test_retry_explains_both_fields_without_replaying_prose_or_changing_output_c
         "maxLength": 1000,
     }
     assert "exactly two required fields" in directive["action"]
+    assert directive["action"] == COMPARISON_OBJECT_RULE + " " + COMPARISON_RULE
     assert "nonblank" in directive["action"] and "same defect and repair" in directive["action"]
     assert packet["schema_repair"]["policy_version"] == "17"
     assert packet["schema_repair"]["preserved_classifications"][0]["assignment_finding_refs"] == [
