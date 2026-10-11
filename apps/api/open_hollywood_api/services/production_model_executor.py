@@ -114,6 +114,7 @@ from open_hollywood_api.services.production_critic_links import (
     project_craft_repair_links,
 )
 from open_hollywood_api.services.production_critic_obligations import (
+    COMPLIANCE_CRAFT_RULE,
     MANDATORY_ANCHORS,
     MINIMUM_REPAIR_RULE,
     OBLIGATION_RULE,
@@ -723,6 +724,8 @@ _INSTRUCTIONS: Mapping[_Operation, str] = {
         + REQUIREMENT_BASIS_RULE
         + " "
         + MINIMUM_REPAIR_RULE
+        + " "
+        + COMPLIANCE_CRAFT_RULE
         + " For every generic issues entry: "
         + COMPARISON_OBJECT_RULE
         + " "

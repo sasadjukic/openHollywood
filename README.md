@@ -791,7 +791,7 @@ still returns its comparison as text instead of the required object.
 See [ADR 0032](docs/adr/0032-independent-craft-owns-original-repair-links.md) and the
 [v47 report](docs/benchmark_reports/independent-repair-links-v47-2026-10-10.md).
 
-Current production contract v48 / graph v9 restates the required comparison object
+Production contract v48 / graph v9 restates the required comparison object
 in structural retries: `finding_refs` is a distinct-reference array and
 `assessment` is bounded nonblank text. The targeted directive includes the exact
 shape derived from the existing schema, limited to reported assignment references.
@@ -800,6 +800,19 @@ unchanged. Eight local regressions and saved-response replays pass. All three
 approved controlled retries validate with correct comparison objects, retained
 classification and exactly the two original repairs without duplicates. See the
 [v48 report](docs/benchmark_reports/comparison-shape-v48-2026-10-10.md).
+
+Current production contract v54 / graph v9 asks the existing critic to retain met
+for completely fulfilled obligations and keep optional craft preferences outside
+mandatory repairs. Optional preferences alone should produce pass; genuine
+independent craft defects can still warrant revision. This extends the v49-v53
+mandatory-check, complete-fact, comparison and source-basis guidance without
+changing validators, writer behavior, graph routing or retry policy 17. Local
+tests cover instruction delivery and durable verdict-to-revision routing. The
+approved 24-probe comparison completes in 25 calls: one optional-only judgment
+now passes, but its summary remains inconsistent, five false blockers persist,
+and both explicit-order controls regress to false passes. Correct native check
+pairs fall from 19/24 to 17/24; the remedy is not qualified. See the
+[v54 implementation and results](docs/benchmark_reports/compliance-craft-v54-2026-10-11.md).
 
 Benchmark word-count ranges are advisory creative targets. New outputs persist a
 non-gating adherence measurement with the target, actual count, status, and word

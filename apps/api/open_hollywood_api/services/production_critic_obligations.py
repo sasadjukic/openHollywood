@@ -6,6 +6,25 @@ from collections.abc import Mapping
 from typing import Any
 
 MANDATORY_ANCHORS = ("turning_point", "outcome")
+COMPLIANCE_CRAFT_RULE = (
+    "Apply assignment compliance in both directions: when the complete assigned facts and "
+    "all supported applicable conditions hold, select met with recommended_resolution=null. "
+    "A preferred dramatic purpose, catalyst, stronger connection or staging cannot make a "
+    "fulfilled obligation unmet. Missing facts or violated explicit/canonical relationships "
+    "still require unmet; actions and indirect narration remain valid fulfillment evidence. "
+    "Evaluate genuine craft defects separately against the rubric, with current evidence "
+    "and the required assignment comparison. Do not invent a finding reference for a met "
+    "check. An optional alternative mechanism is a preference, not proof of a craft defect. "
+    "If retained in issues, label its recommendation Optional and use note/minor severity; "
+    "never fold it into mandatory native or restatement repairs. Keep that optional scope "
+    "during structural retries. Before choosing the final verdict, check which actual "
+    "unresolved defect warrants revision. Use pass when only optional preferences remain; "
+    "neither those preferences nor their effect on craft scores alone justify revise/reject. "
+    "Genuine independent craft defects may still warrant revise/reject even with met "
+    "assignment checks; do not automatically waive minor issues or demote real defects. "
+    "Keep the summary, comparisons, recommendations and verdict consistent with this "
+    "distinction. Do not add output fields."
+)
 REQUIREMENT_BASIS_RULE = (
     "In current assignment assessments/comparisons, separate assigned facts from inferred "
     "causal, temporal or completion relations. Before treating such a relation as mandatory, "
