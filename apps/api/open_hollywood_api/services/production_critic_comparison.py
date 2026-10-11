@@ -5,6 +5,12 @@ from __future__ import annotations
 from collections.abc import Mapping, Sequence
 from typing import Any
 
+COMPARISON_OBJECT_RULE = (
+    "Return assignment_comparison as a JSON object with exactly two required "
+    "fields: finding_refs (an array of distinct reported-reference strings) and "
+    "assessment (a nonblank string, at most 1000 characters). A string, null, missing "
+    "field or extra key is invalid."
+)
 COMPARISON_RULE = (
     "Compare the underlying defective state and required repair, not category, severity or "
     "shared quotations. With assignment_finding_ref=null, explain the distinct evidence-backed "

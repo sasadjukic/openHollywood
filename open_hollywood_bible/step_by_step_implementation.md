@@ -2799,12 +2799,108 @@ IN PROGRESS.** Production prompt v50 / graph v9, critic retry policy 17. See the
   and database hashes. Record 275,139 input / 24,356 output tokens and
   USD 0.04826186 at recorded October 8 rates, below the USD 0.15744 cap. Actual
   charges unknown. No production changes, writer/full-story calls or canonical changes.
-- [ ] Test a compact first-review comparison-object clarification while retaining
-  v50 met semantics and existing schema/consolidation. No further calls authorized
-  here. Separately retain the observed concern about repair advice demanding
-  immediate causality or completed entry beyond the literal assigned minimum.
+- [x] Test a compact first-review comparison-object clarification while retaining
+  v50 met semantics and existing schema/consolidation. Implementation and matched
+  results follow below: v51 validates all twelve first responses. Separately retain
+  the concern about repair advice demanding immediate causality or completed entry
+  beyond the literal assigned minimum.
 - [ ] Establish broader reliability; this one-scene transfer does not qualify
   other models, writer repairs, full-story repeatability, preference or cost acceptance.
+
+**Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
+
+### First-review comparison-object clarification v51: 2026-10-11
+
+**Local implementation and bounded comparison COMPLETE; broader qualification
+IN PROGRESS.** See the
+[implementation and comparison report](../docs/benchmark_reports/first-review-comparison-v51-2026-10-11.md).
+
+- [x] Add the successful comparison-object shape clarification to normal critic
+  instructions for local/cloud original and revision reviews. Share the wording
+  with the existing retry directive without changing that directive's output.
+  Prompt v51 / graph v9 / critic retry policy 17.
+- [x] Preserve the exact v50 obligation module, schemas, validation, classification
+  retention, duplicate consolidation, repair links and writer contract.
+- [x] Replay all 21 sealed v50 responses: twelve identical canonical results and
+  nine identical structural rejections, including matching evidence/classification
+  audits and retry packets. Verify all 116 sealed evidence-file hashes.
+- [x] Freeze the same twelve transfer cases, source artifact versions, seeds,
+  order, settings and budgets. Only the 291-character system clarification differs
+  in model-facing requests; all first user messages and schemas remain identical.
+- [x] Complete local checks: 937 tests pass in the full Python run and the sole
+  obsolete prompt-size guard passes after its explicit allowance update. All 938
+  collected tests are covered. The 54 focused regressions, Ruff, strict mypy,
+  frontend formatting/lint/type checks, 11 frontend tests and production build pass.
+- [x] Obtain explicit approval and complete twelve probes in twelve calls, with
+  all first responses valid versus v50's 3/12. All nine generic repetitions now
+  contain the correct object immediately; none requires a retry.
+- [x] Inspect all checks, evidence, generic comparisons and repairs. Native check
+  pairs and repair-target counts remain unchanged in all twelve cases: indirect
+  fulfillment remains valid and missing touch/decision facts remain separate
+  blockers. No extra craft/boundary finding or repair target. Record changed
+  generic labels/links in three both-missing fresh reviews without claiming all
+  review text or reasoning is identical.
+- [x] Replay every new response and reconstruct its request; verify frozen code,
+  source, prior evidence and database hashes. Record 150,528 input / 13,881 output
+  tokens and USD 0.02662632 at recorded October 8 rates, below the USD 0.15744 cap.
+  Actual charges unknown. No writer/full-story calls or canonical changes.
+- [ ] Address stronger-than-assigned repair advice separately: immediate causal
+  touch triggers and completed entry are prescribed beyond the explicit minimum.
+  The focused v52 comparison follows below; its instruction does not resolve
+  the repair-scope defect.
+  Broader models, writer repair, full-story, preference and cost acceptance remain open.
+
+**Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
+
+### Minimum assignment repairs v52: 2026-10-11
+
+**Local implementation and bounded comparison COMPLETE; repair-scope remedy
+NOT QUALIFIED.** See the
+[implementation and diagnostic report](../docs/benchmark_reports/minimum-assignment-repairs-v52-2026-10-11.md).
+
+- [x] Add an instruction constraining current assignment assessments, native repairs
+  and repeated generic complaints to the missing assigned fact. Preserve fulfilled
+  facts and the current endpoint; do not invent causal order, immediacy or completed action. Retain
+  explicit applicable assignment/canonical requirements. Keep optional suggestions
+  outside mandatory repair text and acceptance conditions.
+- [x] Preserve the v50/v51 definition of met and v51 comparison-object clarification.
+  Prompt v52 / graph v9 / critic retry policy 17. No schema, validator, consolidation,
+  historical repair-test, writer-contract or call-allowance change.
+- [x] Preserve the uncommitted v51 baseline and replay its twelve responses to
+  identical canonical results and audits. Verify prior sealed evidence and source
+  database hashes; past stronger-than-assigned advice is not rewritten.
+- [x] Freeze twelve probes: six cases at two seeds. Match four requests to v51's
+  complete/both-missing baselines. Add pull-before-touch and settled-decision-outside
+  positives, plus same-draft controls with one explicit causality or completed-entry
+  requirement. Keep synthetic plans outside canon and preserve coherent lineage.
+- [x] Complete full local checks: 946 Python tests, 29 focused regressions, Ruff,
+  strict mypy across 192 files, frontend formatting/lint/type checks, 11 frontend
+  tests and production build pass.
+- [x] Obtain explicit approval and complete twelve probes in twelve calls, all
+  first responses valid, with no retries. All eight generic complaints supply valid
+  comparison objects and consolidate; no independent craft or boundary blocker.
+- [x] Inspect all checks, cited passages, plans, generic complaints and complete
+  repairs. Native check pairs match the inspected assignments in 10/12 reviews;
+  both pull-before-touch positives gain unsupported causal blockers. Decision-only
+  and explicit completed-entry controls are distinguished correctly at both seeds.
+- [x] Record the unresolved primary target: neither matched both-missing review
+  keeps complete advice within scope. Both touch repairs still prescribe causality;
+  one generic complaint still prescribes crossing the threshold. Native baseline
+  pairs remain unchanged from v51. Ten repair targets are reported where eight are
+  supported; the two extra targets are native false findings, not duplicates.
+- [x] Replay all twelve raw responses and reconstruct requests. Verify and seal
+  frozen code, sources, prior evidence and database hashes. Record 153,616 input /
+  13,206 output tokens and USD 0.02678864 at recorded October 8 rates, below the
+  USD 0.15744 cap. Actual charges unknown. No writer/full-story calls or canonical
+  changes. New controls have no historical v51 live arm; their failures do not
+  establish a regression caused by v52.
+- [ ] Test support in the assignment or applicable canon for claimed temporal,
+  causal and completion requirements before treating them as mandatory. Retain
+  action/indirect fulfillment. This next focused remedy is not implemented or
+  qualified; broader reliability, preference and cost acceptance remain open.
+- [x] Record the user's observation that v50/v51 charges appear below estimates as
+  qualitative billing evidence awaiting more monitoring. Keep estimates, actual
+  charges and broader cost acceptance separate; retain current reference ceilings.
 
 **Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
 

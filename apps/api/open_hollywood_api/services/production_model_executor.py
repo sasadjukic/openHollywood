@@ -102,6 +102,7 @@ from open_hollywood_api.services.production_critic_classification import (
     retained_classifications,
 )
 from open_hollywood_api.services.production_critic_comparison import (
+    COMPARISON_OBJECT_RULE,
     assignment_comparison_schema,
     assignment_finding_groups,
     comparison_error,
@@ -114,6 +115,7 @@ from open_hollywood_api.services.production_critic_links import (
 )
 from open_hollywood_api.services.production_critic_obligations import (
     MANDATORY_ANCHORS,
+    MINIMUM_REPAIR_RULE,
     OBLIGATION_RULE,
     AssignmentCheckError,
     assignment_checks_schema,
@@ -715,7 +717,12 @@ _INSTRUCTIONS: Mapping[_Operation, str] = {
         "not a hard per-scene quota."
     ),
     _Operation.CRITIQUE: (
-        OBLIGATION_RULE + " "
+        OBLIGATION_RULE
+        + " "
+        + MINIMUM_REPAIR_RULE
+        + " For every generic issues entry: "
+        + COMPARISON_OBJECT_RULE
+        + " "
         "Complete scene_boundary_check before scoring: cite the draft's achieved state "
         "and compare it with the current endpoint and next reservation. Use overrun for "
         "material advancement beyond the current endpoint without explicit current-plan "
