@@ -278,6 +278,7 @@ def test_revision_instructions_do_not_grow_and_schema_shares_one_check_definitio
     # Bound the focused additions separately; retain the limit on the prior guidance.
     from open_hollywood_api.services.production_critic_comparison import COMPARISON_OBJECT_RULE
     from open_hollywood_api.services.production_critic_obligations import (
+        COMPLIANCE_CRAFT_RULE,
         MINIMUM_REPAIR_RULE,
         OBLIGATION_RULE,
         REQUIREMENT_BASIS_RULE,
@@ -287,8 +288,10 @@ def test_revision_instructions_do_not_grow_and_schema_shares_one_check_definitio
     assert len(clarification) <= 291
     assert len(MINIMUM_REPAIR_RULE) <= 675
     assert len(REQUIREMENT_BASIS_RULE) <= 800
+    assert len(COMPLIANCE_CRAFT_RULE) <= 1400
     existing_guidance = len(_INSTRUCTIONS[_Operation.CRITIQUE]) - len(OBLIGATION_RULE)
     existing_guidance -= len(REQUIREMENT_BASIS_RULE) + 1
+    existing_guidance -= len(COMPLIANCE_CRAFT_RULE) + 1
     assert existing_guidance - len(clarification) - len(MINIMUM_REPAIR_RULE) - 1 <= 3887
     execution = _revision()
     schema = _output_schema(

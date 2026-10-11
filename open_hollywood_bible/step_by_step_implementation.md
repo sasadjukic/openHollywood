@@ -3002,13 +3002,76 @@ See the [diagnostic results and frozen design](../docs/benchmark_reports/assignm
   one remains minor craft. The 23 mandatory repair targets include five false
   native blockers; none is an extra duplicate. Verify response replay, source
   hashes and local evidence closure. No new full-suite run is claimed.
-- [ ] Test the symmetric compliance/craft boundary inside the existing critic:
+- [x] Test the symmetric compliance/craft boundary inside the existing critic:
   established assigned facts and supported relationships suffice for met; a
   preferred dramatic mechanism must not turn them into unmet. Keep optional
   craft advice out of mandatory repairs and inspect verdict/routing as well as
   classification. Preserve genuine omissions, explicit relations, applicable
-  canon and indirect fulfillment. This next remedy is not implemented or
-  live-qualified. Production stays v53; broader acceptance remains open.
+  canon and indirect fulfillment. The implementation and bounded comparison are
+  completed below, with partial improvement and two order-control regressions;
+  the remedy and broader acceptance remain unqualified.
+
+**Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
+
+### Fulfilled assignments, optional craft and verdicts v54: 2026-10-11
+
+**Implementation, local verification and bounded comparison COMPLETE; remedy NOT QUALIFIED.**
+See the [implementation and diagnostic results](../docs/benchmark_reports/compliance-craft-v54-2026-10-11.md).
+
+- [x] Add a focused rule to the existing critic: complete assigned facts and
+  supported conditions require met; a preferred dramatic mechanism cannot create
+  a missing obligation. Optional craft preferences stay out of mandatory native
+  and repeated repairs, retain explicit optional scope through retries, and
+  alone do not justify revise/reject. Genuine craft defects remain eligible.
+- [x] Preserve exact v50-v53 rules, schemas, validators, consolidation, writer
+  contract and graph routing. Prompt v54 / graph v9 / critic retry policy 17.
+  This is model guidance, not a semantic validator or automatic verdict rewrite.
+- [x] Pass 32 focused regressions, including twelve new delivery/retry/durable
+  routing cases. Optional pass avoids revision; genuine craft and unmet assignment
+  defects retain repair targets. Optional revise still reaches the writer despite
+  zero mandatory targets, so diagnostics must inspect the verdict too.
+- [x] Pass Python lint/format, strict mypy across 194 files, frontend format/lint/
+  type checks, eleven frontend tests and the production build. Update the existing
+  instruction-size test to separately cap the new rule at 1,400 characters while
+  preserving the old limit; its focused rerun passes.
+- [x] Complete the full Python run: 965 pass and one instruction-size test fails
+  before its addition-aware update. That corrected test passes separately (1/1),
+  covering all 966 cases across the two runs with no unresolved failure. No second
+  clean full-suite execution is claimed. No production code changed after the
+  full run started. Final `git diff --check` passes.
+- [x] Replay all 25 previous responses to identical canonical results/audits or
+  validation failures. Preserve 159 sealed prior evidence files, the previous
+  report and source database. Freeze 24 matched wording probes at the same two
+  seeds; only the 1,393-character system addition and invocation metadata change.
+- [x] Obtain approval bound to the frozen plan and complete 24 probes in 25 calls,
+  below the 48-call ceiling. Record 329,887 input / 30,351 output tokens and
+  USD 0.05832458 at recorded October 8 rates, below the USD 0.31488 cap. Actual
+  charges unknown. No writer/full-story calls or canonical changes.
+- [x] Inspect all native checks, full generic/consolidated advice, summaries,
+  scores and verdicts, including the rejected first response. Five false blockers
+  persist. One clarified met/met review now retains Optional minor advice and
+  passes, but its summary still calls the turn partially met. All six complete
+  baselines pass and all six missing-fact cases retain their two blockers; all six
+  native touch repairs and complete repair sets exceed the assigned minimum.
+  Decision repairs do not demand unconditional completed entry.
+- [x] Record the explicit-order regression: both controls acknowledge the draft's
+  reversed chronology yet mark met/met and pass. Correct native pairs decline
+  from 19/24 to 17/24; 22 matched pairs remain unchanged. Explicit causation and
+  applicable canon still block correctly at both seeds. Canon reviews quote the
+  actual Bible clause but omit its artifact-version ID; consolidated advice
+  restores causal onset more clearly than the native after-touch wording alone.
+- [x] Verify 23 first-valid and 24 final-valid reviews. The one canon retry repairs
+  incomplete evidence IDs, retaining native statuses and raw reject; existing
+  mandatory-check materialization produces revise. Optional-label retry behavior
+  is not exercised live. All 21 generic comparisons validate: twenty consolidate
+  and one remains minor craft. The 21 mandatory targets include five false
+  blockers. Two fewer targets than v53 reflect missed real order violations,
+  not fewer false complaints. Replay saved responses and seal source/evidence
+  hashes. Local simulated craft routing is not live craft or story qualification.
+- [ ] Hold implementation fixed and isolate temporal order from causal permission:
+  compare order alone, order plus a no-causation clause, and separately stated
+  relationship conditions, with valid/reversed order and unconstrained-facts
+  controls. This is a recommendation, not an approved or completed extra batch.
 
 **Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
 
