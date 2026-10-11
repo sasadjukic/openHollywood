@@ -2633,7 +2633,7 @@ def _schema_repair_guidance(
                         ]
                     )
     guidance: dict[str, object] = {
-        "policy_version": "16" if operation is _Operation.CRITIQUE else "10",
+        "policy_version": "17" if operation is _Operation.CRITIQUE else "10",
         "mode": "repair_only",
         "focus_locations": focus_locations,
         "directives": directives,

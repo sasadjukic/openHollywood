@@ -185,7 +185,7 @@ def test_retry_specifies_exact_applicable_fields_without_rejected_allegations() 
     retry = _retry_execution(execution, raw)
     packet = _payload(_Operation.CRITIQUE, retry)
     repair = packet["schema_repair"]
-    assert repair["policy_version"] == "16"
+    assert repair["policy_version"] == "17"
     directive = next(
         d for d in repair["directives"] if d["location"].startswith("assignment_checks")
     )
@@ -243,7 +243,7 @@ class MandatoryCheckGateway(V26Gateway):
                 del raw["assignment_checks"]["turning_point"]
             else:
                 assert payload["retry_context"]["manuscript_defect_established"] is False
-                assert payload["schema_repair"]["policy_version"] == "16"
+                assert payload["schema_repair"]["policy_version"] == "17"
             response = replace(response, content=json.dumps(raw))
         return response
 

@@ -2721,11 +2721,51 @@ remains IN PROGRESS.** Production prompt v49 / graph v9, critic retry policy 16.
 - [x] Record 199,327 input / 19,501 output tokens, USD 0.03570618 estimated at
   recorded October 8 rates, within the USD 0.15744 approval; actual charges unknown.
   No writer calls, full-story runs or canonical changes.
-- [ ] Test a stricter full-proposition meaning of met: a similar dramatic function
-  cannot replace the specifically assigned fact, while indirect/action-based
-  realization remains acceptable.
+- [x] Implement a stricter full-proposition meaning of met while preserving
+  indirect/action-based realization; v50 below completes the controlled test.
 - [ ] Qualify independent semantic judgments before making broader reliability
   claims. Full-story repeatability, preference and cost acceptance remain open.
+
+**Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
+
+### Complete assigned fact means met v50: 2026-10-11
+
+**Focused implementation and frozen comparison COMPLETE; broader qualification
+IN PROGRESS.** Production prompt v50 / graph v9, critic retry policy 17. See the
+[v50 report](../docs/benchmark_reports/complete-assigned-fact-v50-2026-10-11.md).
+
+- [x] Define met as the complete assigned fact/state, including every explicit
+  condition. A similar dramatic function or broad premise cannot replace a
+  missing or contradictory required fact.
+- [x] Preserve action-based evidence, embodied reactions and indirect narration;
+  do not demand literal plan wording, explicit decision sentences or new conditions.
+- [x] Deliver the rule through the existing critic assessment and structural
+  retry paths. Keep schema, runtime validation, writer instructions and budgets.
+- [x] Pass eight focused prompt-delivery/retry regressions; replay all fifteen
+  saved v49 responses with twelve identical accepted results and three identical
+  rejections. The four semantic false passes remain unchanged in this offline replay.
+- [x] Pass all required checks: 934 Python tests, 11 frontend tests, Ruff,
+  strict mypy (190 files), frontend formatting/lint/types and production build.
+- [x] Prepare twelve matching v49 cases with identical input artifacts, settings,
+  budgets and first user messages/output schemas. Pin code, source and request hashes.
+- [x] Obtain explicit approval and complete twelve probes in 16 calls; all final
+  results valid, eight on the first attempt. Correct all four v49 false passes:
+  six missing-date controls each produce one turning-point blocker; six positive
+  drafts remain accepted. All twelve outcomes and original no-match repairs stay
+  met, including action-based decisions in the four implicit cases.
+- [x] Inspect all final evidence and four rejected first responses; replay all
+  sixteen responses and verify frozen requests, sources, code and database.
+  Two first responses still select met despite acknowledging the wrong fact;
+  structural retries recover them. Two other retries repair comparison objects
+  while preserving valid classification and consolidating duplicate complaints.
+  First-response validity is 8/12 versus v49's 9/12: no structural reliability claim.
+- [x] Record 216,532 input / 21,654 output tokens and USD 0.03897608 at recorded
+  October 8 rates, below the USD 0.15744 cap. Actual charges remain unknown.
+  No writer calls, full-story runs or canonical changes.
+- [ ] Qualify transfer to a separate scene with complete indirect/action-based
+  fulfillment, a similar dramatic effect with a wrong/missing fact, and a genuinely
+  missing decision. Keep v50 stable pending that evidence; no further calls
+  authorized here. Broader Step 19 acceptance remains open.
 
 **Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
 
