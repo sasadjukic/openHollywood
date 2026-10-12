@@ -3125,11 +3125,69 @@ See the [comparison results and frozen design](../docs/benchmark_reports/order-c
   Replay all twenty responses and verify/seal production, source and evidence
   hashes. The result supports a wording-associated scoping failure in this case,
   not a general internal-mechanism or reliability claim.
-- [ ] Test a compact replacement for the critic relationship guidance: distinguish
+- [x] Test a compact replacement for the critic relationship guidance: distinguish
   required facts, temporal and causal relations; apply each permission only to
   its named relation and carry those limits into repairs. Preserve complete-fact
   met, applicable canon and indirect evidence. Reuse the frozen matrix before
-  claiming improvement; no new production change or extra batch is made here.
+  claiming improvement. The implementation and approved comparison are completed
+  below, with partial improvement but remaining judgment and repair failures.
+
+**Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
+
+### Separate facts, order and causation in critic guidance v55: 2026-10-12
+
+**Implementation, local verification and approved comparison COMPLETE; remedy NOT QUALIFIED.**
+See the [implementation and comparison results](../docs/benchmark_reports/relationship-scope-v55-2026-10-12.md).
+
+- [x] Replace the existing source-basis and minimum-repair rules: assess facts,
+  temporal order/immediacy and causation separately; scope each permission to
+  its named relationship. Optional causation preserves required order; order
+  alone does not require causation. Carry these distinctions into native and
+  repeated repair advice without adding timing, triggers or completed action.
+- [x] Preserve complete-fact met, applicable canon, actions/indirect narration
+  and optional-versus-independent-craft guidance. The two rules shrink from
+  1,446 to 1,345 characters including their separator. Prompt v55 / graph v9 /
+  critic retry policy 17; no new output fields, validators or workflow changes.
+- [x] Pass 41 focused regressions and all 966 Python tests; pass Ruff, strict
+  mypy, frontend formatting/lint/type checks, all 11 frontend tests and build.
+  Existing tests exercise instruction delivery, retries and durable routing;
+  these local checks do not establish live semantic improvement.
+- [x] Verify all 133 sealed prior evidence files, source report and source
+  database. Replay twenty saved v54 responses to identical canonical results
+  and audits. Verify that only the two rule constants and prompt version change
+  in runtime code; all twenty frozen inputs, payloads, schemas, settings, budgets
+  and seeds match the prior matrix apart from the system-guidance replacement.
+- [x] Freeze twenty matched probes: sixteen core wording/draft cases and four
+  immediate-cause/missing-fact controls, at seeds 19101/19103. Preserve the case
+  order and existing one-retry bound. Maximum forty calls / USD 0.26240 at recorded
+  October 8 rates; actual charges unknown. Zero model calls during preparation.
+- [x] Obtain explicit approval and complete all twenty probes in twenty-one calls.
+  Nineteen first reviews and all twenty final reviews validate. Record 279,680
+  input / 26,322 output tokens and USD 0.049684 at recorded October 8 rates, below
+  the USD 0.26240 ceiling; actual charges unknown. No writer/full-story calls or
+  canonical writes. Production and frozen inputs stay fixed throughout execution.
+- [x] Inspect all responses and replay all twenty-one results/failures and audits.
+  Both causal-waiver false passes become correct blockers on first review.
+  Native pairs improve from 16/20 to 18/20 first and 19/20 final; all twenty outcome
+  checks remain correct. The extra gain follows a 631-character assessment's
+  structural retry, which changes unmet/revise to met/pass. The other unconstrained
+  case retains its false blocker. All eight ordered core cases and four controls
+  preserve correct native checks; no general reliability claim follows.
+- [x] Record repair failures separately: both order-only reviews invent a trigger;
+  one separated-relationship repair adds immediacy; both missing-touch repairs
+  add order. A minor tentative craft suggestion enters a blocking repair without
+  explicit Optional scope. The remaining false blocker also creates an unnecessary
+  repair. Both immediate-cause repairs now preserve onset at contact. Eleven
+  generic reports consolidate into thirteen native targets (twelve real, one
+  false), without duplicates; full advice and summaries remain unqualified.
+- [x] Verify and seal frozen code, source database, prior evidence and current
+  requests/results. Keep local full-suite/build evidence distinct from limited
+  live semantic findings. Step 19 acceptance remains incomplete.
+- [ ] Next, keep v55 fact checks stable and compare each mandatory repair and
+  linked restatement against the exact supported requirement it repairs. Preserve
+  optional craft suggestions outside blockers; test saved-response/local cases
+  before a bounded live comparison. Track the remaining false blocker and retry
+  drift separately. No writer, full-story or cross-provider qualification yet.
 
 **Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
 
