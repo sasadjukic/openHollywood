@@ -801,7 +801,7 @@ approved controlled retries validate with correct comparison objects, retained
 classification and exactly the two original repairs without duplicates. See the
 [v48 report](docs/benchmark_reports/comparison-shape-v48-2026-10-10.md).
 
-Current production contract v54 / graph v9 asks the existing critic to retain met
+Production contract v54 / graph v9 asks the existing critic to retain met
 for completely fulfilled obligations and keep optional craft preferences outside
 mandatory repairs. Optional preferences alone should produce pass; genuine
 independent craft defects can still warrant revision. This extends the v49-v53
@@ -821,6 +821,18 @@ blocker. Repair advice still invents relationships in other cases, and one of si
 exact historical requests changes judgment. This isolates a wording-sensitive
 failure without qualifying a remedy. See the
 [order/causation diagnostic](docs/benchmark_reports/order-causation-v54-2026-10-12.md).
+
+Current production contract v55 / graph v9 replaces the existing source-basis
+and minimum-repair guidance with a slightly shorter rule pair. It asks the critic
+to assess facts, order/immediacy and causation separately, scope permissions to
+the named relationship, and carry those distinctions into repairs. Complete-fact
+met, optional craft guidance, schemas, validation and retry policy 17 remain
+unchanged. All local checks pass. The approved twenty-probe comparison completes
+in twenty-one calls: both causal-waiver false passes are corrected, and final
+native pairs improve from 16/20 to 19/20. First-review pairs are 18/20; one gain
+depends on a structural retry. A false blocker and excessive repair conditions
+remain, so the remedy is not qualified. See the
+[v55 implementation and results](docs/benchmark_reports/relationship-scope-v55-2026-10-12.md).
 
 Benchmark word-count ranges are advisory creative targets. New outputs persist a
 non-gating adherence measurement with the target, actual count, status, and word
