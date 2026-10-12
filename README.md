@@ -814,6 +814,14 @@ and both explicit-order controls regress to false passes. Correct native check
 pairs fall from 19/24 to 17/24; the remedy is not qualified. See the
 [v54 implementation and results](docs/benchmark_reports/compliance-craft-v54-2026-10-11.md).
 
+A subsequent twenty-probe diagnostic holds v54 fixed. At both seeds, order-only
+wording blocks reversed chronology, adding the causal waiver produces a false
+pass, and separately stating required order and optional causation restores the
+blocker. Repair advice still invents relationships in other cases, and one of six
+exact historical requests changes judgment. This isolates a wording-sensitive
+failure without qualifying a remedy. See the
+[order/causation diagnostic](docs/benchmark_reports/order-causation-v54-2026-10-12.md).
+
 Benchmark word-count ranges are advisory creative targets. New outputs persist a
 non-gating adherence measurement with the target, actual count, status, and word
 deviation. Automatic completion reflects a finished, non-truncated document,
