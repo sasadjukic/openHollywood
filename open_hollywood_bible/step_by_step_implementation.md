@@ -3068,10 +3068,68 @@ See the [implementation and diagnostic results](../docs/benchmark_reports/compli
   blockers. Two fewer targets than v53 reflect missed real order violations,
   not fewer false complaints. Replay saved responses and seal source/evidence
   hashes. Local simulated craft routing is not live craft or story qualification.
-- [ ] Hold implementation fixed and isolate temporal order from causal permission:
+- [x] Hold implementation fixed and isolate temporal order from causal permission:
   compare order alone, order plus a no-causation clause, and separately stated
   relationship conditions, with valid/reversed order and unconstrained-facts
-  controls. This is a recommendation, not an approved or completed extra batch.
+  controls. The approved diagnostic is completed in the next section. A paired
+  wording effect is observed, with repair-scope and repeatability limits.
+
+**Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
+
+### Temporal order and causal permission under stable v54: 2026-10-12
+
+**Preparation, approved comparison and evidence review COMPLETE; remedy NOT QUALIFIED.**
+See the [comparison results and frozen design](../docs/benchmark_reports/order-causation-v54-2026-10-12.md).
+
+- [x] Keep production v54 / graph v9 / critic retry policy 17 and runtime sources
+  unchanged at merge `f891bb7`. This is a controlled diagnostic, not a new prompt
+  rule or semantic validator.
+- [x] Prepare sixteen paired cases: four wordings (order alone, order plus the
+  original causal waiver, separately stated relationship conditions, unconstrained
+  facts) crossed with reversed order or touch before delayed pull, at two seeds.
+  The new ordered draft changes only two paragraphs; the entry decision remains
+  action-based. A full minute without pull rules out immediate onset, not every
+  possible delayed causal link.
+- [x] Add four controls: the delayed draft under an explicit immediate-cause plan
+  and the saved both-missing draft under unconstrained facts, each at both seeds.
+  Twenty total probes, six exact historical v54 requests and fourteen new requests.
+  Reverse execution order at the second seed; do not rerun valid judgments.
+- [x] Verify all 161 sealed prior evidence files, prior report and source database.
+  Replay 25 v54 responses to identical requests, results/audits or validation
+  failure. Verify paired payload isolation, coherent synthetic artifact lineage,
+  unchanged system/settings/budgets and exclusion of expected labels from requests.
+- [x] Pass sixteen existing critic/probe regressions, `git diff --check` and
+  UTF-8/LF checks. Preserve the prior full v54 quality-gate record; no new full-suite
+  or frontend build run is claimed for this diagnostic-only change.
+- [x] Obtain explicit approval bound to the plan and complete all twenty probes
+  in twenty calls with no retries. Record 265,530 input / 22,791 output tokens and
+  USD 0.04629060 at recorded October 8 rates, below the USD 0.26240 ceiling. Actual
+  charges unknown. No writer/full-story, production or canonical changes.
+- [x] Inspect all forty native checks, twelve generic complaints, full repairs,
+  summaries, scores and verdicts. At both seeds, order alone blocks reversed
+  chronology, the original causal waiver causes a false pass, and separately
+  stating order/causation restores the correct blocker. All eight ordered core
+  cases pass. Both immediate-cause controls and both missing-fact controls block
+  correctly. Overall 16/20 native pairs and all twenty outcome checks are correct;
+  this differs from the previous matrix and is not an accuracy-improvement claim.
+- [x] Record remaining scope failures: both order-only full repairs invent
+  causation; both unconstrained reversed-draft reviews falsely require dramatic
+  linkage; both missing-touch repairs add timing/trigger demands. One immediate-
+  cause repair offers onset upon release, weakening its timing guarantee. Both
+  separated-relationship repairs permit noncausal order. Twelve generic reports
+  consolidate into twelve native targets (ten real obligations, two false
+  blockers) without duplicates. Correct detection does not qualify all advice.
+- [x] Compare all six exact historical requests: five native pairs/verdicts repeat,
+  but the previous seed-19103 optional pass becomes a false blocker under unchanged
+  requests/settings and recorded model digest. No retry explains this variation.
+  Replay all twenty responses and verify/seal production, source and evidence
+  hashes. The result supports a wording-associated scoping failure in this case,
+  not a general internal-mechanism or reliability claim.
+- [ ] Test a compact replacement for the critic relationship guidance: distinguish
+  required facts, temporal and causal relations; apply each permission only to
+  its named relation and carry those limits into repairs. Preserve complete-fact
+  met, applicable canon and indirect evidence. Reuse the frozen matrix before
+  claiming improvement; no new production change or extra batch is made here.
 
 **Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
 
