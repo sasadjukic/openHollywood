@@ -17,7 +17,6 @@ from open_hollywood_api.services.production_model_executor import (
     _Execution,
     _Operation,
     _output_schema,
-    _revision_acceptance_audit,
     _StructuredOutputContractError,
 )
 from open_hollywood_api.services.production_revision_acceptance import critic_repair_tests
@@ -32,6 +31,12 @@ from tests.api.test_production_v37 import _fixture, _payload
 from tests.api.test_production_v40 import _duplicate
 from tests.evaluations.test_agentic_blueprint import CORPUS_PATH
 from tests.evaluations.test_agentic_production import ProductionFixtureGateway
+from tests.repair_condition_fixtures import (
+    condition_fixture_for_request,
+)
+from tests.repair_condition_fixtures import (
+    fixture_revision_audit as _revision_acceptance_audit,
+)
 
 
 @pytest.fixture
@@ -302,7 +307,7 @@ class LinkedRepairGateway(V26Gateway):
                 )
                 if self.invalid_once and self.revision_one_reviews == 1:
                     check["current_finding_refs"] = ["boundary"]
-        return replace(response, content=json.dumps(raw))
+        return replace(response, content=json.dumps(condition_fixture_for_request(raw, request)))
 
 
 @pytest.mark.anyio

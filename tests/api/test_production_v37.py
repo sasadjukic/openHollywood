@@ -28,6 +28,7 @@ from tests.api.test_production_v28 import _execution
 from tests.api.test_production_v29 import _materialize, _raw, _refs
 from tests.evaluations.test_agentic_blueprint import CORPUS_PATH
 from tests.evaluations.test_agentic_production import ProductionFixtureGateway
+from tests.repair_condition_fixtures import condition_fixture_for_request
 
 
 @pytest.fixture
@@ -224,7 +225,9 @@ class BoundaryGateway(V26Gateway):
                 "assessment": "Synthetic boundary overrun for routing verification.",
                 "recommended_resolution": "Reserve the next scene's central turn.",
             }
-            response = replace(response, content=json.dumps(raw))
+            response = replace(
+                response, content=json.dumps(condition_fixture_for_request(raw, request))
+            )
         return response
 
 

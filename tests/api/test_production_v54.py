@@ -30,6 +30,9 @@ from tests.api.test_production_v46 import _broken, _retry_execution
 from tests.api.test_production_v49 import _unmet
 from tests.evaluations.test_agentic_blueprint import CORPUS_PATH
 from tests.evaluations.test_agentic_production import ProductionFixtureGateway
+from tests.repair_condition_fixtures import (
+    condition_fixture_for_request,
+)
 
 
 @pytest.fixture
@@ -87,7 +90,7 @@ def test_structural_retry_keeps_guidance_and_classification_without_rewriting_ju
     execution = replace(source, selection=replace(source.selection, deployment=deployment))
     retry = _retry_execution(execution, raw)
     packet = _payload(_Operation.CRITIQUE, retry)
-    assert packet["schema_repair"]["policy_version"] == "17"
+    assert packet["schema_repair"]["policy_version"] == "20"
     assert packet["schema_repair"]["preserved_classifications"][0]["assignment_finding_refs"] == [
         "assignment:outcome" if repeated else None
     ]
@@ -151,7 +154,7 @@ class ComplianceCraftGateway(V26Gateway):
                 }
             ]
             raw["verdict"] = "pass" if self.mode == "optional_pass" else "revise"
-        return replace(response, content=json.dumps(raw))
+        return replace(response, content=json.dumps(condition_fixture_for_request(raw, request)))
 
 
 @pytest.mark.anyio

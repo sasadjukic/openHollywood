@@ -17,6 +17,7 @@ from open_hollywood_api.services.production_model_executor import (
     _Operation,
     _output_schema,
 )
+from open_hollywood_api.services.production_repair_conditions import condition_obligation_rule
 from open_hollywood_engine.models import ModelDeployment
 
 from tests.api.test_production_v29 import _materialize
@@ -45,7 +46,7 @@ def test_basis_instruction_preserves_review_context_schema_and_other_roles(
         continuity_model_context=None,
     )
     assert messages[0].content.count(REQUIREMENT_BASIS_RULE) == 1
-    assert messages[0].content.count(OBLIGATION_RULE) == 1
+    assert messages[0].content.count(condition_obligation_rule(OBLIGATION_RULE)) == 1
     assert messages[0].content.count(MINIMUM_REPAIR_RULE) == 1
     for operation, instruction in _INSTRUCTIONS.items():
         if operation is not _Operation.CRITIQUE:
@@ -78,7 +79,7 @@ def test_basis_guidance_reaches_retry_without_reclassifying_or_rewriting_claims(
     execution = replace(source, selection=replace(source.selection, deployment=deployment))
     retry = _retry_execution(execution, raw)
     packet = _payload(_Operation.CRITIQUE, retry)
-    assert packet["schema_repair"]["policy_version"] == "17"
+    assert packet["schema_repair"]["policy_version"] == "20"
     assert packet["schema_repair"]["preserved_classifications"][0]["assignment_finding_refs"] == [
         "assignment:outcome" if repeated else None
     ]

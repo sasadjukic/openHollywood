@@ -865,6 +865,20 @@ including eight native repairs, and all twenty first/final raw assignment pairs
 match the controls. Both missing-facts cases still fail around repeated generic
 criticism. Main remains at v55; v58 is not qualified for promotion.
 
+The v59 candidate gives each native assignment finding one condition set.
+Declared generic restatements reuse the validated finding's rendered advice;
+their explanations and evidence survive without duplicating writer repairs.
+The complete v55 meaning of met remains unchanged. All twenty saved v58 first
+responses now validate locally, including the two formerly rejected missing-facts
+reviews. The approved twenty-probe comparison finishes in 21 calls: nineteen
+first reviews and all twenty final reviews validate, with all assignment pairs
+matching the controls. Four accepted generic repetitions share native conditions
+without duplicate repairs. Source citations resolve, but some explanatory prose
+still conflates order and causation. The focused contract passes this matrix;
+writer and broader semantic qualification remain open. Main stays v55. See
+[ADR 0036](docs/adr/0036-shared-consolidated-repair-conditions.md) and the
+[v59 report](docs/benchmark_reports/shared-repair-conditions-v59-2026-10-13.md).
+
 Benchmark word-count ranges are advisory creative targets. New outputs persist a
 non-gating adherence measurement with the target, actual count, status, and word
 deviation. Automatic completion reflects a finished, non-truncated document,

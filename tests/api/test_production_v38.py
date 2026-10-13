@@ -16,7 +16,6 @@ from open_hollywood_api.services.production_failure_evidence import capture_revi
 from open_hollywood_api.services.production_model_executor import (
     _Operation,
     _output_schema,
-    _scene_boundary_audit,
     _StructuredOutputContractError,
 )
 from open_hollywood_engine.evaluations import load_benchmark_corpus
@@ -28,6 +27,9 @@ from tests.api.test_production_v29 import _materialize, _raw, _refs
 from tests.api.test_production_v37 import _fixture, _payload
 from tests.evaluations.test_agentic_blueprint import CORPUS_PATH
 from tests.evaluations.test_agentic_production import ProductionFixtureGateway
+from tests.repair_condition_fixtures import (
+    fixture_boundary_audit as _scene_boundary_audit,
+)
 
 
 @pytest.fixture
@@ -210,7 +212,7 @@ class ComparisonGateway(V26Gateway):
                 del raw["scene_boundary_check"]
             else:
                 assert payload["retry_context"]["manuscript_defect_established"] is False
-                assert payload["schema_repair"]["policy_version"] == "17"
+                assert payload["schema_repair"]["policy_version"] == "20"
             response = replace(response, content=json.dumps(raw))
         return response
 

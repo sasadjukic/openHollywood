@@ -15,7 +15,6 @@ from open_hollywood_api.services.production_failure_evidence import capture_revi
 from open_hollywood_api.services.production_model_executor import (
     _Operation,
     _output_schema,
-    _scene_boundary_audit,
     _StructuredOutputContractError,
 )
 from open_hollywood_engine.evaluations import load_benchmark_corpus
@@ -30,6 +29,10 @@ from tests.api.test_production_v41 import _revision
 from tests.api.test_production_v46 import _retry_execution
 from tests.evaluations.test_agentic_blueprint import CORPUS_PATH
 from tests.evaluations.test_agentic_production import ProductionFixtureGateway
+from tests.repair_condition_fixtures import condition_fixture_for_request
+from tests.repair_condition_fixtures import (
+    fixture_boundary_audit as _scene_boundary_audit,
+)
 
 
 @pytest.fixture
@@ -71,7 +74,7 @@ def test_only_populated_approved_obligations_are_required(
     for check in checks["properties"].values():
         met, unmet = check["anyOf"]
         assert met["properties"]["recommended_resolution"] == {"type": "null"}
-        assert unmet["properties"]["recommended_resolution"]["minLength"] == 1
+        assert unmet["properties"]["recommended_resolution"] == {"type": "null"}
         assert set(met["required"]) == {
             "status",
             "assessment",
@@ -185,7 +188,7 @@ def test_retry_specifies_exact_applicable_fields_without_rejected_allegations() 
     retry = _retry_execution(execution, raw)
     packet = _payload(_Operation.CRITIQUE, retry)
     repair = packet["schema_repair"]
-    assert repair["policy_version"] == "17"
+    assert repair["policy_version"] == "20"
     directive = next(
         d for d in repair["directives"] if d["location"].startswith("assignment_checks")
     )
@@ -205,7 +208,7 @@ def test_audit_records_both_checks_with_exact_sources_and_redacts_failed_capture
     raw["assignment_checks"]["turning_point"]["assessment"] = "v49-test-only-secret-value"
     _unmet(raw, "outcome")
     audit = _scene_boundary_audit(raw, execution)
-    assert audit["schema_version"] == "4"
+    assert audit["schema_version"] == "7"
     assert audit["candidate_version_id"] == execution.inputs[1]["artifact_version_id"]
     assert audit["current_plan_version_id"] == execution.inputs[0]["artifact_version_id"]
     checks = audit["assignment_checks"]
@@ -243,8 +246,10 @@ class MandatoryCheckGateway(V26Gateway):
                 del raw["assignment_checks"]["turning_point"]
             else:
                 assert payload["retry_context"]["manuscript_defect_established"] is False
-                assert payload["schema_repair"]["policy_version"] == "17"
-            response = replace(response, content=json.dumps(raw))
+                assert payload["schema_repair"]["policy_version"] == "20"
+            response = replace(
+                response, content=json.dumps(condition_fixture_for_request(raw, request))
+            )
         return response
 
 
@@ -281,7 +286,7 @@ async def test_persisted_unmet_turn_reaches_writer_but_missing_check_only_retrie
         assert len(failed) == (1 if mode == "missing_check" else 0)
         for invocation in critics:
             if invocation.schema_validation_succeeded:
-                assert invocation.request_settings["scene_boundary_audit"]["schema_version"] == "4"
+                assert invocation.request_settings["scene_boundary_audit"]["schema_version"] == "7"
                 assert "assignment_checks" not in invocation.output_versions[0].content
             else:
                 assert not invocation.output_versions

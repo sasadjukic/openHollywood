@@ -68,6 +68,9 @@ from tests.evaluations.test_agentic_production import (
     _schema_test_continuity_context,
     _v17_catalog_test_execution,
 )
+from tests.repair_condition_fixtures import (
+    condition_fixture_for_request,
+)
 
 FIXTURES = json.loads(
     (Path(__file__).parents[1] / "fixtures" / "production_v25_regressions.json").read_text(
@@ -440,7 +443,7 @@ class V26Gateway(ProductionFixtureGateway):
                 self.mode == "invalid_once" and self.adjudication_calls == 1
             ):
                 raw["decisions"] = {}
-        return replace(response, content=json.dumps(raw))
+        return replace(response, content=json.dumps(condition_fixture_for_request(raw, request)))
 
 
 async def _run_gateway(gateway: V26Gateway, database: Path, engine: Engine) -> Any:

@@ -36,6 +36,9 @@ from tests.api.test_production_v26 import V26Gateway, _run_gateway
 from tests.api.test_production_v29 import _fixture, _materialize, _raw
 from tests.evaluations.test_agentic_blueprint import CORPUS_PATH
 from tests.evaluations.test_agentic_production import ProductionFixtureGateway
+from tests.repair_condition_fixtures import (
+    condition_fixture_for_request,
+)
 
 
 @pytest.fixture
@@ -215,7 +218,7 @@ class RepairGateway(V26Gateway):
                 for check in raw["repair_checks"].values():
                     check["status"] = "unmet" if self.repair_mode == "unmet" else "met"
                     check["assessment"] = "Repair audit test-only-repair-assessment-secret"
-        return replace(response, content=json.dumps(raw))
+        return replace(response, content=json.dumps(condition_fixture_for_request(raw, request)))
 
 
 @pytest.mark.anyio
@@ -289,7 +292,16 @@ def test_revision_instructions_do_not_grow_and_schema_shares_one_check_definitio
     assert len(MINIMUM_REPAIR_RULE) <= 675
     assert len(REQUIREMENT_BASIS_RULE) <= 800
     assert len(COMPLIANCE_CRAFT_RULE) <= 1400
-    existing_guidance = len(_INSTRUCTIONS[_Operation.CRITIQUE]) - len(OBLIGATION_RULE)
+    from open_hollywood_api.services.production_repair_conditions import (
+        REPAIR_CONDITION_RULE,
+        condition_obligation_rule,
+    )
+
+    assert len(REPAIR_CONDITION_RULE) <= 1950
+    existing_guidance = len(_INSTRUCTIONS[_Operation.CRITIQUE]) - len(
+        condition_obligation_rule(OBLIGATION_RULE)
+    )
+    existing_guidance -= len(REPAIR_CONDITION_RULE) + 1
     existing_guidance -= len(REQUIREMENT_BASIS_RULE) + 1
     existing_guidance -= len(COMPLIANCE_CRAFT_RULE) + 1
     assert existing_guidance - len(clarification) - len(MINIMUM_REPAIR_RULE) - 1 <= 3887

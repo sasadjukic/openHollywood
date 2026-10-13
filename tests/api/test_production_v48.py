@@ -31,6 +31,9 @@ from tests.api.test_production_v45 import _claim
 from tests.api.test_production_v46 import _broken, _retry_execution
 from tests.api.test_production_v47 import IndependentLinkGateway
 from tests.evaluations.test_agentic_blueprint import CORPUS_PATH
+from tests.repair_condition_fixtures import (
+    condition_fixture_for_request,
+)
 
 
 @pytest.fixture
@@ -67,7 +70,7 @@ def test_retry_explains_both_fields_without_replaying_prose_or_changing_output_c
     assert "exactly two required fields" in directive["action"]
     assert directive["action"] == COMPARISON_OBJECT_RULE + " " + COMPARISON_RULE
     assert "nonblank" in directive["action"] and "same defect and repair" in directive["action"]
-    assert packet["schema_repair"]["policy_version"] == "17"
+    assert packet["schema_repair"]["policy_version"] == "20"
     assert packet["schema_repair"]["preserved_classifications"][0]["assignment_finding_refs"] == [
         "assignment:outcome" if repeated else None
     ]
@@ -146,7 +149,7 @@ class ComparisonShapeGateway(IndependentLinkGateway):
             assert set(directive["required_shape"]["required"]) == {"finding_refs", "assessment"}
             assert packet["schema_repair"]["preserved_classifications"]
             assert "Rejected comparison text" not in json.dumps(packet)
-        return replace(response, content=json.dumps(raw))
+        return replace(response, content=json.dumps(condition_fixture_for_request(raw, request)))
 
 
 @pytest.mark.anyio

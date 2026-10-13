@@ -49,10 +49,15 @@ _TEXT_FIELDS = frozenset(
         "achieved_state",
         "current_endpoint_comparison",
         "next_scene_comparison",
+        "repair_ref",
+        "condition",
+        "exact_quote",
+        "support_assessment",
     }
 )
 _REFERENCE_FIELDS = frozenset(
     {
+        "source_ref",
         "draft_evidence_refs",
         "current_finding_refs",
         "finding_refs",
@@ -65,7 +70,13 @@ _REFERENCE_FIELDS = frozenset(
     }
 )
 _OBJECT_FIELDS = frozenset({"basis_details", "assignment_comparison"})
-_LIST_SECTIONS = ("assignment_violations", "issues", "findings", "new_findings")
+_LIST_SECTIONS = (
+    "assignment_violations",
+    "issues",
+    "findings",
+    "new_findings",
+    "assignment_repair_conditions",
+)
 _MAP_SECTIONS = (
     "requirement_coverage",
     "prior_finding_rechecks",
@@ -98,7 +109,7 @@ class _Capture:
         # Do not persist arbitrary nested objects or enormous numeric literals.
         return {"unretained_type": type(value).__name__}
 
-    def finding(self, value: object) -> object:
+    def finding(self, value: object, depth: int = 0) -> object:
         if not isinstance(value, dict):
             return self.scalar(value)
         result: dict[str, object] = {}
@@ -113,16 +124,27 @@ class _Capture:
                     result[key] = [self.scalar(ref) for ref in refs[:MAX_ITEMS]]
                 else:
                     result[key] = self.scalar(refs)
-        # Only this one known nesting level is retained.
-        for key in sorted(_OBJECT_FIELDS):
+        # Only allowlisted object fields and two levels of condition/citation nesting.
+        for key in sorted(_OBJECT_FIELDS) if depth < 2 else []:
             if key in value:
                 child = value[key]
                 if isinstance(child, dict):
                     result[key] = self.finding(
-                        {k: v for k, v in child.items() if k not in _OBJECT_FIELDS}
+                        {k: v for k, v in child.items() if k not in _OBJECT_FIELDS}, depth + 1
                     )
                 else:
                     result[key] = self.scalar(child)
+        if depth < 2:
+            for key in ("conditions", "source_refs"):
+                if key in value:
+                    children = value[key]
+                    if isinstance(children, list):
+                        self.truncated |= len(children) > MAX_ITEMS
+                        result[key] = [
+                            self.finding(child, depth + 1) for child in children[:MAX_ITEMS]
+                        ]
+                    else:
+                        result[key] = self.scalar(children)
         return result
 
 
@@ -273,6 +295,7 @@ def capture_review_failure(
             ),
             "canonical_source_refs": _catalog(payload, "canonical_source_catalog", "reference_id"),
             "world_rule_ids": _catalog(payload, "world_rule_catalog", "world_rule_id"),
+            "source_ref": _catalog(payload, "repair_source_catalog", "source_ref"),
         }
         refs = _references(attempted)
         capture.truncated |= len(refs) > MAX_SELECTED_REFERENCES
@@ -288,7 +311,16 @@ def capture_review_failure(
             if match:
                 row["source"] = {
                     key: capture.scalar(match[key])
-                    for key in ("exact_excerpt", "claim", "statement", "category", "canonical_id")
+                    for key in (
+                        "exact_excerpt",
+                        "claim",
+                        "statement",
+                        "category",
+                        "canonical_id",
+                        "artifact_version_id",
+                        "source_path",
+                        "text",
+                    )
                     if key in match
                 }
                 excerpt = match.get("exact_excerpt")

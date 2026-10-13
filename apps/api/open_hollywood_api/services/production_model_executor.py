@@ -128,6 +128,15 @@ from open_hollywood_api.services.production_critic_retry import (
     critic_link_directive,
 )
 from open_hollywood_api.services.production_failure_evidence import capture_review_failure
+from open_hollywood_api.services.production_repair_conditions import (
+    REPAIR_CONDITION_RULE,
+    RepairConditionError,
+    bind_condition_advice_schema,
+    condition_obligation_rule,
+    render_assignment_repairs,
+    repair_conditions_schema,
+    repair_source_catalog,
+)
 from open_hollywood_api.services.production_revision_acceptance import (
     compact_repair_inputs,
     critic_repair_tests,
@@ -406,7 +415,8 @@ _SCHEMA_REPAIR_OPERATION_RULES: Mapping[_Operation, tuple[str, ...]] = {
         "Keep rubric score values numeric, use only declared verdict and severity literals, "
         "and never combine a passing verdict with a blocking issue. The application derives "
         "overall_score; do not add it.",
-        OBLIGATION_RULE,
+        condition_obligation_rule(OBLIGATION_RULE),
+        REPAIR_CONDITION_RULE,
         "Return assignment_violations=[] if no other concrete assignment failure remains. "
         "Otherwise "
         "each violation needs one populated scene_assignment_contract anchor, an exact "
@@ -719,11 +729,13 @@ _INSTRUCTIONS: Mapping[_Operation, str] = {
         "not a hard per-scene quota."
     ),
     _Operation.CRITIQUE: (
-        OBLIGATION_RULE
+        condition_obligation_rule(OBLIGATION_RULE)
         + " "
         + REQUIREMENT_BASIS_RULE
         + " "
         + MINIMUM_REPAIR_RULE
+        + " "
+        + REPAIR_CONDITION_RULE
         + " "
         + COMPLIANCE_CRAFT_RULE
         + " For every generic issues entry: "
@@ -1775,6 +1787,7 @@ def _output_schema(
             )
             properties["point_of_view_check"] = _point_of_view_check_schema(critic_evidence_refs)
             properties["scene_boundary_check"] = _scene_boundary_check_schema()
+            properties["assignment_repair_conditions"] = repair_conditions_schema()
             definitions = schema["$defs"]
             definitions["CriticDraftEvidenceReference"] = {"type": "string"}
             if critic_evidence_refs is not None:
@@ -1832,6 +1845,7 @@ def _output_schema(
                 ],
                 "assignment_violations",
                 "assignment_checks",
+                "assignment_repair_conditions",
                 "point_of_view_check",
                 "scene_boundary_check",
             ]
@@ -1856,6 +1870,7 @@ def _output_schema(
                     definitions.update(checks_schema.pop("$defs"))
                     properties["repair_checks"] = checks_schema
                     schema["required"].append("repair_checks")
+            bind_condition_advice_schema(schema)
         elif operation is _Operation.STORY_BIBLE_UPDATE:
             _story_bible_thread_output_schema(schema)
         return schema
@@ -2455,7 +2470,8 @@ def _schema_repair_guidance(
     operation_rules = list(_SCHEMA_REPAIR_OPERATION_RULES[operation])
     if operation is _Operation.CRITIQUE:
         operation_rules = [
-            OBLIGATION_RULE,
+            condition_obligation_rule(OBLIGATION_RULE),
+            REPAIR_CONDITION_RULE,
             "Repair only your review JSON. This is not a new draft or a story revision request.",
             "A failure to format a review proves NO manuscript defect. Never put a reviewer "
             "schema, quotation, evidence-handle, or metadata error in issues "
@@ -2638,15 +2654,19 @@ def _schema_repair_guidance(
                         precise[link_directive["location"]] = link_directive
             directives = [precise.get(str(d["location"]), d) for d in directives]
             for directive in directives:
+                if str(directive["location"]).startswith("assignment_repair_conditions"):
+                    directive["action"] = REPAIR_CONDITION_RULE
+                    directive["required_shape"] = repair_conditions_schema()
+                    directive["source_catalog_field"] = "repair_source_catalog"
                 if str(directive["location"]).startswith("assignment_checks"):
-                    directive["action"] = OBLIGATION_RULE
+                    directive["action"] = condition_obligation_rule(OBLIGATION_RULE)
                     directive["required_checks"] = list(
                         assignment_checks_schema(_scene_assignment_contract(critic_execution))[
                             "required"
                         ]
                     )
     guidance: dict[str, object] = {
-        "policy_version": "17" if operation is _Operation.CRITIQUE else "10",
+        "policy_version": "20" if operation is _Operation.CRITIQUE else "10",
         "mode": "repair_only",
         "focus_locations": focus_locations,
         "directives": directives,
@@ -2863,6 +2883,7 @@ def _messages(
                 if key not in {"required_elements", "forbidden_shortcuts"}
             }
             payload["critic_requirement_scope"] = _critic_requirement_scope(execution)
+            payload["repair_source_catalog"] = _critic_repair_sources(execution)
             payload["viewpoint_contract"] = _critic_viewpoint_contract(execution)
             payload["critic_rubric"] = {
                 "name": _CRITIC_RUBRIC_NAME,
@@ -3170,6 +3191,9 @@ def _bind_critic_assignment_schema(schema: dict[str, Any], execution: _Execution
     comparison = assignment_comparison_schema(list(_critic_assignment_routes(execution)))
     schema["$defs"]["CritiqueIssue"]["properties"]["assignment_comparison"] = comparison
     properties = schema["properties"]
+    properties["assignment_repair_conditions"] = repair_conditions_schema(
+        [source["source_ref"] for source in _critic_repair_sources(execution)]
+    )
     properties["assignment_checks"] = assignment_checks_schema(assignment)
     if _scene_boundary_overrun_anchor(execution) is None:
         properties["scene_boundary_check"]["properties"]["status"]["enum"] = ["no_overrun"]
@@ -3301,6 +3325,7 @@ def _normalize_scene_boundary_check(
 
 def _scene_boundary_audit(raw: dict[str, Any], execution: _Execution) -> dict[str, object]:
     """Retain validated, bounded model judgments separately from canonical story content."""
+    rendered = _render_critic_assignment_repairs(raw, execution)
     check = raw["scene_boundary_check"]
     candidate = next(
         item
@@ -3322,17 +3347,25 @@ def _scene_boundary_audit(raw: dict[str, Any], execution: _Execution) -> dict[st
     }
     repetitions = [
         (index, issue)
-        for index, issue in enumerate(raw.get("issues", []))
+        for index, issue in enumerate(rendered.get("issues", []) or [])
         if issue.get("assignment_finding_ref") is not None
     ]
     if repetitions:
         _normalize_current_critic_findings(raw, execution)
+        targets = _critic_condition_finding_targets(rendered, execution)
         audit.update(
             schema_version="2",
             assignment_restatements_total=len(repetitions),
             assignment_restatements=[
                 {
                     "raw_issue_index": index,
+                    "repair_condition_refs": [
+                        ref
+                        for ref in targets[issue["assignment_finding_ref"]]["_current_finding_refs"]
+                        if ref != "boundary"
+                    ],
+                    "includes_boundary_policy": "boundary"
+                    in targets[issue["assignment_finding_ref"]]["_current_finding_refs"],
                     **{
                         key: active_secret_guard().redact_text(issue[key])[:1000]
                         for key in (
@@ -3366,7 +3399,7 @@ def _scene_boundary_audit(raw: dict[str, Any], execution: _Execution) -> dict[st
                 for index, issue in enumerate(raw["issues"][:16])
             ],
         )
-    checks = _validated_critic_assignment_checks(raw, execution)
+    checks = _validated_critic_assignment_checks(rendered, execution)
     audit.update(
         schema_version="4",
         assignment_checks={
@@ -3378,6 +3411,43 @@ def _scene_boundary_audit(raw: dict[str, Any], execution: _Execution) -> dict[st
             }
             for anchor, check in checks.items()
         },
+    )
+    catalog = {source["source_ref"]: source for source in _critic_repair_sources(execution)}
+    guard = active_secret_guard()
+    audit.update(
+        schema_version="7",
+        repair_advice_origin="shared_finding_conditions",
+        assignment_repair_conditions=[
+            {
+                "repair_ref": entry["repair_ref"],
+                "rendered_recommendation": guard.redact_text(
+                    " ".join(condition["condition"] for condition in entry["conditions"])
+                ),
+                "conditions": [
+                    {
+                        "condition": guard.redact_text(condition["condition"]),
+                        "support_assessment": guard.redact_text(condition["support_assessment"]),
+                        "source_refs": [
+                            {
+                                **{
+                                    key: guard.redact_text(catalog[citation["source_ref"]][key])
+                                    for key in (
+                                        "source_ref",
+                                        "artifact_kind",
+                                        "artifact_version_id",
+                                        "source_path",
+                                    )
+                                },
+                                "exact_quote": guard.redact_text(citation["exact_quote"]),
+                            }
+                            for citation in condition["source_refs"]
+                        ],
+                    }
+                    for condition in entry["conditions"]
+                ],
+            }
+            for entry in raw["assignment_repair_conditions"]
+        ],
     )
     return audit
 
@@ -3679,6 +3749,7 @@ def _normalize_current_critic_findings(
     critique: dict[str, Any], execution: _Execution
 ) -> dict[str, Any]:
     """Carry application-owned wire provenance until repair links are validated."""
+    critique = _render_critic_assignment_repairs(critique, execution)
     try:
         critique = project_craft_repair_links(
             critique, critic_repair_tests(execution.inputs, execution.unit_id)
@@ -3692,6 +3763,66 @@ def _normalize_current_critic_findings(
     result = _normalize_story_length_critique(result, execution)
     result = _normalize_scene_boundary_check(result, execution, track_findings=True)
     return _normalize_assignment_restatements(result)
+
+
+def _critic_repair_sources(execution: _Execution) -> list[dict[str, str]]:
+    return repair_source_catalog(execution.inputs, _critic_prompt_inputs(execution))
+
+
+def _render_critic_assignment_repairs(
+    raw: dict[str, Any], execution: _Execution, *, diagnostic: bool = False
+) -> dict[str, Any]:
+    try:
+        rendered = render_assignment_repairs(raw, _critic_repair_sources(execution))
+    except RepairConditionError as error:
+        raise _StructuredOutputContractError(
+            error.location, str(error), issue_type="invalid_assignment_repair_conditions"
+        ) from error
+    issues = rendered.get("issues")
+    if not isinstance(issues, list):
+        return rendered  # The existing issue validator reports malformed arrays.
+    repeated = [
+        (index, issue)
+        for index, issue in enumerate(issues)
+        if isinstance(issue, dict) and issue.get("assignment_finding_ref") is not None
+    ]
+    if not repeated:
+        return rendered
+    try:
+        targets = _critic_condition_finding_targets(rendered, execution)
+    except ValueError:
+        if diagnostic:
+            return rendered  # Preserve earlier choices, never establish invalid new findings.
+        raise
+    for index, issue in repeated:
+        ref = issue["assignment_finding_ref"]
+        target = targets.get(ref) if isinstance(ref, str) else None
+        if target is None or target["severity"] != "blocking":
+            if diagnostic:
+                continue  # An unresolved null recommendation cannot qualify a new choice.
+            raise _StructuredOutputContractError(
+                f"issues.{index}.assignment_finding_ref",
+                "reuse a current blocking assignment finding; "
+                "met or absent findings have no repair",
+                issue_type="invalid_assignment_restatement",
+            )
+        issue["recommendation"] = target["recommendation"]
+    return rendered
+
+
+def _critic_condition_finding_targets(
+    rendered: dict[str, Any], execution: _Execution
+) -> dict[str, dict[str, Any]]:
+    """Resolve aliases with the actual hard-finding validators, never semantic matching."""
+    hard = _normalize_point_of_view_check(
+        {**rendered, "issues": []}, execution, track_findings=True
+    )
+    hard = _normalize_scene_boundary_check(hard, execution, track_findings=True)
+    return {
+        ref: finding
+        for finding in hard.get("issues", [])
+        for ref in finding["_current_finding_refs"]
+    }
 
 
 def _critic_candidate_version_id(execution: _Execution) -> str:
@@ -3720,6 +3851,11 @@ def _critic_link_failure_details(
     raw: dict[str, Any], execution: _Execution, error: ValueError
 ) -> _StructuredOutputContractError | None:
     """Add independent structural errors after rejection, never repair the response."""
+    try:
+        raw = _render_critic_assignment_repairs(raw, execution, diagnostic=True)
+    except ValueError:
+        # Invalid advice cannot establish structurally valid current hard findings.
+        return None
     # Reuse the actual validators and consolidation rules for hard routes. The
     # empty craft projection is diagnostic-only and can never become an output.
     try:
@@ -3790,7 +3926,7 @@ def _critic_link_failure_details(
 
 
 def _normalize_assignment_restatements(critique: dict[str, Any]) -> dict[str, Any]:
-    """Fold only explicit repetitions into validated hard findings, retaining all advice."""
+    """Preserve repeated explanations/evidence; the finding already owns all repair advice."""
     issues = deepcopy(critique.get("issues", []))
     for index, issue in enumerate(issues):
         try:
@@ -3844,8 +3980,13 @@ def _normalize_assignment_restatements(critique: dict[str, Any]) -> dict[str, An
                 "a restatement needs a current blocking assignment finding",
                 issue_type="invalid_assignment_restatement",
             )
+        if issue["recommendation"] != target["recommendation"]:
+            raise _StructuredOutputContractError(
+                f"issues.{index}.recommendation",
+                "a restatement must reuse its finding's complete rendered repair",
+                issue_type="invalid_assignment_restatement",
+            )
         target["description"] += f" Restatement ({issue['category']}): {issue['description']}"
-        target["recommendation"] += f" Restatement repair: {issue['recommendation']}"
         target["evidence"] = list(dict.fromkeys([*target["evidence"], *issue["evidence"]]))
     return {**critique, "issues": retained}
 

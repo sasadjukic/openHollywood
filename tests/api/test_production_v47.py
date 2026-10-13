@@ -16,7 +16,6 @@ from open_hollywood_api.services.production_failure_evidence import capture_revi
 from open_hollywood_api.services.production_model_executor import (
     _Operation,
     _output_schema,
-    _revision_acceptance_audit,
     _StructuredOutputContractError,
 )
 from open_hollywood_api.services.production_revision_acceptance import critic_repair_tests
@@ -31,6 +30,12 @@ from tests.api.test_production_v37 import _payload
 from tests.api.test_production_v41 import LinkedRepairGateway, _revision
 from tests.api.test_production_v46 import _retry_execution
 from tests.evaluations.test_agentic_blueprint import CORPUS_PATH
+from tests.repair_condition_fixtures import (
+    condition_fixture_for_request,
+)
+from tests.repair_condition_fixtures import (
+    fixture_revision_audit as _revision_acceptance_audit,
+)
 
 
 @pytest.fixture
@@ -243,7 +248,7 @@ class IndependentLinkGateway(LinkedRepairGateway):
                 description="The outcome is missed, also reducing tension.",
             )
             raw["issues"].append(repeated)
-        return replace(response, content=json.dumps(raw))
+        return replace(response, content=json.dumps(condition_fixture_for_request(raw, request)))
 
 
 @pytest.mark.anyio

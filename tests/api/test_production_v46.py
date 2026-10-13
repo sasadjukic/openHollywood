@@ -29,6 +29,9 @@ from tests.api.test_production_v37 import _fixture, _payload
 from tests.api.test_production_v41 import LinkedRepairGateway, _linked, _revision
 from tests.api.test_production_v45 import _claim
 from tests.evaluations.test_agentic_blueprint import CORPUS_PATH
+from tests.repair_condition_fixtures import (
+    condition_fixture_for_request,
+)
 
 
 @pytest.fixture
@@ -314,7 +317,7 @@ class ClassificationRetryGateway(LinkedRepairGateway):
                 "assignment_finding_refs"
             ] == ["assignment:outcome"]
             assert "Synthetic repeated outcome complaint" not in json.dumps(payload)
-        return replace(response, content=json.dumps(raw))
+        return replace(response, content=json.dumps(condition_fixture_for_request(raw, request)))
 
 
 @pytest.mark.anyio

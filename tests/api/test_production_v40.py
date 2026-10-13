@@ -13,7 +13,6 @@ from open_hollywood_api.persistence.database import create_session_factory
 from open_hollywood_api.persistence.models import AgentInvocation
 from open_hollywood_api.services.production_model_executor import (
     _Execution,
-    _scene_boundary_audit,
     _StructuredOutputContractError,
 )
 from open_hollywood_engine.evaluations import load_benchmark_corpus
@@ -25,6 +24,12 @@ from tests.api.test_production_v29 import _materialize, _raw, _refs
 from tests.api.test_production_v37 import _fixture
 from tests.evaluations.test_agentic_blueprint import CORPUS_PATH
 from tests.evaluations.test_agentic_production import ProductionFixtureGateway
+from tests.repair_condition_fixtures import (
+    condition_fixture_for_request,
+)
+from tests.repair_condition_fixtures import (
+    fixture_boundary_audit as _scene_boundary_audit,
+)
 
 
 @pytest.fixture
@@ -167,7 +172,9 @@ class ConsolidationGateway(V26Gateway):
                 }
                 for anchor in ("outcome", "turning_point")
             }
-            return replace(response, content=json.dumps(raw))
+            return replace(
+                response, content=json.dumps(condition_fixture_for_request(raw, request))
+            )
         return response
 
 

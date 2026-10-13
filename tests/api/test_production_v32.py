@@ -39,6 +39,9 @@ from tests.api.test_production_v29 import _materialize
 from tests.api.test_production_v31 import _review, _revision
 from tests.evaluations.test_agentic_blueprint import CORPUS_PATH
 from tests.evaluations.test_agentic_production import ProductionFixtureGateway
+from tests.repair_condition_fixtures import (
+    condition_fixture_for_request,
+)
 
 
 @pytest.fixture
@@ -241,7 +244,7 @@ class AdjudicationGateway(V26Gateway):
                 self.decision_mode == "invalid_once" and self.critic_adjudication_calls == 1
             ):
                 raw["decisions"] = {}
-        return replace(response, content=json.dumps(raw))
+        return replace(response, content=json.dumps(condition_fixture_for_request(raw, request)))
 
 
 @pytest.mark.anyio

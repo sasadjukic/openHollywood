@@ -15,7 +15,6 @@ from open_hollywood_api.persistence.models import AgentInvocation
 from open_hollywood_api.services.production_failure_evidence import capture_review_failure
 from open_hollywood_api.services.production_model_executor import (
     _Execution,
-    _scene_boundary_audit,
     _StructuredOutputContractError,
 )
 from open_hollywood_api.services.production_revision_acceptance import critic_repair_tests
@@ -30,6 +29,12 @@ from tests.api.test_production_v41 import _linked, _revision
 from tests.api.test_production_v43 import RepeatedAssignmentGateway
 from tests.api.test_production_v44 import _retry
 from tests.evaluations.test_agentic_blueprint import CORPUS_PATH
+from tests.repair_condition_fixtures import (
+    condition_fixture_for_request,
+)
+from tests.repair_condition_fixtures import (
+    fixture_boundary_audit as _scene_boundary_audit,
+)
 
 
 @pytest.fixture
@@ -79,7 +84,7 @@ def test_same_defect_at_any_severity_consolidates_without_promoting_the_craft_is
     assert result["issues"][0]["severity"] == "blocking"  # Native assignment severity retained.
     assert raw["issues"][0]["description"] in result["issues"][0]["description"]
     audit = _scene_boundary_audit(raw, execution)
-    assert audit["schema_version"] == "4"
+    assert audit["schema_version"] == "7"
     comparisons, repetitions = audit["assignment_comparisons"], audit["assignment_restatements"]
     assert isinstance(comparisons, list) and isinstance(repetitions, list)
     assert comparisons[0]["severity"] == repetitions[0]["severity"] == severity
@@ -278,7 +283,7 @@ class ComparedClaimsGateway(RepeatedAssignmentGateway):
             },
         )
         raw["issues"].append(distinct)
-        return replace(response, content=json.dumps(raw))
+        return replace(response, content=json.dumps(condition_fixture_for_request(raw, request)))
 
 
 @pytest.mark.anyio

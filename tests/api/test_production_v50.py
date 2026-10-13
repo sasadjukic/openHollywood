@@ -13,6 +13,7 @@ from open_hollywood_api.services.production_model_executor import (
     _Operation,
     _output_schema,
 )
+from open_hollywood_api.services.production_repair_conditions import condition_obligation_rule
 from open_hollywood_engine.models import ModelDeployment
 
 from tests.api.test_production_v29 import _materialize, _raw, _refs
@@ -43,7 +44,7 @@ def test_complete_fact_rule_reaches_both_profiles_and_preserves_exact_assignment
         continuity_model_context=None,
     )
     instruction = messages[0].content
-    assert instruction.count(OBLIGATION_RULE) == 1
+    assert instruction.count(condition_obligation_rule(OBLIGATION_RULE)) == 1
     assert "including every explicit condition" in instruction
     assert "similar dramatic purpose cannot substitute" in instruction
     assert "literal plan wording is not required" in instruction
@@ -85,12 +86,12 @@ def test_structural_retry_keeps_full_fact_semantics_without_inventing_a_blocker(
     retry = _retry_execution(execution, broken)
     payload = _payload(_Operation.CRITIQUE, retry)
     guidance = payload["schema_repair"]
-    assert guidance["policy_version"] == "17"
-    assert OBLIGATION_RULE in guidance["operation_rules"]
+    assert guidance["policy_version"] == "20"
+    assert condition_obligation_rule(OBLIGATION_RULE) in guidance["operation_rules"]
     directive = next(
         d for d in guidance["directives"] if d["location"].startswith("assignment_checks")
     )
-    assert directive["action"] == OBLIGATION_RULE
+    assert directive["action"] == condition_obligation_rule(OBLIGATION_RULE)
     assert directive["required_checks"] == ["turning_point", "outcome"]
     assert "Rejected repair prose" not in json.dumps(payload)
     assert payload["retry_context"]["manuscript_defect_established"] is False

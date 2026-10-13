@@ -3293,6 +3293,58 @@ candidate NOT QUALIFIED.** See
 
 **Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
 
+### Shared assignment repair conditions v59: 2026-10-13
+
+**Implementation, local verification, offline replay and approved comparison COMPLETE;
+focused shared-condition contract PASSES this matrix; writer/broader qualification OPEN.** See
+[ADR 0036](../docs/adr/0036-shared-consolidated-repair-conditions.md) and the
+[implementation report](../docs/benchmark_reports/shared-repair-conditions-v59-2026-10-13.md).
+
+- [x] Start from `8939848` on `codex/critic-shared-repair-conditions`, retaining
+  main's v55 production. Recover the previous candidate's rendering and test
+  infrastructure, then make each native finding own one condition set. Keep
+  complete-fact fulfillment, actions/indirect evidence and independent craft.
+- [x] Require linked generic advice to stay null and reuse the exact validated
+  finding recommendation. Reject separate issue records/advice, absent owners
+  and missing native coverage. Preserve repeated descriptions/evidence; append
+  no repeated repair text. Extra conditions belong in the native source-cited set.
+- [x] Resolve boundary/native aliases with the existing exact consolidation
+  validators. Boundary-only restatements reuse application policy. Preserve
+  historical repairs and retry classification. Audit schema 7 records owner refs
+  and boundary policy; prompt 59 / graph 9 / critic retry 20. No new calls or migration.
+- [x] Pass Ruff and strict mypy across 198 files, frontend checks, eleven tests
+  and production build. Full Python run: 1,025 passed, one outdated boundary
+  advice assertion failed. Correct that test-only expectation; all 86 affected
+  v43/v58/v59 tests pass afterward. Sixteen new v59 cases and the adapted durable
+  mock workflow cover shared repairs. No full-suite rerun after the test-only fix.
+- [x] Verify 443 sealed prior files and the source database. Replay 22 unmodified
+  v58 responses: eighteen first reviews keep identical results; both failed first
+  reviews now produce two exact single-copy repairs; the two saved retries remain
+  invalid for separate advice or incomplete independent-craft comparison.
+- [x] Freeze twenty matched cases. Drafts, context, settings, budgets and seeds
+  are identical; the only first-request difference from v58 is condition guidance.
+  Maximum forty calls / USD 0.26240 at recorded October 8 rates; actual charges
+  unknown. Preparation and offline replay make zero model calls.
+- [x] Obtain explicit permission and complete twenty probes in 21 calls: nineteen
+  first reviews and all twenty final reviews validate; all first/final native
+  check pairs match the controls. One 601-character assessment passes after the
+  existing bounded retry. Four generic repetitions share native sets; both
+  missing-facts controls produce two blockers each. No duplicate repair text.
+- [x] Inspect all 25 citations and conditions, twelve final native sets, computed
+  writer targets and explanatory prose. Source identity resolves and no unassigned
+  mandatory condition appears in rendered repairs. Causal language still occurs
+  in explanations; atomic cause/timing and downstream writer behavior remain open.
+- [x] Reconstruct and replay all requests/responses unchanged, verify frozen code
+  and source database, and seal evidence. Usage: 407,609 input / 25,902 output
+  tokens; USD 0.06742606 at recorded rates, actual charges unknown. No writer,
+  full-story or canonical changes; main remains v55.
+- [ ] Next, keep v59 fixed and test actual writer repairs from order-only and
+  missing-fact feedback, preserving fulfilled facts and indirect decisions
+  without adding causal or completed-entry requirements. Include explicitly
+  required causation as a control. Obtain approval for new private payloads.
+
+**Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
+
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 
 21. [ ] **Package the stable system with Tauri** and test crash/restart, offline, missing-model, invalid-key, provider-timeout, and low-disk-space behavior.
