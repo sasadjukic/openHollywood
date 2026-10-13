@@ -3246,6 +3246,53 @@ See [ADR 0034](../docs/adr/0034-traceable-assignment-repair-conditions.md) and t
 
 **Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
 
+### Rendered assignment repair advice v58: 2026-10-13
+
+**Implementation, local verification and approved comparison COMPLETE;
+candidate NOT QUALIFIED.** See
+[ADR 0035](../docs/adr/0035-rendered-assignment-repair-advice.md) and the
+[implementation and test report](../docs/benchmark_reports/rendered-repair-advice-v58-2026-10-13.md).
+
+- [x] Start from retained v55 production plus documentation at `1cd2d53` on
+  `codex/critic-rendered-repair-advice`; leave main at v55. Preserve the meaning
+  of met, relationship scope, optional craft and actions/indirect evidence.
+- [x] Make conditions the sole model-authored assignment repair advice. Validate
+  coverage and citations, require null native/linked advice fields, render exact
+  joined conditions and reject competing text. Keep existing consolidation,
+  writer targets and historical advice. Record rendered origin in audit schema 6.
+  Prompt v58 / graph v9 / critic retry policy 19; no added inference or migration.
+- [x] Pass 44 new tests, 101 affected regressions and all 1,010 Python tests.
+  Ruff, strict mypy across 197 files, frontend format/lint/type checks, all eleven
+  frontend tests and production build pass. Preserve the deliberate source-valid
+  but semantically unsupported counterexample; tests do not establish entailment.
+- [x] Verify 300 sealed v55/v57 files and both reports/database. Replay all thirty
+  saved v57 responses: ten unchanged no-repair passes, twenty extra-advice
+  rejections. Explicit null-only counterfactual copies yield 28 passes and two
+  missing-record failures; these are not new model evidence or semantic approval.
+- [x] Freeze twenty exactly matched cases, seeds, settings, budgets and order;
+  maximum forty calls / USD 0.26240 at recorded October 8 rates. Zero model calls.
+- [x] Record explicit operator approval bound to the final plan hash. Two launch
+  attempts fail before execution due to automatic review timeout/capacity; after
+  operator retry guidance, the third launch passes review. No check is bypassed.
+- [x] Complete twenty probes in twenty-two calls: 428,184 input / 27,168 output
+  tokens, USD 0.07081296 at recorded rates; actual charges unknown. Eighteen first
+  reviews validate, including eight native repairs. All first/final native pairs
+  match the twenty controls; both missing-facts controls exhaust their retry.
+- [x] Inspect all 25 conditions/citations and accepted advice. All sources resolve;
+  no extra mandatory causal/order/entry demands appear in the conditions. Rationale
+  still uses unsupported causal language in four order-only cases. No linked
+  generic repair is accepted live; that route remains unqualified.
+- [x] Isolate the two first failures locally: copying native records into missing
+  linked-issue records makes both explicit counterfactuals validate, while
+  duplicating rendered advice. Originals remain unchanged and are not counted as
+  successes. Replay all twenty-two raw responses, verify frozen evidence and seal
+  the report. Keep main at v55; full-story/preference/cost acceptance stays open.
+- [ ] Next, test one condition set per consolidated finding, with declared
+  restatements reusing that authority. Keep additional conditions inspectable in
+  the authoritative set and preserve independent craft; no silent repair fallback.
+
+**Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
+
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 
 21. [ ] **Package the stable system with Tauri** and test crash/restart, offline, missing-model, invalid-key, provider-timeout, and low-disk-space behavior.

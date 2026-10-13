@@ -851,6 +851,20 @@ write matching advice twice. This would establish coverage, not semantic support
 See [ADR 0034](docs/adr/0034-traceable-assignment-repair-conditions.md) and the
 [v57 implementation and results](docs/benchmark_reports/repair-condition-sources-v57-2026-10-12.md).
 
+The v58 candidate makes structured conditions the single authored source of
+mandatory assignment advice. The application renders existing recommendation
+fields from those conditions and rejects separately authored assignment advice,
+including linked generic additions. V55's meaning of met is unchanged. Source
+traceability remains distinct from semantic support. Local verification and a
+frozen twenty-case comparison are tracked in
+[ADR 0035](docs/adr/0035-rendered-assignment-repair-advice.md) and the
+[v58 report](docs/benchmark_reports/rendered-repair-advice-v58-2026-10-13.md).
+All 1,010 Python tests and required lint/type/frontend checks and build pass.
+The approved twenty-probe run uses twenty-two calls: eighteen reviews validate,
+including eight native repairs, and all twenty first/final raw assignment pairs
+match the controls. Both missing-facts cases still fail around repeated generic
+criticism. Main remains at v55; v58 is not qualified for promotion.
+
 Benchmark word-count ranges are advisory creative targets. New outputs persist a
 non-gating adherence measurement with the target, actual count, status, and word
 deviation. Automatic completion reflects a finished, non-truncated document,
