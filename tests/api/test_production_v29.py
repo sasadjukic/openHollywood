@@ -14,6 +14,7 @@ import pytest
 from open_hollywood_api.services.production_model_executor import (
     _CRITIC_RUBRIC_DIMENSIONS,
     _critic_evidence_catalog,
+    _critic_repair_sources,
     _Execution,
     _materialize_output_data,
     _messages,
@@ -31,6 +32,9 @@ from open_hollywood_engine.workflows import (
 from open_hollywood_engine.workflows.production_graph import _review_disposition
 
 from tests.api.test_production_v28 import _execution
+from tests.repair_condition_fixtures import (
+    condition_fixture,
+)
 from tests.workflows.test_scene_production import _passing_production_input
 
 
@@ -114,7 +118,12 @@ def _materialize(raw: dict[str, Any], execution: _Execution) -> dict[str, Any]:
             artifact_key=draft["artifact_key"], version_id=UUID(draft["artifact_version_id"])
         )
     )
-    normalized = _materialize_output_data(_Operation.CRITIQUE, task, execution, raw)
+    normalized = _materialize_output_data(
+        _Operation.CRITIQUE,
+        task,
+        execution,
+        condition_fixture(raw, _critic_repair_sources(execution)),
+    )
     Critique.model_validate(normalized)
     return normalized
 

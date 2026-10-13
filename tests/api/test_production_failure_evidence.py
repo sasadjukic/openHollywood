@@ -24,6 +24,7 @@ from sqlalchemy import Engine, select
 from tests.api.test_production_v26 import V26Gateway, _run_gateway
 from tests.evaluations.test_agentic_blueprint import CORPUS_PATH
 from tests.evaluations.test_agentic_production import ProductionFixtureGateway
+from tests.repair_condition_fixtures import condition_fixture_for_request
 
 
 @pytest.fixture
@@ -263,7 +264,7 @@ class FailureEvidenceGateway(V26Gateway):
                     },
                 }
             ]
-        return replace(response, content=json.dumps(raw))
+        return replace(response, content=json.dumps(condition_fixture_for_request(raw, request)))
 
 
 @pytest.mark.anyio

@@ -16,6 +16,7 @@ from open_hollywood_api.services.production_model_executor import (
     _Operation,
     _output_schema,
 )
+from open_hollywood_api.services.production_repair_conditions import condition_obligation_rule
 from open_hollywood_engine.models import ModelDeployment
 
 from tests.api.test_production_v29 import _materialize
@@ -44,7 +45,7 @@ def test_minimum_repair_instruction_changes_only_critic_system_message(
         continuity_model_context=None,
     )
     assert messages[0].content.count(MINIMUM_REPAIR_RULE) == 1
-    assert messages[0].content.count(OBLIGATION_RULE) == 1
+    assert messages[0].content.count(condition_obligation_rule(OBLIGATION_RULE)) == 1
     assert MINIMUM_REPAIR_RULE not in _INSTRUCTIONS[_Operation.WRITE]
     monkeypatch.setitem(
         _INSTRUCTIONS,
@@ -71,7 +72,7 @@ def test_structural_retry_keeps_minimum_rule_and_existing_classification_contrac
     execution = replace(source, selection=replace(source.selection, deployment=deployment))
     retry = _retry_execution(execution, raw)
     packet = _payload(_Operation.CRITIQUE, retry)
-    assert packet["schema_repair"]["policy_version"] == "17"
+    assert packet["schema_repair"]["policy_version"] == "20"
     assert packet["schema_repair"]["preserved_classifications"][0]["assignment_finding_refs"] == [
         "assignment:outcome" if repeated else None
     ]

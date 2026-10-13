@@ -38,6 +38,9 @@ from sqlalchemy import Engine, select
 
 from tests.api.test_production_v26 import V26Gateway, _run_gateway
 from tests.evaluations.test_agentic_blueprint import CORPUS_PATH
+from tests.repair_condition_fixtures import (
+    condition_fixture_for_request,
+)
 
 
 @pytest.fixture
@@ -205,7 +208,9 @@ class DevelopmentGateway(V26Gateway):
                 "Offline supplied disposition: compare the event at its stated time, "
                 "not a later state."
             )
-            return replace(response, content=json.dumps(raw))
+            return replace(
+                response, content=json.dumps(condition_fixture_for_request(raw, request))
+            )
         return response
 
 

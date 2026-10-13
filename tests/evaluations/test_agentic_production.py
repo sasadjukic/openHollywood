@@ -140,6 +140,7 @@ from tests.evaluations.test_agentic_blueprint import (
     CORPUS_PATH,
     BlueprintFixtureGateway,
 )
+from tests.repair_condition_fixtures import condition_fixture_for_request
 
 
 class ProductionFixtureGateway(BlueprintFixtureGateway):
@@ -373,7 +374,7 @@ class ProductionFixtureGateway(BlueprintFixtureGateway):
                 if request.model_identifier == "cloud-fixture"
                 else ModelDeployment.LOCAL
             ),
-            content=json.dumps(content),
+            content=json.dumps(condition_fixture_for_request(content, request)),
             thinking=None,
             finish_reason="stop",
             created_at=datetime.now(UTC),

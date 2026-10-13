@@ -31,6 +31,9 @@ from tests.api.test_production_v29 import _comparison, _materialize, _raw
 from tests.api.test_production_v37 import _fixture, _payload
 from tests.api.test_production_v41 import LinkedRepairGateway, _linked, _revision
 from tests.evaluations.test_agentic_blueprint import CORPUS_PATH
+from tests.repair_condition_fixtures import (
+    condition_fixture_for_request,
+)
 
 
 @pytest.fixture
@@ -70,7 +73,7 @@ def _retry(execution: _Execution, raw: dict[str, Any]) -> dict[str, Any]:
         },
     )
     packet = _payload(_Operation.CRITIQUE, retry)
-    assert packet["schema_repair"]["policy_version"] == "17"
+    assert packet["schema_repair"]["policy_version"] == "20"
     assert packet["retry_context"]["manuscript_defect_established"] is False
     return packet
 
@@ -289,7 +292,7 @@ class LinkRetryGateway(LinkedRepairGateway):
             )
             assert any(d.get("missing_routes") == ["boundary"] for d in directives)
             assert "Rejected reviewer allegation" not in json.dumps(payload)
-        return replace(response, content=json.dumps(raw))
+        return replace(response, content=json.dumps(condition_fixture_for_request(raw, request)))
 
 
 @pytest.mark.anyio

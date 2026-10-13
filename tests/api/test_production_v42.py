@@ -26,6 +26,9 @@ from tests.api.test_production_v31 import _review
 from tests.api.test_production_v37 import _fixture
 from tests.api.test_production_v41 import LinkedRepairGateway, _revision
 from tests.evaluations.test_agentic_blueprint import CORPUS_PATH
+from tests.repair_condition_fixtures import (
+    condition_fixture_for_request,
+)
 
 
 @pytest.fixture
@@ -147,7 +150,7 @@ class IndependentRepairGateway(LinkedRepairGateway):
                 current_finding_refs=["assignment:outcome"] if self.original_unmet else [],
                 assessment="Only the original outcome obligation is assessed here.",
             )
-        return replace(response, content=json.dumps(raw))
+        return replace(response, content=json.dumps(condition_fixture_for_request(raw, request)))
 
 
 @pytest.mark.anyio

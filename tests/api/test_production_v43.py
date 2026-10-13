@@ -15,8 +15,6 @@ from open_hollywood_api.services.production_model_executor import (
     _critic_assignment_routes,
     _Operation,
     _output_schema,
-    _revision_acceptance_audit,
-    _scene_boundary_audit,
     _StructuredOutputContractError,
 )
 from open_hollywood_api.services.production_revision_acceptance import repair_checks_schema
@@ -31,6 +29,15 @@ from tests.api.test_production_v37 import _fixture
 from tests.api.test_production_v41 import _linked, _revision
 from tests.api.test_production_v42 import IndependentRepairGateway
 from tests.evaluations.test_agentic_blueprint import CORPUS_PATH
+from tests.repair_condition_fixtures import (
+    condition_fixture_for_request,
+)
+from tests.repair_condition_fixtures import (
+    fixture_boundary_audit as _scene_boundary_audit,
+)
+from tests.repair_condition_fixtures import (
+    fixture_revision_audit as _revision_acceptance_audit,
+)
 
 
 @pytest.fixture
@@ -100,7 +107,7 @@ def test_schema_reuses_compatible_groups_and_respects_boundary_fallback() -> Non
 
 
 @pytest.mark.parametrize("ref", ["assignment:outcome", "boundary", "viewpoint"])
-def test_declared_repetition_preserves_both_claims_repairs_and_all_evidence(ref: str) -> None:
+def test_declared_repetition_preserves_claims_shared_repairs_and_all_evidence(ref: str) -> None:
     execution = _revision()
     raw = _raw(execution, "pov" if ref == "viewpoint" else "assignment")
     if ref == "boundary":
@@ -108,6 +115,7 @@ def test_declared_repetition_preserves_both_claims_repairs_and_all_evidence(ref:
         raw["scene_boundary_check"]["status"] = "overrun"
     raw["repair_checks"] = _review(execution)["repair_checks"]
     repeat = _raw(execution, "blocking_craft")["issues"][0]
+    native_advice = _materialize(raw, execution)["issues"][0]["recommendation"]
     repeat.update(assignment_finding_ref=ref, draft_evidence_refs=[_refs(execution)[1]])
     repeat["assignment_comparison"] = _comparison(ref)
     raw["issues"] = [repeat]
@@ -117,11 +125,17 @@ def test_declared_repetition_preserves_both_claims_repairs_and_all_evidence(ref:
     target = result["issues"][0]
     assert target["category"].startswith("scene_assignment:")
     assert repeat["description"] in target["description"]
-    assert repeat["recommendation"] in target["recommendation"]
+    if ref == "boundary":
+        # The v59 fixture port drops the old second advice channel for boundary-only
+        # restatements. They reuse the application policy without new model conditions.
+        assert target["recommendation"] == native_advice
+        assert repeat["recommendation"] not in target["recommendation"]
+    else:
+        assert repeat["recommendation"] in target["recommendation"]
     assert "The date was today." in target["evidence"]
     assert "assignment_finding_ref" not in json.dumps(result)
     audit = _scene_boundary_audit(raw, execution)
-    assert audit["schema_version"] == "4"
+    assert audit["schema_version"] == "7"
     repetitions = audit["assignment_restatements"]
     assert isinstance(repetitions, list)
     assert repetitions[0]["assignment_finding_ref"] == ref
@@ -250,7 +264,7 @@ class RepeatedAssignmentGateway(IndependentRepairGateway):
                 "assignment_comparison": _comparison("assignment:turning_point"),
             }
         ]
-        return replace(response, content=json.dumps(raw))
+        return replace(response, content=json.dumps(condition_fixture_for_request(raw, request)))
 
 
 @pytest.mark.anyio

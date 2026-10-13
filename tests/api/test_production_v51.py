@@ -14,6 +14,7 @@ from open_hollywood_api.services.production_model_executor import (
     _Operation,
     _output_schema,
 )
+from open_hollywood_api.services.production_repair_conditions import condition_obligation_rule
 from open_hollywood_engine.models import ModelDeployment
 
 from tests.api.test_production_v29 import _refs
@@ -44,7 +45,7 @@ def test_comparison_clarification_reaches_first_review_without_changing_its_cont
     )
     addition = "For every generic issues entry: " + COMPARISON_OBJECT_RULE + " "
     assert messages[0].content.count(addition) == 1
-    assert messages[0].content.count(OBLIGATION_RULE) == 1
+    assert messages[0].content.count(condition_obligation_rule(OBLIGATION_RULE)) == 1
     assert COMPARISON_OBJECT_RULE not in _INSTRUCTIONS[_Operation.WRITE]
     monkeypatch.setitem(
         _INSTRUCTIONS, _Operation.CRITIQUE, _INSTRUCTIONS[_Operation.CRITIQUE].replace(addition, "")
