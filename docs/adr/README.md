@@ -36,3 +36,4 @@ tradeoffs. Status values are `Proposed`, `Accepted`, `Superseded`, or `Rejected`
 | [0031](0031-preserve-critic-classification-during-structural-repair.md) | Preserve critic classification during structural repair | Accepted |
 | [0032](0032-independent-craft-owns-original-repair-links.md) | Independent craft findings own original repair links | Accepted |
 | [0033](0033-independent-mandatory-scene-checks.md) | Independent evidence-backed mandatory scene checks | Accepted |
+| [0034](0034-traceable-assignment-repair-conditions.md) | Traceable assignment repair conditions | Accepted |

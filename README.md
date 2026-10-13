@@ -822,7 +822,7 @@ exact historical requests changes judgment. This isolates a wording-sensitive
 failure without qualifying a remedy. See the
 [order/causation diagnostic](docs/benchmark_reports/order-causation-v54-2026-10-12.md).
 
-Current production contract v55 / graph v9 replaces the existing source-basis
+Production contract v55 / graph v9 replaces the existing source-basis
 and minimum-repair guidance with a slightly shorter rule pair. It asks the critic
 to assess facts, order/immediacy and causation separately, scope permissions to
 the named relationship, and carry those distinctions into repairs. Complete-fact
@@ -833,6 +833,23 @@ native pairs improve from 16/20 to 19/20. First-review pairs are 18/20; one gain
 depends on a structural retry. A false blocker and excessive repair conditions
 remain, so the remedy is not qualified. See the
 [v55 implementation and results](docs/benchmark_reports/relationship-scope-v55-2026-10-12.md).
+
+The v57 candidate starts from retained v55; the rejected v56 prompt change is not
+included. The critic must list every mandatory assignment repair condition with
+exact source citations and a support assessment, including linked restatements.
+Validation checks complete repair-text coverage, source versions and exact
+quotations. Invocation audits preserve the records; citation validity does not
+prove semantic support. The v55 meaning of met and relationship guidance stay
+unchanged. All 998 Python tests, strict type checks and frontend checks/build pass.
+The approved twenty-probe comparison completes in thirty calls. Raw assignment
+pairs match all twenty cases, but only ten reviews validate: every repair-bearing
+review fails exact text coverage on both attempts. All 41 supplied citations
+resolve; separate advice still adds unsupported conditions. Keep main at v55;
+the candidate is not qualified. The next recommendation is to render mandatory
+advice from one authoritative condition list instead of asking the model to
+write matching advice twice. This would establish coverage, not semantic support.
+See [ADR 0034](docs/adr/0034-traceable-assignment-repair-conditions.md) and the
+[v57 implementation and results](docs/benchmark_reports/repair-condition-sources-v57-2026-10-12.md).
 
 Benchmark word-count ranges are advisory creative targets. New outputs persist a
 non-gating adherence measurement with the target, actual count, status, and word

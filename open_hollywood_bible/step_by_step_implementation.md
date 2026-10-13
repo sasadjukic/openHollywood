@@ -3183,11 +3183,66 @@ See the [implementation and comparison results](../docs/benchmark_reports/relati
 - [x] Verify and seal frozen code, source database, prior evidence and current
   requests/results. Keep local full-suite/build evidence distinct from limited
   live semantic findings. Step 19 acceptance remains incomplete.
-- [ ] Next, keep v55 fact checks stable and compare each mandatory repair and
+- [x] Keep v55 fact checks stable and compare each mandatory repair and
   linked restatement against the exact supported requirement it repairs. Preserve
   optional craft suggestions outside blockers; test saved-response/local cases
   before a bounded live comparison. Track the remaining false blocker and retry
-  drift separately. No writer, full-story or cross-provider qualification yet.
+  drift separately. The v56 instruction-only experiment completed but regressed
+  to 17/20 correct native pairs versus v55's 19/20 final. Its candidate was rejected;
+  the operator retained v55 on main. This completes the experiment, not the remedy.
+  No writer, full-story or cross-provider qualification yet.
+
+**Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
+
+### Inspectable assignment repair conditions v57: 2026-10-12
+
+**Implementation, local verification and approved comparison COMPLETE; candidate NOT QUALIFIED.**
+See [ADR 0034](../docs/adr/0034-traceable-assignment-repair-conditions.md) and the
+[implementation and comparison results](../docs/benchmark_reports/repair-condition-sources-v57-2026-10-12.md).
+
+- [x] Start from retained v55 at `d6834f0`, keeping its complete-fact, relationship,
+  minimum-repair and optional-craft rules unchanged. Require condition records
+  for every model-written native assignment repair and linked generic addition,
+  including minor restatements. Preserve independent craft's existing route.
+- [x] Validate exact repair-text coverage, current source membership, exact quotes
+  and bounded structure. Resolve source references to immutable artifact versions
+  and original paths despite context filtering. Retain redacted records in audit
+  schema 5 and bounded failure evidence. Prompt v57 / graph v9 / critic retry
+  policy 18; no new inference pass, retry allowance, writer behavior or migration.
+- [x] Pass 32 new tests, all 998 Python tests, Ruff, strict mypy across 197 files,
+  frontend formatting/lint/type checks, all 11 frontend tests and build. Explicitly
+  port historical simulated fixtures; no production auto-annotation fallback.
+  Demonstrate that a source-valid but unsupported repair remains structurally
+  valid: traceability does not establish entailment or atomic decomposition.
+- [x] Verify all 136 v55 and 133 v56 sealed evidence files and the source database.
+  Replay all 41 saved responses locally. Explicit test-only annotations preserve
+  forty prior canonical results, including semantic errors, and the known prior
+  structural failure. Do not count simulated citations as model evidence.
+- [x] Freeze twenty matched v55 cases at seeds 19101/19103. Inputs, settings,
+  budgets and order match exactly; new requests differ only by condition guidance,
+  source catalog and output schema. Maximum forty calls / USD 0.26240 at recorded
+  October 8 rates, actual charges unknown. Zero model calls during preparation.
+- [x] Obtain explicit permission and complete twenty probes in thirty calls:
+  589,000 input / 37,691 output tokens, USD 0.0975364 at recorded October 8 rates,
+  actual charges unknown. No valid-response reruns, writer/full-story calls or
+  canonical writes. Replay all thirty unmodified responses and verify frozen
+  code, database and source evidence.
+- [x] Inspect every condition, cited source and separate advice. All forty first
+  and last native check pairs match inspected facts, including rejected responses.
+  Only ten no-repair reviews validate; all ten repair-bearing reviews exhaust
+  retry because condition text differs from the separate recommendation. All 41
+  citations resolve, but 24 native texts mismatch and two generic additions lack
+  records. Four final raw reviews retain unsupported causal/order demands; one
+  also gains completed-entry advice on retry. No nonempty condition review was
+  accepted, so neither usable repair delivery nor semantic improvement is qualified.
+- [x] Record structural failure separately from correct raw detection, inspect
+  summaries/scores and stable check/verdict labels, and seal evidence. Keep main
+  at v55. Canon and independent-craft source behavior remain local-test evidence.
+- [ ] Next, test one authored source of mandatory assignment repair advice:
+  render canonical recommendations from the structured conditions, covering native
+  and linked generic routes and rejecting conflicting extra advice. Preserve v55
+  obligation semantics and independent craft. Prove deterministic coverage locally
+  before a bounded live comparison; source support still needs semantic testing.
 
 **Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
 
