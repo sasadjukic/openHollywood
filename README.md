@@ -879,6 +879,15 @@ writer and broader semantic qualification remain open. Main stays v55. See
 [ADR 0036](docs/adr/0036-shared-consolidated-repair-conditions.md) and the
 [v59 report](docs/benchmark_reports/shared-repair-conditions-v59-2026-10-13.md).
 
+After that comparison, v59 was merged to main at `72bed6f`. The
+[fixed-v59 writer repair experiment](docs/benchmark_reports/writer-repairs-v59-2026-10-14.md)
+completed fifteen approved calls with production unchanged. All six repairs pass
+their critic reviews, and the three controls behave as expected. Existing facts
+and indirect endings are preserved, but both missing-decision repairs complete
+entry beyond the threshold and the critic permits it. Endpoint preservation remains
+open. All 34 relevant local tests pass; the recorded-rate estimate is USD 0.03743416,
+with actual charges unknown. See the report for inspection details and limitations.
+
 Benchmark word-count ranges are advisory creative targets. New outputs persist a
 non-gating adherence measurement with the target, actual count, status, and word
 deviation. Automatic completion reflects a finished, non-truncated document,

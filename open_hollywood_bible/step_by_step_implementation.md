@@ -3338,10 +3338,54 @@ focused shared-condition contract PASSES this matrix; writer/broader qualificati
   and source database, and seal evidence. Usage: 407,609 input / 25,902 output
   tokens; USD 0.06742606 at recorded rates, actual charges unknown. No writer,
   full-story or canonical changes; main remains v55.
-- [ ] Next, keep v59 fixed and test actual writer repairs from order-only and
-  missing-fact feedback, preserving fulfilled facts and indirect decisions
-  without adding causal or completed-entry requirements. Include explicitly
-  required causation as a control. Obtain approval for new private payloads.
+- [x] Complete the fixed-v59 writer repair test below with approved private
+  payloads, order-only and missing-fact feedback, and required-causation controls.
+  Existing facts and indirect decisions are preserved in the inspected cases;
+  the test also identifies unresolved endpoint expansion in two repairs.
+
+**Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
+
+### Fixed-v59 writer repairs: 2026-10-14
+
+**APPROVED EXPERIMENT COMPLETE; REPAIR DELIVERY WORKS ON THESE CASES;
+ENDPOINT PRESERVATION OPEN.** See the
+[experiment results](../docs/benchmark_reports/writer-repairs-v59-2026-10-14.md).
+
+- [x] Start from merged v59 at `72bed6f` on `codex/writer-repair-v59`. Keep all
+  production code and the meaning of met fixed; no new schema, instruction,
+  routing, retry allowance or canonical story change.
+- [x] Verify 142 sealed v59 files, its report and the frozen source database;
+  replay all 21 original responses unchanged. Build standard writer/critic
+  requests with identical original repair tests and version-bound evidence.
+- [x] Pass 34 relevant probe, repair-acceptance and v59 tests. Exercise all six
+  writer requests plus retry recovery/exhaustion with nine fake responses and
+  zero model calls. Check diagnostic formatting and syntax. No application changes
+  require another full suite or frontend build.
+- [x] Freeze six writer/critic pairs: order-only, missing-touch/decision and
+  explicit immediate causation, each at two seeds. Add two unchanged-defect
+  controls and one valid indirect-decision control with both feet outside.
+  Maximum 30 calls / USD 0.19680 at recorded October 8 rates; actual charges unknown.
+- [x] Obtain explicit permission and complete all fifteen probes in fifteen calls,
+  without retries or extra requests. All six revisions validate and receive critic
+  passes; eight original repairs are satisfied. All three control pairs match:
+  unchanged defects remain, and a valid indirect decision outside passes.
+- [x] Inspect all whole revisions, diffs and reviews. All first eight paragraphs
+  and approach-to-threshold passages remain exact; four existing action endings
+  and four existing pull paragraphs remain exact. No new mandatory causal or
+  entry demand appears, but causal readings remain in explanatory prose.
+- [x] Record the unresolved scope concern: both missing-decision writers complete
+  entry, and both critics accept it despite the threshold exit state. One calls
+  this the decision's logical completion. Distinguish optional writer expansion
+  and permissive boundary interpretation from a mandatory entry requirement.
+- [x] Reconstruct/replay all fifteen requests/responses unchanged; verify frozen
+  code, database and historical evidence; seal results. Usage: 214,224 input /
+  18,607 output tokens; USD 0.03743416 at recorded rates, actual charges unknown.
+  No second prose revision, full-story calls, canonical or production changes.
+- [ ] Next, keep v59 fixed and compare a valid indirect decision outside with
+  completed entry under the original threshold wording, explicit outside-at-end
+  wording and authorized entry. Keep decision fulfillment separate from endpoint
+  compliance; establish whether wording ambiguity or boundary reasoning explains
+  the permissive judgments before changing code. Prepare and approve new calls.
 
 **Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
 
