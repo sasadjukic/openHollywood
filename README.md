@@ -888,6 +888,14 @@ entry beyond the threshold and the critic permits it. Endpoint preservation rema
 open. All 34 relevant local tests pass; the recorded-rate estimate is USD 0.03743416,
 with actual charges unknown. See the report for inspection details and limitations.
 
+The [fixed-v59 endpoint wording comparison](docs/benchmark_reports/endpoint-wording-v59-2026-10-14.md)
+completed in 24 calls with no retries: all twenty declared boundary controls
+matched. Entry passed under original threshold wording and explicit permission,
+but all four explicit outside-at-end violations required revision. Decisions and
+original repairs stayed met in all 24 reviews. Production stays v59; 45 relevant
+local tests pass. The recorded-rate estimate is USD 0.08499880, with actual charges
+unknown. Writer repair of these explicit boundary defects remains to be tested.
+
 Benchmark word-count ranges are advisory creative targets. New outputs persist a
 non-gating adherence measurement with the target, actual count, status, and word
 deviation. Automatic completion reflects a finished, non-truncated document,

@@ -3381,11 +3381,54 @@ ENDPOINT PRESERVATION OPEN.** See the
   code, database and historical evidence; seal results. Usage: 214,224 input /
   18,607 output tokens; USD 0.03743416 at recorded rates, actual charges unknown.
   No second prose revision, full-story calls, canonical or production changes.
-- [ ] Next, keep v59 fixed and compare a valid indirect decision outside with
+- [x] Keep v59 fixed and compare a valid indirect decision outside with
   completed entry under the original threshold wording, explicit outside-at-end
   wording and authorized entry. Keep decision fulfillment separate from endpoint
-  compliance; establish whether wording ambiguity or boundary reasoning explains
-  the permissive judgments before changing code. Prepare and approve new calls.
+  compliance before changing code. The completed comparison below supports a
+  permissive interpretation of the original wording in these tested cases.
+
+**Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
+
+### Fixed-v59 endpoint wording comparison: 2026-10-14
+
+**COMPLETED; EXPLICIT ENDPOINT WORDING CHANGES THE BOUNDARY JUDGMENT.** See the
+[comparison report](../docs/benchmark_reports/endpoint-wording-v59-2026-10-14.md).
+
+- [x] Start from `c6739976` on `codex/endpoint-wording-v59`; keep production v59,
+  the meaning of met, retry policy and all canonical story artifacts unchanged.
+- [x] Freeze both previous missing-decision writer revisions and variants changing
+  only their final entry sentence to the previously accepted outside-action ending.
+  Cross all four drafts with original threshold, explicit outside-at-end and
+  optional-entry wording at two paired critic seeds: twenty-four probes.
+- [x] Keep the Scene Plan and embedded Blueprint plan consistent, updating only
+  exit state and derived lineage. Verify wording-normalized requests are otherwise
+  identical, including compaction, original repair tests and next-scene reservation.
+  Reproduce two historical live requests exactly at their original seeds.
+- [x] Verify 299 sealed files, both reports and the database; reconstruct/replay
+  fifteen previous requests/responses unchanged. Confirm locally that a boundary
+  blocker can coexist with met decision and original repair checks. Pass 45
+  relevant tests and diagnostic formatting/syntax checks before cloud generation.
+- [x] Declare twenty boundary controls and leave four original-wording entry
+  cells descriptive. Require met decision/turning-point and original repairs
+  independently of any new endpoint defect. Maximum 48 calls / USD 0.31488 at
+  recorded October 8 rates; actual charges unknown.
+- [x] Obtain explicit approval and run all 24 critic probes in 24 calls, with no
+  structural retries. All twenty declared boundary controls match. Both entered
+  drafts pass under original wording and optional entry, but require revision
+  under explicit outside-at-end wording at both critic seeds. Treat the four
+  original-wording entry cells as descriptive, not graded successes.
+- [x] Inspect all judgments and advice: decisions, turning points and both original
+  repairs remain met in 24/24; all twelve outside endings pass. Each explicit
+  boundary violation produces one blocker, with no generic duplicates, reopened
+  repairs or new causal/completion requirements. Raw/final verdicts agree 24/24.
+  No authored condition sets were exercised in these responses.
+- [x] Reconstruct/replay all requests and raw responses; verify frozen sources and
+  seal evidence. Usage: 508,700 input / 34,452 output tokens; USD 0.08499880 at
+  recorded rates, actual charges unknown. No writer, full-story or canonical changes.
+- [ ] Keep v59 fixed and test one writer/critic repair per explicit-boundary
+  finding, checking outside position while preserving fulfilled facts and an
+  indirect decision. Inspect prose and verdicts, with saved outside variants as
+  controls. Prepare and approve the new payload set; no such calls were made here.
 
 **Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
 
