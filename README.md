@@ -904,6 +904,14 @@ uses explicit decision narration, so writer preservation of an independently val
 indirect expression remains open. Production stays v59; 45 relevant tests pass.
 The recorded-rate estimate is USD 0.03843890, with actual charges unknown.
 
+The [fixed-v59 indirect-decision preservation test](docs/benchmark_reports/indirect-decision-preservation-v59-2026-10-14.md)
+completed eight probes in eight calls. Both writers remove the separate forbidden
+entry but also rewrite an already valid final sentence into more explicit intention;
+deletion-only preservation is 0/2. Both unchanged indirect controls and both revised
+drafts pass. Facts and preparatory actions remain intact. Production stays v59;
+45 relevant tests pass. Recorded-rate estimate: USD 0.02457922, actual charges unknown.
+The next focused target is writer preservation during a sufficient deletion-only repair.
+
 Benchmark word-count ranges are advisory creative targets. New outputs persist a
 non-gating adherence measurement with the target, actual count, status, and word
 deviation. Automatic completion reflects a finished, non-truncated document,
