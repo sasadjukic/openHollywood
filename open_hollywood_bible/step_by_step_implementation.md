@@ -3472,10 +3472,51 @@ See the [repair report](../docs/benchmark_reports/outside-boundary-repairs-v59-2
 - [x] Reconstruct/replay all thirteen requests/responses, verify source/code and
   database hashes and seal evidence. Usage: 223,055 input / 18,028 output tokens;
   USD 0.03843890 at recorded rates, actual charges unknown. Production stays v59.
-- [ ] Keep v59 fixed and test an already accepted indirect outside decision with
+- [x] Keep v59 fixed and test an already accepted indirect outside decision with
   a separate forbidden-entry sentence appended. Check whether the writer removes
   only the overrun while preserving the independent decision expression. Prepare
-  and approve that new matrix; no such calls were made here.
+  and approve that new matrix; the subsequent experiment below completes it.
+
+**Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
+
+### Fixed-v59 indirect-decision preservation: 2026-10-14
+
+**COMPLETED — BOUNDARY REPAIRED; DELETION-ONLY PRESERVATION 0/2.**
+See the [preservation report](../docs/benchmark_reports/indirect-decision-preservation-v59-2026-10-14.md).
+
+- [x] Start from `50fabff6` on `codex/indirect-decision-preservation-v59`, keeping
+  production v59, the meaning of met and canonical artifacts unchanged.
+- [x] Retain one previously accepted indirect outside decision verbatim and append
+  a separate forbidden-entry paragraph. Freeze two seeds, each with an initial
+  critic, deletion-only control, writer and post-repair critic. Keep all fresh
+  canonical feedback unedited; skip dependents if the overrun is not detected.
+- [x] Freeze the deletion-only primary measure and separate checks for indirect
+  expression, fulfilled facts, unrelated prose, actual advice and critic verdicts.
+  One prose revision per seed; no replacement cases or valid-response rerolls.
+- [x] Verify 591 prior sealed files, reports, code and database; reconstruct and
+  replay thirteen previous responses. Pass thirteen no-network mock calls and
+  45 regression tests; diagnostic Ruff checks pass.
+- [x] Freeze the plan, baseline, two initial requests and dependent construction.
+  Maximum eight probes / sixteen calls / USD 0.10496 at recorded October 8 rates;
+  actual charges remain unknown.
+- [x] Obtain explicit approval for the new private payload set.
+- [x] Run eight probes in eight calls, all valid on the first attempt; no skips.
+  Both initial critics identify one boundary blocker while keeping both native
+  checks and earlier repairs met. Neither asks for explicit decision narration.
+- [x] Inspect both revisions: forbidden entry removed, first 4,021 characters
+  preserved, including preparatory action, motivation and fulfilled facts. Both
+  replace the accepted final sentence with more explicit entering intention.
+  Exact deletion-only preservation succeeds 0/2; semantic repair succeeds 2/2.
+- [x] Both deletion-only controls and both post-repair critics pass, with native
+  checks and all three repairs met. No duplicate findings or additional mandatory
+  conditions. The original indirect ending was acceptable under the same history.
+- [x] Reconstruct/replay all eight requests/responses, inspect actual writer
+  contracts, reverify hashes and seal evidence. Usage: 143,523 input / 11,215 output
+  tokens; USD 0.02457922 at recorded rates, actual charges unknown.
+- [ ] Test a compact writer-only clarification to preserve already fulfilled
+  expression when deletion alone fixes a separate defect. Include a genuinely
+  missing-decision control; keep the critic and meaning of met unchanged. The
+  current result demonstrates extra rewriting, not its isolated cause.
 
 **Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
 
