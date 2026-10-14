@@ -894,7 +894,15 @@ matched. Entry passed under original threshold wording and explicit permission,
 but all four explicit outside-at-end violations required revision. Decisions and
 original repairs stayed met in all 24 reviews. Production stays v59; 45 relevant
 local tests pass. The recorded-rate estimate is USD 0.08499880, with actual charges
-unknown. Writer repair of these explicit boundary defects remains to be tested.
+unknown. That comparison did not test writer repair of the explicit boundary defects.
+
+The [fixed-v59 outside-boundary writer repair test](docs/benchmark_reports/outside-boundary-repairs-v59-2026-10-14.md)
+completed in thirteen calls: four writers repair the boundary by changing only the
+final sentence; all four follow-up critics and four outside controls pass. One
+critic requires its existing retry to correct a repair ID. Every generated ending
+uses explicit decision narration, so writer preservation of an independently valid
+indirect expression remains open. Production stays v59; 45 relevant tests pass.
+The recorded-rate estimate is USD 0.03843890, with actual charges unknown.
 
 Benchmark word-count ranges are advisory creative targets. New outputs persist a
 non-gating adherence measurement with the target, actual count, status, and word

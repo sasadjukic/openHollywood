@@ -3425,10 +3425,57 @@ ENDPOINT PRESERVATION OPEN.** See the
 - [x] Reconstruct/replay all requests and raw responses; verify frozen sources and
   seal evidence. Usage: 508,700 input / 34,452 output tokens; USD 0.08499880 at
   recorded rates, actual charges unknown. No writer, full-story or canonical changes.
-- [ ] Keep v59 fixed and test one writer/critic repair per explicit-boundary
+- [x] Keep v59 fixed and test one writer/critic repair per explicit-boundary
   finding, checking outside position while preserving fulfilled facts and an
   indirect decision. Inspect prose and verdicts, with saved outside variants as
-  controls. Prepare and approve the new payload set; no such calls were made here.
+  controls. The completed experiment below supports localized boundary repair;
+  preservation of an independently valid indirect expression remains open.
+
+**Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
+
+### Fixed-v59 outside-boundary writer repairs: 2026-10-14
+
+**COMPLETED; FOUR LOCALIZED BOUNDARY REPAIRS; INDIRECT STYLE PRESERVATION OPEN.**
+See the [repair report](../docs/benchmark_reports/outside-boundary-repairs-v59-2026-10-14.md).
+
+- [x] Start from `7adb3907` on `codex/outside-boundary-repairs-v59`; keep production
+  v59, the meaning of met and canonical artifacts unchanged.
+- [x] Prepare four writer/critic pairs from the four saved explicit-boundary
+  findings, retaining exact canonical feedback and all three original repair
+  tests. Add four controls using the saved accepted outside-decision prose under
+  the same repair history. Freeze dependent critic construction from valid writer
+  output only; allow one prose revision per case.
+- [x] Verify 456 sealed files, source reports, database and code hashes. Reconstruct
+  and replay all 24 endpoint requests/responses unchanged. Verify pair contracts,
+  standard compaction and separate missing-decision versus boundary repair IDs.
+- [x] Pass seven mock writer calls covering retry recovery/exhaustion and eight
+  local critic fixtures separating the new boundary repair from met decisions
+  and earlier repairs. No model calls or semantic success claimed.
+- [x] Pass 45 relevant regression tests outside the sandbox after interrupting
+  a stalled first sandboxed run; no application changes. Pass diagnostic Ruff
+  checks and freeze the plan, eight initial requests and dependent critic builder.
+- [x] Obtain explicit cloud approval for twelve probes, maximum 24 calls /
+  USD 0.15744 at recorded October 8 rates.
+  Actual charges remain unknown.
+- [x] Run twelve probes in thirteen calls: four writer revisions, four follow-up
+  critics and four controls. All writers preserve every word before the original
+  final sentence and repair the boundary; all eight final critics pass with both
+  native checks and all three repairs met. Two control reviews accept indirect
+  decisions; the other two retain an explicit decision sentence.
+- [x] Retain the one failed critic response: a mistyped boundary repair ID is
+  rejected, then corrected by the existing structural retry. First attempts:
+  11/12 valid. Native statuses, boundary and verdict do not change on retry.
+- [x] Inspect prose and record the limitation: all four new endings use explicit
+  decision narration. The original action partly conveyed the decision and was
+  itself the overrun, so this does not isolate preservation of an independently
+  valid indirect expression. No new mandatory advice or duplicate findings.
+- [x] Reconstruct/replay all thirteen requests/responses, verify source/code and
+  database hashes and seal evidence. Usage: 223,055 input / 18,028 output tokens;
+  USD 0.03843890 at recorded rates, actual charges unknown. Production stays v59.
+- [ ] Keep v59 fixed and test an already accepted indirect outside decision with
+  a separate forbidden-entry sentence appended. Check whether the writer removes
+  only the overrun while preserving the independent decision expression. Prepare
+  and approve that new matrix; no such calls were made here.
 
 **Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
 
