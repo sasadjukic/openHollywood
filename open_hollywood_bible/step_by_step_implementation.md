@@ -3513,10 +3513,56 @@ See the [preservation report](../docs/benchmark_reports/indirect-decision-preser
 - [x] Reconstruct/replay all eight requests/responses, inspect actual writer
   contracts, reverify hashes and seal evidence. Usage: 143,523 input / 11,215 output
   tokens; USD 0.02457922 at recorded rates, actual charges unknown.
-- [ ] Test a compact writer-only clarification to preserve already fulfilled
+- [x] Test a compact writer-only clarification to preserve already fulfilled
   expression when deletion alone fixes a separate defect. Include a genuinely
   missing-decision control; keep the critic and meaning of met unchanged. The
-  current result demonstrates extra rewriting, not its isolated cause.
+  current result demonstrates extra rewriting, not its isolated cause. The v60
+  comparison below found no preservation improvement.
+
+**Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
+
+### Writer preservation during minimal repair, v60: 2026-10-14
+
+**EXPERIMENT COMPLETE — NO PRESERVATION IMPROVEMENT; NOT PROMOTED.**
+See the [implementation report](../docs/benchmark_reports/writer-minimal-repair-v60-2026-10-14.md).
+
+- [x] Start from `a01c3327` on `codex/writer-minimal-repair-v60`; main stays v59.
+  Add only a 292-character writer clarification: when deletion suffices, preserve
+  already fulfilled wording, including indirect expression; permit necessary repairs.
+- [x] Advance shared prompt metadata to v60; keep graph v9, critic instructions,
+  meaning of met, schemas, validation, compaction, budgets and retry policy unchanged.
+- [x] Update three current-version test expectations and the bounded writer-length
+  cap. Full suite initially passes 1,022 with four stale-expectation failures;
+  all four affected modules subsequently pass 85 tests. Ruff and strict mypy pass.
+- [x] Pass frontend formatting, lint, types, all 11 tests and the production build.
+- [x] Verify 725 sealed files and source hashes; replay all eight previous responses.
+  Confirm identical critic messages/schema/results and only the writer paragraph
+  difference for the exact saved inputs, feedback and seeds.
+- [x] Pass seventeen no-network mock calls for the twelve-stage matrix and bounded
+  failures. Freeze two preservation pairs plus two missing-decision chains and
+  unchanged controls. Maximum 24 calls / USD 0.15744 at recorded October 8 rates;
+  actual charges unknown. No model calls made during preparation.
+- [x] Obtain explicit approval for the frozen twelve-probe matrix.
+- [x] Run all twelve probes in twelve calls: four writer and eight critic calls,
+  all first-attempt valid, with no retries, skips or second prose revisions.
+- [x] Inspect full prose and diffs. Deletion-only repairs remain **0/2**, matching
+  v59: both remove forbidden entry but replace the accepted last sentence with an
+  explicit decision. Both preserve the preceding 4,021 characters, including the
+  preparatory actions, motivation and fulfilled touch/pull facts.
+- [x] Both missing-decision repairs succeed outside; both initial reviews and both
+  unchanged controls correctly reject indecision. All four post-reviews pass with
+  native requirements and historical repairs met. Inspect four supported condition
+  records and three generic restatements; consolidation retains one outcome blocker
+  per negative review without adding a duplicate repair identity.
+- [x] Reconstruct/replay every request/response, reverify the frozen sources and
+  seal evidence. Usage: 194,332 input / 15,807 output tokens; USD 0.03352928 at the
+  recorded rates. Actual charges remain unknown. Main stays v59; do not promote
+  this candidate on these results. Step 19 remains IN PROGRESS.
+- [ ] Isolate whether the already satisfied historical missing-decision complaint
+  in writer context causes the unnecessary restatement. Retain the current boundary
+  and genuinely unmet obligations, and keep the critic and its review history fixed.
+  This is a proposed diagnostic, not a production-history removal policy; the current
+  experiment does not establish the cause.
 
 **Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
 

@@ -912,6 +912,17 @@ drafts pass. Facts and preparatory actions remain intact. Production stays v59;
 45 relevant tests pass. Recorded-rate estimate: USD 0.02457922, actual charges unknown.
 The next focused target is writer preservation during a sufficient deletion-only repair.
 
+The [v60 writer preservation clarification](docs/benchmark_reports/writer-minimal-repair-v60-2026-10-14.md)
+adds one compact paragraph allowing deletion as a complete repair while preserving
+already fulfilled expression. Critic instructions and gates remain unchanged.
+All twelve approved probes validated on their first calls. Neither preservation
+repair was deletion-only (0/2, unchanged from v59); both again replaced the accepted
+last sentence with an explicit decision. Both genuinely missing decisions were
+repaired correctly while remaining outside. The candidate has not demonstrated a
+preservation benefit and is not promoted; main remains v59. Recorded-rate estimate:
+USD 0.03352928, actual charges unknown. The next diagnostic target is the influence
+of an already satisfied historical decision complaint in the writer's context.
+
 Benchmark word-count ranges are advisory creative targets. New outputs persist a
 non-gating adherence measurement with the target, actual count, status, and word
 deviation. Automatic completion reflects a finished, non-truncated document,
