@@ -3907,10 +3907,37 @@ See the [diagnostic report](../docs/benchmark_reports/writer-preservation-except
   generalize the successful exception to all critic reasoning or minimal editing.
 - [x] Record 284,316 input / 21,980 output tokens, USD 0.04859624 at recorded rates,
   actual charges unknown. Reverify fixed implementations and seal evidence.
-- [ ] Examine the smallest production handoff for the tested fulfillment-evidence
+- [x] Examine the smallest production handoff for the tested fulfillment-evidence
   packet, including current draft/assignment provenance and available validated audit
   storage. Retain mandatory repairs and the necessary-edit exception; keep the critic
-  diagnostic separate. No integration or additional cloud run is authorized by completion.
+  diagnostic separate. See the examination below. No integration or additional cloud
+  run is authorized by completion.
+
+**Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
+
+### Fulfillment evidence production handoff examination: 2026-10-15
+
+**EXAMINATION COMPLETE; IMPLEMENTATION NOT STARTED.** See the
+[proposed integration](../docs/handoffs/fulfillment-evidence-production-design-2026-10-15.md).
+
+- [x] Trace the existing writer task, successful critic audit, creator/input lineage,
+  request fingerprint, retry/replay and persistence paths at `fbd726c4`.
+- [x] Identify an optional native-met packet requiring exact draft/plan/shared-canon
+  validation, with every mandatory repair and the tested necessary-edit exception retained.
+- [x] Specify persisted snapshot/digest binding before calls, including stable retries,
+  source eligibility, whole-packet omission and an explicit integrity-error path.
+- [x] Inspect twelve validated critic receipts (22 met and two unmet native checks),
+  excluding one failed attempt. Reconstruct all six records in four saved writer
+  packets exactly from their audits, assignment text and evidence catalogs.
+- [x] Verify all 288 sealed experiment files and its report hash unchanged. Keep
+  production v59, graph v9 and both diagnostic components fixed; make no model calls.
+- [x] Define local provenance, isolation and durable SQLite tests, followed by a
+  gated comparison using ordinary production critic semantics. Separate traceability
+  from semantic qualification; do not promote the failed-clause diagnostic.
+- [ ] If subsequently requested, implement and locally verify the small handoff
+  slice, version its request identity and document the accepted implementation.
+- [ ] Qualify writer behavior with eligible ordinary critic reviews and genuinely
+  unmet controls before promotion or any broader story-quality claim.
 
 **Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
 

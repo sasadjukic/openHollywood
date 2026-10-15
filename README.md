@@ -1015,6 +1015,14 @@ at recorded rates; actual charges unknown. Production v59 and both diagnostic
 components remain fixed. Next, examine a small production handoff of version-bound
 fulfillment evidence while keeping the critic diagnostic separate.
 
+The [production handoff examination](docs/handoffs/fulfillment-evidence-production-design-2026-10-15.md)
+identifies existing successful critic audits as the source for an optional writer
+fulfillment packet. The proposal validates exact draft, assignment and shared canon,
+preserves all mandatory repairs, and pins the packet for retry/replay. All six saved
+fulfillment records reconstruct exactly from the inspected audits and catalogs.
+This is a design only: production remains v59, the critic diagnostic stays separate,
+and no new model calls or production integration were performed.
+
 Benchmark word-count ranges are advisory creative targets. New outputs persist a
 non-gating adherence measurement with the target, actual count, status, and word
 deviation. Automatic completion reflects a finished, non-truncated document,
