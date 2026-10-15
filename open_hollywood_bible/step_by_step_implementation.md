@@ -3558,11 +3558,55 @@ See the [implementation report](../docs/benchmark_reports/writer-minimal-repair-
   seal evidence. Usage: 194,332 input / 15,807 output tokens; USD 0.03352928 at the
   recorded rates. Actual charges remain unknown. Main stays v59; do not promote
   this candidate on these results. Step 19 remains IN PROGRESS.
-- [ ] Isolate whether the already satisfied historical missing-decision complaint
+- [x] Isolate whether the already satisfied historical missing-decision complaint
   in writer context causes the unnecessary restatement. Retain the current boundary
   and genuinely unmet obligations, and keep the critic and its review history fixed.
   This is a proposed diagnostic, not a production-history removal policy; the current
-  experiment does not establish the cause.
+  experiment does not establish the cause. The fixed-v59 comparison below found
+  no preservation improvement when this one complaint was omitted.
+
+**Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
+
+### Satisfied decision history in writer context, fixed v59: 2026-10-14
+
+**EXPERIMENT COMPLETE — NO PRESERVATION IMPROVEMENT; PRODUCTION V59 UNCHANGED.**
+See the [diagnostic plan](../docs/benchmark_reports/writer-satisfied-history-v59-2026-10-14.md).
+
+- [x] Start from `20280f0b` on `codex/writer-history-diagnostic-v59`. Keep all v59
+  production code and both roles unchanged; do not restore the v60 writer paragraph.
+- [x] Prepare paired full-history and one-item omission requests at seeds 19101/19103.
+  Omit only the satisfied historical missing-decision test from the writer projection.
+  Keep immutable artifacts, current boundary, other tests and assignment/canon intact.
+- [x] Add two missing-decision writer controls using exact saved drafts/feedback.
+  Their latest status is unmet, so the same omission procedure retains the test.
+  Keep all history and tests in every post-revision critic request.
+- [x] Verify 902 sealed files and unchanged v59 implementation hashes; replay eight
+  saved responses. Check exact projection differences and identical paired critic
+  requests for an identical candidate. Counterbalance writer condition order.
+- [x] Pass nineteen no-network fixture calls including retry recovery, permanent
+  failures and missing-decision rejection. Pass 45 focused regression tests, Ruff
+  and strict mypy. Freeze the matrix at twelve probes / at most 24 calls and
+  USD 0.15744 at recorded October 8 rates. Actual charges remain unknown.
+- [x] Obtain explicit approval for this new private payload set. No model calls
+  made during preparation.
+- [x] Finish all twelve probes in twelve first-attempt-valid calls: six writer and
+  six critic calls, with no retries, failures, skips or second prose revisions.
+- [x] Compare fresh paired prose: deletion-only preservation is **0/2 with full
+  history and 0/2 with omission**. All four remove entry but add or rewrite explicit
+  commitment. One full-history output retains the entire accepted passage and adds
+  a decision sentence; neither omitted-history output retains the whole ending.
+- [x] Both missing-decision writers repair the outcome while remaining outside and
+  preserving preceding paragraphs. All six full-history critics pass, with both
+  native checks and all original repairs met, no overrun, new issues or conditions.
+- [x] Inspect complete prose/diffs and advice, reconstruct/replay all requests and
+  responses, reverify sources and seal evidence. Usage: 166,130 input / 14,648 output
+  tokens; USD 0.02911740 at recorded rates, actual charges unknown. Keep v59 unchanged;
+  this result does not justify filtering production history.
+- [ ] Test the current boundary recommendation's request to restore both outcome
+  and exit state when only the outside endpoint is unmet. Compare advice confined
+  to the boundary while preserving the met outcome; keep other history and critic
+  fixed, and include a genuinely unmet outcome control. This is a proposed diagnostic,
+  not an established cause or a production change.
 
 **Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
 

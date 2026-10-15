@@ -923,6 +923,15 @@ preservation benefit and is not promoted; main remains v59. Recorded-rate estima
 USD 0.03352928, actual charges unknown. The next diagnostic target is the influence
 of an already satisfied historical decision complaint in the writer's context.
 
+The [fixed-v59 writer-history diagnostic](docs/benchmark_reports/writer-satisfied-history-v59-2026-10-14.md)
+completed all twelve probes in twelve first-attempt-valid calls. Deletion-only
+preservation remained 0/2 with full history and 0/2 with the satisfied decision
+complaint omitted. Both missing-decision controls repaired the genuinely unmet
+outcome; all six full-history critics passed. Production and main stay v59. Usage
+estimate: USD 0.02911740 at recorded October 8 rates; actual charges remain unknown.
+The next diagnostic target is the current boundary advice asking to restore an
+already met outcome along with the violated exit state.
+
 Benchmark word-count ranges are advisory creative targets. New outputs persist a
 non-gating adherence measurement with the target, actual count, status, and word
 deviation. Automatic completion reflects a finished, non-truncated document,
