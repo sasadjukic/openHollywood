@@ -942,6 +942,15 @@ estimate: USD 0.03589308; actual charges remain unknown. The next diagnostic tar
 is exposing the latest review's met requirements and cited current passages to the
 writer, while keeping genuinely unmet requirements repairable.
 
+The [fixed-v59 fulfilled-evidence diagnostic](docs/benchmark_reports/writer-fulfilled-evidence-v59-2026-10-15.md)
+completed all twelve probes in twelve first-attempt-valid calls. Adding the latest
+review's met checks and cited current passages produced exact deletion-only repair
+in 2/2 cases, versus 0/2 with current context. Both missing-decision/entry controls
+repaired both defects; all six unchanged critics passed. Local checks and 45 focused
+regressions pass. Recorded-rate usage estimate: USD 0.02947416, actual charges unknown.
+Production and main remain v59. The next test is transfer to another scene before
+proposing production integration of this positive-evidence handoff.
+
 Benchmark word-count ranges are advisory creative targets. New outputs persist a
 non-gating adherence measurement with the target, actual count, status, and word
 deviation. Automatic completion reflects a finished, non-truncated document,

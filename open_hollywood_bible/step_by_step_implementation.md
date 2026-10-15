@@ -3643,11 +3643,53 @@ See the [diagnostic report](../docs/benchmark_reports/writer-boundary-advice-v59
 - [x] Inspect prose and advice, reconstruct/replay every request and response, reverify
   sources and seal evidence. Usage: 205,142 input / 17,933 output tokens;
   USD 0.03589308 at recorded October 8 rates, actual charges unknown. Keep v59 fixed.
-- [ ] Test whether a compact, draft-version-bound record of the latest review's met
+- [x] Test whether a compact, draft-version-bound record of the latest review's met
   requirements and cited current passages helps the writer preserve valid expression.
   Keep genuinely unmet outcomes repairable, retain the unchanged critic, and use the
-  mixed missing-decision/entry control. This is a proposed diagnostic, not an
-  established cause or an authorized additional cloud run.
+  mixed missing-decision/entry control. The comparison below improves preservation
+  in both paired cases; broader transfer and production integration remain unqualified.
+
+**Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
+
+### Writer fulfilled-evidence comparison, fixed v59: 2026-10-15
+
+**DIAGNOSTIC COMPLETE — POSITIVE PAIRED RESULT; V59 UNCHANGED.**
+See the [diagnostic report](../docs/benchmark_reports/writer-fulfilled-evidence-v59-2026-10-15.md).
+
+- [x] Start from `54410412` on `codex/writer-fulfilled-evidence-v59`; leave production,
+  critic and main at v59. Add only one diagnostic writer field; keep ordinary boundary
+  advice, all original tests, claims, immutable inputs and role instructions intact.
+- [x] Pair current/evidence writer context on the saved overrun at seeds 19101/19103.
+  Reuse actual latest reviews and bind met checks/excerpts to exact draft and assignment
+  versions. Keep post-critic requests identical for an identical candidate.
+- [x] Reuse two mixed missing-decision/involuntary-entry drafts and saved initial
+  reviews. Certify only their turning point; leave the missing decision and boundary
+  repair obligations intact. No fresh initial critic calls are needed.
+- [x] Pass 19 no-network mock calls and reject 13 invalid-provenance cases. Cover
+  retries, failure skips, unchanged negative controls, necessary repairs and hook
+  restoration. Retain two corrected preparation failures; no production fixes.
+- [x] Pass 45 focused regressions, Ruff and strict mypy. The sandboxed test attempt
+  stalled during Windows asyncio setup; the same tests pass outside the sandbox.
+- [x] Verify 1,374 prior sealed files, source reports/database and v59 hashes; replay
+  four saved initial reviews and freeze all six writer requests. Twelve probes,
+  at most 24 calls / USD 0.15744 at recorded October 8 rates, actual charges unknown.
+- [x] Obtain explicit approval for the frozen matrix and record its plan hash.
+- [x] Complete all twelve probes in twelve first-attempt-valid calls: six writers and
+  six critics, with no retries, failures, skipped stages or second prose revisions.
+- [x] Both evidence-condition writers restore the exact accepted 720-word prose by
+  deleting only the forbidden entry. Current context achieves 0/2 and rewrites the
+  decision in both cases. All preceding paragraphs and other draft fields survive.
+- [x] Both mixed controls repair the genuinely missing decision and remove entry.
+  All six post-critics pass with native/historical checks met and no overrun or new
+  conditions. Evidence-condition critics independently accept the retained indirect
+  decision without receiving the added writer packet.
+- [x] Inspect prose/advice, reconstruct/replay every request and response, reverify
+  sources and seal evidence. Usage: 168,044 input / 14,870 output tokens;
+  USD 0.02947416 at recorded rates, actual charges unknown. Keep v59 unchanged.
+- [ ] Test transfer to another scene with valid indirect fulfillment and an independent
+  defect, plus a genuinely unmet-requirement control. Keep this diagnostic projection
+  and critic fixed. Later qualification must cover met evidence that overlaps another
+  defect before production integration; no further cloud run is authorized here.
 
 **Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
 
