@@ -951,6 +951,16 @@ regressions pass. Recorded-rate usage estimate: USD 0.02947416, actual charges u
 Production and main remain v59. The next test is transfer to another scene before
 proposing production integration of this positive-evidence handoff.
 
+The [fixed-v59 evidence transfer diagnostic](docs/benchmark_reports/writer-evidence-transfer-v59-2026-10-15.md)
+completed after six first-attempt-valid critic calls on OH-V01-002. Both baselines
+accepted the indirect decision; all four overrun reviews marked that decision unmet
+because the later endpoint was exceeded. Both missing-date controls detected their
+genuine defect. The gates skipped all twelve dependent writer/post-critic probes,
+so transfer of the writer treatment remains unmeasured. Local checks and 45 focused
+regressions pass. Recorded-rate usage estimate: USD 0.01951168; actual charges unknown.
+Production remains v59. The next target is separating native requirement fulfillment
+from boundary compliance while preserving both necessary blockers and valid evidence.
+
 Benchmark word-count ranges are advisory creative targets. New outputs persist a
 non-gating adherence measurement with the target, actual count, status, and word
 deviation. Automatic completion reflects a finished, non-truncated document,

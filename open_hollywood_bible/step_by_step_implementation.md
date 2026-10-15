@@ -3693,6 +3693,44 @@ See the [diagnostic report](../docs/benchmark_reports/writer-fulfilled-evidence-
 
 **Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
 
+### Writer fulfilled-evidence transfer, fixed v59: 2026-10-15
+
+**DIAGNOSTIC COMPLETE — WRITER TRANSFER NOT MEASURED; INITIAL GATES FAILED.**
+See the [diagnostic report](../docs/benchmark_reports/writer-evidence-transfer-v59-2026-10-15.md).
+
+- [x] Start from `cdcc5488` on `codex/writer-evidence-transfer-v59`; keep production,
+  critic and main at v59. Reuse the exact previous evidence projection and policy.
+- [x] Prepare OH-V01-002's saved indirect verification passage with a separate
+  forbidden match sentence. Preserve the decision outcome and move the existing
+  no-match requirement to the exit state in both synthetic plan views.
+- [x] Include the earlier missing-date draft with identical verification actions and
+  the same overrun. Certify only its met outcome; its missing turning point must repair.
+- [x] Freeze six initial requests and an 18-probe dependent protocol at two seeds:
+  baseline critics, primary current/evidence pairs and unmet-requirement controls.
+  Require suitable current reviews; skip failed/misclassified chains without rerolls.
+- [x] Pass 24 no-network mock calls, ten invalid-provenance checks and four scheduler
+  failure checks. Preserve all original advice and keep critic packets unmodified.
+- [x] Pass 45 focused regressions, repository Ruff/formatting and strict mypy for
+  198 source files. Verify 1,569 prior sealed files, source reports/database and v59.
+- [x] Freeze the plan with maximum 36 calls / USD 0.23616 at recorded October 8 rates;
+  actual charges unknown.
+- [x] Obtain explicit approval and execute the bounded protocol. Six critic calls
+  validate on first attempts; no retries or failures. Both baselines pass, all four
+  overrun cases detect the match, and both negative controls detect the missing date.
+- [x] Record that all four overrun reviews mark the already fulfilled decision unmet
+  because the endpoint was exceeded. This exists in raw responses; it is not a
+  validator-induced status change. All twelve writer/post-critic stages are skipped.
+- [x] Replay every sent request and response; inspect actual actions, date evidence,
+  advice and raw/canonical verdicts. Preserve the secondary duplicate-outcome finding
+  in one review. Reverify sources and seal evidence. Usage: 115,472 input / 8,364 output
+  tokens; USD 0.01951168 at recorded rates, actual charges unknown.
+- [ ] Test scoped native fulfillment versus boundary compliance, retaining the valid
+  decision as met while the separate exit violation remains blocking. Preserve
+  genuinely unmet-fact/decision detection. Keep production v59 and the evidence
+  projection fixed; writer transfer and necessary-repair success remain unmeasured.
+
+**Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
+
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 
 21. [ ] **Package the stable system with Tauri** and test crash/restart, offline, missing-model, invalid-key, provider-timeout, and low-disk-space behavior.
