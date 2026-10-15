@@ -3602,11 +3602,52 @@ See the [diagnostic plan](../docs/benchmark_reports/writer-satisfied-history-v59
   responses, reverify sources and seal evidence. Usage: 166,130 input / 14,648 output
   tokens; USD 0.02911740 at recorded rates, actual charges unknown. Keep v59 unchanged;
   this result does not justify filtering production history.
-- [ ] Test the current boundary recommendation's request to restore both outcome
+- [x] Test the current boundary recommendation's request to restore both outcome
   and exit state when only the outside endpoint is unmet. Compare advice confined
   to the boundary while preserving the met outcome; keep other history and critic
-  fixed, and include a genuinely unmet outcome control. This is a proposed diagnostic,
-  not an established cause or a production change.
+  fixed, and include a genuinely unmet outcome control. The comparison below finds
+  no deletion-only improvement; it establishes no cause or production change.
+
+**Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
+
+### Writer boundary-advice comparison, fixed v59: 2026-10-15
+
+**DIAGNOSTIC COMPLETE — NO PRESERVATION IMPROVEMENT; V59 UNCHANGED.**
+See the [diagnostic report](../docs/benchmark_reports/writer-boundary-advice-v59-2026-10-15.md).
+
+- [x] Start from `e2fe1bb0` on `codex/writer-boundary-advice-v59`; keep both roles and
+  all v59 production code fixed. Change only the current boundary advice prefix
+  in the diagnostic writer projection; retain all claims, evidence and other advice.
+- [x] Pair current and endpoint-only advice at seeds 19101/19103 using exact saved
+  drafts and full feedback. Keep all original tests in every post-critic request.
+- [x] Add two fresh revision-zero controls combining explicit indecision with
+  involuntary crossing. Require the critic to detect both defects and expose boundary
+  advice before dependent writer/post calls; preserve any native outcome repair.
+- [x] Pass 23 no-network fixture calls, including separate/consolidated advice,
+  retry recovery, detection/exposure gates and permanent failures. Pass 45 focused
+  regressions, Ruff and strict mypy. Retain earlier fixture-assertion failures.
+- [x] Freeze the fourteen-probe matrix and exact requests; verify 1,095 sealed files,
+  prior reports, the source database and v59 hashes, and replay eight saved responses.
+  Maximum 28 calls / USD 0.18368 at recorded October 8 rates; actual charges unknown.
+- [x] Obtain explicit approval and complete all fourteen probes in fourteen calls:
+  six writers and eight critics, all first-attempt valid. No retries, failures, skips
+  or second prose revisions.
+- [x] Compare paired prose: deletion-only preservation is **0/2 with current advice
+  and 0/2 with endpoint-only advice**. All four remove entry and add explicit decision
+  wording. One current-advice result retains the whole accepted passage but adds a
+  decision paragraph; neither endpoint-advice result retains the complete ending.
+- [x] Both mixed controls detect and repair the missing decision and forbidden entry.
+  Native advice survives separately from boundary advice; generic Plot/Agency
+  criticism consolidates into the native finding. All six post-critics pass with
+  both native checks and every original repair met, no overrun or new conditions.
+- [x] Inspect prose and advice, reconstruct/replay every request and response, reverify
+  sources and seal evidence. Usage: 205,142 input / 17,933 output tokens;
+  USD 0.03589308 at recorded October 8 rates, actual charges unknown. Keep v59 fixed.
+- [ ] Test whether a compact, draft-version-bound record of the latest review's met
+  requirements and cited current passages helps the writer preserve valid expression.
+  Keep genuinely unmet outcomes repairable, retain the unchanged critic, and use the
+  mixed missing-decision/entry control. This is a proposed diagnostic, not an
+  established cause or an authorized additional cloud run.
 
 **Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
 

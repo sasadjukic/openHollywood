@@ -932,6 +932,16 @@ estimate: USD 0.02911740 at recorded October 8 rates; actual charges remain unkn
 The next diagnostic target is the current boundary advice asking to restore an
 already met outcome along with the violated exit state.
 
+The [fixed-v59 boundary-advice diagnostic](docs/benchmark_reports/writer-boundary-advice-v59-2026-10-15.md)
+completed all fourteen probes in fourteen first-attempt-valid calls. Deletion-only
+preservation remained 0/2 with current advice and 0/2 with endpoint-only advice;
+all four writers added explicit decision wording. Both mixed missing-decision/entry
+controls repaired both defects, and all six unchanged post-critics passed. Production
+and main stay v59. Local fixtures and 45 focused regressions pass. Recorded-rate usage
+estimate: USD 0.03589308; actual charges remain unknown. The next diagnostic target
+is exposing the latest review's met requirements and cited current passages to the
+writer, while keeping genuinely unmet requirements repairable.
+
 Benchmark word-count ranges are advisory creative targets. New outputs persist a
 non-gating adherence measurement with the target, actual count, status, and word
 deviation. Automatic completion reflects a finished, non-truncated document,
