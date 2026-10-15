@@ -3839,6 +3839,42 @@ See the [diagnostic report](../docs/benchmark_reports/critic-event-terminal-v59-
 
 **Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
 
+### Gated writer evidence with explicit event scope, fixed v59: 2026-10-15
+
+**DIAGNOSTIC COMPLETE — DELETION-ONLY PRESERVATION AND BOTH REPAIRS SUCCEEDED.**
+See the [diagnostic report](../docs/benchmark_reports/writer-event-evidence-v59-2026-10-15.md).
+
+- [x] Start from `47966236` on `codex/writer-event-evidence-v59`. Keep production
+  v59, the sealed failed-clause critic diagnostic and writer evidence projection fixed.
+- [x] Replay eight saved event reviews, ten historical response attempts, as gates;
+  retain both missing-date and missing-decision controls and all actual advice.
+- [x] Freeze eight writer requests: current/evidence preservation pairs and
+  evidence-only negative controls at two seeds. Prepare dependent post-critic
+  generation with complete repair history and no writer evidence packet.
+- [x] Set a sixteen-probe / 32-call limit, USD 0.20992 at recorded October 8 rates;
+  actual charges unknown. One prose revision per case; no full-story/canonical changes.
+- [x] Pass twenty-four no-network mock calls, provenance and dependency checks;
+  verify 2,398 sealed source files and unchanged implementation hashes.
+- [x] Pass 45 focused regressions, Ruff/formatting and strict mypy for 198 files.
+- [x] Obtain explicit approval and complete sixteen probes in sixteen calls, with
+  no retries or skipped stages. Freeze every dependent critic request before sending.
+- [x] Replay all sixteen responses and inspect all eight revisions/diffs. Record
+  deletion-only preservation in 2/2 evidence cases versus 0/2 current cases; both
+  arms retain the original decision. All six input overruns are removed and all six
+  existing indirect verification passages stay verbatim.
+- [x] Confirm complete date-plus-realization repair in 2/2 and genuine missing-decision
+  repair in 2/2. Record the narrower saved date advice without claiming it is safe.
+- [x] Confirm eight post passes, sixteen native met checks and ten historical met
+  repair checks, with supported prose evidence. Record the distinction between edit
+  restraint and assignment fulfillment; no blind story-quality result.
+- [x] Record 212,392 input / 19,190 output tokens, USD 0.03741088 at recorded rates,
+  actual charges unknown. Reverify fixed implementations and seal evidence.
+- [ ] Keep production and diagnostic fixed; test the existing preservation exception
+  when a cited fulfilled passage itself contains a defect requiring an edit. Retain
+  a genuinely unmet control. No additional cloud run is authorized by this completion.
+
+**Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
+
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 
 21. [ ] **Package the stable system with Tauri** and test crash/restart, offline, missing-model, invalid-key, provider-timeout, and low-disk-space behavior.

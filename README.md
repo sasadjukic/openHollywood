@@ -993,6 +993,17 @@ replays and 45 focused regressions pass. Usage estimate: USD 0.06213036 at recor
 rates; actual charges unknown. Production stays v59. Next, test actual writer
 preservation and complete repairs under the explicit event-scoped assignment.
 
+The [gated event-scope writer-evidence test](docs/benchmark_reports/writer-event-evidence-v59-2026-10-15.md)
+completed sixteen probes in sixteen calls, with no retries. Evidence-assisted
+overrun repairs are deletion-only in 2/2 cases; current-context repairs preserve the
+decision but add verification language in 2/2. Both date-plus-realization and
+missing-decision controls are fully repaired at both seeds. All eight post critics
+pass; all six existing indirect verification passages remain verbatim. Twenty-four
+no-network mock calls and 45 focused regressions pass. Usage estimate: USD 0.03741088
+at recorded rates; actual charges unknown. Production v59 and the failed-clause
+diagnostic remain fixed. Next, test necessary edits within a cited fulfillment
+passage that also contains the defect.
+
 Benchmark word-count ranges are advisory creative targets. New outputs persist a
 non-gating adherence measurement with the target, actual count, status, and word
 deviation. Automatic completion reflects a finished, non-truncated document,
