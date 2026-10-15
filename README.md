@@ -961,6 +961,16 @@ regressions pass. Recorded-rate usage estimate: USD 0.01951168; actual charges u
 Production remains v59. The next target is separating native requirement fulfillment
 from boundary compliance while preserving both necessary blockers and valid evidence.
 
+The [fixed-v59 fulfillment-scope diagnostic](docs/benchmark_reports/critic-fulfillment-scope-v59-2026-10-15.md)
+completed all sixteen probes in sixteen first-attempt-valid calls. The clarification
+did not improve the disputed classification: fulfilled decisions stayed met in 0/4
+overrun cases in either arm. Both arms blocked all overruns, accepted valid baselines,
+and detected genuinely missing dates and decisions. Local fixtures, six historical
+replays and 45 focused regressions pass. Recorded-rate usage estimate: USD 0.05109744;
+actual charges unknown. Production remains v59. Do not promote the candidate guidance;
+the next target is requiring each unmet check to identify the failed part of its own
+exact assigned requirement while endpoint violations remain separately blocking.
+
 Benchmark word-count ranges are advisory creative targets. New outputs persist a
 non-gating adherence measurement with the target, actual count, status, and word
 deviation. Automatic completion reflects a finished, non-truncated document,

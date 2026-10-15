@@ -3731,6 +3731,42 @@ See the [diagnostic report](../docs/benchmark_reports/writer-evidence-transfer-v
 
 **Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
 
+### Critic fulfillment versus endpoint compliance, fixed v59: 2026-10-15
+
+**DIAGNOSTIC COMPLETE — NO IMPROVEMENT; PRODUCTION V59 UNCHANGED.**
+See the [diagnostic report](../docs/benchmark_reports/critic-fulfillment-scope-v59-2026-10-15.md).
+
+- [x] Start from `8f097792` on `codex/critic-fulfillment-scope-v59`. Keep production
+  prompts, schemas, validators, writer and main at v59.
+- [x] Prepare one diagnostic critic system-span replacement that distinguishes each
+  requirement's own complete fact from a separate exit violation. Preserve indirect
+  evidence, mandatory conditions within the requirement itself, and all blockers.
+- [x] Pair current/scoped guidance for the six exact prior baseline, overrun and
+  missing-date cases, plus a genuinely missing-decision control at both seeds.
+  Sixteen independent critics; no writer or canonical changes.
+- [x] Pass 19 no-network mock calls and verify all eight pairs, including structural
+  retries. Replay six historical responses unchanged; do not impose desired semantics
+  in validation. Verify 1,732 sealed files, reports, source database and v59 hashes.
+- [x] Pass 45 focused regressions, Ruff/formatting and strict mypy for 198 source files.
+- [x] Freeze sixteen requests and the protocol. Maximum 32 calls / USD 0.20992 at
+  recorded October 8 rates; actual charges unknown.
+- [x] Obtain explicit approval and complete sixteen probes in sixteen first-attempt-valid
+  calls. No retries, failures, skipped probes, writer calls or canonical changes.
+- [x] Record no primary improvement: 0/4 fulfilled decisions remain met with overrun
+  in either arm. Both arms block all overruns, accept 2/2 baselines, and detect 2/2
+  missing dates and 2/2 missing decisions. Current-arm disputed classifications reproduce.
+- [x] Replay and inspect all requests, responses, evidence, conditions and raw/canonical
+  verdicts. Record duplicate outcome/boundary complaints in four current and three
+  scoped cases. Reverify sources and seal evidence. Usage: 303,296 input / 21,590 output
+  tokens; USD 0.05109744 at recorded rates, actual charges unknown.
+- [x] Keep production v59; do not promote the unsuccessful guidance clarification.
+- [ ] Test exact-requirement binding in the diagnostic check: each unmet assessment
+  must identify the failed clause of its own requirement with current-draft evidence.
+  Keep endpoint blockers and both negative controls. Source validation establishes
+  traceability only; semantic support and writer transfer remain unqualified.
+
+**Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
+
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 
 21. [ ] **Package the stable system with Tauri** and test crash/restart, offline, missing-model, invalid-key, provider-timeout, and low-disk-space behavior.
