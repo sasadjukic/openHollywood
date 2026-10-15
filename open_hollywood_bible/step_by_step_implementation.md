@@ -3767,6 +3767,43 @@ See the [diagnostic report](../docs/benchmark_reports/critic-fulfillment-scope-v
 
 **Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
 
+### Critic own-requirement failed clauses, fixed v59: 2026-10-15
+
+**DIAGNOSTIC COMPLETE — PARTIAL IMPROVEMENT; PRODUCTION V59 UNCHANGED.**
+See the [diagnostic report](../docs/benchmark_reports/critic-failed-clause-v59-2026-10-15.md).
+
+- [x] Start from `d44605aa` on `codex/critic-failed-clause-v59`. Keep production
+  prompts, schemas, validators, writer and main at v59.
+- [x] Prepare a diagnostic-only response extension: each native check carries its
+  exact assignment binding; unmet identifies its own failed clause and current-draft
+  evidence. Keep the existing complete-fact meaning of met and separate endpoint blockers.
+- [x] Validate source/text identity, quote membership and evidence references in an
+  isolated adapter; strip only added fields before unchanged v59 materialization.
+  Preserve classifications and advice even when source-valid claims lack support.
+- [x] Freeze the same four drafts, both negative controls and two paired seeds under
+  ordinary and diagnostic guidance. Sixteen critics, at most 32 calls / USD 0.20992
+  at recorded October 8 rates; actual charges unknown.
+- [x] Pass 20 no-network mock calls, 13 malformed-field rejection checks and sixteen
+  historical replays. Verify all eight pairs and 1,932 prior sealed files.
+- [x] Pass 45 focused regressions, Ruff/formatting and strict mypy for 198 source files.
+- [x] Obtain explicit approval and complete sixteen probes in seventeen calls,
+  including one structural link retry. No rerolls, writer calls or canonical changes.
+- [x] Replay all seventeen responses and inspect clauses, evidence, advice and
+  verdicts. Record 3/4 fulfilled decisions preserved with separate blocking overrun
+  versus 0/4 current; both arms detect both negative controls and accept baselines.
+- [x] Record the remaining unsupported own-clause claim: the later match is treated
+  as contradicting a prior decision, importing an ending restriction. Traceability
+  succeeds but does not establish semantic support. Do not promote the candidate.
+- [x] Record the retry's valid links and unchanged classifications, plus its shortened
+  date advice omitting explicit realization. Full writer repair remains untested.
+- [x] Record 332,418 input / 24,794 output tokens, USD 0.05645612 at recorded rates,
+  actual charges unknown. Reverify sources and seal results; production stays v59.
+- [ ] Hold the diagnostic fixed and compare an explicit event requirement with an
+  explicit terminal condition, retaining both negative controls. No further cloud
+  test is authorized by this completed run.
+
+**Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
+
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 
 21. [ ] **Package the stable system with Tauri** and test crash/restart, offline, missing-model, invalid-key, provider-timeout, and low-disk-space behavior.

@@ -971,6 +971,17 @@ actual charges unknown. Production remains v59. Do not promote the candidate gui
 the next target is requiring each unmet check to identify the failed part of its own
 exact assigned requirement while endpoint violations remain separately blocking.
 
+The [fixed-v59 failed-clause diagnostic](docs/benchmark_reports/critic-failed-clause-v59-2026-10-15.md)
+completed sixteen probes in seventeen calls, including one structural link retry.
+Fulfilled decisions stayed met while the overrun was blocked in 3/4 experimental
+reviews versus 0/4 under ordinary v59. Both arms accepted valid baselines and detected
+both negative controls at both seeds. One experimental claim has correct source
+and evidence references but still treats a later match as contradicting the prior
+decision. Twenty mock calls, sixteen historical replays and 45 focused regressions
+pass. Recorded-rate usage estimate: USD 0.05645612; actual charges unknown. Keep
+production v59. Next, distinguish a required event from an explicit terminal condition
+in a controlled wording comparison; writer transfer remains unqualified.
+
 Benchmark word-count ranges are advisory creative targets. New outputs persist a
 non-gating adherence measurement with the target, actual count, status, and word
 deviation. Automatic completion reflects a finished, non-truncated document,
