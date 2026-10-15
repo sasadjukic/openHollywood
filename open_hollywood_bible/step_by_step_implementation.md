@@ -3804,6 +3804,41 @@ See the [diagnostic report](../docs/benchmark_reports/critic-failed-clause-v59-2
 
 **Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
 
+### Required event versus terminal condition, fixed v59 diagnostic: 2026-10-15
+
+**DIAGNOSTIC COMPLETE — CLASSIFICATION CONTRAST REPRODUCED; REPAIR QUALIFICATION OPEN.**
+See the [diagnostic report](../docs/benchmark_reports/critic-event-terminal-v59-2026-10-15.md).
+
+- [x] Start from `15aedd38` on `codex/critic-event-terminal-v59`. Keep production,
+  writer and main at v59. Reuse the sealed failed-clause diagnostic implementation.
+- [x] Change only synthetic outcome wording and derived provenance: decision during
+  the scene versus decided-but-unverified state at its end. Keep the separate
+  no-match exit state, every draft and both negative controls unchanged.
+- [x] Prepare four drafts × two wordings × two paired seeds. Freeze sixteen requests
+  and the protocol. Maximum 32 calls / USD 0.20992 at recorded October 8 rates;
+  actual charges unknown. No writer, full-story or canonical changes.
+- [x] Pass 20 no-network mock calls and verify all eight pairs. Replay seventeen
+  prior response attempts; verify 2,155 sealed files and unchanged critic hashes.
+  Confirm source-valid semantic errors still validate rather than forcing statuses.
+- [x] Pass 45 focused regressions, Ruff/formatting and strict mypy for 198 source files.
+- [x] Obtain explicit approval and complete sixteen probes in eighteen calls,
+  including two structural link retries. No rerolls, writer calls or canonical changes.
+- [x] Replay all eighteen responses. Record the correct classification contrast in
+  all four paired overruns, retained blockers, both negative controls and baselines.
+  All twelve final failed-clause claims have supported sources and draft evidence.
+- [x] Inspect advice and record limitations: terminal reviews do not positively
+  certify the fulfilled decision; three of four final date recommendations omit
+  explicit realization. One retry drops that instruction while repairing links.
+  Complete prose repair remains untested; do not promote the diagnostic.
+- [x] Record 363,194 input / 28,208 output tokens, USD 0.06213036 at recorded rates,
+  actual charges unknown. Reverify fixed implementations and sources; seal results.
+- [ ] Keep production v59 and the diagnostic fixed; resume a gated writer-evidence
+  transfer test with explicit event scope and both negative controls. Check actual
+  decision preservation, overrun removal and complete date-plus-realization repair.
+  No additional cloud run is authorized by this completed experiment.
+
+**Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
+
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 
 21. [ ] **Package the stable system with Tauri** and test crash/restart, offline, missing-model, invalid-key, provider-timeout, and low-disk-space behavior.

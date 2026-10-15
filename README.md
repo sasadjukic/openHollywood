@@ -982,6 +982,17 @@ pass. Recorded-rate usage estimate: USD 0.05645612; actual charges unknown. Keep
 production v59. Next, distinguish a required event from an explicit terminal condition
 in a controlled wording comparison; writer transfer remains unqualified.
 
+The [fixed event-versus-terminal diagnostic](docs/benchmark_reports/critic-event-terminal-v59-2026-10-15.md)
+completed sixteen probes in eighteen calls, including two structural link retries.
+All four paired overruns retain a met decision under event wording and fail the
+own no-match clause under terminal wording; both retain the boundary blocker.
+Both negative controls and valid baselines are correctly classified. Terminal
+reviews do not positively certify the fulfilled decision, and three of four final
+date repairs omit explicit character realization. Local checks, seventeen historical
+replays and 45 focused regressions pass. Usage estimate: USD 0.06213036 at recorded
+rates; actual charges unknown. Production stays v59. Next, test actual writer
+preservation and complete repairs under the explicit event-scoped assignment.
+
 Benchmark word-count ranges are advisory creative targets. New outputs persist a
 non-gating adherence measurement with the target, actual count, status, and word
 deviation. Automatic completion reflects a finished, non-truncated document,
