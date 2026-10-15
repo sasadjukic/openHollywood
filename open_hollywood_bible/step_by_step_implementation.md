@@ -3875,6 +3875,45 @@ See the [diagnostic report](../docs/benchmark_reports/writer-event-evidence-v59-
 
 **Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
 
+### Writer preservation exception, fixed v59 diagnostic: 2026-10-15
+
+**DIAGNOSTIC COMPLETE — PRESERVATION EXCEPTION SUCCEEDED; MINIMAL EDITING NOT ESTABLISHED.**
+See the [diagnostic report](../docs/benchmark_reports/writer-preservation-exception-v59-2026-10-15.md).
+
+- [x] Start from `12f8663d` on `codex/writer-preservation-exception-v59`. Keep
+  production v59, the failed-clause critic diagnostic and writer evidence projection fixed.
+- [x] Put the action-based decision and forbidden match in one evidence excerpt.
+  Prepare a matched clean baseline and unchanged genuinely unresolved-decision control.
+- [x] Freeze six initial critics at two seeds. Gate main current/evidence writer
+  pairs on accepted baseline, expected classifications and an actual shared citation.
+  Retain all feedback; never sanitize or fabricate the cited passage.
+- [x] Bound the matrix to eighteen probes / 36 calls, USD 0.23616 at recorded
+  October 8 rates; actual charges unknown. One prose revision per case; no full-story
+  or canonical changes. Freeze dependent requests before sending.
+- [x] Pass twenty-seven no-network mock calls, provenance and dependency checks;
+  replay sixteen historical responses and verify 2,651 sealed source files.
+- [x] Pass 45 focused regressions, Ruff/formatting and strict mypy for 198 files.
+- [x] Obtain explicit approval and complete eighteen probes in nineteen calls,
+  including one structural retry for duplicate recommendation text. All gates pass;
+  no writer retry, skipped pair or semantic reroll.
+- [x] Replay all nineteen responses and inspect all six full revisions/diffs. Both
+  writer arms repair the shared passage and retain the decision; neither is clause-only.
+  Both evidence arms preserve the original ending; current arms add verification language.
+- [x] Confirm both genuinely missing decisions are repaired, all six date realizations
+  remain fulfilled and all six post reviews pass. Record twelve native met checks and
+  six historical met checks with supported resulting prose.
+- [x] Record the initial critics' overstatement equating a match with accepting the
+  warning; the explicit exit prohibition independently supports the blocker. Do not
+  generalize the successful exception to all critic reasoning or minimal editing.
+- [x] Record 284,316 input / 21,980 output tokens, USD 0.04859624 at recorded rates,
+  actual charges unknown. Reverify fixed implementations and seal evidence.
+- [ ] Examine the smallest production handoff for the tested fulfillment-evidence
+  packet, including current draft/assignment provenance and available validated audit
+  storage. Retain mandatory repairs and the necessary-edit exception; keep the critic
+  diagnostic separate. No integration or additional cloud run is authorized by completion.
+
+**Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
+
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 
 21. [ ] **Package the stable system with Tauri** and test crash/restart, offline, missing-model, invalid-key, provider-timeout, and low-disk-space behavior.

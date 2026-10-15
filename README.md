@@ -1004,6 +1004,17 @@ at recorded rates; actual charges unknown. Production v59 and the failed-clause
 diagnostic remain fixed. Next, test necessary edits within a cited fulfillment
 passage that also contains the defect.
 
+The [preservation-exception diagnostic](docs/benchmark_reports/writer-preservation-exception-v59-2026-10-15.md)
+completed eighteen probes in nineteen calls, including one structural retry.
+Both evidence-assisted writers repair the defect inside the cited passage while
+retaining the decision; both current writers succeed too. Neither arm is clause-only.
+Both genuinely missing decisions are repaired, all six date realizations remain
+intact and all six post reviews pass. Twenty-seven no-network mock calls, sixteen
+historical replays and 45 focused regressions pass. Usage estimate: USD 0.04859624
+at recorded rates; actual charges unknown. Production v59 and both diagnostic
+components remain fixed. Next, examine a small production handoff of version-bound
+fulfillment evidence while keeping the critic diagnostic separate.
+
 Benchmark word-count ranges are advisory creative targets. New outputs persist a
 non-gating adherence measurement with the target, actual count, status, and word
 deviation. Automatic completion reflects a finished, non-truncated document,
