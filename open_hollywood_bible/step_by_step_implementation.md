@@ -4063,6 +4063,34 @@ pair. Keep the result fixed for later investigation and blind quality comparison
 No new prompt tuning, canonical changes or story-quality campaign was started.
 **Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
 
+### Fulfillment failure diagnosis and next experiment proposal: 2026-10-16
+
+**DIAGNOSIS COMPLETE; FOLLOW-UP PROPOSED, NOT PREPARED OR RUN.** See the
+[diagnosis and bounded plan](../docs/handoffs/fulfillment-failure-diagnosis-next-experiment-2026-10-16.md).
+
+- [x] Separate invalid critic output routes and assessment length from the valid but
+  incorrect attribution of a separate endpoint defect to an already fulfilled event.
+  Trace the repeated invalid anchor and the earlier repair-condition validation error.
+- [x] Inspect exact writer requests and full prose. Positive policy arrived intact;
+  every cited excerpt survived, but the uncited ending gained explicit restatement.
+  Identify overlapping outcome/boundary framing as a hypothesis, not a proven cause.
+- [x] Compare the earlier successful trial's revision history, repair ledger and
+  evidence selection. Record why it is not an identical replication, and retain the
+  unsuccessful scope-clarification and endpoint-advice diagnostics as counterevidence.
+- [x] Propose a fixed-contract follow-up: ten critic cases at two seeds, plus three
+  current/evidence writer pairs and their post-critics using one fixed validated
+  saved review. Total: **32 probes / proposed 64-call ceiling**. Keep writer coverage
+  independent of new critic eligibility; include complete-outcome negative controls.
+- [ ] Prepare and verify the new cases, full requests, scoring sheet and budget locally;
+  present the frozen manifest for explicit approval before live execution. No unused
+  allowance from the completed experiment is carried forward.
+- [ ] Run and inspect only after approval. No prompt/schema/runtime changes or live
+  calls are part of this diagnosis. Preserve independent craft and necessary edits;
+  use full-prose inspection and later blind human quality review, not quote retention.
+- [ ] Full workflow canary: **NOT STARTED**, still excluded by the user.
+
+**Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
+
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 
 21. [ ] **Package the stable system with Tauri** and test crash/restart, offline, missing-model, invalid-key, provider-timeout, and low-disk-space behavior.
