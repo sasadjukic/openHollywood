@@ -15,6 +15,12 @@ is recorded in the implementation tracker; ordinary-model qualification and stor
 quality remain separate, pending work. Step 19 is **IN PROGRESS**; Step 20 is
 **NOT STARTED**.
 
+The [ordinary-critic comparison](docs/benchmark_reports/production-fulfillment-v61-results-2026-10-16.md)
+finished in 27 of 72 allowed calls. Only one of four paired cases was eligible;
+the evidence arm added restatement where current context preserved the clean text.
+All four unmet controls were repaired. Broader qualification remains incomplete;
+the full workflow canary has not started.
+
 **Testing direction, 2026-09-11:** `gemma4:31b` through Ollama Cloud
 (`gemma4:31b-cloud`) is now the designated testing model. Active E4B tuning and
 narrow proofreading experiments are deferred in favor of complete production

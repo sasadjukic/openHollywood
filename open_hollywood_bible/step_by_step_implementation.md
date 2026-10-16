@@ -3985,6 +3985,84 @@ Frontend source and generated API contracts are unchanged.
 
 **Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
 
+### Ordinary-critic fulfillment comparison preparation: 2026-10-16
+
+**PREPARATION COMPLETE; LIVE COMPARISON COMPLETED BELOW.** See the
+[frozen comparison plan](../docs/benchmark_reports/production-fulfillment-v61-plan-2026-10-16.md).
+This prepares step 5 following the locally verified durable handoff; it is not
+a model qualification result.
+
+- [x] Freeze prompt 61 / graph 9 / handoff policy 1 at `c1bacab638e91dadfd69016ac9226b4885e0f10f`.
+  Keep ordinary critic semantics and the production fulfillment projection fixed;
+  do not import the failed-clause diagnostic or change production code.
+- [x] Freeze six cases across OH-V01-001/002 at seeds 19101/19103: two clean
+  baselines, separate and embedded defects, missing decision, and missing future
+  date plus realization. Preserve full corpus constraints and declare the fresh
+  revision-zero context, corrected inherited case metadata and synthetic identities.
+- [x] Freeze twelve complete initial requests, dependent request builders/gates,
+  source hashes and implementation hashes. Paired writers differ only by the
+  fulfillment field; retain every actual craft finding and mandatory repair.
+- [x] Bound the matrix to 36 probes / 72 attempts, one structural retry per probe
+  and one prose revision per arm. Reserve 1,728,000 input / 576,000 output tokens;
+  USD 0.47232 is the estimate at recorded October 8 rates, not known billed cost.
+  Require explicit plan-bound approval before any live calls.
+- [x] Verify 483 sealed source files and their reports; pass 36 offline stage
+  fixtures, four paired comparisons, twelve retry-request checks, failure gates
+  and two craft-feedback checks. Verify all twelve saved requests reconstruct.
+- [x] Pass 91 focused regressions, repository Ruff lint/format, strict mypy for
+  201 files, and private-script formatting/syntax checks. Document decisions,
+  isolated-probe limitations and later blind story-quality evaluation.
+- [x] Obtain approval for plan SHA-256
+  `03da1a013fc86a4a1a142d561d11fc001ab219ee252c55b64c72b4c0ed60bf18`;
+  verify the recorded model digest and execute only its eligible bounded stages.
+- [x] Inspect and replay every response, report eligibility coverage and writer
+  outcomes separately, account for all attempts, and seal the resulting evidence.
+
+Preparation made no live calls, canonical database writes or historical evidence edits.
+The comparison measures isolated production request behavior; full durable workflow
+qualification remains the separately proposed step 6. Preserving wording is not a
+literary-quality acceptance gate. **Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
+
+### Ordinary-critic fulfillment comparison results: 2026-10-16
+
+**BOUNDED EXPERIMENT COMPLETE; FULL BEHAVIORAL QUALIFICATION NOT ACHIEVED.** See
+the [results and inspection](../docs/benchmark_reports/production-fulfillment-v61-results-2026-10-16.md).
+
+- [x] Record explicit approval for the frozen plan and verify the expected model
+  digest. Keep prompt 61 / graph 9 / policy 1, cases, settings, ordinary critic
+  semantics and production request builders unchanged.
+- [x] Validate the execution ledger with 39 fake calls, including retry and permanent
+  failure, replay without extra calls, call-73 rejection and unknown-outcome rejection.
+  Save full requests and reserve each live attempt before dispatch.
+- [x] Finish twelve initial probes in fifteen calls: eleven validated reviews, one
+  terminal structural failure. Only one of four paired cases qualifies; both Elena
+  embedded reviews mark the existing decision unmet, and seed-19103 Elara never
+  validates. Skip all twelve dependent stages for those three pairs.
+- [x] Execute the one eligible current/evidence pair and all four independently
+  eligible unmet controls: six writers and six post-critics, all valid first attempt.
+  Total: **24 finished probes / 27 calls**, within the 72-call ceiling.
+- [x] Inspect all six full revisions. Current context restores the clean Elara prose
+  exactly (1/1); evidence adds unnecessary explicit decision language (0/1 exact
+  restoration), despite retaining all cited excerpts. All four unmet controls repair
+  their missing fact, preserve fulfilled facts and avoid a handwriting match.
+- [x] Record six post-passes, twelve native-met and six historical-met post checks.
+  No independent craft finding or embedded-passage repair was exercised live.
+  Do not treat critic pass, quote retention or smaller word count as prose quality.
+- [x] Replay all 27 raw responses and validators, reconstruct every actual request,
+  reconcile all ledger slots and skips, and reverify frozen implementation and
+  483 sealed source files. Document and seal results without changing production.
+- [x] Record **428,797 input / 30,845 output tokens**, USD **0.07236958** at recorded
+  October 8 rates; actual charges remain unknown. No extra or replacement calls.
+- [ ] Resolve the incomplete ordinary-critic eligibility and unsupported preservation
+  benefit through separately scoped follow-up before claiming broader qualification.
+- [ ] Full workflow canary: **NOT STARTED**, explicitly excluded by the user.
+
+The experiment is complete even though its qualification criterion was not met.
+There is no positive promotion or story-quality recommendation from one evaluable
+pair. Keep the result fixed for later investigation and blind quality comparisons.
+No new prompt tuning, canonical changes or story-quality campaign was started.
+**Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
+
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 
 21. [ ] **Package the stable system with Tauri** and test crash/restart, offline, missing-model, invalid-key, provider-timeout, and low-disk-space behavior.
