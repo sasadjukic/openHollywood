@@ -8,7 +8,7 @@ import json
 import re
 from collections.abc import Iterable, Mapping
 from copy import deepcopy
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import UTC, datetime
 from difflib import SequenceMatcher
 from enum import StrEnum
@@ -128,6 +128,16 @@ from open_hollywood_api.services.production_critic_retry import (
     critic_link_directive,
 )
 from open_hollywood_api.services.production_failure_evidence import capture_review_failure
+from open_hollywood_api.services.production_fulfillment import (
+    HANDOFF_PROMPT_VERSION,
+    Projection,
+    project_fulfillment,
+)
+from open_hollywood_api.services.production_fulfillment_store import (
+    FulfillmentSource,
+    select_handoff,
+    verify_handoff_before_start,
+)
 from open_hollywood_api.services.production_repair_conditions import (
     REPAIR_CONDITION_RULE,
     RepairConditionError,
@@ -983,7 +993,7 @@ class ProfileRoutedProductionExecutor(SceneProductionExecutor):
             budget=execution.call_budget,
             invocation=InvocationContext(
                 specialist_role=execution.specialist_role,
-                prompt_template_version=SCENE_PRODUCTION_PROMPT_TEMPLATE_VERSION,
+                prompt_template_version=execution.prompt_template_version,
                 input_artifact_version_ids=execution.input_version_ids,
                 model_profile_id=execution.profile_id,
             ),
@@ -1107,6 +1117,15 @@ class ProfileRoutedProductionExecutor(SceneProductionExecutor):
             run = session.get(WorkflowRun, production.workflow_run_id)
             if run is None:
                 raise SceneProductionError("scene-production workflow run does not exist")
+            prompt_version = run.input_state.get("production_prompt_template_version", "59")
+            if (
+                not isinstance(prompt_version, str)
+                or prompt_version not in {"59", HANDOFF_PROMPT_VERSION}
+                or production.prompt_template_version != prompt_version
+            ):
+                raise SceneProductionError(
+                    "production prompt version does not match a supported frozen run"
+                )
             profile_id = _uuid_input(run.input_state, "model_profile_id")
             if profile_id != production.model_profile_id:
                 raise SceneProductionError("production profile does not match its frozen run")
@@ -1160,34 +1179,17 @@ class ProfileRoutedProductionExecutor(SceneProductionExecutor):
                     "input_artifact_version_ids": [
                         str(reference.version_id) for reference in resolved_input_references
                     ],
-                    "prompt_template_version": SCENE_PRODUCTION_PROMPT_TEMPLATE_VERSION,
+                    "prompt_template_version": prompt_version,
                     "model_profile_configuration": configuration.to_data(),
                     "run_seed": run_seed,
                 }
             )
-            attempt_number, previous_failure = _retry_context(
-                session,
-                workflow_run_id=run.id,
-                specialist_role=specialist_role,
-                task_fingerprint=fingerprint,
-            )
-            selection, fallback_history = _select_production_model(
-                operation=operation,
-                specialist_role=specialist_role,
-                configuration=configuration,
-                attempt_number=attempt_number,
-                previous_failure=previous_failure,
-            )
-            if selection.provider != self._gateway.provider:
-                raise SceneProductionError(
-                    f"no runtime gateway is configured for provider {selection.provider!r}"
-                )
-            return _Execution(
+            execution = _Execution(
                 workflow_run_id=run.id,
                 project_id=run.project_id,
                 profile_id=profile_id,
                 configuration_sha256=configuration_sha256,
-                selection=selection,
+                selection=configuration.selection_for(specialist_role),
                 specialist_role=specialist_role,
                 input_version_ids=tuple(
                     reference.version_id for reference in resolved_input_references
@@ -1201,9 +1203,58 @@ class ProfileRoutedProductionExecutor(SceneProductionExecutor):
                 unit_number=_unit_number(task),
                 unit_count=len(production.units),
                 revision_number=_revision_number(task),
+                attempt_number=1,
+                previous_failure=None,
+                fallback_history=(),
+                prompt_template_version=prompt_version,
+            )
+            handoff = None
+            if (
+                operation is _Operation.WRITE
+                and execution.revision_number > 0
+                and prompt_version == HANDOFF_PROMPT_VERSION
+            ):
+                if not isinstance(task, SceneWritingTask):
+                    raise SceneProductionError("writer fulfillment requires a writing task")
+                if str(production.approved_blueprint.version_id) != run.input_state.get(
+                    "approved_blueprint_version_id"
+                ):
+                    raise SceneProductionError("writer Blueprint differs from its approved run")
+                handoff = select_handoff(
+                    session,
+                    task=task,
+                    project_id=run.project_id,
+                    version_ids=execution.input_version_ids,
+                    base_fingerprint=fingerprint,
+                    project=lambda source: _project_writer_fulfillment(execution, task, source),
+                )
+                fingerprint = handoff["task_fingerprint"]
+            attempt_number, previous_failure = _retry_context(
+                session,
+                workflow_run_id=run.id,
+                specialist_role=specialist_role,
+                task_fingerprint=fingerprint,
+                prompt_template_version=prompt_version,
+            )
+            selection, fallback_history = _select_production_model(
+                operation=operation,
+                specialist_role=specialist_role,
+                configuration=configuration,
                 attempt_number=attempt_number,
                 previous_failure=previous_failure,
+            )
+            if selection.provider != self._gateway.provider:
+                raise SceneProductionError(
+                    f"no runtime gateway is configured for provider {selection.provider!r}"
+                )
+            return replace(
+                execution,
+                task_fingerprint=fingerprint,
+                attempt_number=attempt_number,
+                previous_failure=previous_failure,
+                selection=selection,
                 fallback_history=fallback_history,
+                writer_fulfillment_handoff=handoff,
             )
 
     def _replay(
@@ -1286,7 +1337,7 @@ class ProfileRoutedProductionExecutor(SceneProductionExecutor):
                         if continuity_schema_variant is not None
                         else "canonical"
                     ),
-                    "prompt_template_version": (SCENE_PRODUCTION_PROMPT_TEMPLATE_VERSION),
+                    "prompt_template_version": execution.prompt_template_version,
                     "run_seed": execution.seed,
                     "schema_enforced": (execution.selection.deployment is ModelDeployment.LOCAL),
                     "task_fingerprint": execution.task_fingerprint,
@@ -1317,6 +1368,17 @@ class ProfileRoutedProductionExecutor(SceneProductionExecutor):
             )
             session.add(invocation)
             session.flush()
+            if execution.writer_fulfillment_handoff is not None:
+                verify_handoff_before_start(
+                    session, execution.writer_fulfillment_handoff, invocation
+                )
+                invocation.request_settings = {
+                    **invocation.request_settings,
+                    "writer_logical_task_key": execution.writer_fulfillment_handoff[
+                        "logical_task_key"
+                    ],
+                    "writer_fulfillment_handoff": execution.writer_fulfillment_handoff,
+                }
             session.execute(
                 insert(agent_invocation_inputs),
                 [
@@ -1582,6 +1644,7 @@ def _retry_context(
     workflow_run_id: UUID,
     specialist_role: str,
     task_fingerprint: str,
+    prompt_template_version: str = SCENE_PRODUCTION_PROMPT_TEMPLATE_VERSION,
 ) -> tuple[int, dict[str, object] | None]:
     candidates = session.scalars(
         select(AgentInvocation)
@@ -1599,8 +1662,7 @@ def _retry_context(
         # A lost process is not a malformed model response. The invocation still
         # counts toward the aggregate run budget; it supplies no review-repair input.
         and invocation.error_code != "interrupted_execution"
-        and invocation.request_settings.get("prompt_template_version")
-        == SCENE_PRODUCTION_PROMPT_TEMPLATE_VERSION
+        and invocation.request_settings.get("prompt_template_version") == prompt_template_version
     )
     if not failures:
         return 1, None
@@ -1738,6 +1800,30 @@ class _Execution:
     attempt_number: int
     previous_failure: dict[str, object] | None
     fallback_history: tuple[dict[str, object], ...]
+    prompt_template_version: str = SCENE_PRODUCTION_PROMPT_TEMPLATE_VERSION
+    writer_fulfillment_handoff: dict[str, Any] | None = None
+
+
+def _project_writer_fulfillment(
+    execution: _Execution, task: SceneWritingTask, source: FulfillmentSource
+) -> Projection:
+    reviewed = replace(
+        execution, inputs=source.inputs, revision_number=execution.revision_number - 1
+    )
+    assignment = _scene_assignment_contract(execution)
+    if assignment != _scene_assignment_contract(reviewed):
+        return Projection(None, "assignment_mismatch")
+    if task.previous_critique is None or task.previous_draft is None:
+        raise SceneProductionError("writer fulfillment requires exact previous inputs")
+    return project_fulfillment(
+        audit=source.audit,
+        assignment=assignment,
+        catalog=_critic_evidence_catalog(reviewed),
+        critique_version_id=str(task.previous_critique.version_id),
+        draft_version_id=str(task.previous_draft.version_id),
+        plan_version_id=str(task.unit.plan.version_id),
+        response_sha256=source.response_sha256,
+    )
 
 
 def _continuity_schema_variant(execution: _Execution) -> _ContinuitySchemaVariant:
@@ -2832,7 +2918,7 @@ def _messages(
             continuity_model_context
         )
         payload["continuity_contract"] = {
-            "version": SCENE_PRODUCTION_PROMPT_TEMPLATE_VERSION,
+            "version": execution.prompt_template_version,
             "coverage_statuses": ["met", "partial", "absent"],
             "application_owns": [
                 "finding_id",
@@ -4453,6 +4539,10 @@ def _targeted_revision_contract(execution: _Execution) -> dict[str, object] | No
     if targeted:
         contract["minimum_prior_draft_similarity"] = _TARGETED_REVISION_MINIMUM_SIMILARITY
         contract["enforcement"] = "application_validated"
+    if execution.writer_fulfillment_handoff is not None:
+        packet = execution.writer_fulfillment_handoff["packet"]
+        if packet is not None:
+            contract["latest_fulfilled_requirements"] = deepcopy(packet)
     return contract
 
 

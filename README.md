@@ -6,6 +6,15 @@ evaluated, properly formatted work through a durable specialist-agent workflow.
 
 ## Project status
 
+**2026-10-16 — Fulfillment handoff implementation:** new production runs use prompt
+v61 / graph v9. Eligible writer revisions receive exact, version-bound native-met
+evidence from the preceding successful critic; a persisted snapshot fixes the
+decision across retries and replay. Existing v59 runs retain their request identity.
+See [ADR 0037](docs/adr/0037-durable-writer-fulfillment-handoff.md). Local verification
+is recorded in the implementation tracker; ordinary-model qualification and story
+quality remain separate, pending work. Step 19 is **IN PROGRESS**; Step 20 is
+**NOT STARTED**.
+
 **Testing direction, 2026-09-11:** `gemma4:31b` through Ollama Cloud
 (`gemma4:31b-cloud`) is now the designated testing model. Active E4B tuning and
 narrow proofreading experiments are deferred in favor of complete production

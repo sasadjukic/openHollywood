@@ -3934,10 +3934,54 @@ See the [diagnostic report](../docs/benchmark_reports/writer-preservation-except
 - [x] Define local provenance, isolation and durable SQLite tests, followed by a
   gated comparison using ordinary production critic semantics. Separate traceability
   from semantic qualification; do not promote the failed-clause diagnostic.
-- [ ] If subsequently requested, implement and locally verify the small handoff
-  slice, version its request identity and document the accepted implementation.
+- [x] Implement and locally verify the small handoff slice, version its request
+  identity and document the accepted implementation. Completed 2026-10-16 below.
 - [ ] Qualify writer behavior with eligible ordinary critic reviews and genuinely
   unmet controls before promotion or any broader story-quality claim.
+
+**Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
+
+### Durable writer fulfillment handoff implementation: 2026-10-16
+
+**LOCAL IMPLEMENTATION AND VERIFICATION COMPLETE; MODEL QUALIFICATION PENDING.**
+See [ADR 0037](../docs/adr/0037-durable-writer-fulfillment-handoff.md). This executes
+the approved local implementation slice following the October 15 examination.
+
+- [x] Define prompt v61 / graph v9 and policy 1, explicitly supporting ordinary
+  prompt-59/61 schema-7 critics. Freeze the new version in run input and checkpoint
+  state; keep existing v59 requests, retry identity and replay on their prior path.
+- [x] Add a typed pure projection and exact SQLite creator/input reader. Validate
+  current review/draft/plan/shared authority, both native checks and exact evidence;
+  preserve the tested policy, necessary-edit exception and all mandatory feedback.
+- [x] Persist included or omitted snapshots and digests before submission. Reuse
+  pinned snapshots across retries/recovery; reject changed sources, corruption and
+  duplicate concurrent starts without issuing another model call.
+- [x] Test whole-packet omission at the inclusive 16,384-byte UTF-8 boundary and
+  retain security errors instead of redacting exact quotes. Budgets are unchanged.
+- [x] Pass the full Python unit/integration/workflow suite: **1,096 tests**. After
+  adding the final stale-prepared-attempt guard, pass **five focused retry,
+  cancellation, interruption and graph-limit checks** (66 deselected).
+- [x] Pass repository Ruff lint/format and strict mypy on **201 source files**;
+  compare the public OpenAPI schema unchanged and pass `pnpm build`. The handoff
+  module contains 71 test cases, including exact dependency identities, failed
+  critic retry selection, omission pinning, concurrent-start rejection, accepted
+  prior-scene identity, UTF-8 cap boundaries and the v59 legacy request path.
+- [x] Record the accepted decision in ADR 0037 and preserve the original design,
+  historical experiment reports, canonical artifacts and budgets. No dependency,
+  persisted table or public API schema change was needed.
+- [ ] Qualify actual writer behavior using ordinary critics in a separately frozen,
+  authorized comparison. Local fake-gateway checks establish no live quality result.
+
+The failed-clause diagnostic, canonical stories and sealed experiments remain
+unchanged. Independent craft findings can still require edits to fulfilled passages.
+Later story-quality work requires blind human review and the accepted rubric;
+preservation rate and smaller diffs are not quality scores. No live model calls.
+
+Verification used the installed uv environment (`--no-sync --extra api`) and
+workspace-local cache/test directories. Windows sandbox restrictions blocked
+asyncio's loopback socket; the successful integration tests ran outside that
+sandbox with fake gateways. The production build used the pinned pnpm toolchain.
+Frontend source and generated API contracts are unchanged.
 
 **Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
 

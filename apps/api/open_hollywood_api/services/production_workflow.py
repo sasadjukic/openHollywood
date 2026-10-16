@@ -32,6 +32,7 @@ from open_hollywood_engine.models import (
 from open_hollywood_engine.workflows import (
     PRODUCTION_NODE_DEFINITIONS,
     SCENE_PRODUCTION_GRAPH_VERSION,
+    SCENE_PRODUCTION_PROMPT_TEMPLATE_VERSION,
     SCENE_PRODUCTION_WORKFLOW_NAME,
     ArtifactReference,
     CharacterTurnResult,
@@ -544,6 +545,11 @@ class SceneProductionService:
                 units=units,
                 global_context_artifacts=(),
                 call_budget=call_budget,
+                prompt_template_version=(
+                    str(production_run.input_state.get("production_prompt_template_version", "59"))
+                    if production_run is not None
+                    else SCENE_PRODUCTION_PROMPT_TEMPLATE_VERSION
+                ),
                 maximum_revision_cycles=(AGENTIC_BENCHMARK_PRODUCTION_MAX_REVISION_CYCLES),
             )
             budget = RunBudget(
@@ -575,6 +581,13 @@ class SceneProductionService:
                 "model_profile_configuration_sha256": configuration_sha256,
                 "run_seed": run_seed,
             }
+            if (
+                production_run is None
+                or "production_prompt_template_version" in production_run.input_state
+            ):
+                expected_input["production_prompt_template_version"] = (
+                    provisional.prompt_template_version
+                )
             for optional_key in (
                 "benchmark_campaign_id",
                 "benchmark_case_id",

@@ -39,3 +39,4 @@ tradeoffs. Status values are `Proposed`, `Accepted`, `Superseded`, or `Rejected`
 | [0034](0034-traceable-assignment-repair-conditions.md) | Traceable assignment repair conditions | Accepted |
 | [0035](0035-rendered-assignment-repair-advice.md) | Render assignment repair advice from structured conditions | Accepted |
 | [0036](0036-shared-consolidated-repair-conditions.md) | Shared conditions for consolidated assignment findings | Accepted |
+| [0037](0037-durable-writer-fulfillment-handoff.md) | Durable writer fulfillment evidence | Accepted |
