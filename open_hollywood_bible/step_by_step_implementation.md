@@ -4334,15 +4334,129 @@ for this live execution; the full replay verifies the unchanged frozen path.
   Record the full-story rubric/baseline requirements and pending blind human review.
 - [x] Verify the offline evidence helper with Ruff and documentation/link/whitespace
   checks; seal the diagnosis and tracker snapshot. No application test/build claim.
-- [ ] Obtain authorization for local preparation, freeze and verify all contracts,
-  complete cases, conditional builders, requests, scoring and budget; present the
-  frozen plan before requesting plan-bound live approval. No candidate prepared yet.
+- [x] User authorized local preparation. Freeze and verify all contracts, complete
+  cases, conditional builders, requests, scoring and budget; present the frozen plan
+  recorded below. Plan-bound live approval remains separate.
 - [ ] Execute only after that approval; broader qualification remains unfinished.
 - [ ] Full workflow canary: **ON HOLD; NOT STARTED**.
 
 Production prompt 61 / graph 9 / policy 1, canonical artifacts, validators and
 historical evidence are unchanged. This diagnosis made **zero new inference,
 discovery or external network calls**. **Step 19 IN PROGRESS; Step 20 NOT STARTED.**
+
+### Adjudication, exact edits and craft control: local freeze 2026-10-17
+
+**PREPARATION COMPLETE; approved execution is now complete below.** See the
+[frozen plan](../docs/benchmark_reports/fulfillment-adjudication-edits-v61-plan-2026-10-17.md).
+
+- [x] Preserve the six complete critic cases and both fixed ordinary writer sources,
+  full drafts, source receipts, original feedback and fulfillment packets. Add one
+  explicitly synthetic craft draft by duplicating the bracing sentence beside itself,
+  with a new exact version and recorded parent lineage. Canonical stories are unchanged.
+- [x] Freeze J0 ordinary review versus J1 native/boundary adjudication only; J1 remains
+  ineligible as a production Critique or writer source. Preserve complete obligation
+  semantics, full context and current evidence identities; do not compare the smaller
+  schema's validity as if it qualified full critic routing or craft assessment.
+- [x] Freeze E0 ordinary full-scene writing versus E1 exact, model-selected edits.
+  Verify base version/hash, occurrence selectors, Unicode and atomic application;
+  reject stale/ambiguous/overlapping/out-of-order edits. Permit changes anywhere and
+  whole-scene replacement; no protected passages, diff quota or automatic prose fix.
+- [x] Freeze two ordinary craft-source critics and conditional paired writers/posts.
+  Require supported native/boundary judgments, one independent actionable repetition
+  finding, two ordinary tests and positive evidence covering both repeated ranges.
+  Require source/plan-bound operator semantic inspection before dependent dispatch;
+  ineligibility skips its pair without replacement, reroll or manufactured evidence.
+- [x] Freeze **50 scheduled primary probes / 100 maximum attempts**, seeds 19401/19403,
+  counterbalanced arms, one structural retry and nontransferable **48/32/20** block
+  limits. Reserve at most 2,400,000 input / 800,000 output tokens and 90,000 active
+  seconds; historical-only estimate USD 0.65600, actual billed charges unknown.
+- [x] Freeze **34 exact initial requests**, conditional builders, 36 paired-difference
+  records, scoring and schedule. Bind 128 code/dependency hashes and 1,287 fixture
+  files. Plan SHA-256:
+  `765fd0499eb2ddb87f97e32cdfcb65b338b544c9be2e452f34bc16e4da0368a2`.
+  Private bundle: `data/diagnostics/fulfillment-adjudication-edits-v61-2026-10-17/`.
+- [x] Pass 50 stage fixtures, 50 retry builders, six post-equivalence checks and 37
+  negative contract/source checks. Verify both-copy evidence coverage so deleting an
+  uncited duplicate cannot falsely qualify the craft-in-met-passage control.
+- [x] Pass the actual operator harness with 100 fake dispatches across independent
+  ledgers: 52 valid-matrix, 44 fault-matrix and four terminal-failure calls. Verify
+  budget/order/source/request/model/approval guards, pending and failed craft gates,
+  skips, unknown outcomes, cancellation, failed transport/usage and zero-call replay.
+- [x] Replay all 40 predecessor probes / 42 attempts, both fixed sources and all 96
+  completed fixture attempts under final validators. Reconcile complete exports:
+  six valid-matrix and three fault-matrix anonymous pairs; human review stays pending.
+- [x] Pass **75 focused regressions**, repository Ruff lint/format and strict mypy
+  (201 files), seven private-script Ruff lint/format checks and documentation checks.
+  Record Windows sandbox fixture/event-loop limitations and successful mocked checks.
+- [x] Keep factual repair, preservation, craft editing and human literary preference
+  separate. Preserve the accepted rubric, hard gates and future full-story/baseline
+  qualification; no production promotion or added mandatory human story checkpoint.
+- [x] Receive explicit approval on 2026-10-17 bound to this exact plan, 100-call
+  ceiling, full unpublished prose/context sent to Ollama Cloud through the local
+  daemon, and canary exclusion before gateway construction or model discovery.
+- [x] Execute once after approval; inspect all attempts/full prose, reconcile usage,
+  export blind pairs and document failures without tuning mid-run. Results below.
+- [ ] Full workflow canary: **ON HOLD; NOT STARTED**.
+
+Preparation made **zero live model, discovery or external network calls**. Production
+prompt 61 / graph 9 / policy 1, validators, runtime, canonical artifacts and historical
+evidence remain unchanged. **Step 19 IN PROGRESS; Step 20 NOT STARTED.**
+
+### Adjudication, exact edits and craft control: live results 2026-10-17
+
+**BOUNDED RUN COMPLETE: 45/100 calls.** See the
+[results and decisions](../docs/benchmark_reports/fulfillment-adjudication-edits-v61-results-2026-10-17.md).
+
+- [x] Run all 24 critic probes in 27 attempts, eight fixed writers and eight ordinary
+  post-reviews in 16 attempts, and both ordinary craft-source critics in two attempts.
+  Account for all 50 slots: 42 completed probes plus eight dependent craft skips.
+  No semantic rerolls, replacement cases, extra revisions or transport retries.
+- [x] Confirm the frozen model digest at preflight and every phase. Match all 34
+  static requests; save every actual request and reservation before dispatch. Replay
+  all 45 attempts, including five invalid responses and two terminally invalid probes;
+  reconcile all requests, response hashes, usage, outcomes, gates and skips offline.
+- [x] Record J1's **12/12 valid supported shared judgments**, versus J0's **8/12**.
+  J0 first/final validity is 9/12 and 10/12; both separate-match outcomes are falsely
+  unmet and both embedded reviews remain invalid. J1 preserves clean, missing and
+  compound controls. It meets the narrow diagnostic criterion, remains ineligible as
+  a production Critique/writer source, and does not qualify craft, advice or routing.
+- [x] Inspect all three ordinary structural retries: one compound review recovers;
+  both embedded reviews fail terminally. Correct raw embedded judgments are not
+  salvaged. This batch does not reproduce the earlier met-to-unmet retry drift.
+  Record the separate-case advice overrestriction and next-scene acceptance overclaims.
+- [x] Confirm **8/8 first-attempt factual writer repairs and 8/8 ordinary passing
+  posts**, with four atomic E1 patches. Preserve complete prose/diffs. All revisions
+  leave prose before the final main paragraph unchanged, but seven rewrite the ending
+  beyond removing entry. E0 restores the clean scene once; E1 never does.
+- [x] Score E1 preservation as **0 wins, 2 losses, 2 mixed**. Treating the smaller
+  embedded loss as benign gives 0 wins, 1 loss, 1 tie, 2 mixed; the criterion still
+  fails. Distinguish bodily embellishment, repeated bracing, new wait/commitment,
+  benign wording and craft tradeoffs. These are operator judgments, not human scores.
+- [x] Record **0/2 qualified craft sources**: both critics miss the adjacent duplicate,
+  report only the boundary issue and score prose quality 5/5. Both also cite only one
+  of the two repeated ranges as positive evidence. Skip four craft writers and four
+  posts without replacements. Craft editing inside fulfilled evidence is **UNTESTED**.
+- [x] Reconcile **696,412 input / 45,716 output tokens / 224.15 active seconds**;
+  historical October 8 rate estimate **USD 0.11578408**, actual billed charges unknown.
+  Respect the nontransferable block ceilings (27/48, 16/32, 2/20). Unused allowance
+  does not authorize additional calls.
+- [x] Save the sealed live bundle at
+  `data/diagnostics/fulfillment-adjudication-edits-v61-2026-10-17-live/`, including
+  all raw attempts, replay audit, operator assessment, complete prose/diffs and four
+  anonymous primary pairs from six scheduled slots. Bind the unchanged preparation,
+  new approval, dependency hashes, report and tracker snapshot in the final closure.
+  New inspection scripts pass Ruff lint/format; documentation links/whitespace and
+  evidence checks pass. The preparation's 75 regressions remain evidence against
+  unchanged code, not a new test run. No production/client code changed.
+- [ ] Human preference review remains **PENDING**; the exported review sheet is empty.
+- [ ] Neither intervention is promoted. Future work requires a new bounded plan;
+  full-story qualification still requires the accepted weighted rubric/hard gates,
+  full intended Cloud corpus and comparable single-model baseline.
+- [ ] Full workflow canary: **ON HOLD; NOT STARTED**.
+
+Production prompt 61 / graph 9 / fulfillment policy 1, validators, runtime, canonical
+artifacts and historical evidence remain unchanged. **Step 19 IN PROGRESS; Step 20
+NOT STARTED.**
 
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 
