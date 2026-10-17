@@ -4171,6 +4171,137 @@ The comparison is complete even though broader qualification is not. No prompt,
 schema, validator, runtime, canonical artifact or historical evidence was changed.
 **Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
 
+### Remaining critic routes and shared ending rewrites: diagnosis 2026-10-17
+
+**DIAGNOSIS COMPLETE; SUBSEQUENT LOCAL PREPARATION RECORDED BELOW.** See the
+[diagnosis and bounded proposal](../docs/handoffs/fulfillment-routing-ending-next-experiment-2026-10-17.md).
+
+- [x] Reverify 337 sealed live files, 44 preparation/operator files, frozen code and
+  predecessor seals. Replay all 32 receipts / 35 attempts offline with network and
+  gateway construction blocked. Preserve completed results and scoring unchanged.
+- [x] Trace wrong outcome attribution separately from invalid conditions, anchors
+  and links. Confirm all three retry requests omit rejected response bodies and
+  retained classifications; one retry gains structural validity while losing the
+  correct met judgment. Do not salvage failed reviews or relax validation.
+- [x] Inspect the writer's actual negative-feedback channel: boundary category,
+  outcome-framed claim and advice coexist with met evidence. Record adjacency and
+  prospective-step wording as alternative hypotheses, not proven causes. Retain
+  previous unsuccessful reminder, history-omission and advice-prefix experiments.
+- [x] Propose independent critic and writer comparisons: 24 critic probes with an
+  explicit route index; eight writers and eight ordinary post-critics comparing
+  original versus boundary-only feedback framing, with evidence held constant.
+  Include a fixed ordinary-review source whose cited passage contains the defect.
+  Total **40 primary probes / proposed 80-call ceiling**; no prior unused allowance.
+- [x] Keep first/final semantic correctness and advice support separate from output
+  validity. Preserve full-prose judgment, required edits, independent craft and
+  pending blind human review; no quality or promotion claim from smaller diffs.
+- [x] User authorized local preparation of both comparisons; freeze full cases,
+  projections, requests, scoring, schedule and budget, verify the harness and
+  present the frozen plan below. Plan-bound live approval remains separate.
+- [ ] Execute only after that approval; no candidate prompt, request projection or
+  live call was made by this diagnosis. Full workflow canary: **ON HOLD; NOT STARTED**.
+
+Production remains prompt 61 / graph 9 / policy 1. Live craft-in-met-passage and
+complete-story quality qualification remain separate unfinished work.
+**Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
+
+### Critic routes and writer boundary framing: local freeze 2026-10-17
+
+**PREPARATION COMPLETE; APPROVED EXECUTION RECORDED BELOW.** See the
+[frozen plan](../docs/benchmark_reports/fulfillment-routing-framing-v61-plan-2026-10-17.md).
+
+- [x] Freeze six complete critic cases, both fixed ordinary writer sources, exact
+  artifact versions, raw source reviews/audits and positive packets. Replay all
+  32 prior receipts / 35 attempts and both writer sources; verify predecessor seals.
+- [x] Freeze 24 critic probes comparing ordinary C0 with the sole added route-index
+  field C1; eight writers comparing ordinary W0 with three boundary-framing fields
+  W1, evidence held constant; eight conditional ordinary post-critics. Seeds 19301
+  and 19303, counterbalanced arm order, no gating of writers by new critic results.
+- [x] Freeze 32 exact static requests, all dependent/retry builders, request-difference
+  records, schedule and scoring. Plan SHA-256:
+  `cf143f6a1ee077a9c8c24b426b90009805b1d9897a517cb2782afdcf7cc4eb37`.
+  Private bundle: `data/diagnostics/fulfillment-routing-framing-v61-2026-10-17/`.
+- [x] Freeze **40 primary probes / 80 maximum attempts**, one structural retry per
+  probe, nontransferable **48 critic / 32 writer-plus-post** block ceilings and
+  16-attempt writer/post stage ceilings. Reserve at most 1,920,000 input / 640,000
+  output tokens and 72,000 active seconds; historical-only estimate USD 0.52480.
+- [x] Verify 40 stage fixtures, 32 static retry requests, 32 paired differences,
+  four identical-output post pairs, 26 rejected source/view variants and four
+  craft transmission checks. Required edits inside cited prose remain permitted;
+  mixed/native/craft repairs cannot be hidden by the boundary projector.
+- [x] Pass the final 87-fake-dispatch harness across independent ledgers: structural
+  recovery, failed critic and wrong judgment independence, failed writer/sole post
+  skip, zero-call replay, ceilings, ordering, source/request/model/approval guards,
+  unknown/incomplete outcomes, transport/overage/cancellation stops. Bind 1,002
+  fixture files and 121 code files. These calls are mocks, not live allowance use.
+- [x] Pass 91 focused regressions, repository Ruff lint/format and strict mypy
+  (201 files), private-script Ruff lint/format and documentation checks. Record the
+  Windows sandbox temp/socket limitation and successful offline verification.
+- [x] Preserve distinct scoring for routing validity, semantic correctness, advice
+  support, factual repair, avoidable edits and genuine craft tradeoffs. Full anonymous
+  pair exports remain human-review inputs; exact deletion is not a quality gate.
+- [x] Record new approval bound to this plan hash and **full unpublished fictional
+  prose/context sent to Ollama Cloud through the local daemon**, the 80-call ceiling
+  and canary exclusion before gateway construction, discovery or inference.
+- [x] Execute once after approval, inspect every attempt and full revision, report
+  failures and limitations, update tracking and seal live evidence as recorded below.
+- [ ] Blind human preference, live independent craft in a met passage and full-story
+  quality qualification remain pending. Full workflow canary: **ON HOLD; NOT STARTED**.
+
+Preparation made **zero live model, discovery or external network calls**. No
+production prompt/schema/validator/runtime or canonical artifact changed.
+**Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
+
+### Critic routes and writer boundary framing: completed comparison 2026-10-17
+
+**COMPARISON COMPLETE; NEITHER CANDIDATE MEETS THE FROZEN SIGNAL.** See the
+[results and inspection decisions](../docs/benchmark_reports/fulfillment-routing-framing-v61-results-2026-10-17.md).
+
+- [x] Complete all 40 planned probes with **42/80 calls**: 26 initial critic calls,
+  eight writers and eight ordinary post-critics. Respect the nontransferable
+  48/32 block limits and one structural retry; no skips, replacements, semantic
+  rerolls, transport retries or additional revisions. All three model checks match.
+- [x] Record C0 **12/12 first-valid**, C1 **10/12 first-valid** and **12/12 final-valid
+  in both arms**. Final classifications match **8/12 per arm**. Both falsely mark
+  Elena's separate/embedded decision unmet at both seeds; retain correct clean,
+  genuinely missing, complete compound and Elara controls.
+- [x] Inspect both C1 embedded failures: illegal duplicate outcome route at 19301,
+  conditions owned by a met outcome at 19303. Both retries change correct raw met
+  to valid-but-wrong unmet. Preserve failed outputs; no salvaged writer evidence.
+- [x] Audit advice separately: compound repair conditions are supported, with two
+  control next-scene overclaims and one candidate support-rationale caution retained.
+  No independent craft issue was reported. Structural validity is not semantic success.
+- [x] Inspect all eight complete revisions and diffs. All repair entry and retain
+  fulfilled facts; all eight ordinary posts pass, with sixteen native-met and eight
+  original-repair-met checks. All four embedded revisions edit the cited defective
+  sentence successfully. Exact excerpts remain descriptive, not protected spans.
+- [x] Record W1 **0 preservation wins / 3 losses / 1 tie / 0 mixed**. W0 makes exact
+  deletion-only repairs for both separate cases; W1 also rewrites their adequate
+  endings. Embedded 19301 adds a new resolve/waiting beat and broader edits in W1;
+  embedded 19303 is a tie. Preserve the alternative mixed interpretation for 19301
+  if humans prefer its suspense; it still gives zero wins. No literary-quality claim.
+- [x] Record six ending edits beyond the minimum, zero clear new explicit decision
+  assertions and one ambiguous resolve beat. Separate factual retention, avoidable
+  changes, benign wording and potential craft tradeoffs; do not count words as quality.
+- [x] Export four full anonymous pairs/originals and a private order key. Complete
+  assistant inspection separately; blind human review remains pending.
+- [x] Reconstruct all 42 requests and replay all 40 probes / 42 attempts offline;
+  reconcile reservations, outcomes, hashes, schedule and usage. Reverify 121 frozen
+  code files and source/preparation seals. Seal live evidence, report and tracker
+  snapshot. Private inspection scripts and documentation checks pass.
+- [x] Record **686,223 input / 51,178 output tokens**, **292.13 active seconds** and
+  USD **0.11654242** at historical October 8 rates only; actual billed charges unknown.
+- [ ] Resolve critic attribution and retry stability through a separately scoped
+  next proposal before further tuning or live calls. Do not promote either candidate.
+- [ ] Complete blind human preference and live independent craft-in-met-passage
+  qualification separately. Full-story quality qualification remains unfinished.
+- [ ] Full workflow canary: **ON HOLD; NOT STARTED**.
+
+Production prompt 61 / graph 9 / policy 1, validators, canonical artifacts and
+historical evidence remain unchanged. No new application test/build claim is made
+for this live execution; the full replay verifies the unchanged frozen path.
+**Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
+
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 
 21. [ ] **Package the stable system with Tauri** and test crash/restart, offline, missing-model, invalid-key, provider-timeout, and low-disk-space behavior.
