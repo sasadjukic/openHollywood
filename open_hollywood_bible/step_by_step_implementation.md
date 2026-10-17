@@ -4065,7 +4065,7 @@ No new prompt tuning, canonical changes or story-quality campaign was started.
 
 ### Fulfillment failure diagnosis and next experiment proposal: 2026-10-16
 
-**DIAGNOSIS COMPLETE; FOLLOW-UP PROPOSED, NOT PREPARED OR RUN.** See the
+**DIAGNOSIS COMPLETE; FOLLOW-UP SINCE PREPARED AND RUN (2026-10-17).** See the
 [diagnosis and bounded plan](../docs/handoffs/fulfillment-failure-diagnosis-next-experiment-2026-10-16.md).
 
 - [x] Separate invalid critic output routes and assessment length from the valid but
@@ -4081,14 +4081,94 @@ No new prompt tuning, canonical changes or story-quality campaign was started.
   current/evidence writer pairs and their post-critics using one fixed validated
   saved review. Total: **32 probes / proposed 64-call ceiling**. Keep writer coverage
   independent of new critic eligibility; include complete-outcome negative controls.
-- [ ] Prepare and verify the new cases, full requests, scoring sheet and budget locally;
-  present the frozen manifest for explicit approval before live execution. No unused
-  allowance from the completed experiment is carried forward.
-- [ ] Run and inspect only after approval. No prompt/schema/runtime changes or live
-  calls are part of this diagnosis. Preserve independent craft and necessary edits;
-  use full-prose inspection and later blind human quality review, not quote retention.
+- [x] Prepare and verify the new cases, full requests, scoring sheet and budget locally;
+  present the [frozen manifest and plan](../docs/benchmark_reports/fulfillment-contrasts-v61-plan-2026-10-17.md)
+  before live execution. No unused allowance from the completed experiment is carried forward.
+- [x] Run and inspect the separately approved follow-up; see the October 17 results
+  below. The diagnosis itself made no live calls or prompt/schema/runtime changes.
+  Preserve independent craft and necessary edits; full-prose assistant inspection
+  remains separate from pending blind human quality review.
 - [ ] Full workflow canary: **NOT STARTED**, still excluded by the user.
 
+**Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
+
+### Fulfillment contrasts and writer replication preparation: 2026-10-17
+
+**PREPARED AND VERIFIED; SUBSEQUENT APPROVED EXECUTION COMPLETE.** See the
+[frozen plan](../docs/benchmark_reports/fulfillment-contrasts-v61-plan-2026-10-17.md).
+
+- [x] Freeze ten complete critic cases at seeds 19201/19203: clean, separate result,
+  embedded result, missing decision and complete-outcome controls for both stories.
+  Preserve full constraints and consistent immutable diagnostic artifact references.
+- [x] Freeze six writer requests at seeds 19201/19203/19205 using the exact saved
+  successful ordinary review. Each current/evidence pair differs only by the packet.
+  New critic classifications cannot gate these writer trials.
+- [x] Save **26 full static requests**, the six conditional post-review builders,
+  structural retry rules, 32-probe order, scoring/prelabels and **64-call ceiling**.
+  Hash the plan, cases, requests, scoring and 115 code/dependency files. Plan SHA-256:
+  `9d01888c27a0aa45eaa126cf47824540591ce3867aa5324c44dbc48fb8371b9e`.
+- [x] Validate 32 stage fixtures and 26 static retry requests. Complete the final
+  **71-fake-call harness**, covering all three retry roles, permanent failures,
+  writer independence, post skip, zero-call replay, call-65/third-attempt rejection,
+  unknown/incomplete work, transport/overage/cancellation stops and approval guards.
+  Retain 691 hashed fixture files and unscored anonymous full-prose pair exports.
+- [x] Replay all 27 prior attempts; reverify sealed sources. Pass **91 relevant
+  regressions**, repository Ruff/format and strict mypy for 201 source files;
+  private harness lint/format checks pass. Production remains unchanged.
+- [x] Publish the frozen plan and seal preparation evidence. **Zero live model calls
+  or provider discovery calls**; human review remains pending. Preserve independent
+  craft and necessary edits; no quality claim from quote retention or smaller diffs.
+- [x] Obtain explicit approval bound to the frozen plan before live execution;
+  retain the additional explicit prose/context transfer approval for Ollama Cloud.
+- [x] Execute, inspect and report the bounded comparison without tuning mid-run;
+  see the results below. The frozen preparation report remains unchanged.
+- [ ] Full workflow canary: **ON HOLD; NOT STARTED**.
+
+**Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
+
+### Fulfillment contrasts and writer replication results: 2026-10-17
+
+**BOUNDED EXPERIMENT COMPLETE; BROADER QUALIFICATION INCOMPLETE.** See the
+[results and full-text inspection](../docs/benchmark_reports/fulfillment-contrasts-v61-results-2026-10-17.md).
+
+- [x] Execute the exact approved plan with the recorded cloud model digest and
+  unchanged prompt 61 / graph 9 / policy 1. Retain all requests and durable
+  reservations; no semantic rerolls, extra revisions or replacement probes.
+- [x] Finish all **32 probes in 35/64 calls**, with no skips: 23 initial critic
+  attempts, six writers and six post-critics. Thirty probes validate; two embedded
+  Elena reviews fail after their allowed structural retry. All writer/post probes
+  validate first attempt, independent of the new initial critic results.
+- [x] Inspect all raw failures and native/normalized findings. Initial validity is
+  17/20 first attempt and 18/20 final; classification matches are **16/20**. All
+  ten Elara cases match. Both separate Elena results misclassify the fulfilled
+  decision; both embedded cases fail routing. The recovered separate review changes
+  from raw met to valid-but-wrong unmet. Compound outcomes remain unmet in 4/4.
+- [x] Record supported advice separately from statuses: **15/20 sound reviews** on
+  conservative assistant inspection, with one additional over-specific comparison
+  condition documented transparently. No independent craft finding appeared.
+- [x] Inspect all complete revisions and diffs: all six repair entry and retain
+  fulfilled facts. Current context adds explicit decision restatement in **3/3**;
+  evidence in **0/3**. Record three narrow preservation wins, no ties/losses/mixed
+  tradeoffs. The prior evidence-only regression does not recur under these seeds.
+- [x] Retain the shared limitation: **6/6 rewrite an adequate ending**, 0/6 exactly
+  restore the clean text. Six post-passes, twelve native-met and six historical-met
+  checks establish factual repair, not literary quality or durable workflow success.
+- [x] Export three anonymous full-prose pairs and originals, with a separate private
+  key. Complete assistant inspection separately; **blind human review stays pending**.
+- [x] Reconstruct all 35 dispatched requests and replay all 32 receipts, including
+  failed attempts; reconcile ledger, schedule, usage, approved hashes and model
+  identities. Reverify preparation and historical seals; seal live evidence and
+  report. Private inspection scripts pass lint/format; no production code changes.
+- [x] Record **586,904 input / 41,345 output tokens**, 176.48 active dispatch seconds
+  and USD **0.09870456** at recorded October 8 rates; actual charges unknown.
+- [ ] Resolve ordinary-critic routing and attribution through a separately scoped
+  proposal before broader qualification; do not tune from these results implicitly.
+- [ ] Complete blind quality review and live craft-in-met-passage qualification
+  separately. Preserve necessary edits and independent craft; never lock fulfilled prose.
+- [ ] Full workflow canary: **ON HOLD; NOT STARTED**, as explicitly requested.
+
+The comparison is complete even though broader qualification is not. No prompt,
+schema, validator, runtime, canonical artifact or historical evidence was changed.
 **Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
 
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
