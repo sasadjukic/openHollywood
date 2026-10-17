@@ -4623,6 +4623,203 @@ Production prompt 61 / graph 9 / policy 1, canon and historical evidence are unc
 Production prompt 61 / graph 9 / policy 1, validators, runtime, canonical artifacts
 and historical evidence remain unchanged. **Step 19 IN PROGRESS; Step 20 NOT STARTED.**
 
+### P1 reporting and edit selection: diagnosis 2026-10-17
+
+**DIAGNOSIS COMPLETE; NEXT EXPERIMENT PROPOSED, NOT PREPARED OR RUN.** See the
+[diagnosis and proposed 96-call experiment](../docs/handoffs/fulfillment-reporting-edit-purpose-diagnosis-next-experiment-2026-10-17.md).
+
+- [x] Retain P1's improved noticing as diagnostic evidence, per the user's decision.
+  Preserve J1's diagnostic status and E1's mechanical success without preservation
+  qualification. No production promotion.
+- [x] Reverify 415 sealed live files, 57 preparation/operator files, 134 dependencies,
+  source report and predecessor seals; replay all 40 probes / 43 attempts offline.
+  Preserve historical evidence and empty human-review sheets. Block gateway creation
+  and external connections; make zero model, discovery or external network calls.
+- [x] Isolate P1's reporting failures on four response copies. Correcting advice
+  ownership alone exposes missing independent-craft comparison coverage in all four.
+  Correcting both validates all four without changing native/boundary judgments,
+  craft description, severity or evidence. These are operator fixtures, not model
+  successes, canonical artifacts or eligible writer sources.
+- [x] Verify that invalid advice causes the existing diagnostic-enrichment helper
+  to return before collecting comparison/retention metadata. Actual retries focus
+  on the first condition-reference error. Record the distinction between a finding
+  reference, model-authored condition owner and independent comparison coverage.
+  Do not claim complete feedback is guaranteed to fix the exposed errors.
+- [x] Reconfirm accurate application of all eight writer patches and eight valid
+  minimal-patch counterfactuals. Existing preservation instructions and lower
+  temperature do not prevent selected ending recomposition. Retain mixed/tie/loss
+  judgments and their sensitivity analysis; do not equate minimal edits with quality.
+- [x] Verify all eight actual post messages omit the full original prose and diff;
+  only the revised sentence catalog is present alongside old metadata and selected
+  repair evidence. Maximum post scores are not direct preservation comparisons.
+- [x] Propose A: eight full cases, two seeds, 16 shared P1 initials, then one R0/R1
+  correction per branch only after structural failure. Compare existing feedback
+  with independently checkable concrete error coverage; maximum 48 calls. Include
+  real missing/compound native obligations, retain the full ordinary validator and
+  craft findings, and mark insufficient first failures inconclusive without rerolls.
+- [x] Propose B: unchanged E1 versus checkable per-edit purposes at fixed temperature
+  0.85. Two historical boundary sources plus one existing valid minor P1 duplication
+  source, two seeds, 12 writers and 12 ordinary posts; maximum 48 calls. Both arms
+  explicitly receive the optional craft task. Preserve its pass verdict/minor
+  severity; no manufactured mandatory test or automatic production revision trigger.
+- [x] Record the craft control's limitation: only one duplicate copy is positively
+  cited, so successful deletion need not touch positive evidence. Score actual
+  overlap; do not claim necessary craft editing inside fulfilled prose is qualified.
+- [x] Propose nontransferable **96-call** ceiling, seeds 19601/19603, bounded structural
+  retries, no semantic/transport rerolls, full-prose paired scoring and human review.
+  Reserve 2,304,000 input / 768,000 output tokens and 86,400 active seconds; historical
+  ceiling estimate USD 0.62976, actual charges unknown. No new plan or requests frozen.
+- [x] Save private diagnosis evidence under
+  `data/diagnostics/fulfillment-reporting-edit-purpose-diagnosis-2026-10-17/`;
+  verify helper lint/format, source seals, documentation links and whitespace.
+- [x] Receive subsequent authorization and prepare cases, candidate builders, scoring
+  and harness; the completed preparation is recorded below. The diagnosis itself
+  created no candidate prompt/schema or live request/operator bundle.
+- [ ] Human preference, useful craft edits necessarily inside fulfilled evidence,
+  full-story/baseline evaluation and production qualification remain open.
+- [ ] Full workflow canary: **ON HOLD; NOT STARTED**.
+
+Production prompt 61 / graph 9 / policy 1, validators, runtime and canonical artifacts
+remain unchanged. **Step 19 IN PROGRESS; Step 20 NOT STARTED.**
+
+### Reporting retry and edit purpose: frozen preparation 2026-10-17
+
+**PREPARATION COMPLETE; subsequent approved execution is complete below.** See the
+[frozen 96-call plan](../docs/benchmark_reports/fulfillment-reporting-edit-purpose-v61-plan-2026-10-17.md).
+
+- [x] Freeze eight existing full-scene cases and input versions: six Elara
+  base/duplication/functional-recurrence cases with and without overrun, plus Elena
+  missing-decision and compound-outcome controls. Preserve exact prose and context.
+- [x] Freeze A: 16 shared ordinary P1 initial reviews, followed only after structural
+  failure by one R0 and one R1 correction. R0 uses existing retry feedback; R1 adds
+  bounded, independently checkable condition-owner and comparison metadata. Both
+  branches bind the same rejected response. Maximum **48 calls**; valid initials
+  are shared, not two independent successes. No semantic rerolls or third attempts.
+- [x] Keep the ordinary final validator and native conditions intact. Diagnostic
+  projections can inspect metadata but cannot produce accepted reviews or writer
+  sources. Missing/stale native evidence is not promoted; feedback is limited to
+  16 diagnostics / 10,000 serialized diagnostic bytes, with partial coverage marked.
+- [x] Freeze B: unchanged E1 (W0) versus per-edit target/purpose claims (W1), both at
+  temperature 0.85. Three fixed historical sources, two seeds, 12 writers and 12
+  conditional ordinary P0 posts; one structural retry each, maximum **48 calls**.
+  A results cannot select, replace or gate the B sources.
+- [x] Include the actual valid P1 pass/minor duplication source as an explicitly
+  requested optional craft task in both arms. Manufacture no mandatory craft test
+  and introduce no production revision trigger. Keep purpose records outside prose
+  and post messages. Measure positive-evidence overlap without claiming it necessary.
+- [x] Freeze seeds 19601/19603, reverse arm order at the second seed, critic
+  temperature 0.2, top-p 0.95 and thinking disabled. Enforce the nontransferable
+  **96-call** ceiling with stage limits 16/32/24/24. Reserve 24,000 input tokens,
+  8,000 output tokens and 900 seconds per attempt; aggregate 2,304,000 input /
+  768,000 output tokens / 86,400 active seconds. No transfer of prior unused calls.
+- [x] Save **28 exact static requests**, 72 scheduled slots, dependent correction,
+  post and retry builders, complete source identities, scoring and pending assessment
+  templates. Freeze six anonymous full-prose review pairs/export rules. Reject source
+  substitution or request drift; persist and reserve exact requests before dispatch.
+- [x] Freeze separate structural, finding-support, preservation and craft assessments.
+  R1 needs at least two paired qualified rescues including a combined failure, no
+  losses and complete control coverage; fewer than two failed initials is inconclusive.
+  W1 needs all four boundary and both craft repairs, at least two clear boundary-pair
+  wins including an embedded case, no losses and substantively supported edit purposes.
+  Missing/invalid outputs never win. Minor craft remains optional; no-op craft fails.
+- [x] Pass 96 valid response fixtures, 28 paired request-difference checks, 24 invalid
+  purpose checks, four historical failed-attempt feedback checks and six identical-
+  post comparisons. Pass **181 fake dispatches** across ceiling/shared/fault/terminal
+  matrices. Replay all 178 completed attempts and 63 skips with final code; completed
+  reruns add zero calls. Verify caps, branch isolation, approval mismatches, corruption,
+  cancellation, unknown outcomes, source mutation and unavailable stale evidence.
+- [x] Export six complete and five available fault pairs, correctly recording two
+  scheduled craft pairs. Save all qualitative and human assessments as pending.
+  Largest static token estimate 17,282; largest tested dependent estimate 19,747.
+  Exact provider counts remain unknown; no context trimming or token-cap expansion.
+- [x] Pass all 75 focused fulfillment/probe regressions, repository Ruff/format and
+  strict mypy across 201 files, and lint/format for eight private helpers. Reverify
+  predecessor and diagnosis seals. Record final code, request, fixture, report and
+  tracker hashes in the preparation closure. No client changes require frontend checks.
+- [x] Obtain separate approval for this exact frozen plan, full unpublished prose,
+  critique and story context, **Ollama Cloud via the local daemon**, and the **96-call**
+  ceiling before discovery or inference. Bind the user's approval to the sealed plan.
+- [x] Execute and inspect the approved comparison, keeping shared observations,
+  raw diagnostic findings and qualified successes separate; document full prose,
+  all changes, supported purposes and neutral-addition sensitivity before promotion.
+- [ ] Human preference, craft repairs necessarily inside fulfilled evidence, full
+  intended Cloud corpus, comparable single-model baseline and story-quality
+  qualification remain open. Smaller diffs and high critic ratings are not quality.
+- [ ] Full workflow canary: **ON HOLD; NOT STARTED**.
+
+Private evidence: `data/diagnostics/fulfillment-reporting-edit-purpose-v61-2026-10-17/`.
+Frozen plan SHA-256: `ee346c83e38643f9f1438279cde5863067e51896d8da2519fd9788651cc22844`.
+Preparation made **zero live model or discovery calls**. Retain J1/P1 as diagnostic
+evidence and E1 as mechanically successful but preservation-unqualified. Production
+prompt 61 / graph 9 / policy 1, validators, runtime, canon and historical evidence
+remain unchanged. **Step 19 IN PROGRESS; Step 20 NOT STARTED.**
+
+### Reporting retry and edit purpose: live results 2026-10-17
+
+**BOUNDED RUN COMPLETE: 46/96 calls; neither frozen success criterion met.** See the
+[results and decisions](../docs/benchmark_reports/fulfillment-reporting-edit-purpose-v61-results-2026-10-17.md).
+
+- [x] Execute all 72 scheduled slots: 46 calls and 26 justified correction skips.
+  Thirteen of 16 shared initials validate; three branch into six correction calls,
+  four of which validate. All 12 writers and 12 ordinary posts validate immediately.
+  Preserve the five rejected responses, including three initials and two terminal
+  correction branches. No semantic rerolls, transport retries or replacement sources.
+- [x] Match the frozen model digest and Cloud deployment at preflight and both phases.
+  Verify all 28 static requests and dependent builders, exact parent binding, unchanged
+  preparation and 142 dependencies. Reconcile all requests, reservations, responses,
+  receipts, outcomes and skips through offline replay.
+- [x] Record A's **22/48 calls**: R0 and R1 each recover **2/3** failed initials,
+  with **zero additional paired R1 rescues** and zero paired losses. Both policies
+  finish with **15/16** valid supported native/boundary tuples and **3/4** valid
+  supported duplication findings. Raw duplication noticing remains 4/4; eight base/
+  recurrence controls receive no unsupported repetition-removal demand.
+- [x] Inspect the remaining combined-case failures: R0 retains an empty independent
+  craft comparison; R1 fixes comparison coverage but adds forbidden model-written
+  boundary conditions. Both retain the correct minor duplication finding. No initial
+  reproduced the earlier ownership error that masked comparison coverage; record
+  that limit rather than claiming the masked-error hypothesis was fully tested.
+- [x] Confirm all four Elena control conditions remain supported and narrow. Record
+  overclaims in compound-case next-scene explanations separately: a confirmed match
+  does not alone establish warning acceptance or verification of a particular flourish.
+  The explicit current no-match rule still supports the boundary judgments.
+- [x] Record B's **24/48 calls**, with no structural retry. Both arms repair all four
+  boundary cases and both requested optional craft cases, retaining fulfilled facts.
+  Every ordinary post passes, but all 36 maximum craft scores fail to distinguish
+  the observed preservation differences and unsupported editing purposes.
+- [x] Inspect complete prose, patches and diffs. W1 versus W0 primary judgments:
+  **2 wins, 0 losses, 3 ties, 1 mixed**, including an embedded win. Additions-neutral
+  sensitivity: **1 win, 1 loss, 4 ties**. Preserve the mixed tradeoff and human-review
+  uncertainty; do not substitute the sensitivity labels for the frozen primary labels.
+- [x] Assess all eight W1 purpose claims: **4 supported, 2 partly supported,
+  2 unsupported**. Separate-case adjacent rewrites miscast preparation or tonal
+  preference as necessity; embedded purposes justify entry removal but not all added
+  imagery/action. W1 fails the all-supported-purpose criterion despite two primary wins.
+- [x] Verify the craft control succeeds in all four revisions: one bracing action
+  remains, all surrounding words retained; one output leaves a double space. Three
+  selected ranges overlap positive evidence, but deleting the uncited copy remains
+  possible. Do not claim qualification of necessary craft changes inside fulfilled prose.
+- [x] Reconcile **778,005 input / 45,432 output tokens / 253.56 active seconds**;
+  historical October 8 rate estimate **USD 0.12709350**, actual billed charges unknown.
+  Respect every stage, block, per-call and aggregate cap. The 50 unused calls authorize
+  no further experiments, revisions or canary work.
+- [x] Save and seal all live evidence, response-bound assessments, full prose/diffs,
+  six anonymous review pairs, final verification and tracker snapshot under
+  `data/diagnostics/fulfillment-reporting-edit-purpose-v61-2026-10-17-live/`.
+  Pass offline replay, helper Ruff/format, documentation links, UTF-8/LF and whitespace
+  checks. Preparation's 75 regressions and strict mypy remain prior checks of unchanged
+  production code; no new regression run is claimed.
+- [x] Retain J1/P1 as diagnostic evidence and E1 as mechanically successful but
+  preservation-unqualified. Record W1's limited gains and successful optional repair
+  alongside its failed justification gate. No production prompt or policy promotion.
+- [ ] Human preference: **PENDING**; all six complete anonymous pairs exported,
+  review sheet empty. Necessary craft edits within fulfilled passages, broader
+  story-quality evaluation, full intended Cloud corpus and comparable baseline remain open.
+- [ ] Further experiments require a new bounded design; none prepared or run here.
+- [ ] Full workflow canary: **ON HOLD; NOT STARTED**.
+
+Production prompt 61 / graph 9 / policy 1, validators, runtime, canonical artifacts
+and historical evidence remain unchanged. **Step 19 IN PROGRESS; Step 20 NOT STARTED.**
+
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 
 21. [ ] **Package the stable system with Tauri** and test crash/restart, offline, missing-model, invalid-key, provider-timeout, and low-disk-space behavior.
