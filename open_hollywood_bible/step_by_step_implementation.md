@@ -4302,6 +4302,48 @@ historical evidence remain unchanged. No new application test/build claim is mad
 for this live execution; the full replay verifies the unchanged frozen path.
 **Step 19 remains IN PROGRESS; Step 20 is NOT STARTED.**
 
+### Route-index and boundary-framing diagnosis: next proposal 2026-10-17
+
+**DIAGNOSIS COMPLETE; EXPERIMENT PROPOSED, NOT PREPARED OR RUN.** See the
+[diagnosis and proposed comparisons](../docs/handoffs/fulfillment-routing-framing-diagnosis-next-experiment-2026-10-17.md).
+
+- [x] Reverify 407 sealed live files, 52 preparation/operator files, 121 frozen code
+  files and predecessor seals. Replay all 40 probes / 42 attempts to the sealed
+  audit with network/gateway access blocked; inspect complete raw failures and prose.
+- [x] Separate persistent outcome attribution errors from incompatible routes and
+  retry drift. Both C1 retries legalize wrong unmet outcomes. Two explicitly manual
+  routing fixtures validate with the original met/boundary judgments untouched;
+  preserve them as counterfactuals, never model successes or writer sources.
+- [x] Explain the narrower writer result: factual repair succeeds throughout;
+  boundary framing adds static-ending rewrites and one ambiguous resolve/waiting
+  beat. Record salience and edit granularity as hypotheses, retain the mixed-reading
+  sensitivity, and avoid attributing a paired difference to the unchanged packet.
+- [x] Propose ordinary critic versus adjudication-only diagnostic output, retaining
+  complete obligation semantics and context. Do not credit a smaller schema as
+  routing success, generate a production Critique, or omit craft from production.
+- [x] Propose ordinary full-scene writer versus exact model-selected text edits,
+  with original feedback and evidence fixed. Permit broad and whole-scene edits;
+  reject stale, ambiguous or overlapping patches instead of silently fixing them.
+- [x] Include a synthetic repetition control inside fulfilled evidence, with two
+  ordinary source critics and conditional paired writers/posts. Freeze eligibility;
+  source failure skips its dependent pair without fabricated reviews or rerolls.
+- [x] Specify **50 primary probes / proposed 100-call ceiling**, with nontransferable
+  48 critic / 32 fixed-source writer-post / 20 craft-control limits, one structural
+  retry, new seeds 19401/19403 and no transferred allowance. No new calls authorized.
+- [x] Keep preservation, factual repair, craft editing and human quality separate.
+  Record the full-story rubric/baseline requirements and pending blind human review.
+- [x] Verify the offline evidence helper with Ruff and documentation/link/whitespace
+  checks; seal the diagnosis and tracker snapshot. No application test/build claim.
+- [ ] Obtain authorization for local preparation, freeze and verify all contracts,
+  complete cases, conditional builders, requests, scoring and budget; present the
+  frozen plan before requesting plan-bound live approval. No candidate prepared yet.
+- [ ] Execute only after that approval; broader qualification remains unfinished.
+- [ ] Full workflow canary: **ON HOLD; NOT STARTED**.
+
+Production prompt 61 / graph 9 / policy 1, canonical artifacts, validators and
+historical evidence are unchanged. This diagnosis made **zero new inference,
+discovery or external network calls**. **Step 19 IN PROGRESS; Step 20 NOT STARTED.**
+
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 
 21. [ ] **Package the stable system with Tauri** and test crash/restart, offline, missing-model, invalid-key, provider-timeout, and low-disk-space behavior.
