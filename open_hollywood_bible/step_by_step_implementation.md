@@ -4458,6 +4458,171 @@ Production prompt 61 / graph 9 / fulfillment policy 1, validators, runtime, cano
 artifacts and historical evidence remain unchanged. **Step 19 IN PROGRESS; Step 20
 NOT STARTED.**
 
+### Exact-edit selection and missed craft: diagnosis 2026-10-17
+
+**DIAGNOSIS COMPLETE; NEXT EXPERIMENT PROPOSED, NOT PREPARED OR RUN.** See the
+[diagnosis and proposed 80-call comparison](../docs/handoffs/fulfillment-edit-selection-craft-diagnosis-next-experiment-2026-10-17.md).
+
+- [x] Record the user's retention decisions: J1 remains promising diagnostic evidence;
+  E1 remains mechanically successful but unqualified for preservation. Neither is
+  promoted or given production authority.
+- [x] Reverify 443 sealed live files, 58 preparation/operator files, 128 dependency
+  hashes and predecessor seals; replay all 42 probes / 45 attempts offline. Preserve
+  the prior reports, scoring and empty human-review sheet. Network connections and
+  gateway construction are blocked during diagnosis.
+- [x] Locate E1's failure in the model's edit choices: both separate-entry cases
+  contain an unnecessary edit wholly before the defect. All four minimal-patch
+  counterfactuals validate and restore clean prose. These operator-authored fixtures
+  are not model results, writer sources, canonical edits or literary preferences.
+- [x] Verify that both critics received all scene wording, including two distinct
+  duplicate handles, in a 52-entry sentence catalog. The continuous prose field and
+  paragraph layout are absent from actual messages. No text loss or output truncation
+  explains the miss; the raw reviews already omit independent craft and score prose 5/5.
+- [x] Verify that the ordinary schema retains an independent duplication issue on
+  response copies without changing native checks. Distinguish model omission from
+  application filtering, presentation effects and unproven assignment/reporting load.
+  Critics receive no writer fulfillment packet.
+- [x] Identify additional craft-control limitations: both-copy positive coverage is
+  an instrumentation requirement, and ordinary projection creates a second mandatory
+  test for major craft on revise but not minor craft. Both severities remain normalized
+  issues. Do not raise severity or manufacture sources to force control eligibility.
+- [x] Propose comparison A: six complete cases (base, accidental duplicate, functional
+  recurrence, each with/without entry overrun), two seeds, ordinary catalog-only versus
+  exact continuous prose plus the unchanged catalog. Keep system instructions, output
+  schema and critic settings fixed: 24 primary probes / maximum 48 attempts.
+- [x] Propose comparison B: unchanged E1 requests and the two fixed ordinary writer
+  sources at temperatures 0.85 versus 0.2, two seeds, with ordinary unchanged posts:
+  eight writers plus eight posts / maximum 32 attempts. This is a sampling diagnosis,
+  not a low-temperature drafting policy or craft-editing qualification.
+- [x] Keep the proposed ceiling at **80 calls / 40 primary probes**, nontransferable
+  48/32 blocks and one structural retry; no semantic rerolls or replacements. Preserve
+  full-prose scoring, functional-repetition specificity and blind human review. No
+  craft writer control is claimed this round; useful edits inside fulfilled passages
+  remain an explicit later qualification requirement with a separately frozen design.
+- [x] Save local diagnosis and labeled counterfactual evidence under
+  `data/diagnostics/fulfillment-edit-selection-craft-diagnosis-2026-10-17/`; verify
+  helper lint/format, documentation links, whitespace and source seals.
+- [x] Prepare and freeze the proposed cases, requests, scoring and budget after
+  authorization; see the preparation record below for the sealed plan. Approved
+  bounded execution is recorded below.
+- [ ] Human preference, full-story quality and production qualification remain open.
+- [ ] Full workflow canary: **ON HOLD; NOT STARTED**.
+
+This diagnosis made **zero live model, discovery or external network calls** and
+created no next-experiment prompt, request bundle or live plan. Production prompt 61 /
+graph 9 / policy 1, validators, runtime, canon and historical evidence remain unchanged.
+**Step 19 IN PROGRESS; Step 20 NOT STARTED.**
+
+### Critic presentation and E1 temperature: frozen preparation 2026-10-17
+
+**PREPARATION COMPLETE; approved execution is now complete below.** See the
+[frozen 80-call plan](../docs/benchmark_reports/fulfillment-presentation-temperature-v61-plan-2026-10-17.md).
+
+- [x] Freeze six full-scene cases with distinct immutable draft versions: base,
+  accidental adjacent duplication and functional recurrence, each with/without the
+  entry overrun. Freeze construction rationales separately from model messages;
+  legitimate criticism of the functional recurrence remains possible.
+- [x] Freeze comparison A: ordinary P0 catalog versus P1 exact continuous prose
+  alongside the unchanged catalog. Same ordinary instructions, schemas, evidence
+  handles and settings; 24 primary probes / maximum 48 calls.
+- [x] Freeze comparison B: unchanged E1 exact-edit instructions, two historical
+  ordinary sources, full context, fulfillment packets and repair tests, at writer
+  temperatures 0.85 versus 0.2. Eight writers plus eight ordinary P0 posts / maximum
+  32 calls. No A result selects or gates the fixed B sources.
+- [x] Freeze seeds 19501/19503, reverse arm order at the second seed, top-p 0.95,
+  thinking disabled, critic temperature 0.2, and the nontransferable **80-call**
+  ceiling. Reserve 24,000 input / 8,000 output tokens / 900 seconds per attempt;
+  one structural retry, no semantic/transport rerolls or replacement cases.
+- [x] Save 32 exact static requests and frozen dependent builders for eight posts
+  and structural retries. Verify 32 paired attempt differences, all input lineage,
+  exact prose inclusion, unchanged E1 instructions and identical ordinary posts for
+  identical materialized prose. No context trimming. Largest static diagnostic
+  token estimate 17,282; exact provider tokenization remains unknown until execution.
+- [x] Freeze separate detection, native/boundary, advice-support, preservation and
+  craft-tradeoff scoring; keep invalid results in scheduled denominators. Both minor
+  and major independent craft findings can count as detection. Freeze pending
+  assessment templates and four anonymous full-prose human-review pairs/export rules.
+- [x] Verify all 40 scheduled slots through fake providers: 43 attempts with selected
+  retries, 41 in the fault matrix and three terminal-error fixtures. Global, block,
+  stage, token and time limits reject over-budget dispatch. A failed writer skips
+  only its own post; critic failures do not block B. Completed replay adds zero calls.
+- [x] Replay all 84 completed fixture attempts; reject request/response corruption,
+  source mutation and six approval mismatches; verify 16 minor/major issue fixtures
+  and complete/fault anonymous exports. Reverify predecessor seals and current source
+  dependencies. Real gateway construction and external connections are blocked in
+  offline checks.
+- [x] Pass all 75 focused fulfillment/probe tests, repository Ruff/format and strict
+  mypy checks across 201 files, and lint/format for six private helpers. No client or
+  production changes require frontend tests/build. Save the plan, evidence hashes,
+  verification, public report and tracker snapshot in the preparation closure.
+- [x] Receive explicit approval for the frozen full-prose/context payload,
+  Cloud-via-local-daemon destination and 80-call budget before model discovery or
+  inference. Execute the frozen comparisons once; results are recorded below.
+- [ ] Human preference, useful craft edits inside fulfilled passages, broader
+  story-quality evaluation and production qualification remain open. No craft writer
+  control is claimed in this round.
+- [ ] Full workflow canary: **ON HOLD; NOT STARTED**.
+
+Private evidence: `data/diagnostics/fulfillment-presentation-temperature-v61-2026-10-17/`.
+Preparation made **zero live model or discovery calls**. J1 remains promising diagnostic
+evidence; E1 remains mechanically successful but unqualified for preservation.
+Production prompt 61 / graph 9 / policy 1, canon and historical evidence are unchanged.
+**Step 19 IN PROGRESS; Step 20 NOT STARTED.**
+
+### Critic presentation and E1 temperature: live results 2026-10-17
+
+**BOUNDED RUN COMPLETE: 43/80 calls; neither frozen success criterion met.** See the
+[results and decisions](../docs/benchmark_reports/fulfillment-presentation-temperature-v61-results-2026-10-17.md).
+
+- [x] Complete all 40 scheduled probes: 24 initial critics in 27 calls, eight writers
+  and eight ordinary posts in 16 calls. Final validity is 38/40. Three structural
+  retries yield one recovery and two terminal failures; five attempts are invalid.
+  No skips, semantic rerolls, transport retries, replacement sources or extra revisions.
+- [x] Match the frozen model digest at preflight and both phases, verify all 32 static
+  requests and dependent builders, and reconcile every reservation, response, receipt,
+  outcome and probe through offline replay. Preserve invalid results in denominators.
+- [x] Record P1's improved raw duplication detection **4/4 versus P0 0/4**, but only
+  **2/4 valid supported findings**. Both P1 duplicate-plus-overrun reviews remain
+  invalid after retry. Native/boundary judgments are supported in every raw review;
+  valid qualified tuples are P0 12/12 and P1 10/12. Neither arm makes an unsupported
+  repetition-removal demand on its eight base/functional-recurrence controls.
+- [x] Inspect every failed attempt: model-written boundary repair references and
+  recommendation reuse cause the observed failures. Record empty craft-comparison
+  references as an additional visible omission, without inventing a later validation
+  result. Keep correct raw observations separate from usable production reviews.
+- [x] Confirm all eight E1 patches validate immediately, repair the boundary and
+  retain fulfilled facts; all eight ordinary posts pass immediately. Inspect complete
+  prose, selected edits and diffs: all four separate-entry writers edit before the
+  defect, and all four embedded writers add the same threshold image.
+- [x] Score T1 temperature 0.2 relative to T0 0.85 as **0 wins, 1 loss, 2 ties, 1
+  mixed**. Sensitivity with debatable additions neutral gives 0 wins, 1 loss, 3 ties.
+  No embedded pair wins; one pair has byte-identical prose. The clear loss deletes
+  compatible first-step preparation. These are operator judgments; human preference
+  remains pending. Maximum post-review craft scores do not qualify literary quality.
+- [x] Reconcile **765,309 input / 44,131 output tokens / 219.15 active seconds**;
+  historical October 8 rate estimate **USD 0.12479566**, actual billed charges unknown.
+  Respect nontransferable block ceilings (27/48 and 16/32) and every stage/per-attempt
+  limit. The 37 unused calls authorize no additional calls.
+- [x] Seal the live evidence at
+  `data/diagnostics/fulfillment-presentation-temperature-v61-2026-10-17-live/`,
+  including replay audit, per-axis assessment, full prose/diffs, four anonymous human
+  pairs, final verification and tracker snapshot. Bind the unchanged preparation,
+  approval, 134 dependencies and public report. Pass private helper Ruff lint/format,
+  documentation links, UTF-8/LF, whitespace and evidence checks. Preparation's 75
+  regressions and mypy checks are prior evidence against unchanged production code.
+- [x] Retain J1 as promising diagnostic evidence and E1 as mechanically successful
+  but unqualified for preservation. Retain P1's noticing improvement as diagnostic
+  evidence only; neither comparison qualifies promotion. No production prompt change.
+- [ ] Human preference review: **PENDING**; four anonymous pairs exported, sheet empty.
+- [ ] Useful craft edits inside fulfilled passages, full-story quality and production
+  qualification remain open. Keep the accepted rubric/hard gates, full intended Cloud
+  corpus and comparable single-model baseline; no craft writer control is claimed here.
+- [ ] Further experiments require a new bounded design; none prepared in this results task.
+- [ ] Full workflow canary: **ON HOLD; NOT STARTED**.
+
+Production prompt 61 / graph 9 / policy 1, validators, runtime, canonical artifacts
+and historical evidence remain unchanged. **Step 19 IN PROGRESS; Step 20 NOT STARTED.**
+
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 
 21. [ ] **Package the stable system with Tauri** and test crash/restart, offline, missing-model, invalid-key, provider-timeout, and low-disk-space behavior.
