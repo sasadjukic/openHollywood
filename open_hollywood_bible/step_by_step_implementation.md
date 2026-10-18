@@ -4861,8 +4861,9 @@ and historical evidence remain unchanged. **Step 19 IN PROGRESS; Step 20 NOT STA
 - [x] Verify unchanged source seals, 488 live files, 56 preparation/operator files,
   142 dependencies, all 46 attempts and 26 skips offline. Save nine labelled local
   counterfactuals and diagnosis verification; no model, discovery or network calls.
-- [ ] Preparation and exact request/scoring freeze require authorization; none done.
-- [ ] Live execution requires approval of the subsequent frozen plan; none authorized.
+- [x] Preparation was subsequently authorized and completed; see the frozen plan below.
+- [x] The subsequent frozen plan was explicitly approved and executed to its terminal
+  stop; see the partial live results below. No further calls are authorized by that run.
 - [ ] Independent human preference remains pending. Full Cloud corpus, comparable
   baseline and accepted weighted rubric remain required for broader qualification.
 - [ ] Full workflow canary: **ON HOLD; NOT STARTED**.
@@ -4870,6 +4871,112 @@ and historical evidence remain unchanged. **Step 19 IN PROGRESS; Step 20 NOT STA
 Production prompt 61 / graph 9 / policy 1 and historical evidence remain unchanged.
 J1/P1 remain diagnostic; E1 remains preservation-unqualified. **Step 19 IN PROGRESS;
 Step 20 NOT STARTED.** No new production role, graph node or human checkpoint.
+
+### Review correction and comparative assessment: frozen preparation 2026-10-18
+
+**PREPARATION COMPLETE.** The historical preparation state is preserved in the
+[frozen 96-call plan](../docs/benchmark_reports/fulfillment-repair-surface-review-v61-plan-2026-10-18.md).
+Subsequent approval and the terminal live stop are recorded below.
+
+- [x] Freeze A's six exact attempt-1 parent reports, two seeds and two arms: full
+  report versus restricted atomic correction with the same parent JSON and R1
+  diagnostics. Include masked-error and valid native-condition controls. Preserve
+  the compound source's known explanation caveat without certifying it as truth.
+- [x] Freeze B's nine original/revision comparisons: four actual W1 outputs, two
+  minimal boundary repairs, two no-op claim challenges and the within-sentence
+  craft control. Preserve full context, exact versions, provenance and optional
+  task status. The new control necessarily edits inside one positively cited
+  sentence while retaining its fulfilled fact; it has no invented critic source.
+- [x] Freeze **60 primary requests**, exact source/schedule/scoring files and the
+  builder for up to **36 B structural corrections**. V0 is the predeclared primary
+  reviewer; V1 adds only unverified editorial claims. Expected labels and source
+  arm/seed provenance stay outside messages. No new writer calls.
+- [x] Freeze seeds **19701/19703**, temperature **0.2**, top-p **0.95**, thinking
+  disabled and the existing gemma4 Cloud digest. Reverse case and arm order at
+  the second seed. A has **24 calls**, B at most **72**, nontransferable, total **96**.
+- [x] Enforce scope, parent hash, atomic operations and unchanged full validation
+  for A. Preserve valid B judgments and assessments by unique identity on a
+  structural retry, including reordered records. Reject drift; stop on ambiguous
+  duplicate identity or oversized retention. No silent metadata or prose repair.
+- [x] Verify **60 valid fixtures, 389 rejection checks, 30 paired deltas**, and
+  additional reordered-retention checks. Fake matrices use 60/96/62 calls; all
+  **278 completed attempts** replay with final code. **284 total fake dispatches**
+  include transport, identity, cancellation and restart fixtures. Replay uses zero
+  additional calls. Verify approval, locks, ceilings, interrupted/unknown outcomes,
+  source integrity, capture/receipt/usage/summary binding and full-prose exports.
+- [x] Pass **75 focused regressions**, repository Ruff/format and strict mypy
+  across **201 files**, and Ruff/format on **9 private helpers**. No production or
+  client changes; no provider discovery, external network or live inference calls.
+- [x] Verify maximum static input estimate **19,184 tokens** and maximum retained
+  retry-payload estimate **20,487** under the 24,000/8,000/900-second per-call limits.
+  Estimates are not exact provider counts. Preserve aggregate reservations of
+  2,304,000 input / 768,000 output / 86,400 active seconds. Historical-rate ceiling
+  estimate USD 0.62976; actual charges unknown. No silent context trimming.
+- [x] Save preparation, anonymous full-prose pairs and pending review sheet under
+  `data/diagnostics/fulfillment-repair-surface-review-v61-2026-10-18/` and bind
+  **151 code dependencies**, source/diagnosis seals, the public plan and tracker snapshot.
+  Plan SHA-256:
+  `9793f119f39c64ba2cd92f869f1d356240dfc8da7c8cf7b2a4184e79c12d9c86`.
+- [x] Record explicit live approval bound to this frozen plan, the full
+  prose/rejected-review/context payload and Ollama Cloud through the local daemon.
+  Execute only the frozen schedule and stop rules; see the partial results below.
+- [ ] Human preference and broader story-quality qualification remain pending.
+- [ ] Full workflow canary: **ON HOLD; NOT STARTED**.
+
+Production prompt 61 / graph 9 / policy 1, historical evidence and canonical
+artifacts remain unchanged. **Step 19 IN PROGRESS; Step 20 NOT STARTED.**
+
+### Review correction and comparative assessment: live stop 2026-10-18
+
+**STOPPED AT 41/96 CALLS; A COMPLETE, B PARTIAL.** See the
+[results and decisions](../docs/benchmark_reports/fulfillment-repair-surface-review-v61-results-2026-10-18.md).
+
+- [x] Verify the frozen plan, approval, sources and pinned gemma4 Cloud identity
+  before execution. Preserve temperature 0.2, top-p 0.95, thinking disabled,
+  seeds 19701/19703 and the nontransferable 24/72-call blocks.
+- [x] Complete all **24 A calls**. F0 validates 7/12 reports, with 4/8 qualified
+  failed-parent recoveries and 3/4 preserved controls. F1 validates 10/12, with
+  **6/8 qualified recoveries and 2/4 preserved controls**. Two F1 comparisons
+  only restate the boundary; both compound controls emit undeclared report fields.
+  Across all pairs F1 has 3 qualified wins, 2 losses and 7 ties. **A criterion fails.**
+- [x] Execute eight B review slots at seed 19701, b01-b04 in both arms, including
+  their single structural corrections: **16 calls, zero valid assessments or
+  recoveries**. Inspect all attempts, including duplicate keys, missing output
+  fields, citation mismatches and unsupported necessity claims. Preserve the
+  distinction between useful raw observations and qualified model outputs.
+- [x] Stop all dispatch at call **41**, b05/V0's first attempt, after the provider
+  reports `length` at **8,000 output tokens** while copying input material.
+  Preserve the raw capture and incomplete probe; do not retry, invent a receipt,
+  mark the review phase complete or use the **55 remaining calls**.
+- [x] Reconcile **41 reservations/outcomes/captures**, replay all **40 completed
+  attempts**, and label all **27 unstarted primary slots** explicitly. A uses
+  24/24 calls; B uses 17/72. Recover the terminal call's 15,183/8,000 token usage
+  from its persisted capture without changing the outcome's null usage fields.
+  Total: **780,033 input / 64,892 output tokens / 235.33 active seconds**;
+  historical-rate estimate **USD 0.13516142**, actual charges unknown.
+- [x] Inspect four reached raw pairs without claiming the planned 18-pair result.
+  Visible purposes upgrade an optional preparation deletion into a required edit
+  in b01; both arms miss b02's concrete preservation tradeoff and conflate b03's
+  optional imagery with direct repair. b04's duplicate repair is correctly noticed
+  in invalid reports. Retain these limited observations; **B is not qualified**.
+- [x] Verify 95 retained semantic leaves without drift in four parseable retries.
+  Record that duplicate-key responses retain none and wrongly named change records
+  lie outside the frozen retention map. No invalid report is silently repaired.
+- [x] Save partial reconciliation, A/B operator judgments, nine anonymous full-prose
+  pairs, verification and closure under
+  `data/diagnostics/fulfillment-repair-surface-review-v61-2026-10-18-live/`.
+  Recheck 151 frozen code dependencies and preparation/source seals offline.
+- [ ] B's remaining comparisons are **NOT RUN**: no-op defects, synthetic craft
+  control, embedded minimal repair and the second seed remain untested. The
+  minimal separate control was truncated. Any further execution requires a new
+  reviewed plan; the stopped run cannot be automatically continued.
+- [ ] Independent human preference and broader story-quality qualification remain
+  pending. Neither partial raw findings nor structural recovery qualify production.
+- [ ] Full workflow canary: **ON HOLD; NOT STARTED**.
+
+Retain J1/P1 as diagnostic evidence, E1 as preservation-unqualified, and W1's earlier
+limited gains. Production prompt 61 / graph 9 / policy 1 and canonical artifacts
+remain unchanged. **Step 19 IN PROGRESS; Step 20 NOT STARTED.**
 
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 
