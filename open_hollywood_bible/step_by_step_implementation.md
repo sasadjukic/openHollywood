@@ -4820,6 +4820,57 @@ remain unchanged. **Step 19 IN PROGRESS; Step 20 NOT STARTED.**
 Production prompt 61 / graph 9 / policy 1, validators, runtime, canonical artifacts
 and historical evidence remain unchanged. **Step 19 IN PROGRESS; Step 20 NOT STARTED.**
 
+### Review repair and independent revision assessment: diagnosis 2026-10-18
+
+**DIAGNOSIS COMPLETE; NEXT EXPERIMENT PROPOSED, NOT PREPARED OR RUN.** See the
+[diagnosis and bounded proposal](../docs/handoffs/fulfillment-repair-surface-review-diagnosis-next-experiment-2026-10-18.md).
+
+- [x] Trace the unchanged R0/R1 requests and all failed responses. Ordinary feedback
+  already exposed the combined cases' missing comparison group; R1 corrected that
+  field at seed 19603 but introduced unauthorized model-written boundary conditions.
+  Both arms regenerate a complete report without the full rejected JSON. Bounded
+  classification retention does not preserve every judgment, allegation or condition.
+  Record error migration and the untested earlier masked-error case without claiming
+  access to the model's internal reasoning or that expanded feedback is universally useless.
+- [x] Verify five operator-authored review copies can pass with only their applicable
+  reporting fields corrected, preserving judgments, scores, descriptions, severity,
+  evidence and comparison prose. Keep these distinct from actual model recoveries.
+- [x] Inspect all six W1 edit lists and their purposes. A true defect in an old span
+  does not justify every added phrase; preparation is not entry, and a desired tonal
+  change is not an established grammatical dependency. Four minimal boundary patch
+  copies validate. Retain W1's limited preservation gains and successful craft repair.
+- [x] Confirm ordinary posts lack the complete original/revision comparison and do
+  not see purposes. Their maximum ratings do not qualify preservation or show whether
+  writer explanations would bias a comparative reviewer.
+- [x] Propose A: six fixed parent reports, two arms and two seeds, **24 calls** with
+  no additional retry. Both arms receive exact rejected JSON as untrusted diagnostic
+  data and the same diagnostics; compare full replacement against restricted atomic
+  correction. Include valid native-condition controls and the earlier masked failure.
+  This is an isolated departure from production rejected-prose replay policy, not an
+  adopted runtime change. It isolates output scope, not parent visibility by itself.
+- [x] Propose B: nine fixed full-prose candidate comparisons, purposes hidden versus
+  visible, two seeds; **36 primary reviews / 72 calls maximum** with one structural
+  correction each. No new writer calls. Include actual unnecessary/mixed edits,
+  successful craft, clean boundary repairs, unrepaired no-ops with mismatching claims,
+  and a synthetic craft repair necessarily changing a positively cited sentence.
+  Predeclare the purpose-hidden reviewer as the candidate; visible purposes test
+  explanation influence. Keep necessity, preservation and literary merit separate.
+- [x] Propose a **96-call total ceiling**, nontransferable blocks, exact provenance,
+  zero semantic/transport rerolls, identity checks, anonymous full-prose review and
+  fail-closed handling of stale evidence, unexpected outcomes or invalid patches.
+- [x] Verify unchanged source seals, 488 live files, 56 preparation/operator files,
+  142 dependencies, all 46 attempts and 26 skips offline. Save nine labelled local
+  counterfactuals and diagnosis verification; no model, discovery or network calls.
+- [ ] Preparation and exact request/scoring freeze require authorization; none done.
+- [ ] Live execution requires approval of the subsequent frozen plan; none authorized.
+- [ ] Independent human preference remains pending. Full Cloud corpus, comparable
+  baseline and accepted weighted rubric remain required for broader qualification.
+- [ ] Full workflow canary: **ON HOLD; NOT STARTED**.
+
+Production prompt 61 / graph 9 / policy 1 and historical evidence remain unchanged.
+J1/P1 remain diagnostic; E1 remains preservation-unqualified. **Step 19 IN PROGRESS;
+Step 20 NOT STARTED.** No new production role, graph node or human checkpoint.
+
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 
 21. [ ] **Package the stable system with Tauri** and test crash/restart, offline, missing-model, invalid-key, provider-timeout, and low-disk-space behavior.
