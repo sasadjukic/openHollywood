@@ -4978,6 +4978,61 @@ Retain J1/P1 as diagnostic evidence, E1 as preservation-unqualified, and W1's ea
 limited gains. Production prompt 61 / graph 9 / policy 1 and canonical artifacts
 remain unchanged. **Step 19 IN PROGRESS; Step 20 NOT STARTED.**
 
+### Output-contract failure diagnosis and proposed experiment 2026-10-18
+
+**DIAGNOSIS COMPLETE; NEW EXPERIMENT PROPOSED, NOT PREPARED OR RUN.** See the
+[diagnosis and 74-call proposal](../docs/handoffs/fulfillment-output-contract-diagnosis-next-experiment-2026-10-18.md).
+
+- [x] Diagnose F1's a01 semantic failure separately from a06's hybrid output.
+  Correct patch locations/references do not establish a supported craft comparison.
+  Both a06 responses contain the correct empty patch followed by an exact parent
+  copy. Two labelled local projections validate without changing that parent.
+  Competing whole-review/patch output cues are a hypothesis, not a proven cause.
+- [x] Confirm all 41 saved requests use prompt-text schemas with
+  `response_schema=null`; the checked-in Cloud adapter does not send a schema
+  `format` for them. No provider discovery or capability change is inferred.
+- [x] Distinguish B's field/duplicate errors, masked required-text/evidence errors,
+  and input copying from literary judgment. Of 136 raw citation mismatches, 134
+  are exact fragments of the correct full catalog entry; two span entries.
+  Fifteen unambiguous format-only copies remain invalid; do not normalize the
+  conflicting duplicate-key response or count any copy as model recovery.
+- [x] Verify the truncated call echoes input and the complete original prose,
+  reaching 8,000 output tokens before an assessment. Completed B responses use
+  1,292–3,102 output tokens. Increasing the output cap is not supported as the
+  first remedy. Preserve the old run's terminal stop and unused 55-call allowance.
+- [x] Propose A: F1/F2 on four fixed parents at two new seeds, plus F3 local-focus
+  challenges on the two comparison parents: **20 calls**. F2 isolates one active
+  patch contract from ordinary reference rules; F3 adds a diagnosed-issue focus.
+  Share F2's no-comparison controls explicitly instead of duplicate F3 calls.
+- [x] Propose B: all nine frozen prose pairs, V0/V2/V3 at two seeds: **54 calls**.
+  V2 clarifies/separates the existing output contract; V3 adds application-bound
+  version metadata and reference-to-quote expansion while retaining model-chosen
+  evidence and every editorial judgment. Purposes remain hidden. Preserve no-op,
+  minimal-repair, mixed-ending and within-cited-sentence craft controls.
+- [x] Propose **74 total calls, zero retries, no writers**, seeds 19801/19803,
+  temperature 0.2, top-p 0.95, thinking disabled, and the same pinned Cloud model.
+  Retain 24,000 input / 8,000 output / 900 active-second per-call caps; total maximum
+  reservations 1,776,000 input / 592,000 output / 66,600 active seconds. Historical
+  rate ceiling estimate USD 0.48544; actual charges unknown.
+- [x] Explicitly propose a future diagnostic stop-policy distinction: a fully
+  captured, correctly identified `length` response with known in-budget usage
+  fails its cell without retry, then permits the next frozen cell. Unknown outcomes,
+  identity/integrity drift, cancellation, transport failure and exceeded budgets
+  still stop the run. This is not implemented or retroactive approval to continue.
+- [x] Verify 378 sealed live files, 108 preparation/operator files, 151 dependencies,
+  40 completed attempts and the terminal capture offline. Save findings, 17 labelled
+  counterfactuals and verification under
+  `data/diagnostics/fulfillment-output-contract-diagnosis-2026-10-18/`.
+- [ ] Local preparation of the proposed comparisons requires authorization;
+  no new prompts, requests, scoring harness or model calls have been created.
+- [ ] Live execution requires subsequent approval of the frozen plan and payload.
+- [ ] Independent human preference and broader story-quality qualification remain
+  pending. Structural reliability does not establish preservation or literary merit.
+- [ ] Full workflow canary: **ON HOLD; NOT STARTED**.
+
+Production prompt 61 / graph 9 / policy 1, source evidence and canonical artifacts
+remain unchanged. **Step 19 IN PROGRESS; Step 20 NOT STARTED.**
+
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 
 21. [ ] **Package the stable system with Tauri** and test crash/restart, offline, missing-model, invalid-key, provider-timeout, and low-disk-space behavior.
