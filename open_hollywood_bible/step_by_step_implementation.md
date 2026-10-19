@@ -4980,7 +4980,7 @@ remain unchanged. **Step 19 IN PROGRESS; Step 20 NOT STARTED.**
 
 ### Output-contract failure diagnosis and proposed experiment 2026-10-18
 
-**DIAGNOSIS COMPLETE; NEW EXPERIMENT PROPOSED, NOT PREPARED OR RUN.** See the
+**DIAGNOSIS COMPLETE; FOLLOW-UP LOCAL PREPARATION RECORDED BELOW.** See the
 [diagnosis and 74-call proposal](../docs/handoffs/fulfillment-output-contract-diagnosis-next-experiment-2026-10-18.md).
 
 - [x] Diagnose F1's a01 semantic failure separately from a06's hybrid output.
@@ -5018,13 +5018,14 @@ remain unchanged. **Step 19 IN PROGRESS; Step 20 NOT STARTED.**
   captured, correctly identified `length` response with known in-budget usage
   fails its cell without retry, then permits the next frozen cell. Unknown outcomes,
   identity/integrity drift, cancellation, transport failure and exceeded budgets
-  still stop the run. This is not implemented or retroactive approval to continue.
+  still stop the run. The diagnosis did not implement this rule or retroactively
+  authorize continuation; subsequent local preparation is recorded below.
 - [x] Verify 378 sealed live files, 108 preparation/operator files, 151 dependencies,
   40 completed attempts and the terminal capture offline. Save findings, 17 labelled
   counterfactuals and verification under
   `data/diagnostics/fulfillment-output-contract-diagnosis-2026-10-18/`.
-- [ ] Local preparation of the proposed comparisons requires authorization;
-  no new prompts, requests, scoring harness or model calls have been created.
+- [x] Local preparation subsequently authorized; see the output-contract comparison
+  preparation below. The diagnosis itself made no prompt changes or model calls.
 - [ ] Live execution requires subsequent approval of the frozen plan and payload.
 - [ ] Independent human preference and broader story-quality qualification remain
   pending. Structural reliability does not establish preservation or literary merit.
@@ -5032,6 +5033,141 @@ remain unchanged. **Step 19 IN PROGRESS; Step 20 NOT STARTED.**
 
 Production prompt 61 / graph 9 / policy 1, source evidence and canonical artifacts
 remain unchanged. **Step 19 IN PROGRESS; Step 20 NOT STARTED.**
+
+### Output-contract comparisons: local preparation 2026-10-18
+
+**PREPARED, VERIFIED AND FROZEN 2026-10-18; approved attempt recorded below.** See the
+[frozen 74-call plan](../docs/benchmark_reports/fulfillment-output-contract-v61-plan-2026-10-18.md).
+
+- [x] Prepare A from the exact a01/a03/a05/a06 parents: unchanged F1 versus F2's
+  single active patch contract, plus F3's issue-local focus on a01/a03 only.
+  Retain ordinary rules/schema and resulting-review validation. F3 shares four
+  F2 native-control observations explicitly, with no independent success count.
+- [x] Prepare B from all nine exact original/revision packets: unchanged hidden-
+  purpose V0, V2 delivery, and predeclared V3 handle-based metadata expansion.
+  Retain full prose/context, task/fact/change judgments, mixed ending, no-op,
+  minimal repair and within-cited-sentence craft controls. No writer calls.
+- [x] Bind V3 handles to trial, side, frozen version and complete catalog record;
+  expand only model-selected evidence and the bound version envelope. Reject
+  unknown/stale handles and duplicate/missing records. Canonical validation and
+  semantic support remain separate; application metadata is not model judgment.
+- [x] Fix 74 primary slots: A 20 / B 54, seeds 19801/19803, no retries or transfers.
+  Reverse each case's arm order and each block's case order between seeds;
+  place negative/craft controls early. Retain the pinned model, temperature 0.2,
+  top-p 0.95, thinking false and 24,000 / 8,000 / 900 per-call caps.
+- [x] Implement the proposed future diagnostic stop rule: captured, identified,
+  in-budget `length` fails its cell without parsing/retry; fixed scheduling can
+  continue. Unknown outcomes, missing captures/usage, cancellation, transport,
+  identity/integrity drift and exceeded caps stop the run. Old terminal evidence
+  and its unused calls remain closed.
+- [x] Pass 74 positive fixtures, 916 rejection checks, 56 paired request-delta checks
+  and 18 canonical V3 equivalence checks. All requests retain complete packets and
+  fit the existing input estimate (13,970–19,592; actual provider usage still capped).
+- [x] Pass four complete 74-cell fake matrices: valid, invalid, captured length and
+  partial restart. Use 306 fake dispatches including ten terminal fault modes;
+  replay 296 completed attempts with final code, including 74 length responses
+  with parsing disabled. Completed replay makes zero extra calls; restart after
+  three completed slots makes 71. Approval, tamper, budget and lock checks pass.
+- [x] Pass 75 focused regressions, repository Ruff/format, strict mypy on 201 files
+  and lint/format for eight private helpers. Sandbox async stalls occurred before
+  the harness in Windows socket-pair initialization; stopped those processes and
+  reran offline with external-network/real-gateway guards. Correct a local fixture
+  alias and invalid-response replay serialization before final verification.
+- [x] Freeze all 74 requests, exact cases, scoring, stop rules, adapter mappings,
+  schedule, code/source dependencies and verification under
+  `data/diagnostics/fulfillment-output-contract-v61-2026-10-18/`.
+  Plan SHA-256:
+  `c8fb871abe6a9e9f4d432dd7a7a47a696dce0547cf671ccd372318a369c426c9`.
+  Total reservation ceilings: 1,776,000 input / 592,000 output / 66,600 active
+  seconds; historical-rate estimate USD 0.48544, actual charges unknown.
+  Seal the plan/report and tracker snapshot with zero live/discovery calls.
+- [x] Receive approval on 2026-10-19 for the frozen plan, full unpublished
+  prose/context payload and Ollama Cloud destination through the local daemon.
+- [x] Complete both live comparisons after an explicitly authorized preflight retry:
+  74/74 cumulative inference calls. The original zero-call discovery stop remains
+  sealed; see the separate execution records below.
+- [ ] Human preference and broader story-quality qualification remain pending.
+- [ ] Full workflow canary: **ON HOLD; NOT STARTED**.
+
+Production prompts, graph, policy, canonical artifacts and previous evidence
+remain unchanged. **Step 19 IN PROGRESS; Step 20 NOT STARTED.**
+
+### Output-contract comparison execution attempt 2026-10-19
+
+**STOPPED BEFORE INFERENCE — 0/74 CALLS; COMPARISONS NOT RUN.** See the
+[attempt report](../docs/benchmark_reports/fulfillment-output-contract-v61-results-2026-10-19.md).
+
+- [x] Record the user's approval against frozen plan
+  `c8fb871abe6a9e9f4d432dd7a7a47a696dce0547cf671ccd372318a369c426c9`,
+  maximum 74 calls, full prose/context, the specified destination and canary false.
+  Verify the preparation seal, exact requests and source dependencies unchanged.
+- [x] Attempt the unchanged operator's `all` phase. Model discovery at the local
+  Ollama endpoint fails with `ConnectError` / `PROVIDER_UNAVAILABLE` before a
+  catalog response or model-identity verification. The operator exits and cleans
+  up its lock before dispatching any inference request.
+- [x] Honor the frozen whole-run transport stop: no retry, fallback, direct Cloud
+  route, prompt change or canary. The adapter's generic retryable flag does not
+  override the frozen experiment policy.
+- [x] Inspect and preserve the failure log and empty inference ledgers. Record
+  A 0/20 and B 0/54 dispatched, zero responses/tokens/active inference time, all
+  74 cells unobserved, and qualification not evaluated. No prose/context was sent.
+  Seal the offline audit, approval, report and tracker snapshot.
+- [x] Receive explicit authorization for a fresh preflight and complete both
+  comparisons in the separate retry recorded below. This zero-call attempt stays
+  closed; no automatic retry was made.
+- [ ] Independent human preference and broader story-quality qualification remain
+  pending; no experimental candidate is promoted or downgraded by this stop.
+- [ ] Full workflow canary: **ON HOLD; NOT STARTED**.
+
+Production prompt 61 / graph 9 / policy 1, canonical artifacts and previous
+evidence remain unchanged. **Step 19 IN PROGRESS; Step 20 NOT STARTED.**
+
+### Output-contract comparison authorized retry 2026-10-19
+
+**COMPLETED — 74/74 CUMULATIVE CALLS; NEITHER PRIMARY CANDIDATE QUALIFIES.** See the
+[completed retry report](../docs/benchmark_reports/fulfillment-output-contract-v61-retry-results-2026-10-19.md).
+
+- [x] Record the user's explicit authorization to retry preflight and run both
+  frozen comparisons. Retain the original payload/destination approval, all
+  74 exact requests, scoring, budgets and stop rules. Production prompts unchanged;
+  full workflow canary **ON HOLD; NOT STARTED**.
+- [x] Verify the original plan and sealed zero-call attempt. Preserve that attempt
+  unchanged; write new evidence under
+  `data/diagnostics/fulfillment-output-contract-v61-2026-10-18-live-retry-2026-10-19/`.
+  The retry wrapper changes only the evidence destination and adds approval/prior
+  closure checks before the unchanged operator. Cumulative inference ceiling: 74.
+- [x] Pass pinned Cloud model preflight and complete A 20/20 plus B 54/54 calls in
+  the frozen order, one attempt each. No inference retries, writers, replacement
+  cases, budget transfers or canary. Preserve six identified, in-budget length
+  responses as failed cells without parsing/retry; no cells remain unobserved.
+- [x] Inspect all A responses: F1 6/8 structurally valid, 4/8 qualified; F2 0/8
+  valid; F3 0/4 valid. All twelve F2/F3 parent hashes fail. F3's four raw comparison
+  explanations correctly identify duplication surviving minimal boundary repair,
+  but yield zero qualified recoveries. Four native controls delegate to F2;
+  they are not independent F3 successes. Preserve a06's inherited rationale caveat.
+- [x] Inspect all B responses: V0 0/18 valid (twelve invalid stop, six length),
+  V2 15/18 valid, V3 1/18 valid. Paired V2–V0: fifteen validity gains, zero losses;
+  V3–V2: zero gains, fourteen losses. V2 omits required neutral-effect evidence in
+  three cells; seventeen V3 outputs use bare refs instead of bound handles.
+- [x] Separate delivery from substantive support. All 48 nontruncated raw B outputs
+  identify expected task/fact/mandatory statuses; invalid outputs remain failures.
+  Mixed b02 assessments miss losses/uncertainty; b03 promotes some added imagery
+  to necessary repair. Second-seed V2/V3 b07 reports naturalness loss despite
+  byte-identical prose. V2 accepts the within-cited-sentence craft control at both
+  seeds. No primary candidate qualifies; no post-hoc replacement winner selected.
+- [x] Reconcile 74 requests/reservations/captures/outcomes and replay all attempts
+  offline, including six length replays with the parser disabled. Verify frozen
+  source/code evidence unchanged. Record 1,294,398 input / 127,264 output tokens
+  and 550.032 active seconds, all within caps. Actual billing remains unknown.
+  Pass helper lint/format, documentation checks and seal the retry evidence,
+  inspection, full-prose review export, report and tracker snapshot.
+- [ ] Independent human preference and broader story-quality qualification remain
+  pending. Retain earlier diagnostic/preservation candidates in their existing
+  status; no new story-quality gain or production adoption is established.
+- [ ] Full workflow canary: **ON HOLD; NOT STARTED**.
+
+Production prompt 61 / graph 9 / policy 1, canonical artifacts and previous
+evidence remain unchanged. **Step 19 IN PROGRESS; Step 20 NOT STARTED.**
 
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 
