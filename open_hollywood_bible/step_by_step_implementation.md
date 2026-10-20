@@ -5169,6 +5169,71 @@ evidence remain unchanged. **Step 19 IN PROGRESS; Step 20 NOT STARTED.**
 Production prompt 61 / graph 9 / policy 1, canonical artifacts and previous
 evidence remain unchanged. **Step 19 IN PROGRESS; Step 20 NOT STARTED.**
 
+### Critic and writer retrospective and human review packet 2026-10-19
+
+**RETROSPECTIVE SAVED; REVIEW MATERIALS PREPARED; USER REVIEW RECEIVED 2026-10-20 BELOW.** See the
+[analysis and recommendations](../docs/handoffs/critic-writer-retrospective-and-next-tests-2026-10-19.md).
+
+- [x] Preserve the experiment history, bounded gains, failure diagnosis, unresolved
+  hypotheses, and proposed 48-call reviewer / 24-call writer diagnostics. These are
+  provisional proposals, not frozen plans or authorization for live calls.
+- [x] Prepare all nine existing original/revision pairs as complete unlabeled A/B
+  scenes with shuffled order and balanced randomized placement. Save a
+  [blind reading packet](../data/human_reviews/critic-writer-2026-10-19/reviewer/01-blind-reading-packet.md),
+  [assignment checklist](../data/human_reviews/critic-writer-2026-10-19/reviewer/02-assignment-checks.md),
+  and [blank response form](../data/human_reviews/critic-writer-2026-10-19/reviewer/03-response-form.md).
+- [x] Keep source identities, construction labels and original/revision placement
+  in a separate coordinator key. Verify all 18 prose versions against the frozen
+  candidates and sealed exports; preserve all source files. Full prose and review
+  materials remain in Git-ignored local storage, outside sealed historical bundles.
+- [x] Separate initial literary preference from subsequent assignment compliance
+  and task-aware preference. Record the single scene family, shared originals,
+  constructed controls, and prior-familiarity limitations in the review guidance.
+- [ ] Independent human responses and broader story-quality qualification remain
+  pending. Do not fill the review from model judgments or assistant inspections.
+- [ ] Further experiments require their own frozen cases, requests, scoring,
+  budgets, stop rules, verification and approval. Full workflow canary **ON HOLD**.
+
+Documentation and local packaging only: zero model or discovery calls, no external
+transfer, and no production changes. **Step 19 IN PROGRESS; Step 20 NOT STARTED.**
+
+### User review received and mechanical evidence completed 2026-10-20
+
+**COMPLETED USER REVIEW RECORDED; INFORMED READER FEEDBACK, NOT INDEPENDENT BLIND
+QUALIFICATION.** See the
+[findings and revised review process](../docs/handoffs/critic-writer-human-review-results-2026-10-20.md).
+
+- [x] Preserve the exact submitted form and the user's clarifications in a new
+  dated receipt. Record nine overall ties, 45 dimension ties, prior familiarity,
+  and the user's assessment of the variants as one promising story foundation.
+- [x] Interpret empty substantive fields as no major concerns. Do not invent
+  confidence values, numerical scores or timestamps. Record the user's broad
+  call-to-investigate interpretation separately from the frozen decision-to-enter
+  requirement; do not retroactively alter the original assignment.
+- [x] Fill all eighteen editing-request evidence fields from the exact saved
+  prose, frozen tasks, writer/post-review records and comparative-review results.
+  Attribute these additions to the assistant; preserve every human answer.
+  Distinguish four actual writer revisions from five constructed controls, and
+  retain invalid model outputs as invalid.
+- [x] Reconcile the A/B key and verify the original packet, historical sources,
+  exact prose and submitted-review snapshot. Keep the initial manifest unchanged
+  and record the intentional response-form update in a separate annotation receipt.
+- [x] Record the future human-review division of work in the product contract and
+  provide a [short review template](../docs/handoffs/human-story-review-template-2026-10-20.md):
+  human feel, emotion, flow, character and story-breaking concerns; prefilled
+  mechanical checks and recorded outcomes; grounded semantic evidence and
+  uncertainty; meaningful sample selection with less repeated reading.
+- [x] Update the retrospective with the new human evidence. Small preservation
+  differences are not demonstrated reader harm. Revisit editorial scoring before
+  preparing the provisional reviewer/writer experiments; neither is frozen.
+- [ ] Independent whole-story comparison, formal human scores, broader quality
+  qualification and the full intended corpus remain outstanding.
+- [ ] Full workflow canary **ON HOLD**; no new inference or production changes.
+
+Documentation, local evidence completion and review guidance only. Existing
+whole-story rubric weights, hard gates, formal coverage and qualification thresholds
+remain unchanged. **Step 19 IN PROGRESS; Step 20 NOT STARTED.**
+
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 
 21. [ ] **Package the stable system with Tauri** and test crash/restart, offline, missing-model, invalid-key, provider-timeout, and low-disk-space behavior.

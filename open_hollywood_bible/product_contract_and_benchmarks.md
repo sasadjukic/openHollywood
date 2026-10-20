@@ -234,6 +234,33 @@ A story fails regardless of average score if it:
 - Ends because the token limit was reached
 - Incorporates critic notes into the story as prose
 
+### Human review preparation and workload
+
+Review direction clarified by the user on 2026-10-20: human attention should focus
+on overall feel and emotion, basic story flow, character details, and story-breaking
+problems. Prepare mechanical evidence before requesting human review. Exact counts,
+diffs, completion checks, and recorded repair outcomes belong in an application or
+coordinator-prepared appendix, not in a manual evidence-hunting assignment.
+
+Keep that appendix's verdicts out of the initial literary reading. After first-pass
+judgments are recorded, surface material findings or unresolved exceptions for
+review, with exact evidence and clear attribution. Distinguish deterministic
+measurements from semantic interpretations; candidate evidence for an implicit
+decision is not automatically proof of that decision.
+
+For informal diagnostic review, default to one full version or one meaningfully
+different pair per story family and reader. Keep near-identical variants in machine
+diagnostics unless a specific human question justifies repeated reading. Record
+familiarity and breaks. This does not reduce formal frozen-campaign coverage.
+
+When a reader confirms completion and uses the stated convention, blank substantive
+comments mean no major concerns. Do not infer missing numerical scores, confidence,
+timestamps, or preferences. The short
+[human review template](../docs/handoffs/human-story-review-template-2026-10-20.md)
+supports informal diagnostics. The canonical whole-story dimensions, weights, hard
+gates, comparison baseline, and qualification thresholds remain unchanged; do not
+fabricate formal scores from a narrative response.
+
 ### The essential baseline
 
 Compare the agentic workflow against:
