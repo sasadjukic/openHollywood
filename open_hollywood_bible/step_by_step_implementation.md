@@ -5325,6 +5325,33 @@ The linked frozen plan remains an immutable preparation-time record.
 Production prompt **61**, graph **9**, fulfillment policy **1**, routing, schemas
 and human checkpoints remain unchanged. **Step 19 IN PROGRESS; Step 20 NOT STARTED.**
 
+### Unresolved critic and writer issue inventory 2026-10-21
+
+**DOCUMENTATION COMPLETE; UNDERLYING ISSUES REMAIN OPEN.** See the
+[issue index](../issues/README.md) for fourteen focused, GitHub-ready local drafts.
+
+- [x] Review the critic/writer retrospective, completed human review, latest
+  Gemma/DeepSeek results and supporting experiments. Separate resolved work,
+  partial mitigations, deferred word-level concerns and scoring ambiguities.
+- [x] Create one file per focused issue, with current status, recorded evidence,
+  attempted remedies, expected behavior and independently checkable closure criteria.
+  Use fixed committed source links suitable for copying into GitHub.
+- [x] Preserve the human review's nine ties and distinguish unsupported edit scope
+  from demonstrated literary harm. Retain the completed formal evaluations as
+  history; do not represent them as missing reviews or qualification of v61.
+- [x] Map the older combined 31B draft into focused detection/repair follow-ups
+  without altering the historical file. Identify the three proposed preparation
+  workstreams in the index; do not implement or freeze them in this task.
+- [x] Verify issue inventory coverage, Markdown links, source targets, UTF-8/LF
+  encoding and Git whitespace. No production code or sealed evidence changed.
+- [ ] GitHub publication is left to the user. Local CW identifiers are not GitHub
+  issue numbers; no external issues were created.
+- [ ] Further implementation, experiment preparation and live calls remain separate
+  work. The full workflow canary stays **ON HOLD**.
+
+Production prompt **61**, graph **9**, fulfillment policy **1**, schemas and human
+checkpoints remain unchanged. **Step 19 IN PROGRESS; Step 20 NOT STARTED.**
+
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 
 21. [ ] **Package the stable system with Tauri** and test crash/restart, offline, missing-model, invalid-key, provider-timeout, and low-disk-space behavior.
