@@ -5234,6 +5234,97 @@ Documentation, local evidence completion and review guidance only. Existing
 whole-story rubric weights, hard gates, formal coverage and qualification thresholds
 remain unchanged. **Step 19 IN PROGRESS; Step 20 NOT STARTED.**
 
+### Gemma and DeepSeek reviewer diagnostic preparation 2026-10-20
+
+**FROZEN AND LOCALLY VERIFIED; SUBSEQUENT LIVE EXECUTION RECORDED BELOW.** See the
+[frozen plan](../docs/handoffs/reviewer-gemma-deepseek-frozen-plan-2026-10-20.md).
+
+- [x] Record the user's selection of `gemma4:31b-cloud` and
+  `deepseek-v4.1-flash:cloud`. Freeze their full local manifest digests and advertised
+  thinking controls; use explicit `think: false`, temperature 0.2, top-p 0.95, and
+  seed 20261020. Three metadata-only requests; **zero inference calls**.
+- [x] Freeze 12 original/revision pairs across Elara, Elena and the safehouse:
+  four existing controls, four constructed assignment/endpoint failures, and four
+  permissible variation/craft controls. Preserve exact source versions, full prose,
+  catalogs, diffs, construction provenance and prefilled mechanical evidence.
+- [x] Freeze **48 complete requests**: 12 cases × V2/C1 × Gemma/DeepSeek, one attempt
+  per cell, no retries or fallback. V2 retains its existing judgment and delivery
+  instructions; C1 changes diagnostic response delivery to short catalog references
+  with application-owned version/quote binding. Paired source/system messages are
+  identical; the historical b05/V2 messages reproduce byte-for-byte in r03/V2.
+- [x] Freeze scoring that distinguishes delivery, task/fact correctness, mandatory
+  failures, necessity, supported comparative claims, no-op invariance, and literary
+  preference. Preserve supported ties and uncertainty; do not equate exact
+  preservation with reader benefit or treat assistant taste as a gold answer key.
+- [x] Freeze 24 calls per model and 12 per model/interface; 24,000 input and 8,000
+  output tokens per call; 300 seconds per call; aggregate reservations 1,152,000
+  input / 384,000 output tokens and 14,400 active seconds. Peak-rate planning
+  estimate $0.56064 within a $0.60 allowance; actual provider billing remains unknown.
+- [x] Freeze fail-closed stop rules, plan-bound future approval, pre-dispatch model
+  checks, persisted reservations/raw captures, exact request validation and replay.
+  Captured in-budget invalid/truncated cells consume their slots; no salvage or
+  reroll. Unknown outcomes, transport errors, drift, tampering, excess usage/time
+  and unexpected thinking stop further dispatch.
+- [x] Verify **70 tests**: 48 diagnostic harness checks and 22 existing gateway/model
+  contract checks. Exercise the complete 48-cell matrix through in-memory HTTP
+  transport, restart without repeated calls, schema/citation failures, truncation,
+  usage/model failures, cancellation, tampering and approval/lock boundaries.
+  Reproduce archived V2 validation at **15/18**. Ruff lint/format and strict mypy
+  pass on all five private diagnostic scripts.
+- [x] Seal private preparation under
+  `data/diagnostics/reviewer-crossover-v61-2026-10-20/`, including cases, requests,
+  scoring, stop rules, code, verification and source hashes. Full prose remains
+  under ignored `data/`; the repository handoff records the reviewable plan.
+- [x] User subsequently approved this exact frozen plan, the 48-call ceiling and
+  full-prose/context transmission to Ollama Cloud through the local daemon.
+  See the completed execution below; prior budgets were not reused.
+- [ ] Full workflow canary **ON HOLD**. Whole-story quality qualification, broader
+  corpus coverage and independent human comparison remain outstanding.
+
+Preparation only. Production prompt **61**, graph **9**, fulfillment policy **1**,
+runtime routing, schemas, historical evidence and human checkpoints remain unchanged.
+**Step 19 IN PROGRESS; Step 20 NOT STARTED.**
+
+### Gemma and DeepSeek reviewer diagnostic execution 2026-10-20
+
+**COMPLETED AND INSPECTED: 48/48 CALLS, NO RETRIES.** See the
+[results and diagnosis](../docs/benchmark_reports/reviewer-gemma-deepseek-v61-results-2026-10-20.md).
+The linked frozen plan remains an immutable preparation-time record.
+
+- [x] Record plan-bound user approval for both exact deployments, full prose/context
+  and the Ollama Cloud destination through the local daemon. Reverify the frozen
+  preparation, requests, source/runtime hashes and model metadata before dispatch.
+- [x] Execute all 48 scheduled cells once: **34 valid, 14 invalid, zero truncated**,
+  no terminal stop, no fallback and no repair calls. Capture and replay every cell.
+  Usage: 715,222 input / 61,683 output tokens and 323.40 active generation seconds.
+  Recorded-rate estimate **$0.20505836**; actual provider charges remain unknown.
+- [x] Inspect all shuffled normalized assessments before consulting model/interface
+  identities, and inspect invalid raw answers separately. Preserve frozen scores,
+  per-cell notes, exact evidence, scoring sensitivities and unresolved support.
+  Coordinator inspection does not constitute independent human quality validation.
+- [x] Record valid / usable supported assessments, each out of twelve:
+  Gemma V2 **5 / 4**, Gemma C1 **12 / 7**, DeepSeek V2 **10 / 6**,
+  DeepSeek C1 **7 / 5**. Total usable: **22/48**.
+- [x] Retain **Gemma/C1 as promising diagnostic evidence** under the frozen rule:
+  usable gains without paired mandatory/fact loss or new mandatory false alarms.
+  DeepSeek/C1 does not meet the improvement criterion; all five of its invalid
+  reports exceeded the six-reference evidence-array maximum.
+- [x] Document remaining failures: no-op comparative loss; departure mistaken for
+  erased truce; invented prior comparison; misleading token-fragment explanations;
+  and necessary/optional label confusion. Distinguish genuine false claims from
+  answer-key ambiguities and conditional grammar dependencies. Do not rescore
+  failures as successes or equate local wording preferences with reader benefit.
+- [x] Verify the original seal and all 48 completed cells without inference; verify
+  inspection/aggregation coverage and local links. Ruff lint/format and strict mypy
+  pass on the two new private analysis scripts. Preserve local closure and evidence.
+- [ ] Any revised diagnostic interface or further experiment requires its own
+  frozen plan and approval. No next budget or prompt change has been prepared.
+- [ ] Full workflow canary **ON HOLD**. Whole-story quality qualification, broader
+  corpus coverage and independent human comparison remain outstanding.
+
+Production prompt **61**, graph **9**, fulfillment policy **1**, routing, schemas
+and human checkpoints remain unchanged. **Step 19 IN PROGRESS; Step 20 NOT STARTED.**
+
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 
 21. [ ] **Package the stable system with Tauri** and test crash/restart, offline, missing-model, invalid-key, provider-timeout, and low-disk-space behavior.
