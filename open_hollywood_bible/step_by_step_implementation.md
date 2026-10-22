@@ -5435,15 +5435,61 @@ The frozen audit, plan, requests, scoring and stop rules remain unchanged.
   schema uniqueness, local links and UTF-8/LF. Ruff lint/format and strict mypy pass on
   five private analysis/preflight helpers. Preserve closure and evidence locally;
   update the local issue index without changing user-posted GitHub issues.
-- [ ] Delivery-layout investigation, semantic contrast design and any further live
-  comparison remain proposed work with a separate freeze and approval. Neither model
-  passes the predeclared screen; no production adoption or new budget is authorized.
+- [x] Complete the subsequent local delivery-layout investigation and semantic
+  contrast design on 2026-10-22, recorded below. Neither model is retrospectively
+  qualified; all frozen results remain unchanged.
+- [ ] Any further live comparison requires a separate freeze and approval. No
+  production adoption or new inference budget is authorized by the local audit.
 - [ ] Full workflow canary **ON HOLD**. Writer selection, broader corpus coverage,
   independent whole-story preference and quality qualification remain outstanding.
 
 Private execution bundle: `data/diagnostics/reviewer-interface-repeat-v61-2026-10-21-live/`.
 Production prompt **61**, graph **9**, fulfillment policy **1**, schemas, routing and
 human checkpoints remain unchanged. **Step 19 IN PROGRESS; Step 20 NOT STARTED.**
+
+### C2 delivery and semantic investigation 2026-10-22
+
+**LOCAL AUDIT AND EVALUATION DESIGN COMPLETE; NEXT COMPARISONS PROPOSED ONLY.**
+See the [delivery findings](../docs/handoffs/reviewer-delivery-semantics-audit-2026-10-22.md),
+[explicit semantic contrasts](../docs/handoffs/reviewer-semantic-contrast-design-2026-10-22.md)
+and [isolated comparison proposal](../docs/handoffs/reviewer-isolated-comparisons-proposal-2026-10-22.md).
+
+- [x] Verify 104 sealed preparation files, two preparation documents and all 465
+  execution evidence files. Preserve the original packets, captures and scores.
+- [x] Inspect all 32 Gemma raw duplicate-key answers without selecting an occurrence.
+  Every answer uses the same root-field sequence; 29 duplicate values are identical,
+  and all 32 pairs agree on endpoint status/evidence. Independently reproduce six
+  additional task-ID/evidence defect cells. No failed answer is rescued.
+- [x] Exercise a single canonical schema layout locally. All 640 property/required
+  order mismatches disappear without changing constraints or other message content.
+  All 32 valid DeepSeek captures remain valid; all 32 Gemma captures remain invalid.
+  Treat schema order as a generation hypothesis, not a demonstrated cause or fix.
+- [x] Check constrained-output feasibility separately. Both exact cloud tags reject
+  schema enforcement before mocked transport; current official Ollama documentation
+  also reports cloud structured outputs unsupported. No provider guard is bypassed.
+- [x] Make event versus continuing/final state, fulfillment versus relevance, and
+  forbidden transition versus true contradiction explicit. Retain historical controls
+  and author fresh counterexamples, permissible changes and a no-op. Keep ambiguity,
+  causal scope, evidence support and human literary judgment separate.
+- [x] Pass **96 local tests**, Ruff lint/format and strict mypy on two private scripts.
+  Record verification and source bindings; update the issue index while preserving
+  all user-posted GitHub links and leaving external issues untouched.
+- [x] Propose three isolated 16-call pilots (**48 provisional calls**): Gemma layout,
+  DeepSeek temporal scope and DeepSeek fulfillment vocabulary. Include unchanged
+  controls, fresh families, both display orders and an eight-call sentinel stop for
+  systemic delivery failure. No budget is transferred between pilots.
+- [ ] Prepare and freeze any approved follow-up: full fresh packets, exact candidate
+  instructions, requests, scoring, seed, schedule, budget, stop/resume rules and wire
+  verification. Then obtain plan-bound approval before inference. The proposal and
+  offline layout prototypes are not a live freeze or execution authorization.
+- [ ] Full workflow canary remains **ON HOLD**. Writer selection and whole-story
+  quality qualification remain separate work; preserve the completed human review.
+
+Private local bundle:
+`data/diagnostics/reviewer-delivery-semantics-audit-v61-2026-10-22/`.
+**Zero inference and zero daemon discovery calls.** Production prompt **61**, graph
+**9**, fulfillment policy **1**, production schemas, routing and human checkpoints
+remain unchanged. **Step 19 IN PROGRESS; Step 20 NOT STARTED.**
 
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 
