@@ -5478,10 +5478,11 @@ and [isolated comparison proposal](../docs/handoffs/reviewer-isolated-comparison
   DeepSeek temporal scope and DeepSeek fulfillment vocabulary. Include unchanged
   controls, fresh families, both display orders and an eight-call sentinel stop for
   systemic delivery failure. No budget is transferred between pilots.
-- [ ] Prepare and freeze any approved follow-up: full fresh packets, exact candidate
-  instructions, requests, scoring, seed, schedule, budget, stop/resume rules and wire
-  verification. Then obtain plan-bound approval before inference. The proposal and
-  offline layout prototypes are not a live freeze or execution authorization.
+- [x] Prepare and freeze the user-requested three-pilot follow-up on 2026-10-22,
+  recorded below. The preceding proposal and offline prototypes remain historical
+  artifacts; the new seal binds the exact live-ready diagnostic preparation.
+- [x] Obtain subsequent plan-bound approval before inference; the approved
+  execution and terminal stop are recorded below. No production change authorized.
 - [ ] Full workflow canary remains **ON HOLD**. Writer selection and whole-story
   quality qualification remain separate work; preserve the completed human review.
 
@@ -5490,6 +5491,240 @@ Private local bundle:
 **Zero inference and zero daemon discovery calls.** Production prompt **61**, graph
 **9**, fulfillment policy **1**, production schemas, routing and human checkpoints
 remain unchanged. **Step 19 IN PROGRESS; Step 20 NOT STARTED.**
+
+### Isolated reviewer pilot preparation 2026-10-22
+
+**FROZEN LOCALLY: 48 CALLS MAXIMUM.** Preparation itself made no live calls;
+subsequent approved execution and its terminal stop are recorded below.
+See the [frozen plan](../docs/handoffs/reviewer-isolated-pilots-frozen-plan-2026-10-22.md).
+
+- [x] Preserve four historical C2 packets and their control messages exactly; assemble
+  five fresh complete micro-scene packets with immutable version identities and
+  exact catalogs. Freeze nine packets total, including permissible changes, a no-op,
+  a true contradiction and independently grouped root/repair/callback decisions.
+- [x] Resolve F02's scope explicitly: its contradiction must be identified without
+  inventing an assignment/endpoint failure. Resolve F06's compound request into
+  required retention and separate optional duplicate removal, with three complete
+  sentence edit groups and every token operation owned exactly once.
+- [x] Freeze three isolated 16-call pilots: Gemma C2/D1 schema presentation; DeepSeek
+  C2/T1 temporal instruction; DeepSeek C2/R1 fulfillment vocabulary. Preserve all
+  other factors within each pilot. Cross both presentation orders at seed 20261022;
+  counterbalance arm and order dispatch. The 48 cells contain 46 distinct wire
+  payloads because the shared h03 C2 control repeats in T and R intentionally.
+- [x] Freeze strict delivery and alias validation, label keys, source-bound inspection
+  anchors, masked support inspection and the advancement rule. No invalid report is
+  repaired into a pass; partial pilots cannot qualify on reduced denominators.
+- [x] Freeze independent 16-call allowances, 24,000 input/8,000 output tokens per call,
+  300 seconds per call, no retries/repair/writer/fallback calls and no budget transfer.
+  Public reference rates checked October 22 give a $0.64256 reservation estimate
+  within the $0.80 planning allowance; actual billing remains unknown and uncapped
+  by that estimate.
+- [x] Implement and verify eight-call sentinel decisions, including stops when the
+  unchanged control systematically fails. Bind decisions to all eight receipts;
+  test interruption after the final sentinel receipt, tampering, illegal later
+  dispatch, unknown outcomes, source integrity and operator locking. Both deployments
+  must match archived metadata before any approved invocation dispatches.
+- [x] Pass **152 tests**: 130 private diagnostic tests plus 22 gateway/contract checks.
+  Exercise all 48 actual adapter wire requests through in-memory HTTP mocks and
+  retain all 32 historical duplicate-key captures as negative fixtures. Ruff
+  lint/format and strict mypy pass across ten private scripts. Verify the final
+  preparation seal, local links and UTF-8/LF; update the local issue index.
+- [x] Record the user's subsequent approval against the exact seal, 48-call ceiling,
+  both deployments, full unpublished prose/context and Ollama Cloud through the
+  local daemon. Preserve the approval in the private preparation bundle.
+- [x] Execute within that approval and inspect all returned evidence, respecting
+  sentinel and global terminal stops. The run is incomplete at **10/48 attempts**,
+  as recorded below; no candidate is qualified on a reduced denominator.
+
+Private bundle: `data/diagnostics/reviewer-isolated-pilots-v61-2026-10-22/`.
+Preparation seal SHA-256:
+`7256b677fab8fa4f226a0a3e0595339809c6f2af35147e751055df8fe6595cbe`.
+**Preparation: zero inference and zero daemon discovery calls.** Production prompt **61**, graph
+**9**, fulfillment policy **1**, production schemas, routing and human checkpoints
+are unchanged. Historical results and all user-posted GitHub issue links are
+preserved. **Step 19 IN PROGRESS; Step 20 NOT STARTED.**
+
+### Isolated reviewer pilot execution 2026-10-22
+
+**INCOMPLETE / TERMINAL STOP: 10/48 ATTEMPTS; RESULTS INSPECTED AND DOCUMENTED.**
+See the [results and terminal audit](../docs/benchmark_reports/reviewer-isolated-pilots-v61-results-2026-10-22.md).
+
+- [x] Verify the unchanged preparation seal and both model deployments; dispatch
+  ten exact frozen payloads through the local daemon. Nine complete responses and
+  one HTTP-500 error are captured. No retry, repair, fallback or budget transfer.
+- [x] Enforce D's eight-cell sentinel: Gemma C2 **0/4 valid**, all with duplicated
+  root `endpoint_check`; D1 **4/4 valid, label-correct and supported** across h02/F01
+  and both orders. Stop D despite candidate success. Its h03 and no-op F04 cells
+  remain unobserved; retain limited delivery evidence without qualification.
+- [x] Preserve T's terminal HTTP-500 attempt after one valid T1 h04/RO response.
+  That answer has correct labels but unsupported contradiction premises in its
+  group and naturalness explanations, hence **0/1 usable**. No completed paired
+  control exists. R was never started. **38 cells remain unstarted**, not scored
+  as failures: eight D sentinel stops, fourteen T and sixteen R terminal stops.
+- [x] Read all five valid reports and all four invalid raw replies. Seal source-bound
+  notes before consulting the export key; disclose that T's identity was already
+  exposed during terminal diagnosis and that delivery status limits other masking.
+  Preserve human ties and separate supported premises from literary preference.
+- [x] Audit the nine completed cells and failed dispatch offline without resolving
+  the reservation or changing the frozen runner. Record the generic terminal-error
+  classification and normal replay/export limitation. **10 offline tests**, Ruff
+  lint/format and strict mypy pass on three new private post-run scripts.
+- [x] Record known usage: **87,201 input / 7,737 output tokens**, 35.099 active seconds
+  for nine complete responses; failed-request usage and actual billing unknown.
+  Count the failed request among the ten attempts and retain its full reservation.
+- [x] Apply the frozen decision: **all three pilots incomplete, no advancement**.
+  Update the local issue index, preserve all fourteen GitHub links and issue bodies,
+  and make no external issue changes. All issues remain open.
+- [x] Address terminal HTTP evidence and offline audit/export locally in the
+  separate support bundle recorded below. Preserve the original sealed runner,
+  terminal marker, reservation and captures.
+- [x] Specify and locally verify the continuation policy and executable seal below,
+  carrying forward all ten attempts and retaining D's sentinel stop. The user
+  selected one exact recovery; live continuation still requires new approval.
+- [ ] Full workflow canary remains **ON HOLD**. No production adoption, writer
+  selection or whole-story quality qualification follows from this partial run.
+
+Private live bundle:
+`data/diagnostics/reviewer-isolated-pilots-v61-2026-10-22-live/`.
+The terminal marker, failed reservation, raw captures and preparation seal remain
+intact. Production prompt **61**, graph **9**, fulfillment policy **1**, production
+schemas, routing and human checkpoints are unchanged. **Step 19 IN PROGRESS;
+Step 20 NOT STARTED.**
+
+### Reviewer terminal evidence support 2026-10-22
+
+**COMPLETE LOCALLY: ZERO LIVE INFERENCE AND ZERO DAEMON DISCOVERY CALLS.**
+See the [support decisions and commands](../docs/handoffs/reviewer-terminal-evidence-support-2026-10-22.md).
+
+- [x] Add sixteen explicit non-200 response fixtures, including HTTP 500, other
+  provider/auth/rate-limit statuses, HTML/empty bodies, redirects and misleading
+  length/usage fields. Keep non-200 captures out of answer/length evaluation.
+- [x] Preserve the original gateway exception, code, retryability and cause/context
+  chain in sealed terminal evidence. Retain failed reservations and distinguish
+  dispatched attempts from preflight failure. Unreported tokens/cost stay null.
+- [x] Add supported offline audit/export commands for the isolated pilot format,
+  with compatibility pinned to the actual historical bundle. Replay completed
+  receipts and verify terminal attempts separately; do not rescue or rescore them.
+- [x] Export the actual interrupted run into a new local directory: **10 attempts,
+  9 complete responses, 1 unknown-usage HTTP failure**, D stopped, 38 unstarted.
+  Verify source immutability and preserve the original preparation/execution seals.
+- [x] Pass **58 tests** (36 local diagnostic + 22 gateway/contract checks), Ruff
+  lint/format and strict mypy on three private scripts. Exercise all 48 cells using
+  mocks, completed-cell restart, sentinel retention, no terminal retry, tampering,
+  overwrite prevention and the real historical capture without network calls.
+- [x] Document the implementation and update the local issue index, retaining all
+  fourteen GitHub links and original issue bodies. No external issue is changed.
+
+Private support bundle:
+`data/diagnostics/reviewer-terminal-evidence-v61-2026-10-22/`.
+Its successor runner accepts only an in-memory transport and has no live command.
+This completes the requested local support work; it does not authorize continuation
+or alter the interrupted pilot's conclusions. Production prompt **61**, graph **9**
+and fulfillment policy **1** remain unchanged. Canary **ON HOLD**; **Step 19 IN
+PROGRESS; Step 20 NOT STARTED**.
+
+### T/R reviewer continuation preparation 2026-10-22
+
+**COMPLETE LOCALLY; AWAITING LIVE APPROVAL. ZERO INFERENCE OR DAEMON DISCOVERY CALLS.**
+See the [frozen continuation plan](../docs/handoffs/reviewer-tr-continuation-frozen-plan-2026-10-22.md).
+
+- [x] Freeze the user's chosen one-time exact recovery of **T-h04-C2-RO** as attempt
+  two, followed by the fourteen untouched T cells and sixteen R cells. Carry the
+  completed T1 h04/RO response and its unsupported interpretation unchanged.
+- [x] Count **10 prior + at most 31 new = 41 combined attempts**, within the original
+  **48-call ceiling**. Explicitly amend T's allowance from 16 to 17 and DeepSeek's
+  from 32 to 33 for this named exception only. D stays at eight and stopped;
+  seven original slots are unallocated and unavailable. No further retries.
+- [x] Preserve the original source packets, all 31 request files byte-for-byte,
+  both display orders, settings, scoring, inspection anchors and eight-logical-cell
+  sentinels. Keep delivery-attempt accounting separate from comparison cells.
+- [x] Bind a separate continuation ledger to the immutable prior evidence. Add
+  daemon-version checks at approved preflight, before/after each call and across
+  clean restarts; verify the original DeepSeek digest/capabilities before dispatch.
+  Any new terminal failure stops all calls, retaining gateway chain and unknown usage.
+- [x] Verify terminal-aware audit/export, unchanged logical-cell scoring, carryover
+  of the unmasked T1 notes, source-safe exports and rejection of the old approval.
+- [x] Pass **93 tests** (71 continuation + 22 gateway/contract), Ruff lint/format
+  and strict mypy on four private scripts. Exercise all 31 wire requests through
+  mocks, both sentinel stops, version drift, all sixteen non-200 fixtures, restart,
+  authorization bindings and tamper guards. Preserve the initial test-fixture
+  failure record and corrected final verification; no live request was made.
+- [x] Seal the plan and document decisions; update the local issue index while
+  preserving all fourteen GitHub links and issue bodies. No external issue changes.
+- [x] Obtain new approval of this continuation before live preflight or inference,
+  explicitly covering full prose/context, destination and 31 new / 41 total calls.
+- [x] Execute, inspect and document the bounded continuation after that approval;
+  results and the unchanged frozen advancement decisions are recorded below.
+- [ ] Full workflow canary remains **ON HOLD**; no production adoption or story-quality
+  qualification follows from local harness verification.
+
+Private preparation:
+`data/diagnostics/reviewer-tr-continuation-v61-2026-10-22/`.
+Frozen plan SHA-256:
+`1372bb40e4ccb75fb746ca4e888d007b68bdc8d4d49095a3fd138ba2fe9ac201`.
+The prior HTTP-500 reservation remains charged with unknown usage; the old terminal
+run stays closed. No approval record or live continuation directory existed at
+preparation closure; the subsequently approved execution is recorded below.
+Production **prompt 61 / graph 9 / fulfillment policy 1** and human judgments remain
+unchanged. **Step 19 IN PROGRESS; Step 20 NOT STARTED.**
+
+### T/R reviewer continuation execution 2026-10-22
+
+**COMPLETE: 31 NEW CALLS, 41 COMBINED ATTEMPTS; NO ADVANCEMENT FOR T OR R.**
+See the [continuation results](../docs/benchmark_reports/reviewer-tr-continuation-v61-results-2026-10-22.md).
+
+- [x] Verify the frozen seal and record approval before inference. Match daemon
+  **0.40.8**, the archived DeepSeek digest and capabilities; preserve exact request
+  bytes, original settings, source versions, cases, scoring and stop rules.
+- [x] Execute the one authorized exact recovery of **T-h04-C2-RO** and all remaining
+  scheduled T/R cells. Count all ten prior attempts, retain the HTTP-500 reservation
+  and unknown usage, and carry the unsupported T1 response/inspection unchanged.
+  D remains stopped at eight calls; seven unallocated original slots stay unavailable.
+- [x] Record **30 valid + 1 invalid** new reports, all HTTP 200 with normal stop
+  finishes; no new HTTP/terminal/length failure or further retry. Both T/R sentinels
+  pass with 4/4 valid per arm. The later T-F01-C2-OR response is invalid JSON with
+  an unclosed root and six misplaced fields inside craft, not a length finish;
+  retain its invalid receipt without inference repair or semantic rescue.
+- [x] Read all 31 exported reports and audit all 30 valid assessments against source
+  text/context. Seal source-bound judgments before opening the new arm/order key;
+  disclose condition-revealing wording and the already-unmasked carried T1.
+- [x] Record T C2 **7/8 valid, 3/8 label-correct, 3/8 usable** versus T1 **8/8 valid,
+  5/8 label-correct, 4/8 usable**. T1 loses successful controls and has no both-order
+  family recovery. Two F02 reports wrongly make the separate motion contradiction
+  mandatory; every T h03 report folds the lost earlier event into the endpoint.
+- [x] Record R C2 and R1 each **8/8 valid, 6/8 label-correct, 5/8 usable**. R1 fixes
+  h03 fulfillment labels in both orders (**8/8 correct group labels versus 6/8**),
+  but the endpoint error persists. All eight h03 reports across T/R make that error.
+  Both interfaces correctly handle F05/F06's independent duplicate repairs.
+- [x] Apply unchanged decisions: T and R **retain_limited_evidence_no_advancement**;
+  D **incomplete_no_advancement**. Preserve R1's narrow label improvement as
+  diagnostic evidence, with no production or literary-quality qualification.
+- [x] Record new usage **208,787 input / 29,417 output tokens**, **140.616 active
+  seconds**; combined known usage **295,988 / 37,154**, **175.716 seconds**. New
+  reference-rate estimate **$0.09793650**, combined known **$0.11631656**; aggregate
+  actual usage/billing remain unknown because of the original failed attempt.
+- [x] Pass **9 post-run offline tests**, Ruff lint/format and strict mypy on four
+  analysis scripts. Verify all request/receipt bindings, source-grounded notes,
+  counters, sentinels, tamper rejection, invalid preservation and decision replay.
+  Retain the sealed 93-test preparation record; no preparation or production code changed.
+- [x] Seal execution/analysis evidence, publish the local result document and update
+  the local issue index. Preserve all fourteen GitHub links and issue bodies;
+  no external issue edit/closure or additional live call occurred.
+- [ ] Before proposing further inference, consider local regression fixtures for
+  requirement attribution/aggregation and the malformed C2 capture. This is a
+  recommendation, not an implemented prompt change or approved next experiment.
+- [ ] Full workflow canary remains **ON HOLD**.
+
+Private execution:
+`data/diagnostics/reviewer-tr-continuation-v61-2026-10-22-live/`.
+Execution manifest SHA-256:
+`0f1dd72cda2767af82ec1814de1ff89dc8a6d6eece1ae83acf9be3855451d546`.
+Private inspection/analysis:
+`data/diagnostics/reviewer-tr-continuation-v61-2026-10-22-analysis/`.
+Analysis manifest SHA-256:
+`28600949de8908c2ec30ad4417dd081b1148a989c37bfc518ed5df5800d734f1`.
+Production **prompt 61 / graph 9 / fulfillment policy 1**, historical evidence and
+nine human ties remain unchanged. **Step 19 IN PROGRESS; Step 20 NOT STARTED.**
 
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 
