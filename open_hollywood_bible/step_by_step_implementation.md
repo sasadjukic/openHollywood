@@ -5352,6 +5352,99 @@ and human checkpoints remain unchanged. **Step 19 IN PROGRESS; Step 20 NOT START
 Production prompt **61**, graph **9**, fulfillment policy **1**, schemas and human
 checkpoints remain unchanged. **Step 19 IN PROGRESS; Step 20 NOT STARTED.**
 
+### Reviewer interface audit and C2 repeat preparation 2026-10-21
+
+**LOCAL PREPARATION COMPLETE; SUBSEQUENT LIVE EXECUTION RECORDED BELOW.** See the
+[interface audit](../docs/handoffs/reviewer-interface-audit-2026-10-21.md) and
+[64-call frozen plan](../docs/handoffs/reviewer-interface-repeat-frozen-plan-2026-10-21.md).
+
+- [x] Record the user's publication of the fourteen issues and preserve all supplied
+  GitHub links. Link local preparation progress without closing or modifying any
+  external issue. Relevant design work: CW-007–011; diagnostic targets also include
+  CW-001, CW-012 and CW-013. Writer selection and whole-story qualification stay separate.
+- [x] Implement isolated diagnostic C2: application-owned version/quote binding,
+  separate request relation, edit support and conditional dependency, whole-paragraph
+  explanation groups with exact token appendix, and an explicit endpoint judgment.
+  Optional requested cleanup remains optional; conditional cleanup cannot authorize
+  an unsupported root edit. No-op craft evidence rules are explicit.
+- [x] Replay the five saved DeepSeek/C1 cardinality failures against bounds 6/8/12.
+  All five fail at six and validate at eight; twelve adds no captured recovery.
+  Adopt eight distinct references per field for C2, with no silent trimming. Preserve
+  these as offline altered-contract findings, not new live or semantic successes.
+- [x] Freeze eight pairs: four unchanged historical packets and four synthetic
+  controls across three new settings. Both deployments cross two seeds and both
+  labeled presentation orders: **64 calls**, one attempt per cell, no retries,
+  writers, fallback models or transferred allowance. Six scene families in total.
+- [x] Freeze exact requests, withheld scoring, independent seed/order contrasts,
+  diagnostic screening criteria, per-call and aggregate limits, stop/resume rules,
+  inherited model identities and the requirement for future plan-bound approval.
+  The combined candidate has no concurrent C1 arm; no individual-change causal
+  improvement claim is available from this repeat.
+- [x] Pass **80 tests**: 58 offline harness tests plus 22 gateway/contract checks.
+  Verify all 64 actual adapter wire requests through a mock provider, restart and
+  replay, terminal failures, evidence limits, source binding and preserved controls.
+  Ruff lint/format and strict mypy pass across six private scripts. Preserve local
+  verification, the preparation seal and historical evidence without modification.
+- [x] User subsequently approved the frozen plan, **64-call ceiling**, both model
+  deployments, full unpublished prose/context and Ollama Cloud through the local
+  daemon. Preparation itself made **zero inference and zero discovery calls**;
+  the approved execution is recorded below.
+- [ ] The full workflow canary remains **ON HOLD**; no candidate is production-qualified.
+
+Private bundle: `data/diagnostics/reviewer-interface-repeat-v61-2026-10-21/`.
+Preparation seal SHA-256:
+`9246680ddc52832107f5e814a5cddb07c8b436932ab7f368ffb6a523b1a83142`.
+Production prompt **61**, graph **9**, fulfillment policy **1**, schemas, routing and
+human checkpoints are unchanged. **Step 19 IN PROGRESS; Step 20 NOT STARTED.**
+
+### Gemma and DeepSeek C2 reviewer repeat execution 2026-10-21
+
+**COMPLETED AND INSPECTED: 64/64 CALLS, NO RETRIES; NEITHER MODEL CLEARS THE SCREEN.**
+See the [results and diagnosis](../docs/benchmark_reports/reviewer-interface-repeat-v61-results-2026-10-21.md).
+The frozen audit, plan, requests, scoring and stop rules remain unchanged.
+
+- [x] Record the user's exact plan-bound approval and verify both archived model
+  manifests/capabilities at preflight and before every dispatch. Send the authorized
+  full prose/context through the local daemon to Ollama Cloud, one attempt per cell.
+- [x] Complete all 64 cells within the original ceiling: **32 valid, 32 invalid,
+  zero truncated**, no terminal stop, repair, fallback, writer or canary calls.
+  Replay every request, provider capture, receipt and cell seal without inference.
+- [x] Inspect all 32 normalized assessments under shuffled identities, persist and
+  hash per-review notes before unmasking, then inspect all 32 invalid raw answers
+  separately. Retain uncertainty and counterevidence without changing frozen scores.
+- [x] Record Gemma **0/32 valid, 0/32 usable**: every response duplicates the root
+  endpoint key. Twenty-nine repeated values are identical; three differ in wording
+  without differing endpoint status. Six cells have additional structural defects.
+  Audit all 64 supplied schemas: no duplicate property/required names. Raw noticing
+  remains diagnostic evidence; malformed answers are not promoted to successes.
+- [x] Record DeepSeek **32/32 valid, 24/32 all-label-correct, 22/32 usable**.
+  Eight valid no-ops remain invariant and sixteen permissible controls avoid mandatory
+  false alarms. All h03 cells misattribute missing turning-point content to endpoint
+  failure; seven h03/n03 group labels confuse task fulfillment with textual relevance.
+  Two h04 reports with correct labels invent an internal contradiction from a later
+  departure. Preserve one additional unresolved craft premise in an already-failed cell.
+- [x] Record independent seed/order contrasts: DeepSeek usability **6/8 OR and 5/8 RO
+  for each seed**; the h04 explanation failures occur in both RO cells. No paired seed
+  contrast changes usability. Small correlated samples do not establish general order
+  effects, a model winner, causal improvement over C1 or whole-story quality.
+- [x] Record usage **605,648 input / 57,250 output tokens**, **252.79 active seconds**,
+  historical-rate estimate **$0.17838736**; actual billed cost unknown. All exact call,
+  token and time limits hold. No excessive evidence arrays occur under the eight-ref
+  policy; this limited result does not close general delivery or evidence issues.
+- [x] Verify sealed sources and live replay, inspection coverage, aggregate reproducibility,
+  schema uniqueness, local links and UTF-8/LF. Ruff lint/format and strict mypy pass on
+  five private analysis/preflight helpers. Preserve closure and evidence locally;
+  update the local issue index without changing user-posted GitHub issues.
+- [ ] Delivery-layout investigation, semantic contrast design and any further live
+  comparison remain proposed work with a separate freeze and approval. Neither model
+  passes the predeclared screen; no production adoption or new budget is authorized.
+- [ ] Full workflow canary **ON HOLD**. Writer selection, broader corpus coverage,
+  independent whole-story preference and quality qualification remain outstanding.
+
+Private execution bundle: `data/diagnostics/reviewer-interface-repeat-v61-2026-10-21-live/`.
+Production prompt **61**, graph **9**, fulfillment policy **1**, schemas, routing and
+human checkpoints remain unchanged. **Step 19 IN PROGRESS; Step 20 NOT STARTED.**
+
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 
 21. [ ] **Package the stable system with Tauri** and test crash/restart, offline, missing-model, invalid-key, provider-timeout, and low-disk-space behavior.
