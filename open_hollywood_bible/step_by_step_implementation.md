@@ -5875,7 +5875,7 @@ See the [C2/M1 results](../docs/benchmark_reports/reviewer-ownership-v61-results
 - [x] Seal execution and analysis artifacts, document results and next local
   recommendations, and update the issue index while preserving all fourteen
   GitHub links and original issue bodies. No external issue edits or closures.
-- [ ] Review the recommended local delivery audit and separate aggregate design
+- [x] Complete the local delivery audit and separate aggregate evaluation below
   before proposing another bounded live comparison. No new experiment is frozen
   or approved; further live calls remain paused.
 - [ ] Full workflow canary remains **ON HOLD**; no production adoption or
@@ -5891,6 +5891,54 @@ Analysis manifest SHA-256:
 `7dc4fd1c531fe6bfe1c8928dac7d4b8611b038b9ee4f5287a73c5ec5defcffaa`.
 Production **prompt 61 / graph 9 / fulfillment policy 1**, historical seals and
 the nine human ties remain unchanged. **Step 19 IN PROGRESS; Step 20 NOT STARTED.**
+
+### Local delivery and mandatory-aggregation audit 2026-10-23
+
+**COMPLETE LOCALLY: ZERO INFERENCE AND ZERO DAEMON DISCOVERY.**
+See the [audit and decisions](../docs/handoffs/reviewer-delivery-aggregation-audit-2026-10-23.md)
+and [proposed delivery comparison](../docs/handoffs/reviewer-delivery-repeat-proposal-2026-10-23.md).
+
+- [x] Pin all 48 C2/M1 captures and replay their source/request/receipt bindings,
+  historical scores and seals: **35 valid / 13 invalid**, unchanged. All 27
+  duplicated group objects start with `group_id` then follow the required-field
+  list, repeating that ID. Preserve malformed JSON and unknown-reference failures.
+- [x] Compare C2 with exact archived D1 rendering and a local identity-first D2
+  prototype. Verify equivalent validation rules, unchanged contract prose and
+  aligned property/required lists across 480 object-schema instances. Replay all
+  64 older C2 controls: 32 Gemma invalid / 32 DeepSeek valid remain unchanged.
+  No raw answer is repaired; Gemma D's prior stop remains intact.
+- [x] Evaluate a separate source-bound application aggregate using explicit
+  mandatory membership and validated whole reports. Preserve uncertainty,
+  optional findings and genuine craft defects. Derived flags match the withheld
+  aggregate on **35/35 valid inputs**, versus 33/35 model flags; the two CN
+  differences are consistency findings, not repaired successes. All eight
+  historically unusable valid reports remain unusable; thirteen invalid inputs
+  receive no derived aggregate.
+- [x] Add eleven authored controls, including false task verdicts that show why
+  correct arithmetic cannot establish semantic truth. Keep original model flags
+  and explanations; no production gate, persisted schema or writer dispatch changes.
+- [x] Pass **104 offline tests** (81 audit + 23 unchanged execution), Ruff
+  lint/format and strict mypy on four scripts. Preserve the initial exact-D1
+  renderer failures and corrected verification; historical evidence is unmodified.
+- [x] Document a **provisional 48-call C2/D1/D2** delivery comparison: eight cases,
+  four historical and four across two fresh families, both orders, sixteen
+  attempts per arm. Keep ownership/semantic changes separate and measure the
+  application aggregate locally without changing primary scoring.
+- [x] Seal local evidence and update the issue index; preserve all fourteen
+  GitHub links and issue bodies. No issue closure or external GitHub changes.
+- [ ] Select and locally freeze the proposed cases, requests, scoring, budget,
+  schedule and stop rules; verify the harness before seeking new live approval.
+- [ ] Full workflow canary remains **ON HOLD**. No production or story-quality
+  qualification follows from this local audit.
+
+Private audit:
+`data/diagnostics/reviewer-delivery-aggregation-v61-2026-10-23/`.
+Audit manifest SHA-256:
+`f69c1a370683fd1342476a21a2df8b505d735b222c21a53b4cc20ddc77374fe7`.
+The 62-file seal also binds both public documents; source manifests preserve the
+prior execution, analysis, preparation and production fingerprints.
+Production **prompt 61 / graph 9 / fulfillment policy 1**, prior budgets/seals
+and nine human ties remain unchanged. **Step 19 IN PROGRESS; Step 20 NOT STARTED.**
 
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 
