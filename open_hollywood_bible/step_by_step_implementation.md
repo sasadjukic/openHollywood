@@ -5710,9 +5710,9 @@ See the [continuation results](../docs/benchmark_reports/reviewer-tr-continuatio
 - [x] Seal execution/analysis evidence, publish the local result document and update
   the local issue index. Preserve all fourteen GitHub links and issue bodies;
   no external issue edit/closure or additional live call occurred.
-- [ ] Before proposing further inference, consider local regression fixtures for
-  requirement attribution/aggregation and the malformed C2 capture. This is a
-  recommendation, not an implemented prompt change or approved next experiment.
+- [x] Complete local regression fixtures for requirement attribution/aggregation
+  and the malformed C2 capture; verification and the unapproved next proposal
+  are recorded in the 2026-10-23 follow-up below. No prompt change is implemented.
 - [ ] Full workflow canary remains **ON HOLD**.
 
 Private execution:
@@ -5725,6 +5725,172 @@ Analysis manifest SHA-256:
 `28600949de8908c2ec30ad4417dd081b1148a989c37bfc518ed5df5800d734f1`.
 Production **prompt 61 / graph 9 / fulfillment policy 1**, historical evidence and
 nine human ties remain unchanged. **Step 19 IN PROGRESS; Step 20 NOT STARTED.**
+
+### Reviewer scope and malformed-output regressions 2026-10-23
+
+**COMPLETE LOCALLY: ZERO LIVE INFERENCE AND ZERO DAEMON DISCOVERY CALLS.**
+See the [regression handoff](../docs/handoffs/reviewer-scope-regressions-2026-10-23.md)
+and [proposed requirement-ownership comparison](../docs/handoffs/reviewer-requirement-ownership-proposal-2026-10-23.md).
+
+- [x] Preserve all **32 logical T/R responses** as source-bound fixtures: 31 new
+  continuation captures and one carried T1 response; 31 valid, one invalid.
+  Bind source/version IDs, complete prose/context, original expected labels,
+  requests, raw body, receipts and inspection. Replay the original validator and
+  scorer without accepting repairs or changing historical outcomes.
+- [x] Reproduce **eight h03 endpoint errors, one h04 earlier-event error and two
+  F02 mandatory-scope errors**. The same two F02 errors also violate the critics'
+  own task-to-aggregate consistency; do not count them twice. Preserve successful
+  F01/F05/F06 controls and unsupported explanations in otherwise correct reports.
+- [x] Add local ownership controls crossing event retention and final state, plus
+  narrow/broad mandatory scope with the same craft defect. Keep defects visible;
+  optional success cannot cancel a mandatory loss. Preserve uncertainty and
+  reject missing, duplicate or undeclared task/requirement identities.
+- [x] Retain the exact malformed C2 response as invalid JSON after normal stop:
+  **4,165 characters, 860 output tokens**, unclosed root and misplaced fields.
+  Reject a brace-only in-memory mutation under the unchanged schema. Distinguish
+  length, non-200, duplicate-key and capture-integrity failures; no answer repair.
+- [x] Pass **81 tests** (72 new local + nine unchanged post-run), Ruff lint/format
+  and strict mypy on three new scripts. Verify the supported offline audit,
+  tamper rejection, source seals and unchanged historical decisions. Preserve
+  the initial test-authoring failure record and corrected final verification.
+- [x] Document decisions and a **provisional 48-attempt** DeepSeek C2/M1 comparison:
+  twelve cases across four fresh families, both orders, one requirement-ownership
+  card intervention, separate evidence/mapping/aggregation scoring and explicit
+  controls for real craft defects. No cases, requests or live plan are frozen.
+- [x] Seal local artifacts and update the issue index; preserve all fourteen
+  user-posted GitHub links and original issue bodies. No external issue changes.
+- [x] Select and locally prepare the proposed comparison after the user's
+  authorization; the frozen C2/M1 preparation is recorded below.
+- [x] Review the frozen cases/requests/scoring/budget/stops and obtain the user's
+  new plan-bound approval. The completed 48-call execution is recorded below;
+  further live calls remain paused.
+- [ ] Full workflow canary remains **ON HOLD**. No issue closure, production
+  adoption, writer-policy qualification or whole-story benefit is established.
+
+Private regression bundle:
+`data/diagnostics/reviewer-scope-regressions-v61-2026-10-23/`.
+Regression manifest SHA-256:
+`2792d986cc5f04e3642513fb289f68f7dae654eef91103a3b75d723615307c10`.
+Historical accounting remains **41 combined attempts**, D stopped, original
+HTTP-failure usage unknown and seven unallocated slots unavailable. Production
+**prompt 61 / graph 9 / fulfillment policy 1**, original seals and nine human
+ties remain unchanged. **Step 19 IN PROGRESS; Step 20 NOT STARTED.**
+
+### C2/M1 requirement-ownership preparation 2026-10-23
+
+**COMPLETE LOCALLY; ZERO INFERENCE OR DAEMON DISCOVERY DURING PREPARATION.**
+The subsequent approved execution is recorded below; this preparation stays sealed.
+See the [frozen C2/M1 plan](../docs/handoffs/reviewer-ownership-frozen-plan-2026-10-23.md).
+
+- [x] Freeze twelve cases in four fresh fiction families: community radio and
+  costume workroom event/endpoint 2×2 contrasts; conservatory and sound archive
+  identical-prose narrow/broad mandatory-scope pairs. Versions are **268–296 words**.
+  Keep permitted departure, independent optional cleanup and genuine contradiction
+  controls; bind source catalogs, paragraph groups, exact offsets and withheld labels.
+- [x] Freeze **48 requests: 24 C2 + 24 M1**, both display orders, one seed, with
+  unchanged C2 system/schema/evidence policy/grouping/vocabulary. M1 adds only an
+  assignment-derived ownership card, with no gold labels or selected evidence;
+  bind card content hashes and artifact versions. Production prompts are unchanged.
+- [x] Freeze DeepSeek settings, archived model digest/capabilities and daemon
+  **0.40.8** expectation, 24,000/8,000 per-call token bounds, 300-second active
+  limit, **1,152,000 input / 384,000 output** and **14,400 seconds** aggregate.
+  Archive the **$0.80640** reference-rate reservation and **$1.00** planning
+  allowance, explicitly separate from actual billing. No fresh price/discovery call.
+- [x] Freeze the A01/CN eight-call sentinel, per-arm 24-call ceilings, zero retries,
+  terminal stop for non-200/transport/length/usage/thinking/version/model failures,
+  durable reservations, exact-wire guard, restart/replay and terminal audit/export.
+  The earlier seven unused slots remain unavailable; this is a new separate budget.
+- [x] Freeze strict delivery and complete-report scoring, source-bound claim
+  inspection, separate mandatory aggregation and real-contradiction detection.
+  Require at least **22/24 valid M1 reports**, no lost paired usable/target/craft
+  control, and both-order grounded recoveries across an A/B and C/D family.
+  Count only the relevant semantic failure class, not delivery-only gains,
+  one-order gains or post-hoc aggregate repairs. Passing remains diagnostic only.
+- [x] Pass **119 tests** (97 preparation/harness + 22 gateway/contract), Ruff
+  lint/format and strict mypy on five private scripts. Exercise all 48 adapter
+  requests through mocks, restart without duplicate dispatch, sentinel thresholds,
+  all sixteen non-200 fixtures, terminal accounting/export, evidence binding,
+  target-specific screening and tamper rejection. Preserve initial failures and
+  their local corrections; no live provider request or daemon discovery occurred.
+- [x] Seal preparation, source/runtime fingerprints and public plan; run sealed
+  verification. Update the issue index, preserving all fourteen GitHub links and
+  original issue bodies. No external issue changes or issue closure.
+- [x] Obtain new plan-bound live approval covering full prose/context, Ollama Cloud
+  through the local daemon, **48 maximum attempts / 24 per arm**, zero retries and
+  no canary. No approval record or live execution directory exists at preparation.
+- [x] Execute and inspect only after approval; keep production prompts unchanged
+  and full workflow canary **ON HOLD**. No story-quality qualification follows
+  from preparation, mock outputs or diagnostic screening.
+
+Private preparation:
+`data/diagnostics/reviewer-ownership-v61-2026-10-23/`.
+Frozen plan SHA-256:
+`d5d71fb62ccbe39ec1dad871fbfc9b44f9a3ade09e63d87521d33769105b091d`.
+The **74-file** preparation seal binds five scripts, cases, requests, policies,
+local case inspection and verification; **35** source/runtime files and the
+public plan are also pinned. Previous seals and the nine human ties remain
+unchanged. Production **prompt 61 / graph 9 / fulfillment policy 1**;
+**Step 19 IN PROGRESS; Step 20 NOT STARTED.**
+
+### C2/M1 requirement-ownership execution 2026-10-23
+
+**COMPLETE: 48/48 CALLS; LIMITED EVIDENCE, NO ADVANCEMENT.**
+See the [C2/M1 results](../docs/benchmark_reports/reviewer-ownership-v61-results-2026-10-23.md).
+
+- [x] Verify the frozen preparation and record plan-bound approval for full
+  prose/context to Ollama Cloud through the local daemon before preflight.
+  Match daemon **0.40.8**, model digest/capabilities and every frozen wire request;
+  preserve all cases, source versions, settings, scoring and stop rules.
+- [x] Execute **24 C2 + 24 M1 attempts**, with zero retries or replacement calls.
+  Both initial sentinels pass 4/4 valid; all 48 responses are HTTP 200, normal stop,
+  with no thinking, length or terminal failure. Keep the separate earlier budget
+  at 41 attempts, D stopped and seven unused slots unavailable.
+- [x] Preserve **35 valid + 13 invalid** reports. Eleven repeat `group_id` keys
+  (27 repeated occurrences with identical values); one closes JSON prematurely;
+  one cites absent `R020`. Retain every raw failure without repair or semantic credit.
+- [x] Inspect all 35 valid assessments against complete prose/context with arm
+  and order hidden. Seal **425 field-bound claims** and source/version/offset
+  evidence before decoding the key; record unsupported and uncertain premises
+  separately from literary preference. Audit all thirteen rejected captures.
+- [x] Record C2 **16/24 valid, 14/24 target-correct, 12/24 usable** versus M1
+  **19/24 valid, 19/24 target-correct, 15/24 usable**. All 20 valid A/B reports
+  correctly separate event and endpoint; twelve A/B cells remain invalid,
+  including all four A00 cells. No event/endpoint treatment recovery is shown.
+- [x] Retain **CN's both-order mandatory-scope recovery**: M1 reports the real
+  contradiction without elevating it into the narrow mandatory aggregate. Both
+  arms correctly block CB, and all valid C/D reports identify both incompatible
+  assertions. DN controls already succeed; no second scope recovery exists.
+- [x] Apply frozen **retain_limited_evidence_no_advancement**: M1 misses the
+  22/24 valid threshold, loses both B01 controls through delivery and A01/RO
+  usability through an uncertain comparative premise, and lacks the required
+  A/B plus C/D recoveries. Preserve correct labels alongside false consultation-
+  before-action explanations; do not treat the aggregate projection as a repair.
+- [x] Record **265,282 input / 49,109 output tokens**, **208.036 active seconds**
+  and **$0.13851540** at archived reference rates. Actual billing remains unknown.
+- [x] Pass **23 offline post-run tests**, Ruff lint/format and strict mypy on
+  four analysis scripts. Verify exact requests, budget/runtime, all invalid
+  captures, source-bound notes, tamper rejection and decision replay with HTTP
+  blocked. Preserve the initial two incorrect exception expectations and final
+  passing record; retain the unchanged sealed **119-test** preparation evidence.
+- [x] Seal execution and analysis artifacts, document results and next local
+  recommendations, and update the issue index while preserving all fourteen
+  GitHub links and original issue bodies. No external issue edits or closures.
+- [ ] Review the recommended local delivery audit and separate aggregate design
+  before proposing another bounded live comparison. No new experiment is frozen
+  or approved; further live calls remain paused.
+- [ ] Full workflow canary remains **ON HOLD**; no production adoption or
+  story-quality qualification follows from this diagnostic.
+
+Private execution:
+`data/diagnostics/reviewer-ownership-v61-2026-10-23-live/`.
+Private analysis:
+`data/diagnostics/reviewer-ownership-v61-2026-10-23-analysis/`.
+Execution manifest SHA-256:
+`0310a354c726882ae2da62e8e0a4bfc4905e01ff172cbe625b15aaa39752507e`.
+Analysis manifest SHA-256:
+`7dc4fd1c531fe6bfe1c8928dac7d4b8611b038b9ee4f5287a73c5ec5defcffaa`.
+Production **prompt 61 / graph 9 / fulfillment policy 1**, historical seals and
+the nine human ties remain unchanged. **Step 19 IN PROGRESS; Step 20 NOT STARTED.**
 
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 
