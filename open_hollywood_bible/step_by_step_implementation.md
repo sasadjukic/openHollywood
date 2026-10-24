@@ -6092,9 +6092,10 @@ full workflow canary ON HOLD.**
 - [x] Seal the local evidence and both public documents; update the issue index,
   preserving all fourteen GitHub links and original issue bodies. No external
   issue was changed or closed.
-- [ ] Select the proposal and prepare/freeze exact cases, requests, scoring,
-  budgets and stops before seeking live approval. No prompt/card was implemented
-  and no new live plan, request bundle or approval record exists.
+- [x] Select the proposal and prepare/freeze exact cases, requests, scoring,
+  budgets and stops in the local preparation below. The diagnostic card and
+  request bundle now exist; production prompts are unchanged and no live
+  approval record exists.
 
 Private audit: `data/diagnostics/reviewer-field-premise-audit-v61-2026-10-24/`.
 Audit manifest SHA-256 (14 local files plus two public documents):
@@ -6102,6 +6103,425 @@ Audit manifest SHA-256 (14 local files plus two public documents):
 Production **prompt 61 / graph 9 / fulfillment policy 1**, prior budgets/seals
 and nine human ties remain unchanged. **Step 19 IN PROGRESS; Step 20 NOT STARTED;
 live calls PAUSED; full workflow canary ON HOLD.**
+
+### Frozen D2/premise-check preparation 2026-10-24
+
+**COMPLETE LOCALLY; AWAITING NEW LIVE APPROVAL.** See the
+[frozen 32-call plan](../docs/handoffs/reviewer-premise-frozen-plan-2026-10-24.md).
+
+- [x] Freeze **eight cases across eight scene families**, both OR/RO orders and
+  unchanged D2 versus one fixed premise-check card (PC). Preserve A00, B10,
+  E-compound and F-narrow packets and their eight D2 wire requests byte-for-byte.
+  Add ferry-terminal, observatory, plant-nursery and map-archive counterexamples.
+  Freeze source/version/offset catalogs, complete paragraph groups, acceptance
+  labels and withheld inspection anchors. No literary winner is prescribed.
+- [x] Freeze **32 requests, sixteen per arm**, the counterbalanced serial schedule,
+  exact card, archived model/capability fingerprints and expected Ollama **0.40.9**.
+  This is the last verified baseline, not new discovery. Retain temperature 0.2,
+  top-p 0.95, seed 20261022, no thinking/streaming, 24k input / 8k output / 300
+  active seconds per call, and **zero retries or replacements**. Aggregate
+  reservations are 768k input / 256k output / 9,600 seconds; reference cost
+  $0.53760 within a $0.75 planning allowance, with actual billing unknown.
+- [x] Freeze the **first-eight B10/H-before sentinel**, four calls per arm across
+  both families: stop if either arm has zero valid reports or a shared structural
+  signature appears at least three times across both families. Retain terminal
+  stop, unknown-usage/error-chain capture, exact-wire enforcement, operator lock,
+  reserve-before-dispatch, cell seals and clean-boundary restart only.
+- [x] Freeze full-field source inspection, secondary unsupported-claim categories,
+  supported targets, optional repair and genuine contradiction scoring. Require
+  PC **15/16 valid**, **7/8 fresh valid**, and **three paired semantic recoveries
+  across two families including one historical case in both orders**, with no
+  protected losses or new fresh blanket false rejection. Delivery-only gains do
+  not count. Explicitly distinguish **insufficient recovery opportunity**; an
+  independent delivery/regression failure still blocks advancement.
+- [x] Pass **132 offline tests** (110 harness + 22 unchanged gateway/contracts),
+  Ruff lint/format and strict mypy on five private scripts. Exercise all 32
+  requests via mocked HTTP, stop/restart/budget behavior, sixteen non-200 fixtures,
+  terminal export, inspection binding, opportunity limits and regression precedence.
+  Record the Windows async sandbox hang and completed tests with real HTTP blocked.
+  Preserve the initial type-check path failure and final successful verification.
+- [x] Seal **56 local files, 71 source fingerprints and the public plan**. Update
+  this tracker and the issue index while preserving all fourteen GitHub links,
+  original issue bodies and historical evidence. No issue is closed or changed
+  externally; no new model performance claim is made.
+- [x] Obtain plan-bound approval for the 32-call ceiling and full unpublished
+  prose/context destination. Record the approval and attempt frozen preflight;
+  the terminal version-mismatch result is documented below.
+- [ ] Complete the comparison and inspect generated reports. Frozen preflight
+  stopped before all model calls; continuation requires an explicit baseline
+  amendment and new execution identity, not resume of the terminal ledger.
+
+Private preparation: `data/diagnostics/reviewer-premise-v61-2026-10-24/`.
+Plan SHA-256:
+`388c3402b1f6c3f09b35f1f121d290e3e4374aecaa2d1384ec32b67c16b93681`.
+**Zero inference and zero daemon discovery.** Production **prompt 61 / graph 9 /
+fulfillment policy 1**, human checkpoints and nine human ties are unchanged.
+Story-quality qualification remains open; these eight short families do not
+establish whole-story benefit. **Step 19 IN PROGRESS; Step 20 NOT STARTED;
+live calls PAUSED; canary ON HOLD.**
+
+### D2/premise-check execution attempt 2026-10-24
+
+**STOPPED BEFORE INFERENCE; LOCAL TERMINAL AUDIT COMPLETE.** See the
+[preflight-stop report](../docs/benchmark_reports/reviewer-premise-v61-results-2026-10-24.md).
+The comparison remains **INCOMPLETE**, with **0/32 model calls used**.
+
+- [x] Verify the frozen plan and source fingerprints, bind the user's approval
+  to its exact hash, and invoke the approved runner with its unchanged stops.
+  The initial daemon-version response did not exactly match **0.40.9**; retain
+  `ValueError: daemon baseline changed` and obey the terminal stop.
+- [x] Preserve **zero reserved / zero dispatched / zero completed model calls**,
+  with no retries, replacements, prose dispatch, model-metadata preflight or
+  sentinel evaluation. Keep `not_dispatched` separate from unknown usage on a
+  dispatched call; leave actual billing unreported. Do not change the baseline
+  or restart this terminal ledger.
+- [x] Export the terminal evidence through the supported audit path, seal empty
+  inspection notes and replay **`incomplete_no_advancement`**. There are no
+  reports or assessment fields to inspect, no model-quality measurements and
+  no new evidence for or against the premise-check treatment.
+- [x] Document the initial-version observability gap: comparison occurs before
+  persistence of the returned version, and the version transport does not save
+  its response. The saved evidence cannot identify the observed version. A
+  bounded local-log read did not recover it; no extra daemon discovery occurred.
+- [x] Pass **14 offline tests**, Ruff lint/format and strict mypy on three new
+  analysis scripts, with HTTP sends blocked. Verify approval/source binding,
+  exact zero-call accounting, terminal resume rejection, supported empty export,
+  tamper rejection and frozen decision replay. Preserve all preparation evidence.
+- [x] Seal both terminal files through the execution manifest and **18 local
+  analysis files plus the public report** through the analysis manifest. Update
+  this tracker and issue index; preserve all fourteen GitHub links, original
+  issue bodies and historical results. No external issue was changed or closed.
+- [x] Prepare tested version capture before comparison, obtain authorized current
+  metadata, and freeze the explicit baseline amendment below with a new execution
+  identity. Preserve all cases, exact model messages, settings, scoring and the
+  **32-call ceiling**. The amendment is shown for review; inference approval is
+  still pending and the original terminal ledger remains non-resumable.
+
+Private terminal run: `data/diagnostics/reviewer-premise-v61-2026-10-24-live/`.
+Private analysis: `data/diagnostics/reviewer-premise-v61-2026-10-24-analysis/`.
+Execution manifest SHA-256:
+`494943141433c8c38c454379013ef705175043802bd754286c8074176c9fd500`.
+Analysis manifest SHA-256:
+`884a6395eb1e5fcea7f7cc7171921c62e08fdd3790cf9d759fdf044cab13c4a7`.
+Production **prompt 61 / graph 9 / fulfillment policy 1**, human checkpoints and
+nine human ties remain unchanged. **Step 19 IN PROGRESS; Step 20 NOT STARTED;
+live inference PAUSED; full workflow canary ON HOLD.**
+
+### D2/premise-check version-capture fix and baseline amendment 2026-10-24
+
+**COMPLETE LOCALLY; APPROVED AND EXECUTED.** See the execution entry below.
+See the [frozen amendment](../docs/handoffs/reviewer-premise-baseline-amendment-2026-10-24.md).
+
+- [x] Preserve the original preparation, approval, zero-call terminal run,
+  analysis/report and all seals. Create a separate amended execution identity;
+  do not resume the original terminal ledger or replace missing historical data.
+- [x] Persist and seal initial/before/after version request/response observations
+  before validation, including expected/observed versions, UTC times, response
+  status, exact body bytes/hash and parse/transport outcomes. Exclude headers and
+  credentials. Add observations to cell seals, terminal evidence and supported
+  export; reject incomplete/tampered observations and preserve unknown usage.
+- [x] Use the user's metadata-discovery authorization for **four ordered metadata
+  requests only**: version, tags, selected-model show, version. Verify **0.40.10**
+  before and after, with the selected DeepSeek tag, digest, normalized details,
+  capabilities, model information and thinking configuration unchanged. No prose
+  or generation request was sent. The old returned-version value remains unknown.
+- [x] Copy **43 experimental input files byte-for-byte**, including all **32
+  prepared requests**, and verify identical wire payloads. Preserve D2/PC prompts,
+  card, cases, schemas, artifact versions, schedule, settings, scoring, stops and
+  budget. Pin current metadata and unchanged runtime/source fingerprints.
+- [x] Keep **32 total model attempts / sixteen per arm / zero retries**. Prior
+  model calls used are zero, so the combined ceiling stays 32. Retain the same
+  first-eight sentinel, 24k/8k token limits, 300 active seconds per call, 768k/256k
+  aggregate tokens, 9,600 active seconds and archived $0.53760 reservation within
+  the $0.75 planning allowance. Actual billing remains unverified.
+- [x] Pass **177 offline tests** (110 inherited harness + 45 version/amendment +
+  22 unchanged gateway/contracts), Ruff lint/format and strict mypy on seven
+  private scripts. Test all 32 mocked requests, restart/ceilings/sentinels,
+  version failures at all three checkpoints, non-200/malformed/missing/duplicate/
+  invalid-UTF-8 responses, transport failures, terminal export, tampering,
+  metadata-only endpoint guards and rejection of old approvals. Real HTTP is
+  blocked during tests. Preserve initial/final static verification records.
+- [x] Seal **69 local files, 131 source fingerprints and the public amendment**.
+  Update the tracker and issue index while preserving all fourteen GitHub links,
+  issue bodies and historical performance evidence. No external issue is changed
+  or closed; this creates no new reviewer or story-quality result.
+- [x] Obtain explicit approval bound to the amended plan hash and original parent
+  hash before inference, covering full unpublished prose/context to Ollama Cloud
+  through the local daemon and the unchanged 32-call ceiling. At preparation
+  closure no approval/live directory existed; the subsequent approval and
+  completed execution are recorded below.
+- [x] Recheck the approved pinned current baseline, execute the unchanged
+  schedule under its stops, inspect every valid report, document the results and
+  update this tracker. Further version drift stops rather than refreshing silently.
+
+Private amendment: `data/diagnostics/reviewer-premise-amendment-v61-2026-10-24/`.
+Amended plan SHA-256:
+`9f3421d30db0e361736146d9adecdb7bf81fd41dd81a46ad422beb63c6d37810`.
+Metadata manifest SHA-256:
+`0ba49dfc906c82a20eebc87b74b8b2813023d066050713cd56fa66829cf6bcdf`.
+**Preparation closure: four authorized metadata requests; zero inference calls.**
+The approved execution below used 32 calls. Production **prompt 61 / graph 9 /
+fulfillment policy 1**, human checkpoints and nine human ties stay
+unchanged. **Step 19 IN PROGRESS; Step 20 NOT STARTED; inference PAUSED;
+full workflow canary ON HOLD.**
+
+### Amended D2/premise-check execution 2026-10-24
+
+**COMPLETE: 32/32 CALLS; LIMITED EVIDENCE, NO ADVANCEMENT.** See the
+[amended results](../docs/benchmark_reports/reviewer-premise-amendment-v61-results-2026-10-24.md).
+
+- [x] Record the user's exact approval against the amended and parent plan hashes,
+  covering full unpublished prose/context to Ollama Cloud through the local
+  daemon. Count zero earlier model calls plus **32 new calls**, sixteen per arm,
+  with **zero retries** under the unchanged 32-call ceiling.
+- [x] Verify **Ollama 0.40.10** and the frozen selected DeepSeek model metadata;
+  capture/seal all **65 initial/before/after version observations**. Recheck all
+  exact requests, wire payloads and source fingerprints. Preserve the original
+  zero-call stop and its missing observed version without retroactive repair.
+- [x] Pass the first-eight sentinel (D2 4/4 valid, PC 3/4 valid). Complete the
+  schedule without terminal failure, truncation or thinking output. Preserve
+  every reservation, response, usage record and strict validation result.
+- [x] Export shuffled reports and inspect **31 valid reports / 387 explanatory
+  fields** against complete source pairs. Seal exact source-bound notes before
+  key decoding. Preserve unsupported versus uncertain claims and reasonable
+  literary interpretations. Audit the sole rejected report without repair.
+- [x] Record **D2 16/16 valid, 9/16 fully usable; PC 15/16 valid, 6/16 fully
+  usable**. Both deliver 8/8 fresh valid reports. PC earns one semantic recovery
+  (A00 RO), no both-order historical recovery and no delivery-only recovery.
+  Seven eligible D2 premise failures across four families provide sufficient
+  recovery opportunity, but four usable losses and one delivery loss prevent
+  advancement. Frozen decision: **retain_limited_evidence_no_advancement**.
+- [x] Preserve the exact failure distinctions: PC B10 OR cites changed-unit IDs
+  U02/U03 where only prose refs are allowed; eight valid reports miss group
+  labels; fourteen valid reports contain **25 unsupported fields** (22
+  decision-relevant relations/constraints/events, three narrow wording errors).
+  Two PC fields remain uncertain. No schema exception or primary score repair.
+- [x] Retain successes without generalizing: all valid task/endpoint/mandatory
+  labels are correct, separate application aggregation matches on 31/31 valid
+  reports, all four real crate contradictions are noticed within narrow scope,
+  and all four genuine duplicate-cleanup controls are usable. D2 A00 RO has one
+  wrong outcome label. Human preference remains nine ties, not machine preference.
+- [x] Reconcile **179,932 input / 31,662 output tokens**, **131.545 active
+  generation seconds** and archived-rate estimate **$0.091974**. All ceilings
+  hold; usage is complete and actual billing remains unknown. Analysis and
+  verification make no inference calls.
+- [x] Pass **14 post-run offline tests**, Ruff lint/format and strict mypy on
+  three analysis scripts, with real HTTP blocked in tests. Verify tamper
+  rejection, version evidence, namespace contamination, paired-loss priority,
+  masked-note replay and group-label/event-verdict separation. Preserve initial
+  verification failures and final passing records.
+- [x] Seal execution and analysis/report evidence; update this tracker and the
+  issue index while preserving all fourteen issue bodies and GitHub links.
+  No external issue changed or closed.
+- [x] Before another live proposal, bind the new evidence-type and false-
+  contradiction contrasts locally and audit request-relation semantics. Any
+  future schema or taxonomy change needs its own isolated design and controls;
+  do not extend this run or automatically promote the premise-check card.
+
+Private execution: `data/diagnostics/reviewer-premise-amendment-v61-2026-10-24-live/`.
+Private analysis: `data/diagnostics/reviewer-premise-amendment-v61-2026-10-24-analysis/`.
+Plan SHA-256: `9f3421d30db0e361736146d9adecdb7bf81fd41dd81a46ad422beb63c6d37810`.
+Execution manifest SHA-256: `8b554a6023b9225b98bcec6a47b05f044eb2cd99a01fd23b40da1b8e38844376`.
+Analysis manifest SHA-256: `ff387312984aee7e5e7bbfa491ee155e2c94897479ad3fc1b0edac7fb3ee2e8d`.
+Production **prompt 61 / graph 9 / fulfillment policy 1**, human checkpoints and
+nine human ties remain unchanged. **Step 19 IN PROGRESS; Step 20 NOT STARTED;
+further live calls PAUSED; full workflow canary ON HOLD.**
+
+### Local reference and group-relation audit 2026-10-24
+
+**COMPLETE: LOCAL FIXTURES AND AUDIT; NO NEW MODEL EVIDENCE.** See the
+[audit](../docs/handoffs/reviewer-reference-relation-audit-2026-10-24.md) and
+[next bounded proposal](../docs/handoffs/reviewer-claim-verification-proposal-2026-10-24.md).
+
+- [x] Bind and replay the rejected U02/U03 capture and all **32 historical
+  responses**. Preserve strict rejection, exact requests, raw captures and
+  original D2 **9/16** / PC **6/16** usable results. Fingerprint **715 historical
+  source files** without changing any frozen input or historical adjudication.
+- [x] Add **72 reference mutations** across nine report-row locations, valid
+  O/R controls and the retained uncertainty exception. Audit a local catalog-enum
+  schema prototype: it rejects the same one capture as the existing boundary
+  and preserves the other 31. It adds 2,256–2,592 schema characters and proves
+  neither generation improvement nor claim support. No prompt or wire change.
+- [x] Bind **42 captured explanation fixtures**: all 25 unsupported and two
+  uncertain fields plus fifteen supported controls. Include seven false-
+  contradiction fields across four H-before reports. Add **twelve authored
+  contrasts** for consultation/action, explanation/action, version ownership
+  and genuine contradictions. Preserve qualified literary readings and other
+  existing report failures. These are fixed adjudication/scoring regressions,
+  not an automatic truth detector or new model/human preference evidence.
+- [x] Audit **54 groups**: seven fulfillment-label mismatches and one dependency
+  mismatch. Distinguish carrying out the task, touching its subject, permission
+  and dependence on another complete edit. Preserve optional cleanup and mixed-
+  group uncertainty. Keep frozen gold unchanged. A non-scoring projection that
+  omits only the group-label gate would leave D2 at 9/16 and PC at 8/16; it does
+  not remove the remaining unsupported explanations or invalid delivery.
+- [x] Retain the earlier R1 rename evidence: h03 fulfillment improves in both
+  orders, but C2 and R1 both remain 5/8 usable. Do not propose that rename again
+  as an untested mechanism or silently adopt a different taxonomy.
+- [x] Pass **158 offline tests** (144 new audit cases plus fourteen unchanged
+  preceding execution tests), Ruff lint/format and strict mypy on the three new
+  private scripts. Block HTTP during tests; verify capture/source/oracle binding,
+  tamper rejection, authored contrast replay, uncertainty and independent label
+  dimensions. Retain initial and final verification records.
+- [x] Seal the new local bundle and public recommendations; update this tracker
+  and the issue index. Preserve all fourteen original issue bodies and GitHub
+  links. No issue is closed or changed externally.
+- [x] Record the user's deferral of provider investigation. Provider attribution
+  for semantic failures remains unproven; established delivery limitations and
+  interruptions are not erased. Make **zero inference and zero discovery calls**.
+- [x] Propose an isolated **24-attempt fixed-claim verification diagnostic**:
+  three historical and three fresh families, both source orders and two exact
+  repetitions. Separate recognition of supplied claims from generating a full
+  review. Preserve supported craft controls, source inspection and strict
+  failure accounting. This is a descriptive diagnostic, not a production
+  reviewer or a paired improvement claim against historical D2/PC scores.
+- [x] Prepare and freeze exact cases, claim controls, requests, scoring, stops,
+  metadata and budget; verify locally and present the concrete plan. The
+  authorized local preparation is recorded below.
+- [x] Obtain separate plan-bound live approval before any inference. The frozen
+  24-call plan below was subsequently approved and executed as recorded below.
+
+Private bundle: `data/diagnostics/reviewer-reference-relation-audit-v61-2026-10-24/`.
+Audit manifest binds seventeen files, including both public recommendations.
+Audit manifest SHA-256:
+`1e5e576433777c074a02afe82be993d02708ba61547eddc13f496dbfb644ddbb`.
+Historical analysis SHA-256 remains:
+`ff387312984aee7e5e7bbfa491ee155e2c94897479ad3fc1b0edac7fb3ee2e8d`.
+Production **prompt 61 / graph 9 / fulfillment policy 1**, human checkpoints and
+nine human ties remain unchanged. **Step 19 IN PROGRESS; Step 20 NOT STARTED;
+live calls PAUSED; full workflow canary ON HOLD.**
+
+### Frozen fixed-claim verification preparation 2026-10-24
+
+**COMPLETE LOCALLY; SUBSEQUENT APPROVED EXECUTION RECORDED BELOW.** See the
+[frozen plan](../docs/handoffs/reviewer-claims-frozen-plan-2026-10-24.md).
+
+- [x] Freeze **six complete source pairs and eighteen claims**. H/B/G preserve
+  the exact historical packets and nine captured claim texts; K/L/M add fresh
+  concert-hall, pottery-workshop and railway-shed scenes and nine authored claims.
+  Bind expected judgments, full-source rationales and version/offset evidence.
+  Retain true constraint violations and defensible literary criticism alongside
+  false contradictions, invented prerequisites and imported original-version acts.
+- [x] Freeze **24 attempts: six families × two source orders × two exact
+  repetitions**. Interleave H/K in the first eight, followed by B/L and G/M.
+  Keep claim positions fixed across source orders and repeats. Bind every exact
+  request and wire payload; repeat payloads are identical. Keep ten supported
+  and eight unsupported unique claims outside the requests' answer metadata;
+  complete execution yields 40 supported and 32 unsupported judgment opportunities.
+- [x] Use the compact diagnostic claim contract with strict JSON, record order,
+  namespace/cardinality checks, application-owned source binding and bounded
+  reasons. Do not add the catalog enum, premise card, new group taxonomy or a
+  repair pass. Do not disclose expected labels, prior adjudications or gold
+  excerpts. Freeze separate correctness, reason support, citation support,
+  uncertainty, invalid-delivery and whole-request usability accounting.
+- [x] Freeze descriptive reporting by family/origin/order/repeat, repeat
+  disagreement and persistent false-premise acceptance. Mask order/repeat IDs
+  for full-source inspection and require sealed notes before key decoding.
+  Invalid and dispatched terminal answers stay in attempted denominators;
+  unstarted calls are separate. No production advancement threshold or paired
+  improvement claim against historical D2/PC results is introduced.
+- [x] Pin the last verified **Ollama 0.40.10 / DeepSeek** metadata and unchanged
+  temperature 0.2, top-p 0.95, seed 20261022 and thinking=false. Capture no new
+  metadata during preparation. Approved live preflight must match rather than
+  refreshing silently; retain durable initial/before/after version evidence.
+- [x] Freeze **24 total attempts, zero retries**, 24k/8k per-call tokens,
+  576k/192k aggregate tokens, 300 active seconds per call and 7,200 aggregate.
+  Retain the archived-rate **$0.40320** reservation within a **$0.50** planning
+  allowance; actual billing is unknown. Stop on terminal errors, truncation,
+  unknown/invalid/excess usage, drift, tampering or incomplete captures. First-
+  eight sentinel stops on zero valid or three matching structural failures
+  spanning both families. No terminal continuation or transferred allowance.
+- [x] Pass **125 offline tests**, Ruff lint/format and strict mypy on seven
+  private scripts. Exercise every wire request through the production adapter
+  with mocked HTTP, restart/ceilings, terminal export, sixteen non-200 fixtures,
+  version capture, structured rejection, source/oracle tampering and scoring.
+  Retain the reproduced restricted-Windows asyncio socket-pair stall; completed
+  tests run outside that restriction with real HTTP blocked. No inference occurs.
+- [x] Seal **51 local files, 733 historical source fingerprints and the public
+  plan**; independently verify the seal and regenerate every request. Update
+  this tracker and issue index without changing the fourteen issue bodies,
+  user-posted GitHub links or historical results. No external issue is changed.
+- [x] Obtain explicit approval tied to the plan hash below for full unpublished
+  prose/context/claims to Ollama Cloud via the local daemon and the **24-attempt
+  ceiling**. Approval and execution were added after preparation closure.
+- [x] After approval, check the pinned baseline, execute the frozen schedule under
+  its stops, inspect every returned reason/evidence, seal notes before decoding,
+  document descriptive results and update the tracker. Do not dispatch a writer
+  or begin the full workflow canary.
+
+Private preparation: `data/diagnostics/reviewer-claims-v61-2026-10-24/`.
+Plan SHA-256:
+`8c02702da5d54df9b3a074f87463e6a7fb97a87e3fbef734f83dedd5b911fff7`.
+**Preparation: zero inference calls, zero daemon-discovery calls.** Provider
+investigation remains deferred. Production **prompt 61 / graph 9 / fulfillment
+policy 1**, human checkpoints and nine human ties stay unchanged. **Step 19
+IN PROGRESS; Step 20 NOT STARTED; live calls PAUSED; full workflow canary ON HOLD.**
+
+### Approved fixed-claim execution 2026-10-24
+
+**COMPLETE: 24/24 attempts; `complete_descriptive_only`, no production
+qualification.** See the
+[results and recommendations](../docs/benchmark_reports/reviewer-claims-v61-results-2026-10-24.md).
+
+- [x] Bind the user's approval to the frozen plan and full unpublished
+  prose/context/claim payload to Ollama Cloud through the local daemon. Match
+  **Ollama 0.40.10 / DeepSeek** metadata before dispatch and preserve all **49
+  version observations**. Keep requests, settings, scoring and stops unchanged.
+- [x] Complete **24 calls, zero retries**, with no terminal stop or truncation.
+  The first-eight sentinel continued with 7/8 valid responses. Reported usage is
+  **92,888 input / 6,773 output tokens**, 29.134 active generation seconds, all
+  within the frozen ceilings. Archived-rate arithmetic is **$0.035994**; actual
+  billing remains unknown.
+- [x] Inspect all **22 valid responses / 66 reasons** against complete sources;
+  seal masked notes before decoding order/repetition IDs. Inspect both invalid
+  captures separately without repair or semantic credit. Preserve representative
+  citation policy and the frozen gold; this is assistant factual adjudication,
+  not a new human preference review.
+- [x] Record **49/72 correct labels, 48/72 usable claims, 8/24 all-label-correct
+  responses and 7/24 fully usable responses**. Unsupported opportunities split
+  into 12 correct rejections, **13 false acceptances**, four abstentions and
+  three lost to invalid delivery. All **37/37 supported controls in valid
+  responses** retain their labels; three more are lost to invalid delivery.
+- [x] Preserve the semantic distinctions: H/K accept false status contradictions;
+  B accepts invented prerequisites; G abstains on an unsupported earlier-choice
+  premise. L is fully usable in 4/4 responses; M has 4/4 correct label triples but
+  one unsupported exhaustive action count. Some reasons recognize an error yet
+  approve a looser core claim. Do not infer an internal model cause or a general
+  historical/fresh advantage from these selected cases.
+- [x] Retain **CV-K-OR-2** as duplicate-evidence-key rejection with a conflicting
+  label/reason, and **CV-B-RO-1** as nine-reference overflow above the eight-ref
+  maximum. Both are HTTP 200 normal stops with complete usage. Among ten repeat
+  pairs with both deliveries valid, all label triples match; repeat stability
+  includes stable errors. No source-order remedy is demonstrated.
+- [x] Pass **16 post-run offline tests**, Ruff lint/format and strict mypy on the
+  three new private analysis scripts. Verify actual request/usage/version seals,
+  masked inspection provenance, tamper rejection, invalid captures and exact
+  frozen score replay with real HTTP blocked. No production code changed.
+- [x] Seal execution, analysis and the public report; update this tracker and
+  issue index. Preserve all fourteen original issue bodies, user-posted GitHub
+  links, historical evidence and scores. No external issue is changed or closed.
+- [ ] Before another live proposal, extend local delivery regressions for the two
+  new captures, retaining the label/reason conflict without normalization credit.
+- [ ] Audit whole-claim adjudication locally: explicit false factual clauses,
+  true constraints and defensible literary inferences remain separate. If the
+  audit supports more inference, propose an isolated factual-clause assessment
+  before a whole-claim verdict with unchanged controls, fresh families, both
+  orders and positive craft controls. Freeze and seek separate approval; no new
+  live budget or production verifier is authorized by this result.
+
+Private execution: `data/diagnostics/reviewer-claims-v61-2026-10-24-live/`.
+Private analysis: `data/diagnostics/reviewer-claims-v61-2026-10-24-analysis/`.
+Execution manifest binds **366 live JSON files** and approval. SHA-256:
+`9635d524e8e6491cb576d3c5f2edfab17eaf69945797f2bdfd51050a1dc78832`.
+Analysis manifest binds **19 files**, including the public report. SHA-256:
+`bca3b1fa2b39fbf1c08c6c939b84da82a80d27b06ebebdc33f706d88369c8685`.
+Plan SHA-256 remains:
+`8c02702da5d54df9b3a074f87463e6a7fb97a87e3fbef734f83dedd5b911fff7`.
+Retain **nine human ties**; report usability and minimal edits do not establish
+story quality. Provider investigation remains deferred. Production **prompt 61 /
+graph 9 / fulfillment policy 1** and human checkpoints are unchanged. **Step 19
+IN PROGRESS; Step 20 NOT STARTED; further live calls PAUSED; full workflow canary
+ON HOLD.**
 
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 
