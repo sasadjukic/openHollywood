@@ -6040,9 +6040,9 @@ Both candidates receive **retain_limited_evidence_no_advancement**.
 - [x] Seal execution/analysis evidence, document findings and next local work,
   and update the issue index. Preserve all fourteen GitHub links and original
   issue bodies; no external issue or production source changes.
-- [ ] Consider the report's local delivery and explanatory-premise follow-up
-  before proposing another bounded live test. No new budget or inference is
-  authorized; no candidate advances to a writer test or full workflow canary.
+- [x] Complete the report's local delivery and explanatory-premise follow-up;
+  verification and a provisional next comparison are recorded below. No new
+  inference is authorized; no candidate advances to a writer test or canary.
 
 Private execution: `data/diagnostics/reviewer-layout-v61-2026-10-23-live/`.
 Private analysis: `data/diagnostics/reviewer-layout-v61-2026-10-23-analysis/`.
@@ -6053,6 +6053,55 @@ Analysis manifest SHA-256 (21 files, plus the public report):
 Production **prompt 61 / graph 9 / fulfillment policy 1**, historical evidence
 and nine human ties remain unchanged. **Step 19 IN PROGRESS; Step 20 NOT STARTED;
 full workflow canary ON HOLD.**
+
+### Extra-field and explanatory-premise audit 2026-10-24
+
+**COMPLETE LOCALLY; ZERO INFERENCE AND ZERO DAEMON DISCOVERY.** See the
+[audit and fixtures](../docs/handoffs/reviewer-field-premise-audit-2026-10-24.md) and
+[proposed next comparison](../docs/handoffs/reviewer-premise-comparison-proposal-2026-10-24.md).
+
+- [x] Replay all 48 C2/D1/D2 captures, preserving **40 valid / 8 invalid** and all
+  historical scores. Verify the prior analysis/execution/preparation seals and
+  exact requests against wire payloads; production fingerprints remain unchanged.
+- [x] Trace the two empty `effect_note` fields in L-A00-D2-OR to captured provider
+  content. Find no occurrence in any of the 48 exact requests/wire payloads or
+  48 pinned input/runtime files. A bounded 160-capture inventory finds only this
+  one affected response; do not generalize it to a model-wide error rate.
+- [x] Record that all four craft effects are mixed while only two contain the
+  extra field, and all four already have assessments/evidence. Preserve the
+  closed schema and rejection; do not infer a deterministic trigger, repair the
+  response or claim a discovered internal generation cause.
+- [x] Add **20** extra-field mutations covering four craft dimensions and five
+  values under all archived layouts, plus tests for required assessments and
+  the legitimate uncertainty/evidence exception. Keep all captured bytes intact.
+- [x] Bind **26 captured premise examples**: all eleven unsupported claims from
+  nine reports plus fifteen supported controls, with complete source context,
+  exact fields and source/version/offset evidence. Preserve literary interpretation
+  boundaries and the separate wrong group label; do not rescore history.
+- [x] Add **nine authored response contrasts**: four supported/unsupported pairs
+  and one uncertainty case. Verify that correct labels/aggregate arithmetic do
+  not repair unsupported explanations. These test supplied adjudications and
+  binding/scoring, not automatic semantic understanding or new model performance.
+- [x] Pass **94 offline tests** (74 new + 20 unchanged previous execution tests),
+  Ruff lint/format and strict mypy on three new scripts with HTTP blocked.
+  Preserve initial/final static verification; no production/frontend changes.
+- [x] Propose **32 new attempts**, unchanged D2 versus D2 plus one premise-check
+  card, four historical cases plus four fresh counterexample families and both
+  orders. Keep delivery protected and distinguish insufficient recovery opportunity
+  from demonstrated benefit. D2 remains an unqualified diagnostic baseline.
+- [x] Seal the local evidence and both public documents; update the issue index,
+  preserving all fourteen GitHub links and original issue bodies. No external
+  issue was changed or closed.
+- [ ] Select the proposal and prepare/freeze exact cases, requests, scoring,
+  budgets and stops before seeking live approval. No prompt/card was implemented
+  and no new live plan, request bundle or approval record exists.
+
+Private audit: `data/diagnostics/reviewer-field-premise-audit-v61-2026-10-24/`.
+Audit manifest SHA-256 (14 local files plus two public documents):
+`528605218b782574bc6d3d3c1dc77889a9a394da89cf14b060d6f0e2d29780ee`.
+Production **prompt 61 / graph 9 / fulfillment policy 1**, prior budgets/seals
+and nine human ties remain unchanged. **Step 19 IN PROGRESS; Step 20 NOT STARTED;
+live calls PAUSED; full workflow canary ON HOLD.**
 
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 
