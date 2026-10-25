@@ -6500,14 +6500,14 @@ qualification.** See the
 - [x] Seal execution, analysis and the public report; update this tracker and
   issue index. Preserve all fourteen original issue bodies, user-posted GitHub
   links, historical evidence and scores. No external issue is changed or closed.
-- [ ] Before another live proposal, extend local delivery regressions for the two
+- [x] Before another live proposal, extend local delivery regressions for the two
   new captures, retaining the label/reason conflict without normalization credit.
-- [ ] Audit whole-claim adjudication locally: explicit false factual clauses,
+- [x] Audit whole-claim adjudication locally: explicit false factual clauses,
   true constraints and defensible literary inferences remain separate. If the
   audit supports more inference, propose an isolated factual-clause assessment
   before a whole-claim verdict with unchanged controls, fresh families, both
-  orders and positive craft controls. Freeze and seek separate approval; no new
-  live budget or production verifier is authorized by this result.
+  orders and positive craft controls. The local audit and provisional proposal
+  are recorded below; freezing and separate live approval remain outstanding.
 
 Private execution: `data/diagnostics/reviewer-claims-v61-2026-10-24-live/`.
 Private analysis: `data/diagnostics/reviewer-claims-v61-2026-10-24-analysis/`.
@@ -6521,6 +6521,453 @@ Retain **nine human ties**; report usability and minimal edits do not establish
 story quality. Provider investigation remains deferred. Production **prompt 61 /
 graph 9 / fulfillment policy 1** and human checkpoints are unchanged. **Step 19
 IN PROGRESS; Step 20 NOT STARTED; further live calls PAUSED; full workflow canary
+ON HOLD.**
+
+### Local delivery and whole-claim audit 2026-10-24
+
+**COMPLETE LOCALLY; zero inference and zero daemon-discovery calls.** See the
+[audit and evaluation caveats](../docs/handoffs/reviewer-whole-claim-audit-2026-10-24.md)
+and [provisional 36-call comparison](../docs/handoffs/reviewer-material-claims-proposal-2026-10-24.md).
+
+- [x] Replay the complete 24-call evidence and frozen scoring unchanged: **22/24
+  valid, 49/72 correct labels, 7/24 fully usable responses**. Bind **1,174 source
+  fingerprints** and preserve original requests, gold, captures and inspection.
+- [x] Add unchanged **CV-K-OR-2** duplicate-evidence and **CV-B-RO-1** nine-ref
+  fixtures, plus **24 authored boundary mutations** covering all claim positions.
+  Retain the invalid capture's supported-label/unsupported-reason conflict.
+  Accept structural eight-ref and uncertain-empty controls without semantic
+  credit; reject duplicates, overflow, unknown refs and missing required evidence.
+- [x] Inventory **18 unique claims and all 66 captured valid judgments**, with
+  exact reasons, source versions, offsets, context and existing inspection notes.
+  Separate material facts, genuine assignment constraints and defensible craft
+  interpretations. Preserve **sixteen authored contrasts**; none is new model
+  evidence or a replacement for a historical capture.
+- [x] Qualify the previous interpretation of **B/C03 and G/C03**. Deferred-
+  consultation logic can express a craft impression; an earlier choice can mean
+  across-version comparison rather than within-revision chronology. Keep their
+  frozen scores, but do not use ambiguous wording to gate future factual recovery.
+  Of thirteen frozen false acceptances, **ten involve explicit factual targets**
+  and three B/C03's scope-sensitive claim. Four G/C03 abstentions remain unchanged.
+- [x] Preserve recognized-but-excused false clauses, substituted propositions,
+  genuine supported controls and the one correct M/C01 label with an overbroad
+  explanation. A local conjunction helper operates only on supplied adjudications;
+  it is not a semantic classifier, production verifier or automatic relabeling.
+- [x] Pass **90 offline tests** (74 new audit tests plus sixteen unchanged prior
+  execution tests), Ruff lint/format and strict mypy on three new private scripts.
+  Block real HTTP; verify boundary behavior, tamper rejection, source binding and
+  historical score replay. Resolve formatting and static import paths locally.
+- [x] Seal the audit and both public documents; update this tracker and the issue
+  index. Preserve all fourteen original issue bodies and user-posted GitHub links.
+  No external issue is changed or closed.
+- [x] Propose **36 attempts, zero retries**: six unchanged families plus three
+  fresh families, two arms and both source orders. Compare unchanged CV with a
+  brief material-premise assessment in the existing reason field; retain schema,
+  evidence limits, settings and positive craft controls. Separate the two ambiguous
+  probes from primary recovery scoring. Define delivery, recovery, protected-loss,
+  insufficient-opportunity and terminal-stop rules without production advancement.
+- [x] Following local authorization, create and scope-audit exact fresh
+  cases and claims, freeze requests/scoring/stops/budget, verify the harness and
+  present the sealed plan. Completed preparation is recorded below; separate
+  live approval remains pending.
+- [ ] Obtain separate plan-bound approval before any new inference. No writer,
+  production role, production prompt change or full workflow canary is authorized here.
+
+Private bundle: `data/diagnostics/reviewer-whole-claim-audit-v61-2026-10-24/`.
+Audit manifest binds **21 files**, including both public documents. SHA-256:
+`c7b308c95844f3e562bc1d0a010f44e5130a8464a61c70ddb9e852b62de05b79`.
+Historical analysis seal remains:
+`bca3b1fa2b39fbf1c08c6c939b84da82a80d27b06ebebdc33f706d88369c8685`.
+Provider investigation remains deferred. Preserve **nine human ties** and future
+human review of feel/emotion, flow, character and story-breaking problems.
+Production **prompt 61 / graph 9 / fulfillment policy 1** and human checkpoints
+are unchanged. **Step 19 IN PROGRESS; Step 20 NOT STARTED; live calls PAUSED;
+full workflow canary ON HOLD.**
+
+### Frozen CV/MC material-claim preparation 2026-10-24
+
+**COMPLETE LOCALLY; APPROVED AND EXECUTED BELOW.** See the
+[frozen 36-call plan](../docs/handoffs/reviewer-material-claims-frozen-plan-2026-10-24.md).
+
+- [x] Freeze **nine complete source pairs and 27 claims**. Preserve H/B/G/K/L/M
+  packets, eighteen claim texts and historical gold exactly; add floodgate,
+  bookbinding and seed-archive families with explicit factual scope, genuine
+  constraints and defensible literary controls. Bind source versions, offsets,
+  claim hashes and material-check annotations; keep those annotations out of input.
+- [x] Freeze **36 attempts, eighteen per arm, zero retries**, both source orders
+  and balanced arm order. All twelve historical CV wire payloads match the first
+  preceding repetition exactly. MC adds one frozen instruction requiring brief
+  material-premise assessment in the existing reason field; schema, evidence
+  cardinality, reason length, provider wire settings and production prompts stay
+  unchanged. No extra model, correction pass or writer is introduced.
+- [x] Keep **B/C03 and G/C03 secondary** with unchanged historical gold, outside
+  primary recovery/opportunity/protected-semantic-loss scoring. Each arm has **50
+  primary opportunities** (32 supported/eighteen unsupported) plus four secondary.
+  Retain invalid and dispatched terminal answers in attempted denominators and
+  unstarted calls separately. Correct labels with unsupported reasons remain
+  unusable. Material coverage is descriptive; whole-response gold usability is
+  secondary, and supported interpretation need not be a unique literary preference.
+- [x] Freeze MC's diagnostic screen: **17/18 valid, 5/6 fresh valid**, no paired
+  valid-delivery loss; **four paired primary semantic recoveries across two
+  families**, including an unchanged claim in both orders and a fresh recovery;
+  no protected usable-claim, supported-label or grounded-explanation loss.
+  Separate delivery gains and insufficient opportunity. Independent failures
+  cannot be hidden by insufficient opportunity. No result qualifies production.
+- [x] Pin archived **Ollama 0.40.10 / DeepSeek** metadata, temperature 0.2,
+  top-p 0.95, seed 20261022 and thinking=false. Freeze **24k/8k** tokens per call,
+  **864k/288k** aggregate, **300/10,800** active seconds and archived-rate
+  reservation **$0.60480** within a **$0.75** planning allowance. Actual billing is
+  unknown; approved preflight must match without a silent baseline refresh.
+- [x] Freeze the first-eight H/N sentinel: stop on zero valid in either arm or
+  three matching structural signatures across both families, pooling both arms.
+  Preserve terminal stops for non-200/transport/timeout/cancellation, truncation,
+  thinking, usage, drift, tampering and incomplete captures. Count all dispatched
+  attempts; retain gateway error chains and unknown usage. No terminal continuation.
+  A clean boundary restart can dispatch only the untouched frozen remainder.
+- [x] Pass **153 offline tests**, Ruff lint/format and strict mypy on seven private
+  scripts. Exercise all 36 requests through the production adapter with mocked HTTP,
+  exact CV equivalence/MC-only differences, latest duplicate-evidence/nine-ref
+  captures, paired score gates, source/inspection tampering, restart/ceilings,
+  sixteen non-200 fixtures and durable version evidence. Real HTTP is blocked.
+  Retain the interrupted restricted-Windows asyncio run and the completed mock-only
+  suite outside that restriction. No inference or daemon discovery occurs.
+- [x] Seal **66 local files, 1,196 historical source fingerprints and the public
+  plan**. Independently verify and regenerate every request. Update this tracker
+  and issue index while preserving original issue bodies, user-posted GitHub links,
+  historical results and prior seals. No external issue is changed or closed.
+- [x] Obtain explicit approval bound to the plan hash below, full unpublished
+  prose/context/claims to Ollama Cloud via the local daemon, **36 total attempts**
+  and zero retries. No approval file or live-run directory exists at preparation
+  closure; earlier experiment approvals do not authorize this run.
+- [x] After approval, execute the frozen schedule under its stops, inspect every
+  returned reason/evidence, seal masked notes before key decoding, document paired
+  outcomes and update the tracker. No writer or full workflow canary dispatch.
+
+Private preparation: `data/diagnostics/reviewer-material-claims-v61-2026-10-24/`.
+Plan SHA-256:
+`2b83e01b80ba59cc59ad7cf1a388391b85062e8fb76642cd7da2e2ae0924e84e`.
+Public plan SHA-256:
+`47db33b1803e5cf3a1573bf90190abf92019e2eacc09581f73b0b199336fd675`.
+**Preparation: zero inference calls, zero daemon-discovery calls.** Provider
+investigation remains deferred. Preserve **nine human ties** and future reader
+review of feel/emotion, flow, character and story-breaking problems. Production
+**prompt 61 / graph 9 / fulfillment policy 1** and human checkpoints stay unchanged.
+**Step 19 IN PROGRESS; Step 20 NOT STARTED; live calls PAUSED; canary ON HOLD.**
+
+### Approved CV/MC material-claim execution 2026-10-24
+
+**COMPLETE; RETAIN LIMITED EVIDENCE, NO ADVANCEMENT.** See the
+[36-call results](../docs/benchmark_reports/reviewer-material-claims-v61-results-2026-10-24.md).
+
+- [x] Bind explicit approval to the unchanged frozen plan, full unpublished
+  prose/context/claims and Ollama Cloud via the local daemon. Complete **36/36
+  attempts, eighteen per arm, zero retries**, within all frozen allowances.
+  Preflight and **73 version observations** match **Ollama 0.40.10 / DeepSeek**.
+  Sentinel passes; all generations have HTTP 200, normal stop and complete usage.
+  No terminal failure, restart, correction call or unstarted cell.
+- [x] Preserve exact requests, raw responses, receipts, usage and per-cell seals.
+  Record **141,640 input / 10,828 output tokens**, **53.48 active seconds** and
+  archived-rate arithmetic **$0.0554856**. Actual billing remains unknown.
+- [x] Inspect all **102 valid reasons** against nine complete source pairs and
+  context packets. Seal masked notes before key decoding. Treat this as partially
+  masked assistant source adjudication, not human preference.
+- [x] Replay the frozen primary/secondary scoring: **17/18 valid per arm**;
+  primary labels **42/50 CV, 43/50 MC**; primary usable **42/50 CV, 41/50 MC**.
+  All **31 supported primary controls per arm** in valid deliveries retain their
+  labels. B/C03 and G/C03 remain secondary, with unchanged historical gold.
+- [x] Record sufficient opportunity: **six CV failures across four families**,
+  H/C01 in both orders and two fresh N/C02 failures. MC obtains **one recovery**
+  (K/C02 OR), but loses K/C02 RO and Q/C03 OR. Four machine loss flags describe
+  **two distinct claim/order losses**. No fresh recovery, no unchanged claim
+  recovered in both orders, and no delivery gains or paired valid-delivery losses.
+  Frozen outcome: **retain_limited_evidence_no_advancement**.
+- [x] Preserve remaining failures: all four N/C02 answers endorse a false status
+  contradiction; MC-H-RO recognizes consistency but accepts a substitute core;
+  MC-H-OR has a correct rejection with an unsupported dismissal of defensible
+  craft interpretation; MC-Q-OR adds a false exhaustive packet-handling count.
+  L/P/M controls remain successful without establishing a treatment gain.
+- [x] Inspect both B/RO invalid captures without repair or credit: each has nine
+  distinct catalog-valid references for C03 above the eight-ref bound. No duplicate
+  members, unknown references or transport failure in those captures. All six
+  affected claim opportunities remain failed delivery opportunities.
+- [x] Pass **16 post-run offline tests**, Ruff lint/format and strict mypy on three
+  analysis scripts. Check actual requests, ceilings, version/sentinel evidence,
+  exact invalid-output replay, all sealed notes, paired scores and tamper rejection;
+  HTTP is blocked. Resolve two initial restricted temporary-directory setup errors
+  with a new workspace temp path; all sixteen then pass.
+- [x] Preserve the frozen plan, 66 bound files and 1,196 historical fingerprints.
+  Seal execution/analysis and update this tracker and issue index. Preserve all
+  fourteen original issue bodies and user-posted GitHub links; no external issue
+  is changed or closed.
+- [x] Before any new experiment, add the latest delivery and semantic contrasts
+  as local regressions; audit separately stated material assertions and whole-claim
+  aggregation while retaining defensible craft interpretation. Address evidence
+  cardinality separately. No new live plan or budget is approved here.
+
+Private live captures: `data/diagnostics/reviewer-material-claims-v61-2026-10-24-live/`.
+Private analysis: `data/diagnostics/reviewer-material-claims-v61-2026-10-24-analysis/`.
+Plan SHA-256:
+`2b83e01b80ba59cc59ad7cf1a388391b85062e8fb76642cd7da2e2ae0924e84e`.
+Execution manifest SHA-256:
+`c79247d211289155425fc4db3516c5e8d4cff6c0446944d8902d6001b622d278`.
+Analysis seal SHA-256:
+`f35243f068d5a321ddc42be91170cf3d583d29e2a2e012a02b1a01d48f05c9c7`.
+Production **prompt 61 / graph 9 / fulfillment policy 1**, human checkpoints and
+the nine human ties remain unchanged. Provider investigation remains deferred.
+Neither verifier is promoted and no writer dispatch is authorized. **Step 19
+IN PROGRESS; Step 20 NOT STARTED; further live calls PAUSED; full workflow canary
+ON HOLD.**
+
+### Local aggregation and cardinality audit 2026-10-25
+
+**COMPLETE LOCALLY; NEXT COMPARISON PROPOSED, NOT PREPARED OR APPROVED.** See the
+[audit](../docs/handoffs/reviewer-aggregation-cardinality-audit-2026-10-25.md) and
+[provisional 32-call CV/CA comparison](../docs/handoffs/reviewer-component-assessment-proposal-2026-10-25.md).
+
+- [x] Preserve the completed **36-call CV/MC** run, frozen scores, source notes and
+  report. Verify the analysis seal and **1,829 historical source fingerprints**.
+  Primary usable remains **42/50 CV, 41/50 MC**, with one recovery and two distinct
+  losses; no new model result or historical rescoring.
+- [x] Add both unchanged B/RO overflow captures and **24 authored delivery
+  mutations**. Retain strict eight/nine-reference, duplicate-key/reference,
+  unknown-reference, definite-evidence and empty-uncertainty boundaries. Neither
+  invalid response is repaired, normalized or given partial semantic credit.
+- [x] Bind all **102 captured valid judgments** and their exact reasons to the
+  sealed source adjudication; inventory **27 claims** and authored material-scope
+  annotations. Add **twelve authored semantic contrasts** for status versus
+  condition/resolve, craft defensibility, prerequisite scope and exhaustive versus
+  narrow handling claims. B/C03 and G/C03 stay secondary and keep historical gold.
+- [x] Audit whole-claim aggregation with a local response-boundary prototype:
+  exact component coverage/identity, explicit factual/constraint/craft kinds,
+  application-derived conjunction, propagated uncertainty, no model override.
+  Five authored conditional illustrations show both potential enforcement of a
+  recognized false premise and limitations from wrong labels, incomplete
+  decomposition, craft overrejection and invented explanations. These are not
+  model component outputs, recoveries or a production truth classifier.
+- [x] Audit all **108 evidence arrays**: every list has distinct catalog-valid
+  refs; only the two B/C03 RO lists exceed eight, each with nine. Authored
+  representative eight-ref examples pass the existing structural boundary without
+  establishing semantic truth or model reliability. Preserve actual failures.
+  Keep the eight-ref bound for the next semantic comparison; count CA's union
+  across components per claim, and cap total component reasons at 2,000 characters.
+- [x] Pass **91 offline tests**, Ruff lint/format and strict mypy on three private
+  scripts. Tests block HTTP and cover capture/quote binding, tamper rejection,
+  delivery mutations, all 27 three-component label combinations, missing/duplicate
+  components, uncertainty, union/length budgets and explicit non-semantic limits.
+- [x] Record **Ollama 0.40.11 as user-reported on 2026-10-25**, not independently
+  captured. No daemon query occurs. The last observed baseline stays 0.40.10;
+  future preparation must capture current daemon/model metadata and explicitly pin
+  its own baseline without revising old evidence.
+- [x] Propose **32 CV/CA calls, sixteen per arm, zero retries**, six unchanged
+  families plus two fresh ones and both source orders. CV stays unchanged; CA
+  assesses supplied components with application aggregation and unchanged evidence
+  and reason allowances. Propose delivery/protected-control gates, four paired
+  recoveries across two families including both orders and a fresh recovery,
+  insufficient-opportunity handling and existing terminal stops. Exact cases,
+  component maps, requests and scoring remain future preparation work.
+- [x] Update this tracker and issue index; seal local artifacts and public audit/
+  proposal. Preserve all fourteen original issue bodies, user-posted GitHub links,
+  earlier reports and seals. No external issue is changed or closed.
+- [x] Prepare and freeze the accepted comparison's complete cases, component maps,
+  requests, scoring, budgets, stops and verified daemon/model baseline. See the
+  frozen preparation below; separate live approval remains pending.
+
+Private bundle: `data/diagnostics/reviewer-aggregation-audit-v61-2026-10-25/`.
+Local audit manifest SHA-256:
+`9e06ca8daeda8fc2f5502a1b60b6f5f1f1d682c68971b260d76743a1654a5524`.
+Source analysis seal:
+`f35243f068d5a321ddc42be91170cf3d583d29e2a2e012a02b1a01d48f05c9c7`.
+**Zero inference and zero daemon-discovery calls.** Production **prompt 61 /
+graph 9 / fulfillment policy 1**, human checkpoints and the nine human ties remain
+unchanged. Provider investigation stays deferred. **Step 19 IN PROGRESS;
+Step 20 NOT STARTED; live calls PAUSED; full workflow canary ON HOLD.**
+
+### Frozen CV/CA component-assessment preparation 2026-10-25
+
+**COMPLETE LOCALLY; FROZEN; LIVE APPROVAL PENDING.** See the
+[32-call plan](../docs/handoffs/reviewer-components-frozen-plan-2026-10-25.md).
+
+- [x] Freeze **eight families, 24 whole claims and 71 components**: unchanged
+  H/B/K/N/P/Q plus fresh greenhouse U and instrument-conservation V. Freeze full
+  original/revised prose, assignments, source identities, component maps, withheld
+  gold and rationales. Retain false relational assertions, quantifiers, negation,
+  version ownership and qualified literary interpretations in the model-visible
+  maps. These are authored decompositions, not autonomous model decomposition.
+- [x] Freeze **32 exact requests, sixteen per arm, zero retries**, both source
+  orders and balanced arm order. All **twelve historical CV wire payloads match**
+  the previous comparison. CA supplies keyed component assessments and derives
+  whole labels in the application; it cannot override the aggregate with a final
+  model verdict. Diagnostic changes do not alter production prompts.
+- [x] Keep evidence at **eight distinct refs per whole claim**, counting CA's
+  union across components, and **2,000 total reason characters per claim**. Reject
+  incomplete/duplicate/reordered components, extra fields, duplicate JSON and
+  invalid refs without repair. Authored examples for all 24 claims fit the bound,
+  including B/C03 at eight; they are withheld and receive no model/recovery credit.
+- [x] Freeze **46 primary and two secondary judgments per arm**. CA adds 128
+  primary and fourteen secondary component opportunities. Correct aggregates
+  cannot hide wrong material components or unsupported explanations. B/C03's
+  deferred-consultation wording remains a secondary craft interpretation; its
+  unchanged unsupported historical gold is reported separately from component
+  correctness. No retrospective gold change or primary credit from this probe.
+- [x] Freeze CA's diagnostic screen: **15/16 valid, 3/4 fresh valid**, four paired
+  primary recoveries across two families including one historical claim in both
+  orders and one fresh recovery, with no protected delivery/semantic/reason loss.
+  Keep delivery-only gains, insufficient opportunity, abstentions and invalid or
+  terminal attempted opportunities separate. No incomplete run advances.
+- [x] Independently capture **Ollama 0.40.11** via three successful read-only
+  version/tag/show responses. DeepSeek's selected tag, digest, capabilities and
+  thinking metadata match the previous capture. Preserve raw sealed responses and
+  the earlier sandbox-blocked socket attempt. Preserve all 0.40.10 archives;
+  future runtime drift stops execution. Provider attribution remains deferred.
+- [x] Freeze **24,000 input / 8,000 output tokens and 300 active seconds per
+  attempt**, aggregate 768,000 / 256,000 tokens and 9,600 seconds; archived-rate
+  reservation **$0.53760**, planning allowance **$0.70**, actual billing unknown.
+  H/U's first eight calls enforce the per-arm zero-valid and pooled recurrent
+  structural-failure stop. Retain terminal non-200/error/usage/drift/tamper stops,
+  exclusive lock, reservation-before-dispatch, zero terminal retries and only
+  clean cell-boundary restart within the untouched original allocation.
+- [x] Pass **279 offline tests** (188 new harness, 91 prior aggregation), Ruff
+  lint/format and strict mypy on nine new private Python files. Real HTTP is
+  blocked in tests. Verify all **1,851 historical source fingerprints**, exact
+  control payloads, masked source inspection and complete mock execution/stops.
+- [x] Seal **69 local files**, this public plan and historical source identities.
+  Update tracker/index in the same change; preserve fourteen issue bodies,
+  user-posted GitHub links, prior reports and scores. No issue is closed or
+  externally changed; no production qualification or better-story claim is made.
+- [x] Obtain separate approval for the frozen full prose/context and claims/
+  components payload to Ollama Cloud through the local daemon, then complete
+  **32 attempts** and inspect/document results. See the approved execution below;
+  preparation itself used no inference.
+
+Private bundle: `data/diagnostics/reviewer-components-v61-2026-10-25/`.
+Frozen plan SHA-256:
+`ae0f7bb219b2ac76ebbb9165d931444bfb94825e46a3519697e92ac0232d8b40`.
+Public plan SHA-256:
+`f52eea112c95985b61e249914ee036fc1c7c737304276b719f828cc5e1cf49d5`.
+**0/32 inference calls; three successful metadata-only responses.** Production
+**prompt 61 / graph 9 / fulfillment policy 1**, human checkpoints and nine human
+ties remain unchanged. Future reader review remains about feel/emotion, flow,
+character and story-breaking concerns, with machine-prepared mechanics.
+**Step 19 IN PROGRESS; Step 20 NOT STARTED; canary ON HOLD.**
+
+### Approved CV/CA component-assessment execution 2026-10-25
+
+**COMPLETE; RETAIN LIMITED EVIDENCE, NO ADVANCEMENT.** See the
+[results report](../docs/benchmark_reports/reviewer-components-v61-results-2026-10-25.md).
+
+- [x] Execute all **32/32 frozen calls**, sixteen per arm, with **zero retries**
+  and no terminal failure. Preserve exact full-prose/context requests, reservations,
+  raw responses and receipts. All **65 version observations** match Ollama
+  **0.40.11**; selected DeepSeek metadata matches the frozen baseline. Production
+  prompts and all 1,851 historical source fingerprints still verify.
+- [x] Enforce the frozen sentinel: **CV 4/4 valid, CA 2/4 valid**, with both
+  failures in H, so the recurrent-failure rule across two families did not trigger.
+  Continue only within the approved allocation. All responses finish normally;
+  no truncation, missing usage, drift or additional model call occurs.
+- [x] Record **CV 16/16 valid, 6/16 fully usable; CA 5/16 valid, 2/16 fully usable**.
+  Primary usable judgments are **36/46 CV and 12/46 CA**. CA has 31 primary failed
+  delivery opportunities; its five valid reports give the same twelve usable
+  primary claims as CV in those matched cells. Ten valid control failures provide
+  sufficient recovery opportunity; CA yields **zero recoveries and eleven paired
+  valid-delivery losses**, with no extra semantic losses among both-valid pairs.
+- [x] Audit all **eleven invalid CA captures** without repair or partial credit.
+  Each is well-formed, normal-stop JSON with exact component identities but uses
+  non-prose evidence refs. Inventory **24 occurrences in twenty fields**: twelve
+  artifact-ID, six task-ref, four edit-unit, one artifact-kind and one packet-key
+  occurrence. These values are visible in other input namespaces. Thirteen
+  affected fields assess constraints. B/C03 also has unions of **13 OR / 11 RO**,
+  containing ten/eight prose refs respectively; preserve both additional failures.
+- [x] Inspect and seal **21 valid reports, 63 whole reasons and 38 component
+  reasons** before decoding trial/order keys. Partial masking is disclosed. CA
+  has **35/38 correct delivered components**, with three false C02.A02 status
+  relations in U/OR, U/RO and N/OR. The attempted component denominator stays 142.
+  Correct fact restatements do not entail a contradiction, and application
+  conjunction cannot fix falsely supported components.
+- [x] Retain the successful P and V controls without claiming improvement:
+  explicit exhaustive violin handling is rejected in both CV orders and valid
+  CA/V-OR; before-explaining is distinguished from a before-deciding condition in
+  both CV orders and valid CA/P-RO. All supported primary controls in valid reports
+  retain correct labels. B/C03 remains secondary with unchanged historical gold;
+  both CV explanations support a defensible craft reading, while both CA B reports
+  are invalid. Document the narrow Q/RO sequence-reading adjudication explicitly.
+- [x] Record **130,894 input / 11,435 output tokens**, **36.23 active generation
+  seconds**, maximum **4,945 input / 900 output tokens** and **1.99 active seconds**
+  per call. Archived-rate estimate **$0.0529902**, actual billed cost unknown; all
+  limits stay within the original ceiling. Analysis uses zero inference calls.
+- [x] Pass **twenty post-run offline tests**, Ruff lint/format and strict mypy on
+  three analysis scripts. Verify captured-response replay, reference namespaces,
+  union cardinality, exact requests/usage, source-bound inspection, tamper rejection
+  and frozen scoring. Seal **486 execution JSON files** and fifteen analysis files,
+  plus this report; update tracker/index while preserving prior reports, original
+  issue bodies and user-posted GitHub links. No issue is closed or externally changed.
+- [x] Complete the local evidence-namespace coverage audit, decide diagnostic
+  prose/context reference ownership, and add relation-label and resolve/status
+  fixtures. See the local follow-up below. No new live budget, prompt change or
+  production integration is approved by this audit.
+
+Private execution: `data/diagnostics/reviewer-components-v61-2026-10-25-live/`.
+Private analysis: `data/diagnostics/reviewer-components-v61-2026-10-25-analysis/`.
+Execution manifest SHA-256:
+`011b4e010da1584ff225ff04e3679cca1ec56ab0893cd844e1f0af9bd28d44f8`.
+Analysis seal SHA-256:
+`c6a4839f084ecbdda3fadcbfdd26f57dba98347be5bd1444e5f7ceddcd36cacb`.
+Report SHA-256:
+`ee70784e105095263000fd9f4c7665d8d9844a24e5892a8c39ae80aed741672a`.
+Production **prompt 61 / graph 9 / fulfillment policy 1**, human checkpoints and
+nine human ties remain unchanged. Provider investigation remains deferred; future
+reader review remains about feel/emotion, flow, character and story-breaking
+concerns. **Step 19 IN PROGRESS; Step 20 NOT STARTED; further live calls PAUSED;
+full workflow canary ON HOLD.**
+
+### Local evidence-namespace and relation follow-up 2026-10-25
+
+**COMPLETE; LOCAL REGRESSIONS AND DESIGN ONLY.** See the
+[audit](../docs/handoffs/reviewer-namespace-relation-audit-2026-10-25.md) and
+[provisional namespace/polarity pilots](../docs/handoffs/reviewer-namespace-polarity-proposal-2026-10-25.md).
+
+- [x] Census all **190 evidence arrays**, comprising 142 CA components and 48 CV
+  whole-claim arrays. Retain **24 forbidden occurrences in twenty CA fields**;
+  locate every value in the exact input namespaces. Affected fields are
+  **13/18 constraint, 4/92 fact and 3/32 craft**. Preserve both B/C03 union
+  overflows and all eleven historical invalid reports without repair or credit.
+- [x] Audit all eight packets' duplicated context views: **forty mirror checks
+  pass**. Identify P/Q's identical-content assignment-version reuse. Prototype
+  application-owned, packet-bound O/R prose and C context-leaf identity; resolve
+  **81 context leaves plus 295 prose entries**. Keep model source selection,
+  the combined eight-reference bound and strict historical rejection. Context
+  requirements do not certify manuscript events, and no current boundary changes.
+- [x] Preserve **32 byte-identical captured responses**, all 21 sealed valid-report
+  adjudications, and **eleven focused relation failures**: eight CV whole claims
+  and three CA components. Retain the true-but-incomplete N/OR restatement and
+  the two U explanation failures. Application conjunction still cannot identify
+  false semantic components; the original **35/38** delivered-component result
+  and all frozen scores remain unchanged.
+- [x] Add **eighteen authored local contrasts** for compatible status, genuine
+  contradiction, actual obligation, fulfilled conditions, resolve, defensible
+  craft, false explanatory premises, uncertainty, version/time/subject ownership
+  and narrow/exhaustive scope. These are regression annotations, not model
+  successes or an automatic semantic classifier. B/C03 stays secondary.
+- [x] Pass **100 offline tests** (80 new audit, twenty unchanged execution), Ruff
+  lint/format and strict mypy on four new private scripts. Block real HTTP in
+  tests; verify **2,427 historical source fingerprints**, capture replay, source
+  and registry tampering, cardinality, relation scoring and protected craft.
+- [x] Document the ownership decision and propose **two isolated sixteen-call
+  pilots, 32 total**: unchanged CA versus a context-citation candidate, and
+  unchanged CV versus logically complemented target assertions. Keep delivery
+  gains distinct from relation-polarity signals; neither qualifies production.
+  Preserve all fourteen issue bodies, posted links and prior reports. No external
+  issue is edited or closed.
+- [ ] If requested, prepare and freeze the two pilots, three fresh scene families,
+  exact controls/candidates, source bindings, scoring, budget and stops. Present
+  the complete plan before seeking separate live approval. **Not yet prepared,
+  frozen, approved or executed.**
+
+Private bundle: `data/diagnostics/reviewer-namespace-relation-audit-v61-2026-10-25/`.
+**Zero inference and zero daemon-discovery calls.** Ollama **0.40.11** is the last
+sealed observation, not a new availability check. Production **prompt 61 / graph
+9 / fulfillment policy 1**, human checkpoints and nine human ties remain
+unchanged. Provider investigation is deferred. Future human review remains about
+feel/emotion, flow, character and story-breaking details, with machine-prepared
+mechanics. **Step 19 IN PROGRESS; Step 20 NOT STARTED; live calls PAUSED; canary
 ON HOLD.**
 
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
