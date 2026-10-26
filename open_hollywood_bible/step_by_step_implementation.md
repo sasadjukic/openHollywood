@@ -6956,10 +6956,9 @@ full workflow canary ON HOLD.**
   gains distinct from relation-polarity signals; neither qualifies production.
   Preserve all fourteen issue bodies, posted links and prior reports. No external
   issue is edited or closed.
-- [ ] If requested, prepare and freeze the two pilots, three fresh scene families,
-  exact controls/candidates, source bindings, scoring, budget and stops. Present
-  the complete plan before seeking separate live approval. **Not yet prepared,
-  frozen, approved or executed.**
+- [x] Prepare and freeze both pilots, three fresh scene families, exact controls/
+  candidates, source bindings, scoring, budget and stops. See the frozen
+  preparation below. **Prepared locally; separate live approval still pending.**
 
 Private bundle: `data/diagnostics/reviewer-namespace-relation-audit-v61-2026-10-25/`.
 **Zero inference and zero daemon-discovery calls.** Ollama **0.40.11** is the last
@@ -6969,6 +6968,190 @@ unchanged. Provider investigation is deferred. Future human review remains about
 feel/emotion, flow, character and story-breaking details, with machine-prepared
 mechanics. **Step 19 IN PROGRESS; Step 20 NOT STARTED; live calls PAUSED; canary
 ON HOLD.**
+
+### Frozen namespace and relation-polarity preparation 2026-10-25
+
+**PREPARATION COMPLETE; APPROVED EXECUTION COMPLETED BELOW.** See the
+[frozen 32-call plan](../docs/handoffs/reviewer-namespace-polarity-frozen-plan-2026-10-25.md).
+
+- [x] Freeze two independent **sixteen-call pilots**, eight attempts per arm:
+  CA/NC reference delivery on H/W/B/V and CV/CP relation polarity on N/X/U/Y,
+  with both source orders. Retain all five inherited source/claim packets and
+  **ten byte-identical historical control wire payloads**. Author three complete
+  fresh families: letterpress state change, foundry same-instant contradiction,
+  and archive unresolved timing. No short local fixture is relabeled fresh.
+- [x] Freeze **24 original claims, four complete-assertion complements and 41
+  component specifications**. The allocation has **96 whole-claim opportunities:
+  92 primary and four secondary**, plus 82 component judgments per N arm. Keep
+  B/C03 secondary. Preserve exact inner assertion text under CP's sentential
+  negation and disclose Y's uncertain-versus-unestablished contract ambiguity.
+- [x] Freeze NC's packet-bound O/R/C registry, allowed-value schema and citation
+  instructions. Preserve the combined **eight-reference union** and 2,000 reason
+  characters per claim. Authored examples fit; B/C03 keeps its eight-ref prose-only
+  example. Bare identifiers, duplicate keys, unknown refs, partial delivery and
+  both historical B overflows remain rejected without repair or salvaged credit.
+- [x] Freeze separate screens for **delivery evidence only** and **relation-framing
+  signal only**, with contemporary opportunity checks, both-order controls,
+  complete grounded coverage and protected losses. Keep raw CP labels alongside
+  normalized target analysis; no formulation-sensitive gain is called a same-claim
+  repair. Neither screen can qualify production or authorize writer edits.
+- [x] Independently capture three successful metadata-only responses confirming
+  **Ollama 0.40.11** and unchanged selected DeepSeek digest/capabilities. Preserve
+  the first restricted socket failure separately. Freeze temperature 0.2, top-p
+  0.95, seed 20261022, thinking=false, stream=false and no format override.
+- [x] Freeze **32 attempts**, zero retries or cross-pilot reallocation; per-attempt
+  reservations **24,000 input / 8,000 output tokens / 300 active seconds**.
+  Aggregate reservations are 768,000 / 256,000 tokens and 9,600 active seconds;
+  archived-rate estimate **$0.53760**, planning allowance **$0.70**, billing unknown.
+  Independent eight-call sentinels skip only the stopped pilot; infrastructure,
+  drift, tampering, unknown usage and ambiguous dispatch stop the entire run.
+- [x] Pass **230 offline tests** (150 new harness, eighty prior regressions), Ruff
+  lint/format and strict mypy on nine new private scripts. Block real HTTP in tests;
+  verify all **2,477 historical fingerprints**, exact requests, source bindings,
+  mock execution, independent stops, clean restart, terminal failure after skipped
+  cells, unknown usage, approval binding and masked export. Preserve metadata and
+  evidence seals. No production/API/worker/frontend code changed.
+- [x] Seal cases, claims, components, complements, registries, requests, scoring,
+  budget, stops, verification and this public plan. Update tracker/index while
+  preserving fourteen issue bodies, user-posted links and all historical results.
+  No issue is closed or externally edited.
+- [x] Obtain separate plan-bound approval to send the frozen full prose/context,
+  claims, components and registry/complement variants to Ollama Cloud through
+  the local daemon within **32 calls**, then execute and inspect. **32/32 calls
+  completed, zero retries; both decisions retain limited evidence, no advancement.**
+
+Private bundle: `data/diagnostics/reviewer-namespace-polarity-v61-2026-10-25/`.
+Production **prompt 61 / graph 9 / fulfillment policy 1**, human checkpoints and
+nine human ties remain unchanged. Provider attribution remains deferred. Future
+human review concerns feel/emotion, flow, character and story-breaking details,
+with machine-prepared mechanics. **Step 19 IN PROGRESS; Step 20 NOT STARTED;
+live inference PAUSED; full workflow canary ON HOLD.**
+
+### Namespace and relation-polarity execution 2026-10-25
+
+**APPROVED RUN COMPLETE; BOTH PILOTS RETAIN LIMITED EVIDENCE, NO ADVANCEMENT.**
+See the [results report](../docs/benchmark_reports/reviewer-namespace-polarity-v61-results-2026-10-25.md).
+
+- [x] Execute the exact frozen **32/32 calls**, sixteen per pilot/eight per arm,
+  through the local daemon to Ollama Cloud under explicit full-payload approval.
+  Preserve all reservations, requests, raw captures, receipts and seals. No
+  retries, reallocation, terminal stop or extra inference. All **65 version
+  observations match 0.40.11** and selected DeepSeek metadata remains unchanged.
+- [x] Complete the N delivery comparison: **CA 3/8 valid, 9/22 usable primary;
+  NC 6/8 valid, 13/22 usable primary**. There are three paired delivery gains,
+  but only H's two gains count toward four required inherited gains. Four
+  contemporary inherited failures provide sufficient opportunity. NC fails
+  minimum delivery and gain requirements, with no protected paired loss.
+- [x] Audit all seven invalid reports without repair or semantic credit. Five
+  CA reports contain twenty wrong-namespace ref occurrences across sixteen
+  component arrays. Both NC B/C03 reports use valid refs but exceed the combined
+  union with **fourteen each: eight prose and six context**. CA B unions also
+  exceed eight (twelve/eleven). All seven are normal-stop, well-formed JSON;
+  none is truncated. B/C03 remains secondary with historical gold unchanged.
+- [x] Preserve newly delivered semantic failures: H still falsely supports the
+  status-relation component in both orders and abstains on defensible craft;
+  W/RO rejects an actual endpoint violation despite locating its rule/event.
+  W's empty-then-filled relation and both V orders remain successful controls.
+  These are diagnostic findings, not semantic recoveries credited from invalid
+  controls, and they do not qualify NC for production.
+- [x] Complete P: **CV 8/8 valid, 17/24 usable primary; CP 8/8 valid, 16/24**.
+  Both have eighteen correct primary labels. All four false-acceptance
+  opportunities in N/U recur; CP yields **zero target recoveries**. Normalized
+  target labels agree in all eight pairs: two both-correct X pairs, six neither
+  under primary gold, zero endorsement of both opposites. CP fails framing,
+  uncertainty-control and protected-explanation screens.
+- [x] Inspect the false N/OR acceptance-test explanation, incomplete N/RO
+  contractual reasoning and CV X/RO missing structured counterpart citation.
+  Preserve Y's predeclared uncertain-versus-unestablished ambiguity: true
+  observations of missing support are not automatically false timing claims,
+  nor do they prove the complete complement. No retrospective gold or prompt edit.
+- [x] Source-inspect **25 valid reports, 75 whole reasons and 72 component
+  reasons**, sealing masked notes before decoding trial IDs. Disclose partial
+  masking and assistant adjudication; no blind human preference claim. Preserve
+  exact source/context/claim/component bindings and all seven invalid captures.
+- [x] Verify **56 offline post-run tests**, Ruff lint/format and strict mypy on
+  three private analysis scripts. Replay all captures, budgets, sentinels,
+  labels, explanation/coverage gates, evidence tampering and exact decisions.
+  Verify frozen plan/public plan and 2,477 historical fingerprints. Preserve
+  all fourteen issue bodies and user-posted links; close or externally edit none.
+- [x] Record usage **161,544 input / 12,434 output tokens / 46.754 active seconds**,
+  within reservations. Archived-rate arithmetic estimate **$0.063384**; actual
+  billed cost unknown. Seal execution manifest, source inspection, analysis and
+  report; update authoritative tracker and issue index.
+- [x] Audit bounded whole-claim citation planning locally using both NC/B
+  fourteen-ref captures. Add regressions for endpoint-label, craft-abstention,
+  relation/negation-scope and acceptance-explanation failures. Resolve the
+  prospective diagnostic epistemic label contract locally before proposing any
+  further live budget. Completed in the 2026-10-26 follow-up below; production
+  and historical label contracts remain unchanged.
+
+Private bundles: `data/diagnostics/reviewer-namespace-polarity-v61-2026-10-25/`,
+its `-live/` and `-analysis/` siblings. Production **prompt 61 / graph 9 /
+fulfillment policy 1**, human checkpoints and nine human ties remain unchanged.
+Provider attribution remains deferred. Future human assessment remains focused
+on feel/emotion, flow, character and story-breaking details, with machine-prepared
+mechanical evidence. **Step 19 IN PROGRESS; Step 20 NOT STARTED; further live
+calls PAUSED; full workflow canary ON HOLD.**
+
+### Local citation-budget, relation and uncertainty audit 2026-10-26
+
+**COMPLETE LOCALLY; ZERO INFERENCE OR DAEMON CALLS.** See the
+[audit](../docs/handoffs/reviewer-citation-relation-uncertainty-audit-2026-10-26.md)
+and [provisional 28-call proposal](../docs/handoffs/reviewer-epistemic-status-proposal-2026-10-26.md).
+
+- [x] Preserve all **32 raw captures**, prior inspection and both limited-evidence
+  decisions. Verify **3,061 historical fingerprints**. Historical usable primary
+  totals stay CA 9/22, NC 13/22, CV 17/24 and CP 16/24; no old gold, label, prompt,
+  request, limit, response or score is rewritten.
+- [x] Trace both NC/B/C03 fourteen-ref unions to exact sources/components:
+  **eight prose plus six context**, maximum four per component. Three redundant
+  context refs can be omitted from an authored alternative witness basis, but
+  **eleven remain**. Preserve the eight-ref prose-only convention with its
+  implicit-context limitation; eleven is an authored basis, not a proved minimum.
+  Neither is a repaired model response. Both historical reports stay rejected.
+- [x] Verify an application-owned local citation-plan accounting prototype:
+  exact packet/claims/component-map/registry binding, complete component identity,
+  source text/version and namespace checks, and the unchanged eight-ref union.
+  No automatic evidence selection, silent trimming, dispatch or production
+  promotion. Keep the explicit eleven-ref plan over budget. Defer a live citation
+  comparison until explicit context coverage and allowance policy are decided.
+- [x] Add **32 source-bound regression records**: 22 failure/ambiguity records
+  and ten positive controls. Cover status versus rule/resolve relations,
+  whole-assertion negation, endpoint rejection, craft abstention, reversed
+  acceptance explanations, incomplete reasoning/citations, genuine conflict,
+  exhaustive action scope and qualified craft. Preserve Y's disclosed ambiguity.
+- [x] Add **eighteen authored local contrasts**, explicitly not new model evidence
+  or fresh full-scene cases. Test actual and apparent contradictions, sequential
+  states, intention versus obligation, missing versus explicitly unresolved
+  premises, before-explaining versus before-deciding, and whole conjunction scope.
+- [x] Clarify a **prospective diagnostic** four-status contract: established true,
+  established false, unestablished and explicitly unresolved. Map both unknown
+  states to uncertain; negation preserves unknown states. False material parts
+  refute conjunctions; all-true parts establish them. Keep craft defensibility
+  separate. Verify that projection cannot correct a falsely supplied relation
+  status and cannot substitute for grounded, complete source inspection.
+- [x] Pass **184 offline tests** (128 new plus all 56 prior execution regressions),
+  Ruff lint/format and strict mypy on four new scripts, with HTTP blocked. Verify
+  byte-identical captures, historical scoring, bounded plans, stale/malformed
+  evidence rejection, epistemic projection and source integrity. Seal the private
+  bundle and public audit/proposal. No production/API/worker/frontend changes.
+- [x] Update tracker/index while preserving fourteen issue bodies and user-posted
+  GitHub links. No issue is closed or externally edited. Recommend a single
+  **28-call NC/ES evidence-status comparison**: seven full-scene families, both
+  orders, fourteen attempts per arm, three fresh families, zero retries, protected
+  controls and explicit uncertainty limits. This is **not prepared, frozen or
+  approved**; no candidate prompt or request has been created.
+- [ ] If requested, prepare the NC/ES comparison locally: author three full fresh
+  families and missing component maps, freeze exact cases/requests/scoring/stops
+  and the 28-call ceiling, capture current metadata without generation, verify
+  the harness, and show the frozen plan before any separate live approval.
+
+Private bundle: `data/diagnostics/reviewer-citation-epistemic-audit-v61-2026-10-26/`.
+Production **prompt 61 / graph 9 / fulfillment policy 1**, human checkpoints and
+nine human ties remain unchanged. Provider attribution stays deferred. Preserve
+story ambiguity and defensible craft; humans assess feel/emotion, flow, character
+and story-breaking details with machine-prepared mechanics. **Step 19 IN PROGRESS;
+Step 20 NOT STARTED; live calls PAUSED; full workflow canary ON HOLD.**
 
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 
