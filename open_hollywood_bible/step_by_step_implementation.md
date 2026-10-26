@@ -7139,12 +7139,14 @@ and [provisional 28-call proposal](../docs/handoffs/reviewer-epistemic-status-pr
   GitHub links. No issue is closed or externally edited. Recommend a single
   **28-call NC/ES evidence-status comparison**: seven full-scene families, both
   orders, fourteen attempts per arm, three fresh families, zero retries, protected
-  controls and explicit uncertainty limits. This is **not prepared, frozen or
-  approved**; no candidate prompt or request has been created.
-- [ ] If requested, prepare the NC/ES comparison locally: author three full fresh
+  controls and explicit uncertainty limits. At audit completion this was **not
+  prepared, frozen or approved**. Local preparation is completed below;
+  its approved execution is completed below.
+- [x] Prepare the NC/ES comparison locally: author three full fresh
   families and missing component maps, freeze exact cases/requests/scoring/stops
   and the 28-call ceiling, capture current metadata without generation, verify
   the harness, and show the frozen plan before any separate live approval.
+  Completed in the frozen preparation below.
 
 Private bundle: `data/diagnostics/reviewer-citation-epistemic-audit-v61-2026-10-26/`.
 Production **prompt 61 / graph 9 / fulfillment policy 1**, human checkpoints and
@@ -7152,6 +7154,189 @@ nine human ties remain unchanged. Provider attribution stays deferred. Preserve
 story ambiguity and defensible craft; humans assess feel/emotion, flow, character
 and story-breaking details with machine-prepared mechanics. **Step 19 IN PROGRESS;
 Step 20 NOT STARTED; live calls PAUSED; full workflow canary ON HOLD.**
+
+### Frozen NC/ES evidence-status preparation 2026-10-26
+
+**COMPLETE LOCALLY. At preparation: 0/28 inference calls used and separate live
+approval pending. The approved 28-call execution is completed below.**
+See the [frozen plan](../docs/handoffs/reviewer-evidence-status-frozen-plan-2026-10-26.md).
+
+- [x] Freeze **28 attempts, fourteen per arm**, seven full-scene families, both
+  orders, zero retries and no reallocation. Preserve H's two historical NC wire
+  payloads exactly. Reuse H/U/X/Y source/claims; preserve H/U maps; author X/Y maps
+  and three fresh pottery, railway-office and reservoir-record scene families.
+- [x] Freeze **21 whole claims, 49 material components**, gold, source-bound
+  registries, schemas, exact prepared/wire requests and schedule. Per arm,
+  **42 whole claims / 98 components / 14 targets / 84 non-targets** are scored.
+  Gold and witness answers never enter model messages. Preserve the same
+  eight-reference whole-claim union and 2,000 summed reason-character limit.
+- [x] Resolve the proposal's scope ambiguity before inference: ES changes only
+  the designated relation to four evidence statuses. Project that target before
+  unchanged three-label whole-claim aggregation; retain other component and
+  qualified craft semantics. Derived target negation is not a second observation.
+  Check whole four-status conjunction/negation only on authored offline fixtures.
+- [x] Freeze delivery, exact-status, projected-label, grounded-complete reasoning,
+  citation, recovery-spread and protected-loss screens. Require at least 12/14
+  valid ES reports, all fresh deliveries, three grounded contemporary H/U
+  recoveries across both families and both orders in at least one, all required
+  contradiction/compatible/unresolved targets, and no protected losses. Preserve
+  legacy uncertainty ambiguity separately; no retroactive gold or score changes.
+- [x] Freeze the first-eight-call structural sentinel and global terminal stops.
+  Preserve raw gateway/version evidence and unknown usage; prohibit retries,
+  terminal restart, ambiguous-cell replay and excess dispatch. Clean-boundary
+  continuation uses only remaining original cells. Aggregate reservations:
+  **672,000 input / 224,000 output tokens / 8,400 active seconds**; archived-rate
+  arithmetic **$0.47040**, **$0.60** planning allowance, actual billing unknown.
+- [x] Capture three metadata-only responses confirming **Ollama 0.40.11** and
+  unchanged selected DeepSeek tag/show/digest. Retain the initial sandbox
+  connection failure without treating it as provider evidence. No generation
+  probe or inference occurs; later drift remains terminal.
+- [x] Pass **336 offline tests**: 152 new harness tests, 128 preceding local audit
+  regressions and 56 prior execution regressions. Ruff lint/format and strict
+  mypy pass on ten scripts. Exercise all 28 requests through mocked HTTP,
+  sentinels, budget/approval binding, terminal audit/export, unknown usage,
+  source tampering and independent losses. Real HTTP is blocked during tests.
+- [x] Seal the private bundle/public plan and verify **3,110 historical source
+  fingerprints**. Update this tracker and issue index; preserve all fourteen
+  issue bodies and posted GitHub links. No issue is closed or externally edited.
+- [x] After separate approval of this exact plan, payload, destination and
+  28-call ceiling, run the frozen comparison, source-inspect all valid reports,
+  document results and update the tracker. Completed below under the recorded
+  plan-bound approval; the preparation itself supplied no inference authority.
+
+Private bundle: `data/diagnostics/reviewer-evidence-status-v61-2026-10-26/`.
+Production **prompt 61 / graph 9 / fulfillment policy 1**, human checkpoints and
+nine prior human ties remain unchanged. Retain only diagnostic evidence even if
+the screen passes; do not authorize writer edits or infer better stories from
+status projection. Humans assess feel/emotion, flow, character and story-breaking
+details with machine-prepared mechanics. Provider attribution and a separate live
+citation comparison remain deferred. **Step 19 IN PROGRESS; Step 20 NOT STARTED;
+live calls PAUSED; full workflow canary ON HOLD.**
+
+### Approved NC/ES evidence-status execution 2026-10-26
+
+**COMPLETE: 28/28 CALLS; ZERO RETRIES; RETAIN LIMITED EVIDENCE, NO ADVANCEMENT.**
+See the [results](../docs/benchmark_reports/reviewer-evidence-status-v61-results-2026-10-26.md)
+and unchanged [frozen plan](../docs/handoffs/reviewer-evidence-status-frozen-plan-2026-10-26.md).
+
+- [x] Record approval of the exact frozen plan, 28-call ceiling, full fictional
+  prose/context and Ollama Cloud through the local daemon. Run fourteen attempts
+  per arm with no probe, replacement, retry or reallocation. All 28 HTTP responses
+  finish normally; the first-eight sentinel continues with 4/4 valid per arm.
+  No terminal failure occurs. **57/57 version observations match Ollama 0.40.11**;
+  selected DeepSeek metadata remains unchanged.
+- [x] Record **NC 13/14 valid, 7/14 usable targets, 30/42 usable whole claims;
+  ES 14/14 valid, 10/14 usable targets, 35/42 usable whole claims**. Usable
+  components are 81/98 versus 89/98; usable non-targets 74/84 versus 79/84.
+  ES has 36 correct whole labels, but one correct label lacks complete component
+  evidence. Invalid delivery stays in all scheduled denominators.
+- [x] Preserve all **four contemporary H/U false-acceptance opportunities and
+  zero ES recoveries**. Every H/U target is falsely supported in both arms and
+  orders; ES calls each established_true. Separate factual compatibility from
+  the actual rule/resolve breach. Preserve wrong-relation substitution and false
+  compound premises rather than crediting true fact restatements as recovery.
+- [x] Retain ES's **ten correct, grounded required X/Y/fresh targets**, including
+  explicitly_unresolved for both Y and F3 orders. NC's Y unsupported labels
+  retain their disclosed unestablished interpretation: their factual explanations
+  are true, though primary labels are wrong. This run does not test a live gold
+  cell requiring the unestablished subtype.
+- [x] Inspect two NC endpoint label/reason disagreements: F1/OR and F3/OR explain
+  real violations accurately but label the violation propositions unsupported.
+  ES labels them correctly. Retain those limited gains without repairing NC.
+- [x] Apply protected-loss screens independently of the higher overall score.
+  ES loses H/RO craft support and U/OR complete craft evidence. Nine overlapping
+  flags describe **two paired cells**, not nine independent failures. H's craft
+  readings need defensibility, not unique entailment; U's omitted R010 witness
+  cannot be supplied silently from a sibling component. Both recovery and
+  preservation screens fail: **retain_limited_evidence_no_advancement**.
+- [x] Reject E-NC-F1-RO intact: normal-stop output duplicates claim_id in all
+  three claim objects. Preserve raw bytes and all three duplicate members as one
+  failed report. No loose-JSON salvage, trimming, retry or semantic credit.
+- [x] Inspect **27 valid reports, 81 whole reasons and 190 component reasons**
+  against complete source/context; seal masked notes before key decoding.
+  Disclose partial masking and assistant adjudication, not human preference.
+  Keep source truth, citation sufficiency, coverage and label correctness separate.
+- [x] Pass **55 offline post-run tests**, Ruff lint/format and strict mypy on
+  three analysis scripts. Verify all raw replays, source/inspection bindings,
+  duplicate-key rejection, accounting, uncertainty distinctions, protected losses
+  and the exact frozen decision. Preserve the prepared 336-test harness and
+  **3,110 historical fingerprints**; make no production code or prompt changes.
+- [x] Record **232,418 input / 10,753 output tokens / 44.818 active seconds**,
+  within reservations. Archived-rate estimate **$0.082629**; actual billed cost
+  unknown. Seal approval, execution, inspection, analysis and report; update this
+  tracker and issue index. Preserve fourteen issue bodies and posted links;
+  close or externally edit no issue.
+- [x] Before another live proposal, preserve new delivery, endpoint-label,
+  relation-scope, craft-abstention and incomplete-witness regressions locally.
+  Audit explicit assertion-pair/relation identity and label/reason consistency,
+  keeping genuine-conflict, uncertainty and craft successes as controls. Require
+  a materially different hypothesis before more inference; no new budget is
+  frozen or authorized. Any later isolated-pair versus full-scene probe would
+  diagnose context sensitivity, not justify removing production story context.
+  Completed in the local relation-object audit below; its operating-mode proposal
+  is materially different but remains unfrozen and unauthorized.
+
+Private bundles: `data/diagnostics/reviewer-evidence-status-v61-2026-10-26/`,
+its `-live/` and `-analysis/` siblings. Production **prompt 61 / graph 9 /
+fulfillment policy 1**, human checkpoints and nine human ties remain unchanged.
+No writer revision or human preference test ran. Provider attribution remains
+deferred. Humans assess feel/emotion, flow, character and story-breaking details
+with machine-prepared mechanics. **Step 19 IN PROGRESS; Step 20 NOT STARTED;
+further live calls PAUSED; full workflow canary ON HOLD.**
+
+### Local relation-object audit and model assessment 2026-10-26
+
+**COMPLETE LOCALLY; NO NEW MODEL OR DAEMON CALLS.** See the
+[relation-object audit](../docs/handoffs/reviewer-relation-object-audit-2026-10-26.md)
+and [DeepSeek attribution assessment](../docs/handoffs/deepseek-model-attribution-assessment-2026-10-26.md).
+
+- [x] Preserve byte-identical copies of all **28 NC/ES raw captures**, source
+  packets, receipts and sealed adjudications. Add **48 selected component
+  regressions** and a separate duplicate-member fixture. Preserve E-NC-F1-RO
+  intact as one invalid normal-stop report with three duplicate claim_id members;
+  do not salvage JSON, repair, retry or award semantic credit.
+- [x] Retain all eight H/U relation errors, two endpoint label/reason mismatches,
+  six craft abstentions, the false craft premise and incomplete intention
+  witnesses, with genuine-conflict, sequential, uncertainty, rule/intention and
+  qualified-craft controls. Tags overlap and are not independent observations.
+  Preserve historical labels/gold, NC/Y ambiguity and all prior scores.
+- [x] Author **eleven source-bound relation objects**: seven factual pairs and
+  four H/U rule/intention pairs, with exact assertions, namespaces, versions,
+  timing witnesses and claim/component identity. Audit all eight target reasons:
+  six infer a false contradiction from the requested pair, NC-U-OR substitutes
+  a real intention conflict, and ES-U-OR conflates resolve and status.
+- [x] Verify local identity checks reject stale/substituted commitments without
+  claiming semantic truth or correcting model labels. Confirm ES-U-OR's omitted
+  R010 craft witness has **zero incremental whole-union cost**; sibling evidence
+  cannot silently supply a missing component premise. Keep craft defensibility
+  distinct from unique entailment and from factual-premise correctness.
+- [x] Assess model attribution using saved evidence and official mode documentation.
+  Raw answers establish limitations of the tested DeepSeek deployment/configuration;
+  earlier Gemma failures and mixed matched comparisons rule out attributing the
+  entire history to DeepSeek. The latest 28 wires request **think: false**; captured
+  metadata supports high thinking. Its performance on these cases is untested.
+  Do not attribute failures solely to weights, precision or the provider.
+- [x] Pass **175 offline tests** (120 new plus all 55 preceding execution tests),
+  Ruff lint/format and strict mypy on two new scripts. Real HTTP is blocked.
+  Verify **3,632 historical source fingerprints**, exact replays and unchanged
+  sealed results; seal the local bundle and both public notes. No application
+  code, production prompts, graph or policy changed.
+- [x] Update tracker/index; preserve fourteen issue bodies and posted GitHub links.
+  No issue is closed or externally edited. Require a materially different
+  hypothesis before inference; enum/wording changes alone do not qualify.
+- [ ] If the user chooses further testing, separately prepare and freeze a matched
+  non-thinking/high-thinking comparison with unchanged NC controls/full packets,
+  known and fresh families, both orders, protected semantic/craft controls, explicit
+  mode/usage accounting, new budget and stops. The current proposal is **unfrozen
+  and unauthorized**. A separate later isolated-pair/full-scene probe remains an
+  alternative for context sensitivity; do not combine both interventions initially.
+
+Private bundle: `data/diagnostics/reviewer-relation-object-audit-v61-2026-10-26/`.
+Production **prompt 61 / graph 9 / fulfillment policy 1**, human checkpoints and
+nine human ties remain unchanged. Machines prepare mechanics; humans assess
+feel/emotion, flow, character and story-breaking details. Provider attribution
+remains deferred. **Step 19 IN PROGRESS; Step 20 NOT STARTED; live calls PAUSED;
+full workflow canary ON HOLD.**
 
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 
