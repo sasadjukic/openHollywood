@@ -7324,12 +7324,13 @@ and [DeepSeek attribution assessment](../docs/handoffs/deepseek-model-attributio
 - [x] Update tracker/index; preserve fourteen issue bodies and posted GitHub links.
   No issue is closed or externally edited. Require a materially different
   hypothesis before inference; enum/wording changes alone do not qualify.
-- [ ] If the user chooses further testing, separately prepare and freeze a matched
+- [x] If the user chooses further testing, separately prepare and freeze a matched
   non-thinking/high-thinking comparison with unchanged NC controls/full packets,
   known and fresh families, both orders, protected semantic/craft controls, explicit
   mode/usage accounting, new budget and stops. The current proposal is **unfrozen
   and unauthorized**. A separate later isolated-pair/full-scene probe remains an
   alternative for context sensitivity; do not combine both interventions initially.
+  The user selected the 48-call mode comparison; its preparation is completed below.
 
 Private bundle: `data/diagnostics/reviewer-relation-object-audit-v61-2026-10-26/`.
 Production **prompt 61 / graph 9 / fulfillment policy 1**, human checkpoints and
@@ -7337,6 +7338,192 @@ nine human ties remain unchanged. Machines prepare mechanics; humans assess
 feel/emotion, flow, character and story-breaking details. Provider attribution
 remains deferred. **Step 19 IN PROGRESS; Step 20 NOT STARTED; live calls PAUSED;
 full workflow canary ON HOLD.**
+
+### Frozen DeepSeek thinking-mode preparation 2026-10-26
+
+**COMPLETE LOCALLY; 0/48 INFERENCE CALLS USED; SEPARATE LIVE APPROVAL PENDING.**
+See the [frozen plan](../docs/handoffs/reviewer-thinking-mode-frozen-plan-2026-10-26.md).
+
+- [x] Freeze **48 attempts, 24 per mode**, twelve full-scene families, both
+  presentation orders and zero retries. Compare the same DeepSeek deployment with
+  **think: false (NC)** versus **think: high (TH)**. Keep each paired wire request
+  identical except for think; interleave modes with twelve pairs starting each way.
+- [x] Preserve all seven existing cases/claims/maps and fourteen historical NC
+  message sequences exactly. Add five fresh 281–313-word originals: letterpress,
+  ferry boathouse, aquarium, bakery photographs and radio ledger. Separate factual
+  compatibility from real rule/intention conflicts, genuine simultaneous conflict,
+  explicitly unresolved timing and missing timing evidence. Retain assignment,
+  endpoint, decision and qualified-craft controls.
+- [x] Freeze **36 claims / 83 components**, complete source/version bindings,
+  registries, withheld gold/witnesses, exact prepared/wire requests, schemas,
+  authored examples, readable casebook and schedule. Per mode: **72 whole claims,
+  166 components, 24 targets and 142 non-targets**. Preserve the NC three-label
+  contract, eight-reference whole-claim union and 2,000 summed reason characters.
+- [x] Freeze equal limits of **24,000 input / 16,000 total generated tokens /
+  600 active seconds per call**, with 40,000 requested context capacity. Aggregate
+  reservations: **1,152,000 input / 768,000 generated / 28,800 active seconds**.
+  Thinking and final output share the generated-token limit. Archived-rate estimate
+  **$1.26720**, planning allowance **$1.50**, actual billing unknown. These are
+  ceilings, not forecasts; the larger common allowance changes historical wire
+  settings, while contemporary NC/TH pairs differ only in mode.
+- [x] Freeze mode-observation and accounting checks, first-eight delivery sentinel,
+  and global terminal stops. Nonempty TH thinking is required to observe the
+  manipulation; absence is unverified mode delivery, not semantic incapacity.
+  Preserve normal malformed reports, raw terminal errors, unknown usage, failed
+  reservations and clean-boundary-only continuation. No probes, retries,
+  reallocation, terminal restart or mid-run budget adjustment.
+- [x] Freeze six grounded paired recoveries across H/U/G1/G2 with sufficient
+  contemporary opportunities and order spread; at least **22/24 valid TH**, all
+  **ten fresh deliveries**, all **sixteen required target controls**, and no
+  protected target, whole-claim, non-target, craft, citation or delivery losses.
+  Insufficient opportunity and incomplete execution cannot advance. Keep known
+  and fresh results separate; no generic model or production qualification.
+- [x] Capture latency, provider timing, input/cache counts, generated tokens and
+  explicitly reported reasoning breakdowns. Preserve unknown splits; never infer
+  tokens from characters. Report paired ratios and input/generated/combined tokens
+  and time per usable report. Score only final content; exclude thinking and
+  resource measurements from the masked source-review export. Do not use a trace
+  to rescue an incorrect final answer or pass it into story truth/writer context.
+- [x] Capture three metadata-only responses confirming **Ollama 0.40.11** and
+  unchanged selected DeepSeek metadata with false/high supported. Preserve the
+  sandbox connection failure separately. No generation occurs. Requested sampling
+  settings match, but effective mode-dependent sampling remains unverified.
+- [x] Pass **381 offline tests**: 206 new preparation tests, 120 preceding audit
+  regressions and 55 prior execution tests. Ruff lint/format and strict mypy pass
+  on eleven scripts. Exercise all 48 calls through MockTransport; block real HTTP.
+  Verify **3,678 historical source fingerprints**, seal the public/private plan,
+  and update tracker/index while preserving fourteen issue bodies and posted links.
+- [x] Obtain separate approval of this frozen plan, the full unpublished fictional
+  prose/context payload, Ollama Cloud via the local daemon, and the **48-call
+  ceiling**. Complete execution and source inspection; results are recorded below.
+
+Private bundle: `data/diagnostics/reviewer-thinking-mode-v61-2026-10-26/`.
+No live approval file or live run exists at preparation. Production **prompt 61 /
+graph 9 / fulfillment policy 1**, human checkpoints and nine human ties remain
+unchanged. No writer or human-preference test is included. Selective production
+thinking, a lower-thinking arm, another model and context isolation are deferred.
+Humans assess feel/emotion, flow, character and story-breaking details with machine-
+prepared mechanics. **Step 19 IN PROGRESS; Step 20 NOT STARTED; live inference
+PAUSED; full workflow canary ON HOLD.**
+
+### Approved DeepSeek thinking-mode execution 2026-10-26
+
+**COMPLETE — 48/48 calls; retain limited evidence, no advancement.** See the
+[NC/TH results](../docs/benchmark_reports/reviewer-thinking-mode-v61-results-2026-10-26.md).
+
+- [x] Execute the exact approved freeze: 24 NC (`think: false`) and 24 TH
+  (`think: "high"`) calls through the local daemon to Ollama Cloud. Preserve
+  all original requests, source versions, raw responses, reservations, receipts
+  and seals. No retries, replacements, extra probes or terminal failure. All
+  97 daemon-version observations match **0.40.11** and model metadata matches.
+- [x] Observe all 24 TH responses with nonempty thinking and all 24 NC responses
+  without thinking. Score final content only; exclude thinking and resource
+  observations from the masked review. Do not claim independent verification of
+  internal effort allocation or effective sampling.
+- [x] Preserve **NC 23/24 valid; TH 24/24 valid**. M-NC-F1-OR repeats claim_id in
+  all three claim objects and remains one invalid delivery without repair or
+  semantic credit. The first-eight sentinel passes at four valid per mode.
+- [x] Inspect and seal **47 valid reports, 141 whole reasons and 326 component
+  reasons** against full source/context before decoding the trial key. Keep
+  label accuracy, factual truth, citation support and completeness separate.
+- [x] Record **eight of eight grounded TH recoveries** across H/U/G1/G2 in both
+  orders, including both fresh relation families. NC/TH usable targets are
+  **8/24 versus 16/24**, usable whole claims **48/72 versus 62/72**, usable
+  components **137/166 versus 156/166**, and usable complete reports **5/24
+  versus 14/24**. This is operating-mode diagnostic evidence, not story preference.
+- [x] Preserve five endpoint label/reason alignment gains and craft-label gains
+  alongside failures. TH fails eight uncertainty controls: seven accurate
+  unestablished explanations with unsupported labels, plus F3/RO's supported
+  conditional substitution. F3/OR loses NC's correct uncertain judgment.
+- [x] Preserve two H craft explanation defects: OR's inaccurate direct-adjacency
+  assertion and RO's missing resolve witness. Six overlapping protected-loss
+  flags occur in four cells, not six independent failures. Even forgiving the
+  two H annotations leaves the frozen no-advancement decision unchanged.
+- [x] Record resource tradeoffs: median latency **2.441 s NC / 10.323 s TH**;
+  median paired latency **3.83×** and generated-token ratio **4.81×**. Total
+  usage is **400,096 input / 59,336 generated tokens / 338.825 active seconds**.
+  TH uses 18.852 active seconds and 3,566.1 generated tokens per usable report,
+  versus NC's 14.980 seconds and 1,882.2 tokens. Reasoning/final token splits and
+  prompt/load/generation timing splits remain unknown. Archived-rate estimate
+  **$0.191232**, actual billed cost unknown; no automatic efficiency qualification.
+- [x] Pass **67 post-run offline tests**, Ruff lint/format and strict mypy on four
+  analysis scripts. Verify all 48 exact raw/wire replays, sealed source notes,
+  budget/version accounting, recovery/loss screens, sensitivity and resource
+  denominators. Real HTTP is blocked. Preserve the frozen 381-test preparation
+  and verify all **3,678 historical source fingerprints**.
+- [x] Seal the analysis, report, tracker and issue-index update. Preserve all
+  fourteen issue bodies and posted GitHub links; no external issue is edited or
+  closed. No production code or prompt changes occur.
+- [x] Before another live proposal, add the new local capture regressions and
+  audit uncertainty semantics, conditional-versus-observed claims and incomplete
+  craft witnesses. A separately frozen follow-up may assess the remaining failure
+  with unchanged high-thinking controls and fresh full scenes. No new budget,
+  lower-thinking arm, writer test or production rollout is authorized here.
+
+Private evidence: `data/diagnostics/reviewer-thinking-mode-v61-2026-10-26-live/`
+and `data/diagnostics/reviewer-thinking-mode-v61-2026-10-26-analysis/`.
+Production **prompt 61 / graph 9 / fulfillment policy 1**, human checkpoints and
+nine prior human ties remain unchanged. Humans assess feel/emotion, flow, character
+and story-breaking details with machine-prepared mechanics. Provider attribution
+remains deferred. **Step 19 IN PROGRESS; Step 20 NOT STARTED; further inference
+PAUSED; full workflow canary ON HOLD.**
+
+### Local thinking-mode epistemic/scope audit 2026-10-26
+
+**COMPLETE — local evidence preservation and contract audit; no live calls.**
+See the [audit](../docs/handoffs/reviewer-epistemic-scope-audit-2026-10-26.md) and
+[proposed 32-call follow-up](../docs/handoffs/reviewer-epistemic-clarity-proposal-2026-10-26.md).
+
+- [x] Preserve byte-identical copies of all **48 raw NC/TH captures** and all
+  **326 valid component assessments**, exact source bindings and sealed prior
+  judgments. Retain the eight paired relation recoveries with real rule/intention
+  controls, five endpoint label/reason disagreements, duplicate-ID delivery,
+  conditional substitution, craft explanation defects and successful controls.
+  Raw thinking is not semantic evidence; no historical output or score is repaired.
+- [x] Audit the actual identical system definitions in all 48 requests. Legacy
+  unsupported explicitly includes premises the sources **do not establish**;
+  uncertain also covers inability to judge. Of sixteen uncertain-source targets,
+  **fourteen** have grounded unestablished explanations labeled unsupported,
+  **one** is correctly uncertain and **one** substitutes a conditional answer.
+  Preserve primary scores while disclosing that fourteen outcomes fit a literal
+  legacy definition and cannot isolate a reasoning failure.
+- [x] Record prospective disjoint factual-label semantics without changing any
+  prompt: refuted differs from unestablished, unknown remains unknown under
+  negation, and defensible craft need not be uniquely compelled. Keep source
+  uncertainty, incomplete citations and evidence-capacity abstention distinct.
+- [x] Bind **eight source relation audits** to exact assertions, identity, timing
+  and state witnesses; add **twelve authored logic contrasts**. A true conditional
+  does not establish its antecedents. Disclose F3's possible conditional reading
+  of “as descriptions … at the same instant” alongside its frozen observed-instance
+  target. No internal model cause is inferred from that one capture.
+- [x] Verify the diagnostic scope/status utility rejects changed bindings and
+  missing premises but cannot establish semantic truth from hashes or enums.
+  Preserve a negative test where a falsely supplied established-time premise
+  causes a wrong projected result. No automatic label correction or writer action.
+- [x] Correct the preceding report's citation arithmetic explicitly: M-TH-H-RO/C01
+  has union **R014/R015**; adding R012 costs **one**, expanding two refs to three,
+  not zero. R012 is in other claims. The omission still fits within the eight-ref
+  limit; the missing-witness finding and all historical scores are unchanged.
+- [x] Pass **177 offline tests**: 110 new audit checks plus all 67 preceding
+  execution tests. Ruff lint/format and strict mypy pass on four scripts. Block
+  real HTTP; verify **4,521 historical fingerprints**. Update tracker/index and
+  seal local artifacts, preserving all fourteen issue bodies and posted links.
+- [x] Propose **32 calls**: eight full-scene families, both orders, unchanged
+  high-thinking TH versus disjoint factual-definition EC, sixteen calls per arm.
+  Retain three exact known control families and propose five fresh families,
+  including separate observed/conditional components shared by both arms.
+  Distinguish label alignment from semantic recovery; no new budget is frozen.
+- [ ] If chosen, prepare and verify that comparison locally, including exact
+  requests, current metadata, source/citation feasibility, scoring, stops and
+  budget. Present the freeze before separate live approval. Selective production
+  thinking, lower-thinking efficiency and writer tests remain deferred.
+
+Private bundle: `data/diagnostics/reviewer-epistemic-scope-audit-v61-2026-10-26/`.
+**Zero inference and daemon calls.** Production **prompt 61 / graph 9 / fulfillment
+policy 1**, human checkpoints and nine human ties remain unchanged. Humans assess
+feel/emotion, flow, character and story-breaking details with machine-prepared
+mechanics. No issue is closed or externally edited. **Step 19 IN PROGRESS;
+Step 20 NOT STARTED; live calls PAUSED; full workflow canary ON HOLD.**
 
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 
