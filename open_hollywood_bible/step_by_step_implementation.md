@@ -7513,9 +7513,9 @@ See the [audit](../docs/handoffs/reviewer-epistemic-scope-audit-2026-10-26.md) a
   Retain three exact known control families and propose five fresh families,
   including separate observed/conditional components shared by both arms.
   Distinguish label alignment from semantic recovery; no new budget is frozen.
-- [ ] If chosen, prepare and verify that comparison locally, including exact
-  requests, current metadata, source/citation feasibility, scoring, stops and
-  budget. Present the freeze before separate live approval. Selective production
+- [x] Prepare and verify the TH/EC comparison locally on 2026-10-27, including
+  exact requests, current metadata, source/citation feasibility, scoring, stops
+  and the 32-call ceiling. See the frozen preparation below. Selective production
   thinking, lower-thinking efficiency and writer tests remain deferred.
 
 Private bundle: `data/diagnostics/reviewer-epistemic-scope-audit-v61-2026-10-26/`.
@@ -7524,6 +7524,177 @@ policy 1**, human checkpoints and nine human ties remain unchanged. Humans asses
 feel/emotion, flow, character and story-breaking details with machine-prepared
 mechanics. No issue is closed or externally edited. **Step 19 IN PROGRESS;
 Step 20 NOT STARTED; live calls PAUSED; full workflow canary ON HOLD.**
+
+### Frozen TH/EC epistemic-clarity preparation 2026-10-27
+
+**COMPLETE — local preparation only; 0/32 inference calls. Awaiting live approval.**
+See the [frozen plan](../docs/handoffs/reviewer-epistemic-clarity-frozen-plan-2026-10-27.md).
+
+- [x] Freeze **32 attempts / sixteen per arm / zero retries**: eight full-scene
+  families, both source presentation orders, high-thinking TH control and EC
+  factual-label-definition candidate. Preserve six historical H/F3/G5 TH wire
+  payloads exactly; EC changes only the unsupported/uncertain definition span.
+  Supported and defensible-craft standards, schema and production prompts stay intact.
+- [x] Author five fresh full scenes (295–314 original words): pool appeal, bakery,
+  quartet, community kitchen and puppet theatre. J1–J4 separate actual-instance
+  and conditional components, with unresolved, absent, same and different timing.
+  J5 preserves authorization-status versus real intention/obligation conflicts.
+  Freeze **24 whole claims / 58 components**, sources, context, registries and
+  withheld gold; both orders yield 48 whole claims / 116 components per arm.
+- [x] Verify complete material witnesses fit the unchanged **eight-reference union
+  / 2,000 reason-character** bounds; maximum complete union is seven. Include
+  explicit assignment/rule/voice witnesses and preserve the R012 citation correction.
+  No historical output, request or primary score is repaired.
+- [x] Freeze separate contract-alignment and observed-scope conclusions. Require
+  six alignment opportunities/recoveries across all four unknown families with
+  both orders in two; scope replication requires two recovered families including
+  one fresh and no converse scope error. Source-inspect explanations independently
+  of labels. Require all sixteen EC deliveries, all sixteen EC targets, all eight
+  conditional controls and no protected paired loss. Incomplete runs cannot advance.
+- [x] Freeze paired balanced schedule, F3/G5 first-eight sentinels, reservations
+  of **768,000 input / 512,000 generated tokens / 19,200 active seconds**, 24k/16k/600s
+  per call, 40k requested context. Both arms require nonempty high-thinking output;
+  missing splits remain unknown. Retain terminal raw evidence, no-retry stops and
+  clean-boundary continuation only within the original unspent allocation.
+- [x] Capture metadata only: **Ollama 0.40.11**, unchanged selected DeepSeek digest
+  `e04da138d31e0c9468e982e1ae9503d06cb7e170caa16a90c17d931c4aa140f8`.
+  Preserve the initial sandbox socket denial and successful three-response capture.
+  No prose sent and no inference performed during preparation.
+- [x] Pass **385 offline tests** (208 current, 110 scope regressions, 67 prior
+  execution checks), Ruff lint/format and strict mypy on twelve scripts. Exercise
+  all 32 gateway dispatches through mocks, exact-wire treatment isolation,
+  cardinality/bindings, separate scoring, stops/restart, terminal export and approval.
+  Verify **4,590 historical fingerprints**; seal local artifacts and update index.
+  Preserve all fourteen issue bodies and posted links; no external issue changes.
+- [x] Obtain separate plan-bound approval and complete the 32-call TH/EC run on
+  2026-10-27: full unpublished prose/context plus claims/components to Ollama Cloud
+  through the local daemon, both arms high thinking, zero retries. See execution
+  below. No selective production-thinking rollout or canary authorization.
+
+Private bundle: `data/diagnostics/reviewer-epistemic-clarity-v61-2026-10-27/`.
+No new model evidence or story-quality conclusion. Human review remains overall
+feel/emotion, flow, character and story-breaking details with machine-prepared
+mechanical evidence. Production **prompt 61 / graph 9 / fulfillment policy 1**,
+Blueprint approval and nine prior human ties remain unchanged. Provider attribution
+and writer tests are deferred. **Step 19 IN PROGRESS; Step 20 NOT STARTED;
+live inference PAUSED; full workflow canary ON HOLD.**
+
+### Approved TH/EC epistemic-clarity execution 2026-10-27
+
+**COMPLETE — 32/32 calls, sixteen per arm, zero retries.** See the
+[results](../docs/benchmark_reports/reviewer-epistemic-clarity-v61-results-2026-10-27.md).
+Frozen decision: **retain_limited_evidence_no_advancement**.
+
+- [x] Execute the exact approved plan with both arms high thinking; EC changes only
+  unsupported/uncertain factual definitions. Preserve all six historical TH wires.
+  Reserve and dispatch exactly 32 calls; first-eight sentinels pass (TH 3/4, EC 4/4).
+  No terminal stop, HTTP failure, length finish or retry. All 65 daemon observations
+  match **0.40.11** and selected model metadata remains frozen.
+- [x] Retain **15/16 valid reports per arm**. TH/F3/RO and EC/J3/RO each repeat
+  `claim_id` in all three claim objects: six duplicate-key occurrences across two
+  normal-stop responses. Reject both intact; no repaired parse or semantic credit.
+- [x] Source-inspect **30 valid reports / 90 whole reasons / 219 component reasons**
+  from a masked export; seal notes before key decoding. Exclude thinking, arm/order
+  and resource observations, while disclosing partial masking. Preserve exact
+  artifact/claim/component/registry bindings and separate primary labels from reasons.
+- [x] Record TH **8/16 primary-correct / 6/16 usable targets / 34/48 usable whole
+  claims / 4/16 usable complete reports**; EC **11/16 / 10/16 / 40/48 / 10/16**.
+  Invalid attempts remain in all denominators. All valid assignment and qualified
+  craft labels are supported as intended; explanation precision remains separate.
+- [x] Count **seven alignment opportunities, three recoveries**: F3/OR and G5 in
+  both orders. EC's four preserved uncertainty targets are usable, but all eight
+  fresh J1/J2 targets across both arms remain unsupported. Their reasons recognize
+  unknown timing; keep the frozen uncertain gold and disclose the possible
+  underlying-event versus evidence-entailment reading of “actually establish.”
+  The present design cannot isolate wording from scene family as the cause.
+- [x] Record **zero observed-scope opportunities** and **not_reproduced**, not a
+  demonstrated EC recovery. The exact historical TH/F3/RO failure cell is invalid
+  and unavailable for semantic observation. All fifteen valid fresh conditional
+  components pass; EC has 7/8 because J3/RO is invalid. H/J5 preserve the distinction
+  between unauthorized status and early action, separate from real rules/intentions.
+- [x] Retain six explanation concerns: three J4 source-attribution overstatements
+  (“no claim” becomes explicit denial), EC/J2/RO's one-lamp/another slip, TH/J5/RO's
+  empty-chair-to-absence inference, and an explicitly qualified TH/H/OR precision
+  concern. The four overlapping protected loss flags span EC J2/RO and J3/RO.
+  Relaxing all explanation concerns still cannot change the frozen decision.
+- [x] Record **288,432 input / 86,777 generated tokens / 292.433 active seconds**.
+  Median latency TH **8.269s**, EC **8.587s**; paired median ratios **1.076x latency
+  / 0.979x generated tokens**. All 32 reasoning-token splits and actual billing
+  remain unknown. Archived-rate estimate **$0.190662**, not a confirmed charge.
+- [x] Pass **53 offline tests**, Ruff lint/format and strict mypy on four analysis
+  scripts. Replay all 32 captures, sealed notes/results, duplicate-key rejection,
+  budgets, source binding, masked coverage, protected losses and denominator logic.
+  Verify all **81 frozen preparation artifacts / 4,590 historical fingerprints**;
+  analysis makes zero additional model or daemon calls. Update tracker/index and
+  seal execution/analysis evidence; preserve fourteen issue bodies and posted links.
+- [x] Before another inference proposal, carry duplicate captures into local
+  regressions; audit event truth versus source entailment and assertion of negation;
+  add source-attribution, referent and unsupported-absence fixtures with positive
+  craft/conditional controls. Set prospective semantics explicitly without repairing
+  historical gold. Further inference, selective routing and writer work are deferred.
+
+Private evidence: `data/diagnostics/reviewer-epistemic-clarity-v61-2026-10-27/`,
+its `-live/` sibling and `-analysis/` sibling. Retain the narrow EC known-case
+alignment and high-thinking relation distinctions as diagnostic evidence only.
+No human story-preference or prose-quality conclusion; humans retain feel/emotion,
+flow, character and story-breaking review with machine-prepared mechanics.
+Production **prompt 61 / graph 9 / fulfillment policy 1**, Blueprint approval and
+nine prior human ties remain unchanged. No issue is closed or externally edited.
+**Step 19 IN PROGRESS; Step 20 NOT STARTED; further live calls PAUSED;
+full workflow canary ON HOLD.**
+
+### Local duplicate-ID, attribution and claim-object audit 2026-10-27
+
+**COMPLETE — local regression preservation and semantic audit; no live calls.**
+See the [audit](../docs/handoffs/reviewer-claim-object-audit-2026-10-27.md) and
+[proposed 24-call ER/SE comparison](../docs/handoffs/reviewer-claim-object-proposal-2026-10-27.md).
+
+- [x] Preserve all **32 exact raw captures / 219 valid component regressions**,
+  exact source bindings and sealed judgments. Retain both duplicate-ID failures
+  (TH/F3/RO and EC/J3/RO), six duplicate keys and six attribution/precision
+  fixtures. Strict parsing remains unchanged; invalid output earns no semantic
+  credit. Historical gold, scores and no-advancement decision stay unchanged.
+- [x] Distinguish narrated event relation, bounded-source entailment and explicit
+  source assertion, including inner/outer negation. Unknown events stay unknown;
+  a fully reviewed source can fail to establish an event without establishing its
+  negation. Negative source findings require complete, explicitly bounded review,
+  not a general closed-world assumption about missing story facts.
+- [x] Bind six full-packet source audits and one selected-span audit. J4's complete
+  scene establishes different times independently of R013's "no claim that";
+  the latter is not itself an explicit negative assertion. Preserve one-lamp/two-
+  entries identity, empty-chair countermodels and the qualified adjacency concern.
+  Maintain defensible craft and conditional-without-antecedent positive controls.
+- [x] Audit all **fifteen valid unknown-source targets**: eleven unsupported and
+  four uncertain, including eight fresh J1/J2 unsupported answers. Their "actually
+  establish" claim form admits a source-entailment reading. Record that prospective
+  distinction without inferring the model's internal interpretation or rescoring
+  historical event-relation gold. Prior wording and family were not crossed.
+- [x] Verify the local claim-object utility rejects changed identities, missing
+  statuses, mismatched scopes and incomplete negative source audits. It consumes
+  authored source judgments, cannot prove semantic truth and cannot route writers.
+  Preserve a false-premise countertest alongside **48 authored claim/negation
+  contrasts** and **twelve attribution controls**.
+- [x] Pass **163 offline tests** (110 current plus all 53 preceding execution
+  checks), Ruff lint/format and strict mypy on four scripts. Block real HTTP;
+  verify **5,179 historical fingerprints**. Seal local artifacts and documentation;
+  preserve all fourteen issue bodies and posted links. No external issue changes.
+- [x] Propose **24 calls**: six full-scene families, both presentation orders,
+  event-relation ER versus source-entailment SE, twelve per form. Keep EC system
+  definitions and high thinking unchanged; preserve four exact historical J1/J2
+  EC wire controls and add four fresh families. State the prospective SE gold
+  explicitly; test claim-form discrimination, not retrospective recovery.
+- [ ] If requested, prepare and verify this comparison locally: current metadata,
+  full scenes/claims, prospective gold, exact requests, budget, stops, witness
+  feasibility and mocked dispatches. Present the frozen plan for separate live
+  approval. No new requests or budget are frozen by this proposal.
+
+Private bundle: `data/diagnostics/reviewer-claim-object-audit-v61-2026-10-27/`.
+**Zero inference and daemon calls.** Production **prompt 61 / graph 9 / fulfillment
+policy 1**, Blueprint approval and nine prior human ties remain unchanged. Humans
+retain feel/emotion, flow, character and story-breaking review with machine-prepared
+mechanics. Selective thinking, writer testing and provider attribution stay deferred.
+**Step 19 IN PROGRESS; Step 20 NOT STARTED; live calls PAUSED;
+full workflow canary ON HOLD.**
 
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 
