@@ -7683,10 +7683,10 @@ See the [audit](../docs/handoffs/reviewer-claim-object-audit-2026-10-27.md) and
   definitions and high thinking unchanged; preserve four exact historical J1/J2
   EC wire controls and add four fresh families. State the prospective SE gold
   explicitly; test claim-form discrimination, not retrospective recovery.
-- [ ] If requested, prepare and verify this comparison locally: current metadata,
+- [x] Prepare and verify this comparison locally on 2026-10-27: current metadata,
   full scenes/claims, prospective gold, exact requests, budget, stops, witness
-  feasibility and mocked dispatches. Present the frozen plan for separate live
-  approval. No new requests or budget are frozen by this proposal.
+  feasibility and mocked dispatches. See frozen preparation below; separate live
+  approval remains pending.
 
 Private bundle: `data/diagnostics/reviewer-claim-object-audit-v61-2026-10-27/`.
 **Zero inference and daemon calls.** Production **prompt 61 / graph 9 / fulfillment
@@ -7695,6 +7695,180 @@ retain feel/emotion, flow, character and story-breaking review with machine-prep
 mechanics. Selective thinking, writer testing and provider attribution stay deferred.
 **Step 19 IN PROGRESS; Step 20 NOT STARTED; live calls PAUSED;
 full workflow canary ON HOLD.**
+
+### Frozen ER/SE claim-form preparation 2026-10-27
+
+**COMPLETE — local preparation only; 0/24 inference calls. Awaiting live approval.**
+See the [frozen plan](../docs/handoffs/reviewer-claim-form-frozen-plan-2026-10-27.md).
+
+- [x] Freeze **24 attempts / twelve per form / zero retries**: six full-scene
+  families, both presentation orders, source-entailment SE control and event-relation
+  ER contrast. Both use unchanged EC instructions, component schema and high
+  thinking. Only C02.A01 and its corresponding whole-claim text differ; restored
+  SE text reproduces each paired wire exactly. Preserve all four historical J1/J2
+  EC wire requests under the matching baseline.
+- [x] Author four new full scenes: ferry refund, theatre costume room, orchard
+  water allocation and museum bell return, **308–329 original words** each. Freeze
+  unresolved/absent/same/different observation timing, retained discovery/decision,
+  endpoint changes, qualified craft and separate supported conditional controls.
+  Twelve family/form records contain **36 whole claims / 84 components**; both
+  orders give **36 whole claims / 84 components / 72 non-targets per arm**.
+- [x] Make prospective gold explicit: unknown event ER is uncertain; complete
+  bounded-source insufficiency makes the stronger SE claim unsupported. Preserved
+  J1/J2 historical uncertain gold and scores remain untouched. Bind full-packet
+  scope audits and complete witness sets; all 36 unions fit within eight references,
+  maximum **six**, and reason examples fit 2,000 summed characters.
+- [x] Freeze separate primary-label and exact-object explanation scoring. Require
+  all 24 deliveries, all eight unknown matched pairs, all eight individual known-
+  time targets, all 24 conditional components and no protected SE-to-ER loss.
+  Judge whole aggregates against their own claim forms; different correct labels
+  are not losses. Partial masking hides metadata, while claim form remains visible.
+  Seal source notes before key decoding; thinking is never semantic evidence.
+- [x] Freeze balanced adjacent pairs, J1/J2 first-eight sentinels, **576,000 input /
+  384,000 combined generated tokens / 14,400 active seconds**, 24k/16k/600s per call,
+  40k requested context. Retain reservation-before-dispatch, terminal evidence and
+  unknown usage, zero retries/reallocation and clean-boundary continuation only.
+- [x] Capture metadata only: **Ollama 0.40.11**, selected model digest unchanged
+  (`e04da138d31e0c9468e982e1ae9503d06cb7e170caa16a90c17d931c4aa140f8`). Preserve the
+  initial sandbox denial and successful three-response capture. No prose sent.
+- [x] Pass **393 offline tests**: 230 current, 110 claim-object regressions and all
+  53 prior execution checks. Ruff lint/format and strict mypy pass on twelve
+  scripts. Real HTTP is blocked; mock all 24 gateway dispatches, exact requests,
+  prospective scoring, delivery boundaries, budgets, drift, stops/restart,
+  terminal export and approval enforcement. Verify **5,234 historical fingerprints**;
+  seal preparation and update the issue index, preserving all fourteen issue
+  bodies and posted links. No external issue changes or production edits.
+- [x] Obtain separate plan-bound live approval and complete **24/24 calls** on
+  2026-10-27: full unpublished prose/context and frozen claims/components to Ollama
+  Cloud via the local daemon, both high thinking and zero retries. See execution
+  below. Selective production thinking and writer work stay deferred.
+
+Private bundle: `data/diagnostics/reviewer-claim-form-v61-2026-10-27/`, including
+the frozen casebook and `plan.json` seal. This is prospective claim-form discrimination,
+not retrospective recovery or story-quality qualification. Humans retain overall
+feel/emotion, flow, character and story-breaking review with machine-prepared
+mechanics. Production **prompt 61 / graph 9 / fulfillment policy 1**, Blueprint
+approval and nine prior human ties remain unchanged. **Step 19 IN PROGRESS;
+Step 20 NOT STARTED; inference PAUSED; full workflow canary ON HOLD.**
+
+### Approved ER/SE claim-form execution 2026-10-27
+
+**COMPLETE — 24/24 calls, twelve per form, zero retries.** See the
+[results](../docs/benchmark_reports/reviewer-claim-form-v61-results-2026-10-27.md).
+Frozen decision: **retain_limited_evidence_no_advancement**.
+
+- [x] Execute the approved frozen schedule with unchanged EC instructions and high
+  thinking. Preserve all four historical J1/J2 EC wire controls. Reserve/dispatch/
+  complete exactly 24 calls; first-eight sentinels pass (SE 3/4, ER 4/4). No terminal
+  stop, HTTP failure, truncation or retry; all **49 version observations** match
+  **Ollama 0.40.11** and selected model metadata stays frozen.
+- [x] Retain **SE 10/12 valid / ER 12/12 valid**. SE/J2/OR adds `claim_id_note` to
+  all three claim objects; SE/K3/OR adds empty `components_note` fields to all three.
+  Both are HTTP-200 normal-stop captures with six forbidden-field occurrences,
+  no duplicate keys, no unknown refs and no cardinality/reason overflow. Neither
+  field appears in any frozen wire. Reject intact; no repair or semantic credit.
+- [x] Inspect **22 masked valid reports / 66 whole reasons / 154 component reasons**
+  against complete sources, and seal notes before key decoding. Exclude thinking,
+  arm/order/trial metadata and resources while disclosing visible claim form.
+  Preserve exact artifact/claim/component/registry bindings and alternative
+  complete witnesses without demanding an exact withheld reference list.
+- [x] Record **SE 8/12 primary-correct / 7/12 usable targets / 27/36 usable whole
+  claims / 67/84 usable components / 7/12 usable complete reports**; ER **12/12 /
+  11/12 / 35/36 / 83/84 / 11/12**. Non-target usability is **60/72 versus 72/72**;
+  all valid non-target components pass. These are different prospective claim
+  objects, not a general model ranking or a retrospective score correction.
+- [x] Retain **4/8 strict unknown-timing discriminating pairs**, J1/K1 in both
+  orders. J2/RO also has correct differing primary labels but shared qualified
+  "then" precision concerns; J2/OR SE is invalid. Both K2 SE targets remain
+  uncertain despite accurate missing-time explanations; ER is correctly uncertain.
+  All eight ER unknown targets and four ER known-time targets have correct labels.
+- [x] Record **7/8 usable known-time controls / 22/24 usable conditionals**, with
+  unavailable cells caused by invalid delivery, and all valid controls passing.
+  No protected SE-to-ER paired loss or valid conditional substitution occurs.
+  The delivery, unknown-pair and control-total screens still fail.
+- [x] Keep the two J2/RO "then" concerns explicitly qualified: entry order versus
+  observation chronology is ambiguous, while both explanations recognize unknown
+  timing. Relaxing both raises unknown discriminating pairs to **5/8**, usable
+  targets to **SE 8/12 / ER 12/12**, and leaves no advancement unchanged. No proven
+  invented chronology or new story-quality failure is asserted.
+- [x] Record **223,584 input / 72,116 generated tokens / 403.831 active seconds**.
+  Median call latency is **13.302s SE / 17.256s ER**; median paired ER/SE ratios are
+  **0.977x latency / 1.051x generated tokens**. All 24 reasoning/final token splits
+  and actual billing remain unknown. Archived-rate estimate **$0.1536144**;
+  both forms use high thinking, so no thinking-mode efficiency conclusion follows.
+- [x] Pass **44 post-run offline tests**, Ruff lint/format and strict mypy on four
+  scripts. Replay exact requests/captures, source notes, scoring, field rejection,
+  version/budget accounting and precision sensitivity; real HTTP is blocked.
+  Verify **74 preparation artifacts / 5,234 historical fingerprints**. Seal analysis
+  and documentation; preserve all fourteen issue bodies and posted links.
+- [x] Before another live proposal, preserve the new forbidden fields and qualified
+  temporal wording as local regressions; audit K2 source-entailment wording and
+  whole-claim composition against the successful forms. Require a materially
+  isolated hypothesis with crossed forms/families before preparing more inference.
+  No new requests, budget, prompt changes or writer experiments are authorized here.
+  Completed in the local source-sufficiency audit below.
+
+Private evidence: `data/diagnostics/reviewer-claim-form-v61-2026-10-27/` and its
+`-live/` and `-analysis/` siblings. Retain claim-form sensitivity as limited
+diagnostic evidence. Historical gold, production **prompt 61 / graph 9 / fulfillment
+policy 1**, Blueprint approval and nine prior human ties remain unchanged. Humans
+retain feel/emotion, flow, character and story-breaking review with machine-prepared
+mechanics. No issue is closed or externally edited. **Step 19 IN PROGRESS;
+Step 20 NOT STARTED; further live calls PAUSED; full workflow canary ON HOLD.**
+
+### Local forbidden-field, temporal-wording and K2 audit 2026-10-27
+
+**Status: COMPLETE — local regressions and source-sufficiency audit; no inference.**
+See the [audit](../docs/handoffs/reviewer-source-sufficiency-audit-2026-10-27.md) and
+[proposed 36-call SE/BS/ER comparison](../docs/handoffs/reviewer-source-sufficiency-proposal-2026-10-27.md).
+
+- [x] Preserve all **24 raw ER/SE captures / 154 valid component regressions**,
+  source bindings and sealed annotations. Reproduce historical SE **10/12 valid,
+  8/12 primary-correct, 7/12 usable targets** and ER **12/12, 12/12, 11/12** with
+  `retain_limited_evidence_no_advancement`; no historical rescoring.
+- [x] Add intact forbidden-field fixtures for SE/J2/OR `claim_id_note` and
+  SE/K3/OR empty `components_note`: **six occurrences across two normal-stop
+  reports**, distinct from duplicate JSON keys. Preserve two earlier duplicate-ID
+  comparators. Reject extra fields at root, claim and component levels, including
+  empty/null/false values; no repaired delivery or semantic credit.
+- [x] Retain both J2/RO “then” concerns as qualified, not proven chronology errors.
+  Bind exact source quotes and the reports' timing qualifications. Add **twelve
+  authored temporal contrasts** separating entry order, observation chronology,
+  reversed timestamps, explicit simultaneity, absent/unresolved timing, unrelated
+  events, conditionals and source insufficiency. Preserve the prior sensitivity.
+- [x] Audit **twelve source-bound family/form records**. K2 has one hook and two
+  literal opposite-state entries with no observation times in the complete packet.
+  An unsupported source-sufficiency assertion does not refute the event relation.
+  Keep incomplete source scope distinct from a completed insufficiency audit.
+- [x] Replay all four K2 raw C02 judgments. A01 is uncertain and A02 supported;
+  application conjunction correctly preserves uncertain. The SE mismatch precedes
+  aggregation. Both SE reasons retain grounded `source_insufficient` annotations;
+  no automatic label correction or claim about the internal interpretation.
+- [x] Record an additional confound: J1/J2/K1 C03.A02 discusses timing, while K2
+  discusses hook identity. Family, target phrasing and neighbor cues were not
+  independently crossed. Their causal contributions remain unproved.
+- [x] Pass **124 offline tests**: 80 current checks plus all 44 preceding execution
+  checks, Ruff lint/format and strict mypy on four scripts. Correct initial local
+  formatting/module-path findings; preserve both verification records. All
+  **5,697 historical fingerprints** verify. Tests block real HTTP; **zero new
+  inference or daemon calls**. Seal audit assets and documentation.
+- [x] Propose **36 calls**, six families × three forms × both orders: unchanged SE,
+  direct bounded-source BS, unchanged ER. Preserve K2/J2/K1 and add fresh absent,
+  same-instant and different-time scenes. Hold neighboring claims fixed within
+  families; separate new matched recoveries from non-reproduced failures.
+- [ ] If requested, prepare and freeze the SE/BS/ER cases, exact control/treatment
+  requests, source adjudication, scoring, budget and stop rules; verify current
+  metadata and mocked dispatch, then present the plan for separate live approval.
+  The proposal does not prepare or authorize live requests or writer calls.
+
+Private bundle: `data/diagnostics/reviewer-source-sufficiency-audit-v61-2026-10-27/`.
+Production **prompt 61 / graph 9 / fulfillment policy 1**, Blueprint approval,
+historical budgets and nine human ties are unchanged. Human review retains
+feel/emotion, flow, character and story-breaking judgments with machine-prepared
+mechanics. Selective production thinking, writer tests and provider attribution
+remain deferred. All fourteen issue bodies and posted links remain intact; no
+external issue is edited or closed. **Step 19 IN PROGRESS; Step 20 NOT STARTED;
+live calls PAUSED; full workflow canary ON HOLD.**
 
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 
