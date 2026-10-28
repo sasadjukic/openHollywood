@@ -7976,11 +7976,12 @@ and [approved version amendment](../docs/handoffs/reviewer-source-sufficiency-ba
   analysis scripts; replay exact captures, requests, seals, annotation bindings,
   aggregation, recoveries, denominators and sensitivity. Update the issue index;
   preserve fourteen issue bodies and user-posted links. No external issue edit.
-- [ ] Preserve K2 failures, L1 failures/recoveries and qualified craft wording as
+- [x] Preserve K2 failures, L1 failures/recoveries and qualified craft wording as
   local regressions; audit K2/L1 predicate, timing and source-scope contrasts.
   Require a materially different, locally justified hypothesis before another
   live plan. Evaluate any typed claim/source-obligation projection only against
   validated premises and complete scope; no silent label correction or rollout.
+  Completed in the local source-obligation audit below.
 
 Private amendment/live/analysis roots begin
 `data/diagnostics/reviewer-source-sufficiency-amendment-v61-2026-10-28`.
@@ -7989,6 +7990,181 @@ historical budgets and nine human ties remain unchanged. Human feel/emotion,
 flow, character and story-breaking judgments remain separate from machine-prepared
 mechanics. **Step 19 IN PROGRESS; Step 20 NOT STARTED; further inference PAUSED;
 full workflow canary ON HOLD.**
+
+### Local K2/L1 source-obligation audit 2026-10-28
+
+**Status: COMPLETE — local regressions and audit; zero inference.** See the
+[audit](../docs/handoffs/reviewer-source-obligations-audit-2026-10-28.md) and
+[proposed BS/PO/ER comparison](../docs/handoffs/reviewer-source-obligations-proposal-2026-10-28.md).
+
+- [x] Preserve **36 raw captures / 252 component regressions**, exact requests,
+  source bindings and sealed historical annotations. Add four focused K2
+  SE/BS × OR/RO fixtures: raw source labels uncertain, expected unsupported,
+  supported conditional, correct uncertain whole-claim aggregation. No repair
+  or rescoring; historical **SE 8/12, BS 10/12, ER 12/12** remains unchanged.
+- [x] Audit twelve K2/L1 form/order records and six complete source/form records.
+  Both have one referent, literal opposite states and absent observation timing;
+  both have a neighboring referent qualification. BS recovers **L1 2/2**, **K2 0/2**
+  valid opportunities. Family, predicate/negation wording and narrative were not
+  independently crossed; no causal claim about negation, internal reasoning or
+  the provider follows. Retain two qualified craft-wording fixtures separately.
+- [x] Add **42 authored local contrasts** and six predicate-implication controls.
+  Separate identity, literal opposition and same-instant evidence; bind a local
+  typed projection to exact source, claim and observation pair. Distinguish a
+  complete visible packet from an incomplete declared record, incomplete review,
+  conflicting authority and figurative/compatible predicates. A deliberate false
+  premise proves the algebra does not validate semantic truth or authorize edits.
+- [x] Pass **164 offline tests**: 107 current checks plus all 57 preceding execution
+  checks, Ruff lint/format and strict mypy on four scripts. Preserve the initial
+  passing run and a scope-check lint finding, corrected before final verification.
+  Verify **6,488 historical fingerprints**; real HTTP blocked, **zero daemon and
+  inference calls**. Record audit/documentation seals. All fourteen issue bodies
+  and user-posted GitHub links remain intact; no external issue edited or closed.
+- [x] Propose a materially different **48-call BS/PO/ER** diagnostic: eight cases,
+  three arms, both orders; unchanged BS/ER controls and a primitive-obligation
+  ledger with application-derived source/event labels. Retain K2/L1 and add six
+  fresh families, including context-only timing, incomplete declared scope and
+  different referents. Require accurate premises and actual known/fresh matched
+  recoveries; wrong premises cannot earn credit through a correct aggregate.
+  This is a proposal only, not a frozen budget, prepared request or live approval.
+- [x] If requested, prepare/freeze the proposed cases, obligations, exact controls
+  and PO requests, source gold, scoring, 48-call budget and stops. Capture current
+  metadata, verify mocked execution and scope/citation feasibility, then present
+  the frozen plan before separate live approval. Do not launch automatically.
+  Completed in the local BS/PO/ER preparation below; live execution is not approved.
+
+Private bundle: `data/diagnostics/reviewer-source-obligations-audit-v61-2026-10-28/`.
+Production **prompt 61 / graph 9 / fulfillment policy 1**, Blueprint approval,
+historical budgets and nine human ties remain unchanged. Human feel/emotion, flow,
+character and story-breaking review stays separate from machine-prepared mechanics.
+No production qualification, writer dispatch or story-quality improvement is
+claimed. **Step 19 IN PROGRESS; Step 20 NOT STARTED; live calls PAUSED;
+full workflow canary ON HOLD.**
+
+### Frozen BS/PO/ER source-obligation preparation 2026-10-28
+
+**Status: COMPLETE — locally frozen and verified; 0/48 inference calls used.** See
+the [frozen plan](../docs/handoffs/reviewer-source-obligations-frozen-plan-2026-10-28.md).
+
+- [x] Freeze **48 attempts**, sixteen per arm, eight cases × BS/PO/ER × both source
+  orders, zero retries/replacements. Preserve **eight historical K2/L1 BS/ER wire
+  requests** exactly. Keep three-arm sets adjacent with balanced arm orders;
+  first twelve K2/L1 cells are the included delivery sentinel, four per arm.
+- [x] Author six fresh full-scene families M1–M6 (**329 / 320 / 324 / 327 / 325 /
+  332 original words**): occupancy/negation and antonym missing-time transfer,
+  context-only clock key, explicit different times, unavailable declared-source
+  appendix and different objects at a shared instant. Freeze **24 case/form
+  records, 72 whole claims, 168 component specifications**, scope audits, registries
+  and exact requests. Gold remains outside the requests; no literary winner given.
+- [x] Freeze PO's target-only protocol: independently return same-entity,
+  literal-opposition and same-instant statuses/reasons/references. Bind and derive
+  source/event labels separately; keep projections provisional until semantic
+  inspection. The full visible-source review, every primitive status, explanation
+  and citation must be inspected. Wrong premises cannot earn recovery through a
+  correct derived label. Preserve other components and the independent conditional.
+- [x] Audit M3's context key as prose-linked observation provenance rather than an
+  assignment proving an action. For M5, explicitly judge declared S including its
+  unavailable appendix, without substituting visible V or inventing hidden facts.
+  All **72 authored witness unions** fit within eight refs; maximum **six**. The
+  largest authored reason total is **495 characters** within the unchanged 2,000
+  per-claim limit, including all PO primitives and the conditional.
+- [x] Freeze screens: **48 valid deliveries, 16 usable PO targets / 48 correct and
+  grounded primitives, 16 usable ER targets, 24 M3–M6 control targets, 48 usable
+  conditionals**, both retained L1 BS targets and no protected BS-to-PO loss.
+  Require a contemporary valid matched recovery in K2 and at least one of M1/M2;
+  distinguish alignment, limited evidence and incomplete outcomes. No promotion.
+- [x] Freeze per-call **24,000 input / 16,000 combined generated tokens / 600 active
+  seconds**, context 40,000; total **1,152,000 / 768,000 / 28,800 seconds**. Largest
+  rough input estimate **10,075 tokens**. Archived-rate reservation **$1.26720**,
+  $1.50 planning allowance; actual tariff/billing and unreported token splits remain
+  unknown. No enforced billed-dollar ceiling or separate thinking allowance.
+- [x] Capture three metadata-only responses: **Ollama 0.40.12**, unchanged DeepSeek
+  digest/capabilities. Preserve the initial sandbox socket denial. No prose sent,
+  no inference performed. Retain twelve-call delivery and global transport,
+  version/model, usage, timing, truncation, thinking, tamper, cancellation and
+  ambiguous-dispatch stops; terminal evidence and unknown usage stay observable.
+- [x] Pass **450 offline tests**: 286 current preparation checks, all 107 preceding
+  audit checks and all 57 preceding execution checks. Ruff lint/format and strict
+  mypy pass on fifteen scripts. Preserve the initial sandbox stall/type findings
+  and the 449-pass run that caught a stale SE resource-ratio selector; correct to
+  BS and pass the full rerun. Real HTTP blocked throughout all tests. Verify
+  **6,548 historical fingerprints** and seal **106 preparation artifacts** plus
+  this public plan; no live approval file or live ledger exists.
+- [x] Obtain separate approval before sending the frozen full prose/context/claims
+  and PO obligation map to Ollama Cloud through the local daemon, within **48
+  attempts / 16 per arm**. Execute only the approved sealed plan and inspect all
+  results before another proposal. Do not start a writer test or the canary.
+
+Private bundle: `data/diagnostics/reviewer-source-obligations-v61-2026-10-28/`.
+Plan SHA-256: `c4bb1cb9824ae410db133f89b924bba864f3b9ec7ecb13bc53046a4aae7a1bd5`.
+Production **prompt 61 / graph 9 / fulfillment policy 1**, Blueprint approval,
+historical budgets/scores and nine human ties remain unchanged. Humans retain
+feel/emotion, flow, character and story-breaking judgments with machine-prepared
+mechanics. All fourteen issue bodies and user-posted links remain intact; no
+external issue is edited or closed. **Step 19 IN PROGRESS; Step 20 NOT STARTED;
+live calls PAUSED; full workflow canary ON HOLD.**
+
+### Executed BS/PO/ER source-obligation comparison 2026-10-28
+
+**Status: COMPLETE — 48/48 calls, sixteen per arm; retain a bounded source-obligation
+recovery signal only.** See the
+[results](../docs/benchmark_reports/reviewer-source-obligations-v61-results-2026-10-28.md).
+This execution supersedes the preparation's zero-call/no-approval state above.
+
+- [x] Record approval of the exact frozen payload/destination/plan. Complete
+  **48 reservations / 48 dispatches / 48 responses**, all valid, with no probe,
+  retry, replacement, truncation or terminal stop. The first-twelve delivery
+  sentinel passes **4/4 per arm**. Keep all requests/settings/scoring/stops fixed.
+- [x] Preserve **eight exact historical K2/L1 BS/ER wire controls**, the 106 sealed
+  preparation artifacts and **6,548 historical fingerprints**. All **97 runtime
+  version observations** match **Ollama 0.40.12** and the model metadata stays
+  unchanged. All responses contain high-thinking output, excluded from grading.
+- [x] Inspect **48 masked reports / 144 whole reasons / 336 component reasons /
+  48 additional PO primitive judgments** against full original/revision/context.
+  Seal source-bound notes before decoding identities; disclose partial masking.
+  Every PO primitive is correct, grounded and complete; both projections pass
+  in all sixteen PO reports. Preserve raw outputs without repair or relabelling.
+- [x] Record correct/usable targets **BS 11/16, PO 16/16, ER 16/16**. PO recovers
+  all **five** contemporary BS failures: **K2 OR/RO, M1 OR/RO, M2 OR**. These are
+  label recoveries; BS already notices missing timing. Known/fresh usable targets
+  are BS **2/4 + 9/12**, PO and ER each **4/4 + 12/12**.
+- [x] Preserve **48/48 PO primitives, 24/24 M3–M6 control targets, 48/48 conditionals,
+  both L1 BS targets and 10/10 unknown-time PO/ER pairs**, with **zero protected
+  BS-to-PO or BS-to-ER losses**. In M5 both source and event remain uncertain
+  because declared S includes the unavailable appendix. All frozen screens pass:
+  **`retain_source_obligation_recovery_signal_only`**. No production qualification.
+- [x] Retain one qualified BS/L1/OR craft-wording concern about “seating Tavi.”
+  Strict BS usable whole claims/components/non-targets/complete reports are
+  **42/48, 106/112, 95/96, 10/16**; accepting that wording gives **43/48, 107/112,
+  96/96, 11/16**. Targets, five recoveries and the frozen decision are unchanged.
+  PO/ER each have **48/48, 112/112, 96/96, 16/16**. No human preference measured.
+- [x] Record **476,614 input / 191,195 combined generated tokens / 738.21 active
+  request seconds**. All caps hold. PO uses **11.3% more generated tokens / 10.1%
+  more active time than BS in aggregate**, but less per usable report. Active
+  time excludes local verification overhead. Archived-rate estimate **$0.3724182**;
+  actual billing and all reasoning/final token splits remain unknown.
+- [x] Pass **84 post-run offline tests**, Ruff lint/format and strict mypy on seven
+  scripts; preserve the first 83-test passing attempt with one lint finding.
+  Replay all captures, check version/request/inspection bindings, wrong-premise
+  rejection and precision sensitivity. The preparation's sealed **450-test**
+  verification remains intact. No real HTTP during post-run tests or analysis.
+- [ ] Before another live proposal, preserve failed-BS/successful-PO pairs and
+  scope/time/identity controls as local regressions; audit how production would
+  obtain obligations and complete source scope without assuming hidden evidence,
+  confusing assignments with performed facts, or permitting stale/false premises.
+  Only locally justified generalization work should lead to a separately frozen
+  comparison. Do not authorize writer edits or the full workflow canary.
+
+Private evidence: `data/diagnostics/reviewer-source-obligations-v61-2026-10-28/`
+and sibling `-live/`, `-analysis/` bundles. The successful treatment combines
+model premise assessment with application-owned projection; it does not show that
+direct BS verdicts are repaired or that arbitrary literary claims fit this algebra.
+Production **prompt 61 / graph 9 / fulfillment policy 1**, Blueprint approval,
+historical scores/budgets and nine human ties remain unchanged. Humans retain
+feel, flow, character and story-breaking judgments with machine-prepared mechanics.
+All fourteen issue bodies and posted links are preserved; no external issue is
+edited or closed. **Step 19 IN PROGRESS; Step 20 NOT STARTED; further live calls
+PAUSED; full workflow canary ON HOLD.**
 
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 
