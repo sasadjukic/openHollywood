@@ -7856,10 +7856,11 @@ See the [audit](../docs/handoffs/reviewer-source-sufficiency-audit-2026-10-27.md
   direct bounded-source BS, unchanged ER. Preserve K2/J2/K1 and add fresh absent,
   same-instant and different-time scenes. Hold neighboring claims fixed within
   families; separate new matched recoveries from non-reproduced failures.
-- [ ] If requested, prepare and freeze the SE/BS/ER cases, exact control/treatment
+- [x] If requested, prepare and freeze the SE/BS/ER cases, exact control/treatment
   requests, source adjudication, scoring, budget and stop rules; verify current
   metadata and mocked dispatch, then present the plan for separate live approval.
   The proposal does not prepare or authorize live requests or writer calls.
+  Local preparation is completed below; inference still requires separate approval.
 
 Private bundle: `data/diagnostics/reviewer-source-sufficiency-audit-v61-2026-10-27/`.
 Production **prompt 61 / graph 9 / fulfillment policy 1**, Blueprint approval,
@@ -7869,6 +7870,125 @@ mechanics. Selective production thinking, writer tests and provider attribution
 remain deferred. All fourteen issue bodies and posted links remain intact; no
 external issue is edited or closed. **Step 19 IN PROGRESS; Step 20 NOT STARTED;
 live calls PAUSED; full workflow canary ON HOLD.**
+
+### Frozen SE/BS/ER source-sufficiency preparation 2026-10-27
+
+**Status: COMPLETE — locally frozen and verified; 0/36 inference calls used.**
+See the [frozen plan](../docs/handoffs/reviewer-source-sufficiency-frozen-plan-2026-10-27.md).
+
+- [x] Freeze **36 attempts**, twelve each SE/BS/ER, zero retries/replacements:
+  preserved K2/J2/K1 plus three fresh full-scene families L1/L2/L3, both source
+  presentation orders. Preserve all **twelve historical SE/ER wire controls**.
+  Adjacent triples use each of the six form orders twice; first twelve K2/L1
+  cells constitute the delivery sentinel within the same budget.
+- [x] Freeze **18 family/form records, 54 whole claims and 126 components**, exact
+  original/revision/context artifacts, source registries, claims, requests and
+  prospective gold. Fresh originals have **327 / 337 / 341 words**. Change only
+  the target source-sufficiency proposition and matching whole C02 text within
+  sets; retain EC instructions, separate conditional, assignment/craft controls
+  and neighboring qualifications. All forms use high thinking.
+- [x] Audit complete source scope: no context-only observation time changes BS
+  versus SE gold. Unknown ER relations stay uncertain while the corresponding
+  finite-source sufficiency assertion is unsupported. Preserve explicit same-
+  and different-time controls. Claims under assessment are not story evidence.
+  All **54 witness unions fit within eight references; maximum six**.
+- [x] Freeze scoring: 36 valid deliveries, twelve usable targets each BS/ER,
+  twelve individual known-time control targets, 36 conditionals, no protected
+  SE-to-BS/ER loss and a contemporary valid matched recovery in each of K2/L1.
+  Invalid SE is not a recovery opportunity; correct controls that do not reproduce
+  a failure cannot create recovery credit. Record label and source recoveries,
+  alignment without reproduced recovery, limited evidence and incomplete outcomes
+  separately. No production qualification, historical rescoring or writer dispatch.
+- [x] Freeze per-call **24,000 input / 16,000 combined generated tokens / 600 active
+  seconds**, context 40,000; total **864,000 / 576,000 / 21,600 seconds**. Archived
+  reference reservation **$0.95040**, retained $1 planning allowance; current
+  tariff/actual billing unknown, no enforced billed-dollar ceiling. Largest rough
+  quarter-byte estimate **8,761 tokens**; actual counts remain unknown pre-inference.
+- [x] Freeze twelve-call sentinel and global transport, version/model, usage,
+  thinking-observation, truncation, timing, cancellation, tamper and ambiguous-
+  dispatch stops. Preserve terminal error chains and unknown usage; no retry,
+  budget reallocation or semantic early stop. Resume only at a clean completed
+  boundary within unspent allocation.
+- [x] Capture three successful metadata-only responses: **Ollama 0.40.11**,
+  unchanged DeepSeek digest/capabilities. Retain the earlier sandbox socket denial.
+  **Zero inference calls; no prose sent.** No live approval file or live ledger.
+- [x] Pass **416 offline tests**: 292 current checks, all 80 preceding audit checks
+  and all 44 prior execution checks. Ruff lint/format and strict mypy pass on
+  thirteen scripts. Exercise all 36 mock dispatches, restart, stops, malformed
+  output, sealed inspection, scoring and no-approval refusal. The initial sandbox
+  attempt stalled before mock dispatch; the complete permitted offline rerun passes
+  with real HTTP blocked. Verify **5,743 historical fingerprints** and seal the plan.
+- [x] Obtain separate approval before sending the frozen full prose/context/claims
+  payload to Ollama Cloud via the local daemon, within the 36-call ceiling. Do not
+  start a writer test, production prompt rollout or the full workflow canary.
+  Approved and executed with the authorized 0.40.12 amendment on 2026-10-28 below.
+
+Private bundle: `data/diagnostics/reviewer-source-sufficiency-v61-2026-10-27/`,
+including the complete casebook, exact wire requests and `plan.json` seal.
+Production **prompt 61 / graph 9 / fulfillment policy 1**, Blueprint approval,
+historical budgets and nine human ties remain unchanged. Humans retain feel/emotion,
+flow, character and story-breaking judgments with machine-prepared mechanics.
+All fourteen issue bodies and posted GitHub links remain intact; no external issue
+is edited or closed. **Step 19 IN PROGRESS; Step 20 NOT STARTED;
+inference PAUSED; full workflow canary ON HOLD.**
+
+### SE/BS/ER source-sufficiency execution 2026-10-28
+
+**Status: COMPLETE — 36/36 calls; limited evidence, no advancement.** See the
+[results](../docs/benchmark_reports/reviewer-source-sufficiency-v61-results-2026-10-28.md)
+and [approved version amendment](../docs/handoffs/reviewer-source-sufficiency-baseline-amendment-2026-10-28.md).
+
+- [x] Capture current **Ollama 0.40.12** metadata and unchanged DeepSeek metadata.
+  Preserve the original zero-call plan and seal. All **56 experimental input
+  files / 36 prepared requests** remain byte-identical; twelve historical SE/ER
+  wires remain exact. The new approval binds the original parent, amended plan
+  and approved daemon version, retaining the combined **36-call** ceiling.
+- [x] Pass **419 offline tests**, Ruff lint/format and strict mypy before inference.
+  Correct stale version-test expectations caught by initial verification; rerun
+  the whole suite successfully. Seal **84 artifacts / 5,833 historical fingerprints**.
+- [x] Execute **36 reservations / 36 dispatches / 36 completed responses**, twelve
+  per form, zero retries/replacements/probes/terminal stops. All **36 deliveries
+  validate**; first-twelve sentinel is 4/4 per form. All **73 runtime version
+  observations** match 0.40.12; selected model metadata remains frozen.
+- [x] Inspect and seal **36 masked reports / 108 whole reasons / 252 component
+  reasons** before trial-key decoding. Exclude thinking/resources from the review
+  view; retain partial masking and assistant factual-audit limitations.
+- [x] Record correct and usable targets **SE 8/12, BS 10/12, ER 12/12**. BS recovers
+  both fresh **L1** SE label failures but neither known **K2** failure: **2/2 versus
+  0/2** valid matched opportunities. Explanations already recognize missing timing;
+  both recoveries are labels, not grounding repairs. K2 SE and BS raw component
+  judgments remain uncertain before correct whole-claim aggregation.
+- [x] Record **6/8 BS/ER unknown-timing pairs**, **12/12 known-time targets** and
+  **36/36 conditionals** usable, with no protected SE-to-BS/ER paired-loss flags.
+  All assignment/craft primary labels remain supported. Preserve two qualified
+  SE craft-wording concerns: L2/RO before/until timing and L1/OR hand-guidance
+  attribution. Relaxing both leaves target scores, recoveries and decision unchanged.
+- [x] Retain **`retain_limited_evidence_no_advancement`**. Failed screens are
+  `all_BS_targets` and `known_and_fresh_recoveries`. The L1 recovery is diagnostic
+  evidence; BS is not qualified. A clean delivery batch does not establish a
+  permanent fix or an Ollama-update effect. Historical gold/scores stay unchanged.
+- [x] Record **337,268 input / 113,756 generated tokens / 502.942 active seconds**.
+  Maximum call **9,681 / 5,336 / 24.144 seconds** stays within frozen ceilings.
+  Archived-rate estimate **$0.2376876**; actual billing and reasoning/final-token
+  splits remain unknown. All forms use high thinking; no production latency or
+  thinking-on/off conclusion is drawn.
+- [x] Pass **57 post-run offline tests**, Ruff lint/format and strict mypy on seven
+  analysis scripts; replay exact captures, requests, seals, annotation bindings,
+  aggregation, recoveries, denominators and sensitivity. Update the issue index;
+  preserve fourteen issue bodies and user-posted links. No external issue edit.
+- [ ] Preserve K2 failures, L1 failures/recoveries and qualified craft wording as
+  local regressions; audit K2/L1 predicate, timing and source-scope contrasts.
+  Require a materially different, locally justified hypothesis before another
+  live plan. Evaluate any typed claim/source-obligation projection only against
+  validated premises and complete scope; no silent label correction or rollout.
+
+Private amendment/live/analysis roots begin
+`data/diagnostics/reviewer-source-sufficiency-amendment-v61-2026-10-28`.
+Production **prompt 61 / graph 9 / fulfillment policy 1**, Blueprint approval,
+historical budgets and nine human ties remain unchanged. Human feel/emotion,
+flow, character and story-breaking judgments remain separate from machine-prepared
+mechanics. **Step 19 IN PROGRESS; Step 20 NOT STARTED; further inference PAUSED;
+full workflow canary ON HOLD.**
 
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 
