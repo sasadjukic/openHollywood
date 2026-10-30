@@ -1163,6 +1163,50 @@ When a FastAPI route or response model changes, regenerate the shared SDK:
 pnpm contracts:generate
 ```
 
+Inspect saved ordinary-critic reviews without a running model or daemon:
+
+```powershell
+uv run --extra api python scripts/review_evidence_export.py inventory --database data/open_hollywood.db
+uv run --extra api python scripts/review_evidence_export.py export `
+  --database data/open_hollywood.db `
+  --invocation-id "REPLACE_WITH_EXACT_INVOCATION_UUID" `
+  --output data/diagnostics/saved-review-evidence
+```
+
+Replace the invocation placeholder with an ID from the inventory. Repeat
+`--invocation-id` for up to twelve distinct reviews. Inventory lists metadata
+candidates; export validates their complete sources. The supported contract is
+ordinary v61/schema-7 criticism in a matching graph-9/v61 run. Older, missing or
+inconsistent records produce explicit non-results without model calls.
+
+The read-only command writes local JSON, Markdown and a manifest to the selected
+destination, preserving complete original reviews and separately labeled
+application text comparisons. It compares each exact assignment field with all
+of its selected evidence handles; matching text does not establish fulfillment
+or literary quality. Original/revision correspondence remains unresolved. An
+identical repeat verifies and reuses the destination; changed or partial output
+is never overwritten. No prompts, database records, acceptance gates or writer
+routes change. See [ADR 0038](docs/adr/0038-read-only-review-evidence-export.md).
+
+Export the separately supported October 16 diagnostic-probe archive:
+
+```powershell
+uv run --extra api python scripts/probe_review_export.py `
+  --archive data/diagnostics/production-fulfillment-v61-2026-10-16-live `
+  --trial-id s19101-elara-clean-initial `
+  --output data/diagnostics/probe-review-export
+```
+
+Repeat `--trial-id` for up to twelve distinct trials. The sibling prepared archive
+must also be present. This command verifies the registered archive seals, retains
+raw responses, normalized reviews and native audits, and writes an index plus
+Markdown/JSON pairs. Synthetic context and absent production creators are explicit.
+It rechecks sources before publication; changed or partial output is never
+overwritten. The bundles contain unpublished source material and are local
+operator artifacts. No database or model call is made. See
+[ADR 0039](docs/adr/0039-diagnostic-probe-review-export.md) and the
+[twelve-capture export report](docs/handoffs/reviewer-probe-export-results-2026-10-30.md).
+
 Inspect the active revision or roll back one migration during development:
 
 ```powershell

@@ -8596,11 +8596,11 @@ and [proposed read-only export](../docs/handoffs/reviewer-copy-integration-next-
   original-review visibility, eligibility and non-result states, retry/replay
   identity and ADR/schema/migration boundaries. No production registration,
   API/client change, persisted application schema or automatic writer route.
-- [ ] Consider porting the verified core into a **tracked read-only operator
-  exporter**, with an ADR and local qualification. Inventory saved-record
-  compatibility before selecting at most twelve real reviews; report missing
-  coverage without new inference. Require a materially different observed
-  selection failure before proposing another live diagnostic.
+- [x] Port the verified core into a **tracked read-only operator exporter** with
+  ADR 0038 and local qualification, as recorded below. Inventory saved-record
+  compatibility before selecting at most twelve real reviews. No compatible
+  SQLite reviews were found; preserve that coverage gap without inference or
+  substituted fixtures. Semantic selection remains unqualified.
 
 Private evidence: `data/diagnostics/reviewer-copy-integration-design-v61-2026-10-30/`.
 Live/daemon calls **zero**; all gateway responses in verification are fixtures.
@@ -8609,6 +8609,135 @@ checkpoint remain unchanged. Human feel, flow, character and story-breaking
 review remains the quality authority. All fourteen issue bodies/posted links are
 preserved; no issue closed. **Step 19 IN PROGRESS; Step 20 NOT STARTED; live calls
 PAUSED; full workflow canary ON HOLD.**
+
+### Tracked read-only review export 2026-10-30
+
+**Status: COMPLETE — bounded implementation and inventory; compatible saved-review
+inspection has zero coverage.** See the
+[implementation and inventory report](../docs/handoffs/reviewer-copy-export-results-2026-10-30.md),
+[ADR 0038](../docs/adr/0038-read-only-review-evidence-export.md) and
+[next-step proposal](../docs/handoffs/reviewer-copy-export-next-steps-2026-10-30.md).
+
+- [x] Add a typed, provider-independent comparison core, read-only SQLite adapter
+  and operator CLI. Require exact successful creator/target/run identity, v61
+  messages recovered by stored hash, canonical versions and full native catalogs.
+  Preserve original critique/audit data separately from literal comparisons.
+  Keep saved met/unmet checks unchanged and original/revision mapping unresolved.
+- [x] Export JSON, literal-source Markdown and a manifest for one to twelve exact
+  invocation IDs. Validate in one read transaction; never initialize or migrate
+  the database. Reject credential-bearing data before creating output. Identical
+  repeats verify without writing; changed or partial destinations are preserved.
+  Recompute comparisons before publication. No production route or API change.
+- [x] Inventory **54 non-test-path databases** from **1,386 discovered files**.
+  The **1,712 critic rows / 1,254 distinct invocations** contain no schema-7 native
+  audits and no prompt version above 33. The default database independently has
+  147 metadata rows and zero candidates. **Zero compatible reviews selected or
+  inspected**, against a maximum of twelve; no older review, fake-gateway fixture
+  or probe capture is substituted. Main database hashes remain unchanged.
+- [x] Pass **63 focused tests**, including twelve source/status fixtures, exact
+  view hashing, native status preservation, catalog parity, successful retries,
+  unavailable/mismatched sources, SQLite read-only and concurrent snapshots,
+  repeat/partial-output handling and credential guards. Repository-wide Python
+  Ruff lint/format and strict mypy pass on **207 files**; the full Python suite
+  passes **1,160 tests in 324.19 seconds**, including the focused tests. Exact
+  outputs are retained in the private verification record.
+- [x] Complete the bounded **zero-inference provenance audit** below on twelve
+  pinned ordinary-v61 probe captures. Their exact source chains justify a
+  separately labeled diagnostic adapter proposal. They do not fill the missing
+  persisted-production-review coverage or justify further inference.
+
+Private evidence: `data/diagnostics/reviewer-copy-export-v61-2026-10-30/`.
+Live/daemon calls **zero**. Production **prompt 61 / graph 9 / fulfillment policy
+1**, Blueprint checkpoint, historical scores and prior human review remain
+unchanged. All fourteen issue bodies/posted links are preserved; no issue closed.
+Literal matching supplies mechanical review assistance, not a literary score or
+writer permission. **Step 19 IN PROGRESS; Step 20 NOT STARTED; live calls PAUSED;
+full workflow canary ON HOLD.**
+
+### Saved ordinary-v61 probe provenance audit 2026-10-30
+
+**Status: COMPLETE — bounded local audit; separate adapter proposed.** See the
+[provenance audit](../docs/handoffs/reviewer-probe-provenance-audit-2026-10-30.md)
+and [adapter proposal](../docs/handoffs/reviewer-probe-adapter-next-steps-2026-10-30.md).
+
+- [x] Inventory eighteen ordinary-v61 critic probes, seventeen validated and one
+  failed. Pin **twelve** before detailed inspection: six initial reviews covering
+  clean/defect/unmet cases and both successful retries, plus all six post-reviews.
+  Preserve failed predecessors without promoting them or substituting samples.
+- [x] Verify all twelve request/source/response/attempt chains against sealed
+  preparation, reservation and live records. Reproduce **14 request snapshots**
+  including the two retry predecessors, all twelve successful normalized results
+  and native audits, and six writer outputs used by post-reviews. Two unselected
+  parent critiques are sealed lineage dependencies only, not additional reviews.
+- [x] Bind **24 native checks / 55 selected excerpt instances** to complete
+  catalogs and exact offsets. Preserve **21 met / 3 unmet**, three raw-to-audit
+  advice additions and three raw-reject-to-revise normalizations. All 55 excerpts
+  differ from assignment wording; this is no semantic failure or repair gate.
+  Distinguish six recovered old prose bodies from visible historical repair
+  quotations. Retain synthetic probe identities and null production creators.
+- [x] Pass **81 tests: 35 local audit/regression + 46 existing comparison-core**;
+  Ruff lint/format and strict mypy pass on three local scripts. Preserve initial
+  verification findings about application-rendered advice and JSON/source-path
+  typing. Verify **278 archive files**, the historical seals and **483 upstream
+  source files**, **109 frozen implementation files**, and the current **202-file
+  Python baseline**; counts overlap. No historical capture or score changes.
+- [x] Reinspect the known Elena event/endpoint contrast and Elara post-review
+  evidence shift. Correct handle resolution does not establish semantic judgment
+  or preservation. No materially different failure class emerges and no new
+  live comparison is justified or prepared. Keep human literary review separate.
+- [x] Implement and qualify the separate **read-only `diagnostic_probe` export
+  adapter** below. Export the same twelve captures with full raw/normalized/audit
+  records and source/view identity. Preserve synthetic origin, failed-attempt
+  links and unchanged SQLite checks; no fabricated creators or writer authority.
+
+Private evidence: `data/diagnostics/reviewer-probe-provenance-v61-2026-10-30/`.
+Production **prompt 61 / graph 9 / fulfillment policy 1**, Blueprint checkpoint,
+historical scores and prior human review are unchanged. All fourteen issue
+bodies/posted links are preserved; no issue closed. Live/daemon calls **zero**.
+**Step 19 IN PROGRESS; Step 20 NOT STARTED; live calls PAUSED; canary ON HOLD.**
+
+### Diagnostic-probe adapter and exports 2026-10-30
+
+**Status: COMPLETE — tracked adapter and all twelve local exports.** See the
+[implementation/export report](../docs/handoffs/reviewer-probe-export-results-2026-10-30.md)
+and [ADR 0039](../docs/adr/0039-diagnostic-probe-review-export.md).
+
+- [x] Add typed probe records, sealed-file reader and a separate operator CLI.
+  Pin the supported plan/preparation/live hashes; verify full evidence membership,
+  exact attempts, requests, responses, source inputs and post-review lineage.
+  Read archive files as data; never execute historical code or create database
+  records. Preserve synthetic context and null production creator identities.
+- [x] Publish the exact **twelve selected captures** as **26 files / 6,033,980
+  bytes**, with an index, twelve Markdown/JSON pairs and a manifest. Inspect all
+  **24 native checks / 55 selected excerpts** against the prior audit. Preserve
+  raw model content, normalized results, application-rendered advice, source/view
+  hashes, recovered old prose and failed predecessors. No historical rescoring.
+- [x] Run the real CLI twice. The second run returns `reused`; all bytes and file
+  timestamps remain unchanged. Reject modified/partial output, source drift,
+  unsupported contracts, traversal, credential-bearing output and archive-internal
+  destinations before publication. Keep complete saved evidence beside comparisons.
+- [x] Pass **83 focused tests: 37 new adapter + 46 existing comparison-core**,
+  repository-wide Ruff lint/format and strict mypy on **212 Python files**. Retain
+  the full-suite pass of **1,197 tests in 368.97 seconds** in the verification
+  record. Preserve initial sandbox temporary
+  directory and authored fixture `scene_id` findings; fix the fixture, not the
+  source validator. No prompt or production workflow change.
+- [x] Verify **202 existing Python files**, **278 source archive files**, **12
+  prior-audit artifacts** and all fourteen issue bodies/posted links unchanged.
+  Keep the existing SQLite exporter and its compatibility boundaries intact.
+- [ ] Select one unresolved semantic workflow issue and establish an unanswered,
+  materially different hypothesis from the existing experiment record before
+  preparing more inference; recommended priority is CW-013's material repair
+  premises and complete source support. These exports are complete operator references;
+  further export infrastructure and new human rescoring are not required for this
+  sample. No new live plan or call budget is proposed.
+
+Private index: `data/diagnostics/reviewer-probe-export-v61-2026-10-30/exports/index.md`.
+Implementation/inspection evidence is in the parent directory. Model/daemon/database
+calls during export **zero**. Production **prompt 61 / graph 9 / fulfillment
+policy 1**, Blueprint checkpoint, historical scores and human literary-review
+authority remain unchanged. No issue closed. **Step 19 IN PROGRESS; Step 20 NOT
+STARTED; inference PAUSED; full workflow canary ON HOLD.**
 
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 

@@ -177,3 +177,48 @@ twelve compatible saved production reviews. No new inference is proposed;
 production integration and semantic selection remain unqualified. Production
 prompts unchanged, live calls **PAUSED**, canary **ON HOLD**. No external issue
 edited or closed.
+
+**2026-10-30 tracked read-only review export complete:** the
+[implementation report](../docs/handoffs/reviewer-copy-export-results-2026-10-30.md)
+records the typed comparison core, read-only SQLite adapter and operator CLI.
+Original saved critiques and native checks remain separate from deterministic
+text comparisons; there is no semantic reassessment or writer action. **63
+focused tests**, **1,160 full-suite tests** (including those focused tests),
+repository-wide Ruff and strict mypy pass. Inventory of **54
+databases / 1,254 distinct critic invocations** finds **zero compatible v61
+reviews**; no authentic saved-review sample is inspected or replaced with a
+fixture. The [next-step proposal](../docs/handoffs/reviewer-copy-export-next-steps-2026-10-30.md)
+is a bounded local provenance audit of existing ordinary-v61 probe captures
+before considering a separately labeled adapter. No new inference is proposed.
+Production prompts and historical scores are unchanged; live/daemon calls
+**zero**, inference **PAUSED**, canary **ON HOLD**. All fourteen issue bodies and
+posted links remain intact; no external issue edited or closed.
+
+**2026-10-30 saved ordinary-v61 probe provenance audit complete:** the
+[audit](../docs/handoffs/reviewer-probe-provenance-audit-2026-10-30.md) verifies
+**12 pinned successful captures / 24 native checks / 55 selected excerpts**,
+with exact source, request, response, retry and validation provenance. Preserve
+three application-rendered advice additions separately from raw output, and
+recovered old prose separately from visible repair quotations. These remain
+synthetic diagnostic probes, with no persisted production creator. **81 tests**,
+Ruff and strict mypy pass; historical captures, scores and all fourteen issue
+bodies/posted links remain intact. A [separate diagnostic adapter](../docs/handoffs/reviewer-probe-adapter-next-steps-2026-10-30.md)
+is justified and proposed, not implemented. The known event/endpoint and ending
+examples supply no materially different live hypothesis. Zero inference/daemon
+calls; production prompts unchanged, live calls **PAUSED**, canary **ON HOLD**.
+No external issue edited or closed.
+
+**2026-10-30 diagnostic-probe adapter and exports complete:** the
+[implementation report](../docs/handoffs/reviewer-probe-export-results-2026-10-30.md)
+records the separate read-only CLI and all **twelve exported captures / 26 files**.
+Raw responses, normalized reviews and application-rendered audit advice retain
+separate origins; synthetic context and absent production creators remain explicit.
+All **24 native checks / 55 excerpt bindings** match the prior audit. Repeat export
+verifies bytes without writes. **83 focused tests**, **1,197 full-suite tests**
+(including the focused tests), repository-wide Ruff and strict mypy pass.
+Historical captures/scores, the SQLite exporter and all fourteen
+issue bodies/posted links remain unchanged. Mechanical export work is complete;
+prioritize one unresolved semantic question with a materially different hypothesis
+before further inference. Zero model/daemon/database calls during export;
+production prompts unchanged, inference **PAUSED**, canary **ON HOLD**. No external
+issue edited or closed.
