@@ -8381,10 +8381,10 @@ fulfillment policy 1**, Blueprint checkpoint and nine human ties are unchanged.
   fresh full-scene families, both orders and zero retries. Require actual
   matched precision recovery, correct fresh semantic contrasts and no protected
   loss. No reproduced failure means alignment only.
-- [ ] If authorized, prepare and verify the proposed cases, receipts, requests,
-  independent gold, prospective materiality rubric, metadata, budget and stops;
-  show a frozen plan for separate live approval. The proposal is **not prepared,
-  frozen or approved**, and no new call budget is active.
+- [x] Prepare and verify the authorized **32-call PO/EX comparison** on
+  **2026-10-30**, recorded below. Freeze cases, receipts, requests, independent
+  gold, materiality scoring, metadata and stops. Separate live approval remains
+  pending; no inference is authorized by preparation.
 
 Private bundle:
 `data/diagnostics/reviewer-retention-materiality-audit-v61-2026-10-30/`.
@@ -8396,6 +8396,165 @@ machine-prepared mechanics. All fourteen issue bodies and posted links remain
 intact; no external issue edited or closed. Production **prompt 61 / graph 9 /
 fulfillment policy 1**, Blueprint checkpoint and nine human ties remain unchanged.
 **Step 19 IN PROGRESS; Step 20 NOT STARTED; live calls PAUSED; canary ON HOLD.**
+
+### Frozen PO/EX semantic-retention and exact-copy preparation 2026-10-30
+
+**Status: COMPLETE — local preparation only; 0/32 inference calls used.** See the
+[frozen plan](../docs/handoffs/reviewer-exactness-frozen-plan-2026-10-30.md).
+
+- [x] Freeze **32 attempts**, sixteen per arm: N8/N4 anchors plus six fresh
+  families × PO/EX × both source orders, zero retries/replacements/reallocations.
+  Preserve **four exact historical PO wires**. EX differs only by one read-only
+  application text-comparison block. Counterbalance paired arm order globally
+  and within families; the first eight calls are the two known-family sentinels.
+- [x] Author six complete scene pairs covering paraphrase, intentional action,
+  fictional quotation, a different actor, negation and an earlier real decision
+  followed by endpoint violation. Freeze **16 case/form records / 48 whole
+  claims / 112 component specifications**, full prose/context and independent
+  semantic/source/primitive gold. Preserve event-versus-endpoint distinctions.
+- [x] Freeze **32 unique exact-text comparisons**, four per family, with both
+  original-to-revision and assignment-to-revision pairs. Bind versions, field
+  pointers, hashes, offsets and quotes; no normalization or semantic inference.
+  Before freezing, add X3/X6 exact assignment-text positives with opposite
+  semantic decision outcomes. No constant-negative comparison shortcut, new
+  calls, or historical control changes. No gold or materiality hints on the wire.
+- [x] Freeze separate semantic, strict-explanation, precision and materiality
+  views. Require **32 valid deliveries**, **112 usable EX components**, all
+  **36 fresh EX semantic judgments / 48 EX premises / 16 projection pairs**,
+  no protected semantic/source/craft loss, zero definite EX literal errors and
+  no increase in ambiguous-referent assertions. Require an actual matched
+  definite-precision recovery; otherwise record alignment only. No story-quality
+  or production qualification; no writer authorization.
+- [x] Capture only version/tags/show: **Ollama 0.40.13** and unchanged selected
+  DeepSeek metadata/digest. Preserve sandbox denial and successful metadata-only
+  retry. Keep high thinking, temperature 0.2, top-p 0.95, seed 20261022, context
+  40,000 and non-streaming. No prose transmission or inference.
+- [x] Freeze **24,000 input / 16,000 combined generated tokens / 600 seconds**
+  per call; aggregate **768,000 / 512,000 / 19,200 seconds**. Preserve unknown
+  billing/splits, eight-call delivery stops, terminal error chains and usage,
+  metadata drift checks, reserve-before-dispatch and clean-boundary-only restart.
+- [x] Pass **468 offline tests** (**251 preparation + 141 local audit + 76 prior
+  execution**), Ruff lint/format and strict mypy on sixteen scripts. Verify
+  **8,294 historical fingerprints**. Preserve verification attempts, including
+  restricted-Windows interruption and local typing/string-layout corrections;
+  rerun the full suite after the positive literal controls. Tests block real
+  HTTP, including all thirty-two mock dispatches and terminal/export fixtures.
+- [x] Obtain separate approval for the frozen plan and full prose/context plus
+  receipt payload to Ollama Cloud through the local daemon. The approved
+  **32/32-call execution** is recorded below; preparation used zero inference.
+
+Private bundle: `data/diagnostics/reviewer-exactness-v61-2026-10-30/`.
+Historical primary/sensitivity scores and all fourteen issue bodies/posted links
+remain intact; no external issue edited or closed. Production **prompt 61 /
+graph 9 / fulfillment policy 1**, Blueprint checkpoint and nine human ties are
+unchanged. Machines prepare literal comparisons; humans retain feel, flow,
+character and story-breaking assessment. **Step 19 IN PROGRESS; Step 20 NOT
+STARTED; full workflow canary ON HOLD.** The approved execution follows.
+
+### PO/EX semantic-retention and exact-copy execution 2026-10-30
+
+**Status: COMPLETE — 32/32 calls; retain limited evidence, no advancement.** See
+the [results report](../docs/benchmark_reports/reviewer-exactness-v61-results-2026-10-30.md).
+
+- [x] Run the approved full prose/context and receipt payload through the local
+  daemon to Ollama Cloud. Reserve, dispatch and complete exactly **32 calls**,
+  sixteen per arm, with zero retries, replacements, repairs or reallocation.
+  The first eight sentinels deliver 4/4 valid per arm; all 32 outputs validate and
+  finish normally. No terminal stop fires. All **65 version observations** match
+  **Ollama 0.40.13**; selected-model metadata/digest and four historical PO wires
+  match the frozen inputs. High thinking and sampling requests remain unchanged.
+- [x] Seal execution before masked export. Read all **32 final reports / 224
+  components / 96 primitives / 288 leaf reasons** against full prose/context and
+  source scope. Seal annotations before opening the trial key. Keep thinking
+  outside semantic evidence; record partial masking and assistant factual review,
+  not blind human preference.
+- [x] Record **112/112 semantically usable components, 48/48 grounded premises,
+  16/16 projection pairs and 48/48 usable whole claims per arm**. All **36 fresh
+  assignment components per arm** pass, including paraphrase, intentional action,
+  fictional attribution, different actor, negation and later reversal. Both arms
+  retain every conditional and craft/factual qualification. No protected semantic,
+  source or craft loss occurs.
+- [x] Preserve two ambiguous verbatim assertions in **C-EX-N8-OR**, C01.A01/A02.
+  Original prose matches the revision exactly; canonical assignment text differs,
+  and the report does not name the comparison source. Retain strict uncertainty
+  separately from independently correct semantic retention. Strict component
+  grounding is **PO 112/112, EX 110/112**. Neither arm makes a definite literal
+  error; there is **no matched precision recovery**. The frozen screen fails only
+  `ambiguous_referents_increased`; no EX benefit or production promotion is claimed.
+- [x] Record **355,464 input / 133,442 combined generated tokens / 611.08 active
+  seconds**. Per-call maxima **12,930 / 6,653 / 39.08 seconds** stay within all
+  limits. EX adds **22.65% input / 3.25% generated tokens / 7.20% active time**
+  relative to PO. Preserve unknown billing and reasoning/final splits; archived
+  rate estimate **$0.2667696** is not a verified charge.
+- [x] Pass **65 offline post-run tests**, Ruff lint/format and strict mypy on six
+  analysis scripts. Replay exact raw captures, wires, seals, annotation bindings,
+  budgets, projections, descriptive tables and ambiguity mutations with HTTP
+  blocked. Verify **95 frozen artifacts / 8,294 historical fingerprints**;
+  preserve the preparation's 468-test record and all historical scores.
+- [x] Preserve the ambiguous N8 pair and fresh semantic successes as regressions;
+  complete the local application-rendered comparison/source-alignment audit
+  recorded below. Do not add EX to production or schedule another repeat from
+  these results; further inference requires a materially different hypothesis.
+
+Private evidence: `data/diagnostics/reviewer-exactness-v61-2026-10-30/`, its
+`-live/` and `-analysis/` companions. All fourteen issue bodies and user-posted
+links remain intact; no external issue edited or closed. Production **prompt 61 /
+graph 9 / fulfillment policy 1**, Blueprint checkpoint and nine human ties remain
+unchanged. No writer calls or prose repairs; human feel, flow, character and
+story-breaking assessment remain separate. **Step 19 IN PROGRESS; Step 20 NOT
+STARTED; further inference PAUSED; full workflow canary ON HOLD.**
+
+### Local copy-display and production source-alignment audit 2026-10-30
+
+**Status: COMPLETE — local regression preservation and audit only.** See the
+[audit](../docs/handoffs/reviewer-copy-rendering-source-alignment-audit-2026-10-30.md)
+and [next-step proposal](../docs/handoffs/reviewer-copy-rendering-next-steps-2026-10-30.md).
+
+- [x] Preserve **32 byte-identical raw captures / 224 component regressions /
+  96 primitive assessments**, all **16 PO/EX pairs**, both N8 orders and all
+  **12 fresh pairs / 168 fresh component regressions**. Keep two EX-N8-OR
+  ambiguous assertions, their exact reasons, original sealed notes and both
+  literal comparison sources. Retain the historical no-advancement outcome,
+  both arms' 112/112 semantic usability, EX's 110/112 strict grounding and zero
+  matched precision recoveries. No historical rescoring or output repair.
+- [x] Add an offline deterministic display prototype and **32 source-bound
+  comparison displays**. Recompute receipts, require exact bindings, name both
+  source roles and preserve versions, field pointers, hashes, offsets and quotes.
+  Use exact Unicode comparison without normalization; unavailable stays unknown.
+  Render no semantic fulfillment verdict, prose repair or writer authorization.
+  Keep raw model explanations separate from the application display.
+- [x] Replay the three existing production-rendering probes and add duplicate-
+  occurrence and whitespace/Unicode probes. All **five** preserve canonical
+  inputs and current production messages. Audit **ten assignment field
+  projections / eleven catalog spans**. Versioned ordinal handles distinguish
+  repeated sentences; quote-only resolution returns the same text for different
+  occurrences. Complete canonical catalog replay recovers offsets; partial,
+  stale or modified catalogs fail. No semantic alignment is inferred.
+- [x] Confirm that compacted old/other-scene drafts retain identity while their
+  prose is absent from the visible critic view. Preserve canonical and rendered
+  hashes and source roles separately. Existing native audits and fulfillment
+  packets retain handles; do not generalize quote-only limitations to every
+  evidence path. Assignment provenance is available, but assigning a passage to
+  a complete semantic obligation remains unqualified.
+- [x] Pass **143 offline tests: 78 audit + 65 unchanged execution checks**, Ruff
+  lint/format and strict mypy on seven scripts. Verify **8,904 historical and
+  production fingerprints**. Preserve the initial verification record: it ran
+  before fixture construction completed and found missing artifacts; construction
+  also exposed tuple/list JSON serialization differences. Rebuild with JSON-native
+  occurrence lists before the successful full check. No production change.
+- [ ] Consider the proposed bounded **zero-inference integration-design pass**:
+  saved-invocation source records, explicit comparison eligibility and twelve
+  source/visibility/replay fixtures. Review a concrete production proposal before
+  integration. No new live comparison or call budget is prepared or authorized;
+  establish a materially different failure class from saved evidence first.
+
+Private evidence: `data/diagnostics/reviewer-copy-rendering-audit-v61-2026-10-30/`.
+Inference/daemon calls **zero**. Production **prompt 61 / graph 9 / fulfillment
+policy 1**, Blueprint checkpoint and nine prior human ties remain unchanged.
+Humans retain feel, flow, character and story-breaking review, supplied with
+machine-prepared mechanics. All fourteen issue bodies/posted links are preserved;
+no external issue edited or closed. **Step 19 IN PROGRESS; Step 20 NOT STARTED;
+live calls PAUSED; full workflow canary ON HOLD.**
 
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 
