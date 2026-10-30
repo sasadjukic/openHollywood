@@ -8148,12 +8148,13 @@ This execution supersedes the preparation's zero-call/no-approval state above.
   Replay all captures, check version/request/inspection bindings, wrong-premise
   rejection and precision sensitivity. The preparation's sealed **450-test**
   verification remains intact. No real HTTP during post-run tests or analysis.
-- [ ] Before another live proposal, preserve failed-BS/successful-PO pairs and
+- [x] Before another live proposal, preserve failed-BS/successful-PO pairs and
   scope/time/identity controls as local regressions; audit how production would
   obtain obligations and complete source scope without assuming hidden evidence,
   confusing assignments with performed facts, or permitting stale/false premises.
   Only locally justified generalization work should lead to a separately frozen
   comparison. Do not authorize writer edits or the full workflow canary.
+  Completed in the local production-scope audit below.
 
 Private evidence: `data/diagnostics/reviewer-source-obligations-v61-2026-10-28/`
 and sibling `-live/`, `-analysis/` bundles. The successful treatment combines
@@ -8165,6 +8166,236 @@ feel, flow, character and story-breaking judgments with machine-prepared mechani
 All fourteen issue bodies and posted links are preserved; no external issue is
 edited or closed. **Step 19 IN PROGRESS; Step 20 NOT STARTED; further live calls
 PAUSED; full workflow canary ON HOLD.**
+
+### Local BS/PO regression and production-scope audit 2026-10-28
+
+**Status: COMPLETE — local preservation and applicability audit only.** See the
+[audit](../docs/handoffs/reviewer-production-scope-audit-2026-10-28.md) and
+[proposed 40-call BS/PO comparison](../docs/handoffs/reviewer-production-scope-proposal-2026-10-28.md).
+
+- [x] Preserve **48 byte-identical raw captures / 336 component regressions**, all
+  **16 BS/PO pairs**, **48 PO primitive judgments**, corresponding ER anchors and
+  **24 M3/M4/M5/M6 control targets**. Retain the **five** exact label recoveries
+  (K2 OR/RO, M1 OR/RO, M2 OR), qualified BS/L1/OR craft concern and unchanged
+  sensitivity. Raw BS reasons already identify the missing timing; these are not
+  newly recovered noticing. No historical labels, gold or scores are repaired.
+- [x] Audit current production assignment checks, version loading, prompt
+  recording, canonical source catalog, scene filtering and repair compaction.
+  Exercise **three deterministic production-rendering probes**: initial, final
+  and revision. The same version identity can accompany a filtered view; the
+  current critic path does not automatically inherit the generic context
+  compiler's omission ledger. These are applicability findings, not demonstrated
+  causes of the diagnostic BS failures.
+- [x] Distinguish approved assignment obligations from PO's independent identity,
+  literal-opposition and common-observation-time premises. Keep finite declared
+  source S, visible V and wider story truth separate. Production obligation/pair
+  creation and source inventory remain unimplemented boundaries; existing
+  canonical paths and IDs do not supply semantic completeness automatically.
+- [x] Add **18 authored scope fixtures** and stale binding/reference/content
+  mutations. Cover omitted/lossy/unreviewed sources, role-confused witnesses,
+  entry-versus-observation time, conflicting authorities, compatible predicates
+  and unresolved identity. Preserve a deliberately false but well-formed premise
+  that passes structure and produces a wrong projection: code does not prove
+  premise truth or actual review coverage. The shadow validator is local only;
+  all projections remain provisional and writer dispatch is disabled.
+- [x] Pass **188 offline tests** (104 audit + 84 unchanged execution), Ruff
+  lint/format and strict mypy on six scripts. Verify **7,414 historical and
+  production fingerprints**. Preserve the first failed verification attempt
+  (local module-name collision and explicit-export type errors) and the corrected
+  passing attempt. No real HTTP during tests; **zero inference or daemon calls**.
+- [x] Propose **40 calls**, ten families × BS/PO × both orders, with K2/M5 exact
+  controls and eight fresh source-provenance contrasts. Keep prompts, thinking,
+  schema and projection semantics unchanged; inspect all **60 PO premises** and
+  both projections, preserve conditional/assignment/craft controls and report
+  genuine recovery separately from alignment. ER anchors remain offline; no new
+  ER generalization result can be claimed. Proposal only, not frozen or approved.
+- [x] If selected, prepare and verify the source-provenance comparison separately,
+  freeze all cases/requests/gold/scoring/stops/budget and present the plan before
+  inference. Any baseline or interface incompatibility must be resolved explicitly
+  during preparation. Do not infer live approval or production promotion from
+  this completed local audit.
+  Completed in the frozen preparation below; inference requires separate approval.
+
+Private bundle: `data/diagnostics/reviewer-production-scope-audit-v61-2026-10-28/`.
+Production **prompt 61 / graph 9 / fulfillment policy 1**, Blueprint approval,
+historical scores/budgets and nine human ties are unchanged. Humans retain feel,
+flow, character and story-breaking judgments with machine-prepared mechanics.
+Source insufficiency is not automatic permission to restate or rewrite prose.
+All fourteen issue bodies and posted GitHub links remain intact; no external
+issue is edited or closed. **Step 19 IN PROGRESS; Step 20 NOT STARTED; live calls
+PAUSED; full workflow canary ON HOLD.**
+
+### Frozen BS/PO source-provenance preparation 2026-10-29
+
+**Status: COMPLETE — local preparation only; 0/40 inference calls used.** See the
+[frozen plan](../docs/handoffs/reviewer-provenance-frozen-plan-2026-10-29.md).
+
+- [x] Freeze **40 attempts**, twenty per arm: ten families × BS/PO × OR/RO, with
+  zero retries, replacements or reallocations. Preserve all **eight K2/M5 wire
+  controls** exactly. Counterbalance paired arm order globally and within each
+  family. The first **eight** calls cover both historical families and orders.
+- [x] Author eight fresh full-scene pairs covering distributed identity/time,
+  entry timestamps, planned timing, a lossy summary with unavailable full source,
+  equal-authority clock conflict, compatible predicates, unresolved identity and
+  distributed different times. Freeze **20 case/form records / 60 whole claims /
+  140 component specifications**, exact requests, scopes, inventories, source
+  witnesses and independent primitive/source/event gold. N6 has negative
+  conditional gold; N7 retains referent uncertainty without inventing identity.
+- [x] Retain BS/PO instructions, schema structure, high thinking, sampling,
+  citation/reason limits and application projection algebra. Evidence-reference
+  enums bind each case's registry. Fresh work-order/summary records fit the
+  existing fact container with explicit attribution; no registry or production
+  prompt changes. All previous PO projections replay unchanged. Authored
+  obligations and scope are diagnostic inputs, not production extraction.
+- [x] Freeze scoring: all **40 deliveries**, **20 PO targets / 60 premises / both
+  projections**, **four historical incomplete-S targets**, **40 conditionals**
+  (36 supported, four unsupported) and **200 assignment/craft components** must
+  be usable, with no protected paired loss. Require every actual contemporary
+  valid BS target failure to recover; no reproduced failure means alignment only.
+  ER remains an offline anchor, with no new ER performance claim.
+- [x] Capture **Ollama 0.40.13** via version/tags/show only. DeepSeek digest,
+  model information and capabilities match the previous selected model. Record
+  the user-disclosed **0.40.12-to-0.40.13** baseline change explicitly: identical
+  historical wires do not imply identical cross-run runtime. Preserve raw
+  metadata and the initial sandbox denial; no prose transmission or inference.
+- [x] Freeze **24,000 input / 16,000 combined generated tokens / 600 seconds per
+  call**, total **960,000 / 640,000 / 24,000 seconds**. Keep high thinking inside
+  the generated allowance, unknown token splits/billing, eight-call delivery
+  stops, global terminal stops and clean-boundary-only continuation. The runner
+  requires an exact plan/payload/destination/baseline approval before live use.
+- [x] Pass **455 offline tests** (267 preparation + 104 preceding audit + 84
+  preceding execution), Ruff lint/format and strict mypy on seventeen scripts.
+  Verify **7,489 historical fingerprints** and seal **102 preparation artifacts**.
+  Preserve the interrupted Windows-sandbox attempt and subsequent failures;
+  correct a missing scoring-label configuration and a case-reference schema-test
+  assumption before the final passing run. Tests block real HTTP, including all
+  forty mock dispatches, malformed outputs, terminal audit/export and accounting.
+- [x] Receive separate user approval of the frozen forty-call plan and full
+  unpublished prose/context destination; bind it to the exact plan hash before
+  execution below. Preserve production prompts, historical scores and human
+  checkpoints; do not start writer repairs, selective-thinking integration or the
+  full workflow canary.
+
+Private bundle: `data/diagnostics/reviewer-provenance-v61-2026-10-29/`. At the local
+preparation boundary no live directory or approval record existed; see the
+separately approved execution below. Production **prompt 61 / graph 9 /
+fulfillment policy 1**, Blueprint approval and nine human ties remain unchanged.
+Source insufficiency does not authorize prose restatement; humans retain feel,
+flow, character and story-breaking judgments with machine-prepared mechanics.
+All fourteen issue bodies and posted links remain intact; no external issue is
+edited or closed. This preparation handed off with inference paused pending
+separate approval; the approved execution is recorded below. **Step 19 IN PROGRESS;
+Step 20 NOT STARTED; full workflow canary ON HOLD.**
+
+### BS/PO source-provenance execution 2026-10-29
+
+**Status: COMPLETE — 40/40 approved attempts; primary result retains limited
+evidence without advancement.** See the
+[results report](../docs/benchmark_reports/reviewer-provenance-v61-results-2026-10-29.md).
+
+- [x] Bind full prose/context authorization to the frozen plan and Ollama Cloud
+  through the local daemon. Complete **20 BS + 20 PO** calls, with **40/40 valid
+  normal finishes**, zero retries/replacements/repairs and no terminal stop.
+  Historical sentinels pass 4/4 per arm. All **81** version observations match
+  **0.40.13**; selected-model checks match; all eight K2/M5 wire controls remain
+  exact. Retain the previous run's separate 0.40.12 baseline.
+- [x] Seal execution and export partially masked reports. Inspect **40 reports,
+  280 component reasons and 60 PO premises** against full sources; seal notes
+  before decoding the key. Do not use thinking as semantic evidence or present
+  this assistant audit as human preference or fully blind inspection.
+- [x] Record **BS 17/20 versus PO 20/20 usable targets**, including **14/16 versus
+  16/16 fresh targets**. PO recovers **K2-RO and N5-OR/RO**, all three contemporary
+  BS failures. All **60 PO premises and 20 pairs of projections** are correct and
+  grounded; no target loss. These are label recoveries from source facts BS also
+  notices. All **240 non-target labels**, **40 conditional judgments** and
+  **80 craft/qualification components** pass; all endpoint violations are noticed.
+- [x] Preserve the conservative explanation-precision findings: **two definite
+  false text-equality assertions in PO N8-OR**, plus **five ambiguous verbatim
+  formulations** in BS N5-OR and PO N2/N4-OR. Assignment meaning is retained in all
+  seven. Primary assignment/craft usability is **193/200**, with three protected
+  PO-loss pairs, so the frozen overall screen does not pass. Distinguish the
+  thirteen overlapping metric entries from the three affected pairs.
+- [x] Seal sensitivity without changing notes, labels or gold. Accepting five
+  ambiguous original-copy readings gives **198/200** and still no advancement.
+  Excluding exactness assertions from a core-meaning-only view gives **200/200**
+  and a diagnostic generalization signal; it does not replace the primary result
+  or erase two definite errors. No finding establishes a story-quality regression.
+- [x] Record **399,848 input / 151,314 generated tokens / 750.72 active seconds**.
+  Per-call maxima **10,790 / 8,979 / 46.59 seconds** remain within all limits.
+  PO uses **23.15% more generated tokens and 21.99% more active time** for equal
+  call counts. Reasoning/final splits and actual billing remain unknown; the
+  archived-rate estimate is **$0.3015312**, not a current verified tariff.
+- [x] Pass **76 post-run offline tests**, Ruff lint/format and strict mypy on eight
+  scripts. Replay every captured request/response and seal; verify the frozen
+  **102 preparation artifacts / 7,489 historical fingerprints** and preserve the
+  preceding 455-test record. Retain the first verification's strict-typing failure
+  and successful tests; an explicit string conversion fixes typing without
+  changing inspection notes. No application code or production prompt changes.
+- [x] Complete local regression preservation and the semantic-retention,
+  exact-copying, explanation-materiality and production-scope audit on
+  **2026-10-30**, recorded below. Preserve historical scores. A new diagnostic
+  hypothesis is proposed; preparation and live approval remain separate.
+
+Private execution/analysis bundles use the frozen preparation's stem with
+`-live` and `-analysis`. All fourteen issue bodies and posted GitHub links remain
+intact; no external issue edited or closed. Retain PO as promising diagnostic
+evidence without production qualification. Production **prompt 61 / graph 9 /
+fulfillment policy 1**, Blueprint checkpoint and nine human ties are unchanged.
+**Step 19 IN PROGRESS; Step 20 NOT STARTED; inference PAUSED; canary ON HOLD.**
+
+### Local retention, copying and explanation-materiality audit 2026-10-30
+
+**Status: COMPLETE — offline work only; zero inference or daemon calls.** See the
+[audit](../docs/handoffs/reviewer-retention-materiality-audit-2026-10-30.md) and
+[proposed PO/EX comparison](../docs/handoffs/reviewer-retention-materiality-proposal-2026-10-30.md).
+
+- [x] Preserve **40 byte-identical raw captures / 280 component regressions**,
+  all **20 BS/PO pairs**, the **three K2-RO/N5-OR/N5-RO recoveries**, and **60 PO
+  premise judgments** with exact sources, application bindings and sealed notes.
+  Keep all seven definite/qualified precision annotations and both existing
+  sensitivities. No new grounding recovery or historical rescoring.
+- [x] Audit all **80 discovery/decision assessments**, representing **20 unique
+  passages in ten families**. Every original-to-revision sentence is identical;
+  every canonical-assignment-to-revision sentence differs. Prior success does
+  not establish semantic discrimination under paraphrase, quotation or changed
+  actor context. Source-bound exactness receipts perform no semantic inference.
+- [x] Add **21 authored contrasts** and an offline inspected-input policy for
+  semantic fulfillment, exact-copy tasks and explanation materiality. Cover
+  paraphrase/action, fictional quotation, actor/polarity, conditional evidence,
+  earlier event versus later endpoint, unavailable text, false repair advice,
+  invalid scope and ambiguous referents. A deliberately false input demonstrates
+  that valid structure is not a truth detector. Keep all report errors visible;
+  no rule dispatches a writer or admits production output.
+- [x] Replay three production-rendering probes unchanged. Confirm literal plan
+  wording remains unnecessary, current-scope obligations differ from event
+  evidence, and exact version/reference binding does not imply full visibility
+  or entailment. Do not infer automatic PO premise/source extraction capability.
+- [x] Pass **217 offline tests** (**141 audit + 76 preceding execution**), Ruff
+  lint/format and strict mypy on six scripts; verify **8,227 fingerprints**.
+  Preserve the first verification's two strict-import errors and passing tests;
+  direct test imports resolve them. Historical preparation, execution, source
+  inspection and primary/sensitivity scores remain unchanged.
+- [x] Propose a materially new **32-call PO/EX** question: can explicit
+  application-owned copy receipts reduce false equality assertions without
+  creating semantic shortcuts? Use unchanged PO controls, N8/N4 anchors, six
+  fresh full-scene families, both orders and zero retries. Require actual
+  matched precision recovery, correct fresh semantic contrasts and no protected
+  loss. No reproduced failure means alignment only.
+- [ ] If authorized, prepare and verify the proposed cases, receipts, requests,
+  independent gold, prospective materiality rubric, metadata, budget and stops;
+  show a frozen plan for separate live approval. The proposal is **not prepared,
+  frozen or approved**, and no new call budget is active.
+
+Private bundle:
+`data/diagnostics/reviewer-retention-materiality-audit-v61-2026-10-30/`.
+The primary result remains **retain limited evidence, no advancement**; retain
+PO as promising diagnostic evidence. Exact copying is not a story-quality
+requirement, and a report-precision error does not automatically authorize prose
+repair. Humans retain feel, flow, character and story-breaking assessment with
+machine-prepared mechanics. All fourteen issue bodies and posted links remain
+intact; no external issue edited or closed. Production **prompt 61 / graph 9 /
+fulfillment policy 1**, Blueprint checkpoint and nine human ties remain unchanged.
+**Step 19 IN PROGRESS; Step 20 NOT STARTED; live calls PAUSED; canary ON HOLD.**
 
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 
