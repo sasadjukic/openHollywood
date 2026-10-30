@@ -8542,11 +8542,12 @@ and [next-step proposal](../docs/handoffs/reviewer-copy-rendering-next-steps-202
   before fixture construction completed and found missing artifacts; construction
   also exposed tuple/list JSON serialization differences. Rebuild with JSON-native
   occurrence lists before the successful full check. No production change.
-- [ ] Consider the proposed bounded **zero-inference integration-design pass**:
-  saved-invocation source records, explicit comparison eligibility and twelve
-  source/visibility/replay fixtures. Review a concrete production proposal before
-  integration. No new live comparison or call budget is prepared or authorized;
-  establish a materially different failure class from saved evidence first.
+- [x] Complete the proposed bounded **zero-inference integration-design pass**
+  below: saved-invocation source records, explicit comparison eligibility and
+  twelve source/visibility fixtures, with SQLite/fake-gateway replay checks.
+  Production integration remains proposed. No new live comparison or call budget
+  is prepared or authorized; establish a materially different failure class from
+  saved evidence first.
 
 Private evidence: `data/diagnostics/reviewer-copy-rendering-audit-v61-2026-10-30/`.
 Inference/daemon calls **zero**. Production **prompt 61 / graph 9 / fulfillment
@@ -8555,6 +8556,59 @@ Humans retain feel, flow, character and story-breaking review, supplied with
 machine-prepared mechanics. All fourteen issue bodies/posted links are preserved;
 no external issue edited or closed. **Step 19 IN PROGRESS; Step 20 NOT STARTED;
 live calls PAUSED; full workflow canary ON HOLD.**
+
+### Local exact-copy integration design 2026-10-30
+
+**Status: COMPLETE — bounded local design and prototype only.** See the
+[design and verification report](../docs/handoffs/reviewer-copy-integration-design-2026-10-30.md)
+and [proposed read-only export](../docs/handoffs/reviewer-copy-integration-next-steps-2026-10-30.md).
+
+- [x] Specify a saved-invocation source record with exact creator, project/run,
+  critique/draft/plan versions, canonical content hashes, native audit, actual
+  rendered-view identity, field/handle/offset and catalog replay identity. Reuse
+  existing provenance. Distinguish shown, recovered-after-review and unavailable
+  sources; do not infer semantic authority from a version or hash.
+- [x] Verify recovery of the supported v61 system/user message pair from saved
+  prompt text only when exactly one serialization matches the stored prompt
+  hash. Reject missing/truncated/unsupported/mismatched views. Do not regenerate
+  messages using current prompts. Pin the local catalog replayer separately from
+  the historical request catalog; no historical runtime attestation is claimed.
+- [x] Exercise **twelve authored fixtures: six source conditions × met/unmet**.
+  Unique and duplicate selected handles compare exactly; multiple excerpts stay
+  separate with exact/different results; recovered old prose differs; missing
+  prose stays unavailable; conflicting anchor provenance is rejected. Judgments
+  never change equality or availability. Unresolved original/revision mapping
+  produces no literal claim; no automatic semantic selection is introduced.
+- [x] Extend existing migrated SQLite/fake-gateway fixtures. Verify exact source
+  creator, fresh-session replay, sorted-JSON snapshot replay, successful retry
+  identity and exclusion of the failed attempt. Export only a derived sidecar;
+  preserve application state and original checks. Reject changed dependencies
+  instead of overwriting an existing export. Keep same-scene/older-revision
+  provenance mandatory even when a historical body is unavailable.
+- [x] Pass **273 offline tests: 59 new design + 143 preserved audit/execution +
+  71 existing fulfillment checks**, Ruff lint/format and strict mypy on eight
+  local scripts. Verify **8,904 historical/production fingerprints** and a
+  separate overlapping baseline of **196 Python files**. Preserve verification
+  history: corrected local typing and JSON key-order hashing; sandboxed Windows
+  asyncio loopback stalled before gateway execution, and the fake-gateway suites
+  pass outside that restriction. No production prompt or historical score change.
+- [x] Document a concrete operator-export integration surface, application labels,
+  original-review visibility, eligibility and non-result states, retry/replay
+  identity and ADR/schema/migration boundaries. No production registration,
+  API/client change, persisted application schema or automatic writer route.
+- [ ] Consider porting the verified core into a **tracked read-only operator
+  exporter**, with an ADR and local qualification. Inventory saved-record
+  compatibility before selecting at most twelve real reviews; report missing
+  coverage without new inference. Require a materially different observed
+  selection failure before proposing another live diagnostic.
+
+Private evidence: `data/diagnostics/reviewer-copy-integration-design-v61-2026-10-30/`.
+Live/daemon calls **zero**; all gateway responses in verification are fixtures.
+Production **prompt 61 / graph 9 / fulfillment policy 1** and the single Blueprint
+checkpoint remain unchanged. Human feel, flow, character and story-breaking
+review remains the quality authority. All fourteen issue bodies/posted links are
+preserved; no issue closed. **Step 19 IN PROGRESS; Step 20 NOT STARTED; live calls
+PAUSED; full workflow canary ON HOLD.**
 
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 
