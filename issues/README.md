@@ -222,3 +222,46 @@ prioritize one unresolved semantic question with a materially different hypothes
 before further inference. Zero model/daemon/database calls during export;
 production prompts unchanged, inference **PAUSED**, canary **ON HOLD**. No external
 issue edited or closed.
+
+**2026-10-31 CW-013 local premise-admission preparation complete:** the
+[design and verification report](../docs/handoffs/cw013-admission-preparation-2026-10-31.md)
+pins the same twelve Gemma diagnostic captures, accounts for **163 candidate
+prose fields / 219 metadata/reference strings**, and binds six authored inspection
+cases without converting field identity into semantic truth. The known unsupported
+missing-decision premise remains separate from its valid boundary criticism.
+**137 offline tests**, Ruff and strict mypy pass; existing production code,
+historical reports, exports and all fourteen issue bodies/posted links are intact.
+A provisional **24-call premise-admission diagnostic** would separate full-report
+claim selection from assessment of independently supplied exact spans. Its fresh
+cases, requests, resource limits and scoring are **not frozen or live-approved**.
+The completed local plan has a **zero-call budget**. No issue is closed or externally
+edited; production prompts unchanged, inference **PAUSED**, canary **ON HOLD**.
+
+**2026-10-31 CW-013 SA/VA diagnostic frozen:** the
+[24-call plan](../docs/handoffs/reviewer-premise-admission-frozen-plan-2026-10-31.md)
+binds six families, two admission conditions and two context/prose orders, with
+zero retries. SA selects premises from the full report; VA receives authored
+verbatim spans with no gold labels. Both share full sources and semantic rules.
+The 18 targets yield 36 opportunities per condition; admission recovery stays
+separate from semantic correctness and preservation of valid criticism.
+**252 offline tests**, Ruff and strict mypy pass; 397 historical/runtime source
+fingerprints and the fourteen issue bodies/posted links remain intact. Metadata
+confirms Ollama **0.40.13** and unchanged DeepSeek information. **0/24 live calls
+used; separate approval pending.** No verifier, writer route or story-quality
+improvement is qualified; CW-013 and every other issue remain open. Production
+prompts unchanged, inference **PAUSED**, full workflow canary **ON HOLD**.
+
+**2026-10-31 CW-013 SA/VA execution stopped and inspected:** the
+[results report](../docs/benchmark_reports/reviewer-premise-admission-v61-results-2026-10-31.md)
+records **6/24 attempts, five completed reports and eighteen unstarted calls**.
+The sixth response reached the 16,000-token generation limit with thinking but
+no final answer, triggering the frozen terminal stop; no retries or automatic
+continuation. Completed primary targets have correct admission/support labels;
+grounded usability is **SA 6/6, VA 8/9**, with one VA citation set missing evidence
+of the observed psychic pull. No admission recovery or fresh-family evidence was
+obtained. The decision is **incomplete, no advancement**. All **252 offline tests**
+pass again; frozen evidence, production code and fourteen issue bodies/posted
+links remain intact. Recommended local work covers the empty-final capture,
+terminal raw-counter reporting, component citation coverage and selection workload.
+CW-008/CW-013 and all other issues remain open; no external issue edited. Production
+prompts unchanged, live calls **PAUSED**, full workflow canary **ON HOLD**.

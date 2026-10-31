@@ -8725,12 +8725,10 @@ and [ADR 0039](../docs/adr/0039-diagnostic-probe-review-export.md).
 - [x] Verify **202 existing Python files**, **278 source archive files**, **12
   prior-audit artifacts** and all fourteen issue bodies/posted links unchanged.
   Keep the existing SQLite exporter and its compatibility boundaries intact.
-- [ ] Select one unresolved semantic workflow issue and establish an unanswered,
-  materially different hypothesis from the existing experiment record before
-  preparing more inference; recommended priority is CW-013's material repair
-  premises and complete source support. These exports are complete operator references;
-  further export infrastructure and new human rescoring are not required for this
-  sample. No new live plan or call budget is proposed.
+- [x] Select CW-013 and complete the bounded premise-admission design and local
+  preparation below. Distinguish extracting consequential allegations from
+  judging already supplied claims. Export work remains complete; no new human
+  rescoring is required. The subsequent live-request freeze is recorded below.
 
 Private index: `data/diagnostics/reviewer-probe-export-v61-2026-10-30/exports/index.md`.
 Implementation/inspection evidence is in the parent directory. Model/daemon/database
@@ -8738,6 +8736,150 @@ calls during export **zero**. Production **prompt 61 / graph 9 / fulfillment
 policy 1**, Blueprint checkpoint, historical scores and human literary-review
 authority remain unchanged. No issue closed. **Step 19 IN PROGRESS; Step 20 NOT
 STARTED; inference PAUSED; full workflow canary ON HOLD.**
+
+### CW-013 premise-admission preparation 2026-10-31
+
+**Status: COMPLETE — bounded local design and harness; subsequent live-request freeze below.**
+See the [preparation and next-step design](../docs/handoffs/cw013-admission-preparation-2026-10-31.md).
+
+- [x] Compare the proposed admission question with fixed CV/MC claims, PO's
+  authored source-obligation maps, provenance generalization, PO/EX and local
+  materiality/source audits. Identify claim selection from complete ordinary
+  reports as distinct from rewording a supplied claim or repeating exact receipts.
+- [x] Pin the same **twelve October 16 Gemma diagnostic captures**. Verify their
+  full export/archive bindings. Inventory **163 candidate prose fields / 219
+  metadata/reference strings**, with every string accounted for. Keep fields
+  whole, semantic support/materiality unreviewed and three application-rendered
+  advice records separate. This is not 163 atomic claims or new model judgments.
+- [x] Bind **six authored inspection cases across five Elena reviews** to exact
+  report subspans, source versions, fields, offsets, quotes and view hashes.
+  Preserve the known unsupported missing-decision premise alongside the valid
+  no-match boundary finding; retain genuine missing-event/date controls,
+  action-based fulfillment and recovered-old-source visibility. No new scoring.
+- [x] Freeze the local **zero-model/zero-daemon/zero-retry** plan and eight-file
+  preparation seal. Add a verifier that refuses missing/changed members before
+  testing. Pass **137 offline tests: 54 preparation + 83 unchanged export/core**
+  in **7.31 seconds**, Ruff lint/format and strict mypy on four local scripts.
+  Preserve initial import/lint/type-path fixes and the earlier 134-test result.
+- [x] Verify **212 existing Python files, 33 prior-export artifacts, nine
+  historical reports and fourteen issue bodies/posted links** unchanged. Negative
+  controls demonstrate that bound false claims and structurally valid wrong
+  semantic labels are not machine-verified truth. No production adapter, prompt,
+  graph, schema, model setting or writer route changed.
+- [x] Prepare and verify the **24-call premise-admission diagnostic** below:
+  six families, two admission conditions and two source orders, zero retries.
+  Preserve full source/report context and identical semantic instructions;
+  separately freeze the new requests, metadata, scoring, budget and stops.
+  Live execution still requires explicit approval.
+
+Private evidence: `data/diagnostics/cw013-preparation-v61-2026-10-31/`.
+All cases remain diagnostic or authored; no semantic extractor or generalization
+gain is claimed. Human feel/flow/character/story-breaking review, nine prior ties
+and Blueprint approval remain unchanged. CW-013 and all fourteen issues remain
+open; no external issue edited. **Step 19 IN PROGRESS; Step 20 NOT STARTED;
+production prompts unchanged; live calls PAUSED; canary ON HOLD.**
+
+### Frozen CW-013 SA/VA premise-admission diagnostic 2026-10-31
+
+**Status: FROZEN AND VERIFIED; approved execution stopped at 6/24 as recorded below.** See the
+[frozen plan](../docs/handoffs/reviewer-premise-admission-frozen-plan-2026-10-31.md).
+
+- [x] Freeze **six families × SA/VA × PC/CP = 24 requests**, twelve per condition,
+  zero retries/replacements/reallocation. SA selects factual premises from the
+  full report; VA receives authored exact spans. Remove VA's one span message to
+  reproduce the corresponding SA wire. Both retain identical full sources,
+  report, semantic instructions, schema and high-thinking sampling settings.
+- [x] Preserve H1 Elena/H2 Elara raw Gemma reports and full saved input contents.
+  Add four authored fresh families for interpretation versus action, speaker
+  attribution, conditional versus observed action, and unavailable source scope.
+  Freeze **18 target specifications / 36 opportunities per condition**: 26
+  supported, eight unsupported, two uncertain, with 24 fresh opportunities.
+  Source order reverses context/prose, not original/revision; historical requests
+  are new diagnostic controls, not claimed byte-identical older model wires.
+- [x] Freeze field/quote identity, compact citation locations, source hashes and
+  complete context. Preserve compound report wording and supported criticism.
+  Score admission, labels, grounded usability and additional material errors
+  separately. Require 24 valid deliveries, 36 usable VA targets, no VA material
+  error/paired loss and two actual admission recoveries across two families,
+  including fresh, for diagnostic signal only. Supplied selection earns no model
+  admission credit; zero opportunity and semantic failures remain separate.
+- [x] Verify metadata-only **Ollama 0.40.13** and unchanged selected DeepSeek digest
+  and high-thinking capability. Freeze **24,000 input / 16,000 total generated
+  tokens / 600 seconds per call**, 24 attempts; thinking shares output. Maximum
+  quarter-byte input estimate is **15,037**. Archived-rate reservation **$0.63360**,
+  planning allowance **$0.75**, actual billing unknown. Retain socket-denial and
+  successful metadata captures; no prose sent or inference performed.
+- [x] Freeze first-eight historical delivery sentinels, per-cell reservations,
+  terminal stops, no automatic terminal resume, clean-boundary continuation,
+  metadata/version checks and masked source inspection with sealed notes.
+  Preserve raw terminal evidence/error chains/unknown usage. No semantic early
+  stopping, writer repair, prompt adoption or canary.
+- [x] Pass **252 offline tests: 93 current + 54 prior admission + 83 export/core
+  + 22 version-evidence**. Ruff lint/format and strict mypy pass on nine scripts.
+  Verify 397 historical/runtime source fingerprints. Preserve pre-freeze registry
+  sizing and F4 wording refinements, type/format fixes, module-collision attempts
+  and the inherited fence-parser failure; enforce bare JSON without repair.
+- [x] Execute after plan-bound approval within the 24-call ceiling and frozen
+  stops; inspect all completed outputs and document the terminal result below.
+  **Six calls attempted, five reports completed, eighteen calls unstarted.**
+  The comparison is incomplete; no diagnostic signal or production adoption is
+  qualified, and terminal continuation remains prohibited.
+
+Private artifacts: `data/diagnostics/reviewer-premise-admission-v61-2026-10-31/`.
+The frozen plan retains its preparation-time state; separate approval, execution,
+inspection and results are now recorded below. All fourteen issue bodies
+and posted links remain intact; no external issue edited. Human literary review,
+Blueprint approval and nine earlier human ties are unchanged. **Step 19 IN
+PROGRESS; Step 20 NOT STARTED; production prompts unchanged; live calls PAUSED;
+full workflow canary ON HOLD.**
+
+### CW-013 SA/VA premise-admission results 2026-10-31
+
+**Status: EXECUTION AND INSPECTION COMPLETE — comparison INCOMPLETE after frozen
+terminal stop; 6/24 attempted, five completed, eighteen unstarted, zero retries.**
+See the [results and local next work](../docs/benchmark_reports/reviewer-premise-admission-v61-results-2026-10-31.md).
+
+- [x] Bind user approval to the frozen plan and dispatch six exact scheduled
+  requests through the local daemon to Ollama Cloud. Preserve all inputs,
+  production prompts and high-thinking settings. Stop at **A-SA-H1-CP**: HTTP 200,
+  `done_reason: length`, 16,000 generated tokens, thinking present and empty final
+  content. Preserve the gateway/cause chain, raw response and terminal seal.
+  No retry, replacement, reallocation or automatic terminal continuation.
+- [x] Verify **twelve daemon observations at Ollama 0.40.13** and seven matching
+  model checks. Explicitly record the absent post-terminal version observation;
+  the gateway rejected the empty answer before that step. No eight-call delivery
+  checkpoint or fresh family was reached.
+- [x] Export five reports through the supported terminal audit. Inspect **21
+  returned assertions/reasons and fifteen primary targets** against source;
+  seal notes before opening the key. All completed target admissions/labels are
+  correct. Grounded usability: **SA 6/6, VA 8/9**; fixed planned denominators
+  remain **6/36 and 8/36**. Preserve valid boundary criticism and count equivalent
+  repeated premises once. Zero admission recoveries; no fresh generalization.
+- [x] Record **A-VA-H2-CP T3** as a citation-coverage/localization failure:
+  requirement plus touch citations omit the observed psychic pull. Preserve its
+  correct factual label and distinguish strict usability from a material story
+  error. Matched SA cites the actual pull. Keep additional source-entailment
+  findings separate from literary pacing judgments and new primary targets.
+- [x] Preserve canonical terminal usage as **unknown** and separately verify raw
+  counters. Five valid receipts: **73,670 input / 40,251 generated**. Including
+  terminal raw observations: **87,926 / 56,251 / 162.07 active seconds**; archived
+  rate reference **$0.093879**, actual billing and token split unknown.
+- [x] Replay requests, receipts, seals, annotations, scores, resource totals and
+  refusal to resume. Pass **252 offline tests again**, Ruff lint/format and strict
+  mypy on the frozen harness and separate result verifier. Preserve **100 frozen
+  files / 397 historical-runtime fingerprints**, production code, fourteen issue
+  bodies and posted links. Frozen decision: **`incomplete_no_advancement`**.
+- [ ] Before more inference, preserve the empty-final/length capture and H2
+  citation contrast as local fixtures; audit terminal raw-counter reporting,
+  factual-component citation coverage and SA's combined selection/assessment
+  workload. Then assess a separately approved bounded amendment with a stated
+  resource hypothesis. The eighteen unused slots do not authorize a restart.
+
+Private evidence uses the `reviewer-premise-admission-v61-2026-10-31` frozen,
+`-live`, `-inspection` and `-analysis` directories. CW-013 and all other issues
+remain open; no external issue edited. No writer call or story revision occurred.
+**Step 19 IN PROGRESS; Step 20 NOT STARTED; production prompts unchanged;
+inference PAUSED; full workflow canary ON HOLD.**
 
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 
