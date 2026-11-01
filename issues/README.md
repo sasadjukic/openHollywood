@@ -330,3 +330,35 @@ the eight already-used selector calls remain part of staged resource accounting.
 Zero new model/daemon/database calls or production changes. Original issue bodies
 and fourteen posted links remain preserved; CW-008/CW-013 and all other issues
 remain open. Live calls **PAUSED**, canary **ON HOLD**; no external issue edited.
+
+**2026-11-01 VA/MA assessment comparison frozen:** the
+[16-call plan](../docs/handoffs/reviewer-selected-assessment-frozen-plan-2026-11-01.md)
+preserves eight exact authored-span control wires and changes only the admitted
+selection list for eight MA assessments. All **41 saved SO selections** remain,
+with full context, explicit provenance and no selector rerun. The freeze binds
+**65 authored judgments / sixteen exact paired units**, scoring and stops; correct
+components do not automatically establish whole relations. Metadata-only capture
+confirms **Ollama 0.40.13** and unchanged DeepSeek information. **236 offline tests**,
+Ruff, strict mypy, historical result replay and final payload parity checks pass;
+**1,108 source fingerprints** and all fourteen original issue bodies/posted links
+remain intact. **0/16 inference calls used; separate live approval pending.**
+The prior stopped runs and unused allowances remain separate. No issue is closed,
+no external issue edited, and no production prompt changed. Inference **PAUSED**;
+full workflow canary **ON HOLD**.
+
+**2026-11-01 VA/MA execution and inspection complete:** the
+[results report](../docs/benchmark_reports/reviewer-selected-assessment-v61-results-2026-11-01.md)
+records **16/16 calls**, zero retries and sixteen structurally valid outputs.
+VA grounds **24/24** authored judgments; MA has **37/41 correct labels but 30/41
+grounded judgments**. Two semantic failure patterns recur in both orders (four judgments),
+and seven further judgments lack adequate citations. Four exact-pair grounded
+losses mean both frozen MA gates fail. Full context remains preserved; it does
+not guarantee reference placement or whole-relation reasoning. All F2/F4 MA
+judgments pass this bounded inspection, without generalization or story-quality
+qualification. **235 offline tests**, lint, strict typing and sealed result replay
+pass; all **63 frozen files / 1,108 source pins**, original issue bodies and posted
+links remain intact. Next work is local regression preservation and an explicit
+source/paragraph/reference audit, separating citation mechanics from the two
+remaining semantic contrasts. No next live budget is prepared. CW-007/CW-013 remain
+implicated; CW-008 and every other issue remain open. No external issue edited;
+production prompts unchanged, inference **PAUSED**, canary **ON HOLD**.

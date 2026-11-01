@@ -9076,14 +9076,16 @@ ADVANCEMENT.** [Audit, decisions and next proposal](../docs/handoffs/reviewer-st
   units**, with only **16 exact field/quote matches**. Keep full source packets and
   all extras. Preserve the prior selector cost of eight calls / 63,000 input /
   80,000 generated tokens / 245.31 seconds separately from any future assessment.
-- [ ] If requested, prepare the proposed **16-new-call VA/MA comparison**: eight
+- [x] Prepare the proposed **16-new-call VA/MA comparison**: eight
   unchanged authored-span VA controls and eight assessments of the actual saved
   SO selections, H1/H2/F2/F4 in both source orders. Freeze all 41 selected-unit and
   24 control judgments, sixteen exact paired units, requests, metadata and stops.
   Require 8/8 valid MA deliveries and 41/41 grounded judgments, plus zero paired
-  grounded losses; keep whole-relation assessment separate. Proposed caps remain
-  24,000 input / 16,000 generated / 600 seconds per attempt, zero retries. This is
-  a proposal, **not frozen or approved**; no selection rerun or budget borrowing.
+  grounded losses; keep whole-relation assessment separate. Caps remain
+  24,000 input / 16,000 generated / 600 seconds per attempt, zero retries. See the
+  [frozen plan](../docs/handoffs/reviewer-selected-assessment-frozen-plan-2026-11-01.md)
+  and completion entry below. Separate live approval remains pending; no
+  selection rerun or budget borrowing.
 
 Private support: `data/diagnostics/reviewer-staged-handoff-audit-v61-2026-11-01/`;
 data-only export: `data/diagnostics/reviewer-staged-handoff-export-v61-2026-11-01/`.
@@ -9094,6 +9096,132 @@ quality. Human literary-review authority and Blueprint approval are unchanged.
 CW-008/CW-013 and every other issue remain open; no external issue edited.
 **Step 19 IN PROGRESS; Step 20 NOT STARTED; production prompt61 / graph9 /
 fulfillment policy1 unchanged; live calls PAUSED; full workflow canary ON HOLD.**
+
+### Frozen VA/MA selected-premise assessment comparison 2026-11-01
+
+Status: **LOCAL PREPARATION COMPLETE; 0/16 INFERENCE CALLS USED; SEPARATE LIVE
+APPROVAL PENDING.** [Frozen plan](../docs/handoffs/reviewer-selected-assessment-frozen-plan-2026-11-01.md).
+
+- [x] Freeze **H1/H2/F2/F4 × VA/MA × PC/CP = 16 requests**, eight per condition,
+  with balanced condition order. Preserve all eight VA control wires exactly.
+  MA changes only the admitted-spans message; original assessment instructions,
+  response contract, full source/report context and settings remain identical.
+  All families are previously seen; no selector rerun or fresh-scene claim.
+- [x] Bind MA to all **41 saved SO selections / 40 field instances**, including ten
+  partial quotes and the overlapping premise. Retain exact offsets, complete field
+  context and source/report versions. Add application-side receipt/handoff version
+  provenance without leaking expected labels or authored relation links to requests.
+- [x] Freeze all **65 judgments**: VA 24 (18 supported / four unsupported / two
+  uncertain), MA 41 (31 / eight / two). Preserve prior authored labels, add explicit
+  selected-proposition rationales and illustrative component evidence requirements,
+  and bind **sixteen exact field/quote pairings**. Keep three contextual-relation
+  flags separate from component correctness; no automatic relation or writer credit.
+- [x] Require **8/8 valid MA deliveries and 41/41 grounded judgments**, with all
+  sixteen exact pairs evaluable and zero grounded VA-to-MA losses for a favorable
+  comparison. Inspect all reasons, extras and overlaps. Invalid/unstarted units
+  stay in fixed denominators. Seal source-bound partial-masking notes before
+  decoding; exclude thinking text and make no blind-human-review claim.
+- [x] Capture **Ollama 0.40.13** and unchanged DeepSeek metadata independently via
+  version/tags/show only. Preserve the sandbox-blocked initial version attempt.
+  Retain high thinking, temperature 0.2, top-p 0.95, seed 20261022, context 40,000,
+  non-streaming and no format override. **Zero inference calls.**
+- [x] Freeze **16 attempts maximum / eight per condition**, zero retries, repairs,
+  replacements or reallocation. Per call **24,000 input / 16,000 combined generated
+  / 600 seconds**; aggregate **384,000 / 256,000 / 9,600 seconds**. Archived-rate
+  reference $0.42240, planning allowance $0.50; current billing is not verified.
+  Carry historical selector usage separately: eight calls / 63,000 input / 80,000
+  generated / 245.31 seconds. Impose no efficiency threshold on unequal workloads.
+- [x] Preserve verified-length condition retirement, historical delivery sentinels
+  and global non-resumable stops for transport/non-200, unknown/conflicting usage,
+  excess limits, metadata/thinking/timing failures, tampering, ambiguous dispatch
+  and cancellation. Test exact empty-final/error-chain retention and terminal export.
+  Preserve the prior SA/SO ten consumed calls and six retired cells independently.
+- [x] Pass **236 offline tests**: 89 new comparison, 22 gateway/contract, 41 handoff
+  and 84 delivery/usage. Ruff lint/format and strict mypy pass on eleven scripts.
+  After an explicit import-alias typing correction, repeat seventeen payload/budget
+  checks and rebuild all requests identically. Preserve initial failures and the
+  corrected test that mistook existing source rationale fields for injected gold.
+  Replay historical SA/SO results; verify **1,108 historical/runtime source pins**.
+- [x] Seal the cases, selections, gold, exact pairings, provenance, requests,
+  scoring/stops/budget, metadata, tests and public plan. Freeze SHA-256:
+  `beeeeb915ca0d5a953e7e6c44b85f7174d9fec2fe48053d6a7c996d647c180b2`.
+- [x] Obtain separate approval bound to the frozen plan, full unpublished
+  prose/context/report/selection payload and **Ollama Cloud through the local
+  Ollama daemon**, then execute at most sixteen new calls and inspect every
+  completed judgment. No approval file or live-run directory existed at preparation;
+  the approved run and sealed inspection are complete in the results entry below.
+
+Private bundle: `data/diagnostics/reviewer-selected-assessment-v61-2026-11-01/`.
+No production code, prompt, graph, schema, story prose or external issue changed.
+CW-008/CW-013 and all other issues remain open. Even a favorable result supports
+only further staged evaluation; it does not establish whole-claim reasoning,
+autonomous admission completeness, preservation, end-to-end savings or story
+quality. Human literary review and the Blueprint checkpoint are unchanged.
+**Step 19 IN PROGRESS; Step 20 NOT STARTED; inference PAUSED pending separate
+approval; full workflow canary ON HOLD.**
+
+### VA/MA selected-premise assessment results 2026-11-01
+
+Status: **APPROVED RUN COMPLETE: 16/16 CALLS, ZERO RETRIES; ALL OUTPUTS STRUCTURALLY
+VALID; MA FAILS BOTH FROZEN SEMANTIC GATES; NO PRODUCTION ADVANCEMENT.**
+[Results and next local work](../docs/benchmark_reports/reviewer-selected-assessment-v61-results-2026-11-01.md).
+
+- [x] Run all **sixteen frozen requests**, eight VA and eight MA, with full
+  prose/context/report/selection payload to Ollama Cloud through the local daemon.
+  Preserve exact VA controls and MA's selection-list-only contrast. No prompt,
+  response-contract or source edit; no selector rerun, retry, repair or reallocation.
+- [x] Verify all sixteen HTTP-200 stop responses, known usage and nonempty thinking.
+  All **33 daemon-version observations** match **0.40.13**, and **seventeen model
+  checks** match the frozen metadata. No length retirement, transport/usage terminal
+  stop or unstarted cell. Prior experiment counters and stopped allowances remain
+  unchanged; all sixteen new inference slots are consumed.
+- [x] Inspect all **65 judgments**, reasons and citations against full source and
+  field context. Seal source-bound partial-masking notes before decoding; exclude
+  thinking and make no blind-human-review claim. VA achieves **24/24 correct labels
+  and grounded judgments**. MA achieves **37/41 correct labels, 30/41 grounded**.
+- [x] Record **four semantic false-positive judgments across two recurring patterns**:
+  general handwriting match treated as consuming the specific private-flourish
+  turning point, and an interior location/affect treated as proof of starting
+  already inside. Record **seven further correct-label citation failures** involving
+  adjacent/wrong paragraphs or incomplete component coverage. Do not repair them
+  for scoring. Preserve all F2/F4 positives and valid independent boundary criticism.
+- [x] Evaluate all **sixteen exact field/quote pairs**: VA grounds 16/16, MA 12/16.
+  Four grounded losses occur at H1/CP Q002/Q005 and H2/PC Q001/Q002. MA therefore
+  fails both its 41/41 feasibility requirement and the zero-paired-loss requirement.
+  Extra MA semantic false positives do not show how an unasked VA control would
+  answer those extra claims. No automatic whole-relation or writer credit.
+- [x] Inspect the three contextual flags separately: H1/CP gives components without
+  the full endpoint comparison; H2/CP mentions the boundary violation without
+  sufficient citations; F4/CP explicitly grounds the complete relation. Full field
+  preservation does not guarantee correct use of that context.
+- [x] Verify **141,388 input / 76,157 generated tokens / 306.64 active call seconds**;
+  archived-rate reference **$0.1338048**, billing unknown. Per-call maxima are
+  15,458 input / 12,970 generated / 53.70 seconds, within all limits. Across eight
+  complete pairs, median MA/VA generation ratio **1.742**, active-time ratio **1.635**;
+  descriptive only, with no frozen efficiency threshold for unequal workloads.
+  Historical SO + MA totals **16 calls / 133,890 input / 132,178 generated /
+  451.50 seconds**, including eight historical selection calls, not new extra calls.
+- [x] Pass **235 post-run offline tests** (88 comparison, 22 gateway/contract,
+  41 handoff, 84 usage), Ruff lint/format and strict mypy on eleven frozen plus
+  three analysis scripts. Replay approval, wire/raw evidence, ledger, annotations
+  and scores; verify all **63 frozen files / 1,108 source pins**. Exclude only the
+  preparation test asserting no approval exists; check actual approval separately.
+- [ ] If requested, preserve the four failing MA outputs and corresponding VA
+  controls as local regressions, including all eleven failed units and three
+  contextual flags. Audit exact source/paragraph/reference presentation and bounded
+  application-owned excerpt lookup without silently repairing semantic claims.
+  Keep general-versus-specific verification and location-versus-entry-time scope
+  separate. Require a materially different, locally justified hypothesis before
+  proposing another live comparison; no next budget or requests are prepared.
+
+Private records: `data/diagnostics/reviewer-selected-assessment-v61-2026-11-01/`
+and the `-live`, `-inspection`, `-analysis` siblings. Retain bounded delivery and
+F2/F4 success as diagnostic evidence; the complete staged reviewer is unqualified.
+No production prompt, code, writer route, story prose or mandatory human checkpoint
+changed. CW-007/CW-013 remain implicated; delivery success here does not close
+CW-008. All issues remain open and no external issue was edited. Human literary
+review remains separate. **Step 19 IN PROGRESS; Step 20 NOT STARTED; inference
+PAUSED; full workflow canary ON HOLD.**
 
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 
