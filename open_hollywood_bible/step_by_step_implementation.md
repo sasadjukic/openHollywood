@@ -9206,13 +9206,12 @@ VALID; MA FAILS BOTH FROZEN SEMANTIC GATES; NO PRODUCTION ADVANCEMENT.**
   three analysis scripts. Replay approval, wire/raw evidence, ledger, annotations
   and scores; verify all **63 frozen files / 1,108 source pins**. Exclude only the
   preparation test asserting no approval exists; check actual approval separately.
-- [ ] If requested, preserve the four failing MA outputs and corresponding VA
-  controls as local regressions, including all eleven failed units and three
-  contextual flags. Audit exact source/paragraph/reference presentation and bounded
-  application-owned excerpt lookup without silently repairing semantic claims.
-  Keep general-versus-specific verification and location-versus-entry-time scope
-  separate. Require a materially different, locally justified hypothesis before
-  proposing another live comparison; no next budget or requests are prepared.
+- [x] Preserve the four failing MA outputs and corresponding VA controls as
+  local regressions, including all eleven failed units and three contextual flags.
+  Audit exact source/paragraph/reference presentation and bounded application-owned
+  excerpt lookup without repairing semantic claims. Keep the two semantic contrasts
+  separate. The local audit below records completion and a provisional, isolated
+  paragraph-presentation hypothesis; no next budget or requests are frozen.
 
 Private records: `data/diagnostics/reviewer-selected-assessment-v61-2026-11-01/`
 and the `-live`, `-inspection`, `-analysis` siblings. Retain bounded delivery and
@@ -9222,6 +9221,169 @@ changed. CW-007/CW-013 remain implicated; delivery success here does not close
 CW-008. All issues remain open and no external issue was edited. Human literary
 review remains separate. **Step 19 IN PROGRESS; Step 20 NOT STARTED; inference
 PAUSED; full workflow canary ON HOLD.**
+
+### VA/MA failure preservation and citation-mapping audit 2026-11-01
+
+Status: **LOCAL AUDIT COMPLETE; MAPPING VERIFIED; CITATION AND SEMANTIC FAILURES
+REMAIN SEPARATE; NO NEW INFERENCE OR PRODUCTION ADVANCEMENT.**
+[Audit, evidence and proposed next step](../docs/handoffs/reviewer-citation-mapping-audit-2026-11-01.md).
+
+- [x] Preserve **269 exact capture/support files**: four failing MA reports and
+  four VA controls, plus eight F2/F4 positive captures, raw evidence, source cases,
+  pairings and sealed inspection notes. Bind all **65 assessments**: 54 positive,
+  seven citation-only failures and four semantic failures. Retain four exact-pair
+  losses and three contextual flags without score repair or new human-review claims.
+- [x] Independently reconstruct source fields and nonempty prose paragraphs from
+  frozen wire content. Verify **681 distinct family references / 2,724 presented
+  entries across sixteen requests**, including Unicode offsets, hashes, short
+  standalone paragraphs and trailing spaces. **Zero application mapping errors.**
+- [x] Separate five adjacent-paragraph citation gaps and two missing-component
+  gaps from the two recurring semantic contrasts. H1/PC's correctly located
+  citations still do not establish the specific flourish; H2 interior location
+  does not establish starting after entry. Valid independent endpoint criticism
+  and positive F2/F4 judgments remain intact; no automatic whole-relation credit.
+- [x] Exercise conservative exact-excerpt lookup against all seven missing
+  witnesses. Six are already exact substrings of model reasons; one is auditor
+  selected. Location remains unassessed for truth and cannot repair historical
+  citations/scores. Test duplicate occurrences, wrong scope, Unicode/whitespace,
+  changed negation and cross-paragraph excerpts without model/daemon/DB access.
+- [x] Pass **161 offline tests**: 74 new regressions, 46 existing review-evidence
+  tests and 41 prior handoff tests. Ruff lint/format and strict mypy pass on five
+  local scripts. Preserve the initial two lint findings and successful rerun.
+  Replay historical results and verify **1,467 source fingerprints**, retaining
+  all 63 frozen files / 1,108 prior source pins. Fixture export is byte/mtime
+  idempotent. All fourteen original issue bodies and posted URLs remain unchanged.
+- [x] Propose **MA/PE, provisionally sixteen calls**, targeting only paragraph
+  citation placement: unchanged MA versus exact paragraph text beside every prose
+  reference, same full context, selections and response contract. Two historical
+  and two fresh long-context families, both orders, zero retries; semantic failures
+  remain independent controls. No new requests, budget or stops are frozen.
+- [x] Prepare and locally verify MA/PE with exact historical controls, fresh
+  contrasts and gold, complete source/paragraph parity, input overhead and separate
+  citation/semantic scoring. Freeze requests, budget/stops and submit the plan below
+  for approval. Live approval remains pending; no edit necessity or production
+  readiness is inferred from a possible citation improvement.
+
+Private bundle: `data/diagnostics/reviewer-citation-mapping-audit-v61-2026-11-01/`.
+No production prompt, code, graph, canonical prose, schema, writer route or external
+issue changed. No issue is closed. Human feel/flow/character review and the Blueprint
+checkpoint remain unchanged. **Step 19 IN PROGRESS; Step 20 NOT STARTED; inference
+PAUSED; full workflow canary ON HOLD.**
+
+### MA/PE paragraph-excerpt comparison preparation 2026-11-01
+
+Status at preparation: **PREPARED, VERIFIED AND FROZEN; 0/16 INFERENCE CALLS.**
+Separate approval and completed execution are recorded in the next section.
+[Frozen plan, cases, scoring, budget and stops](../docs/handoffs/reviewer-paragraph-excerpts-frozen-plan-2026-11-01.md).
+
+- [x] Freeze **sixteen requests**, eight MA and eight PE, across H1/H2 and fresh
+  C5/D6 families in both PC/CP source orders. Preserve four exact historical MA
+  wire controls. No selector rerun, writer, repair, retry or production prompt edit.
+- [x] Verify PE adds only exact paragraph text beside every prose registry entry;
+  stripping the additions restores every paired MA wire exactly. Preserve complete
+  sources, context, fields, report, selections and response contract. All **102
+  paragraph additions** retain version/field identity, code-point offsets, Unicode,
+  short paragraphs and trailing whitespace; there are no gold relevance cues.
+- [x] Freeze **112 judgments / 56 exact paired units**, with 38 supported,
+  14 unsupported and four uncertain slots per arm. Preserve historical selected
+  scopes; author eight premises per fresh report with positive/negative semantic
+  contrasts, split evidence, short realizations, attribution/negation and missing
+  annex scope. Adequacy is content coverage, not a citation whitelist.
+- [x] Freeze a citation-specific screening rule: all sixteen valid; at least two
+  paired recoveries among seven historically failing citation targets, with control
+  failure reproduced; no grounded/semantic/contextual-relation pair losses; retain
+  **13 historical grounded and 20 historical semantic successes**; ground all
+  **32 fresh PE units**. Insufficient control reproduction is inconclusive when
+  other gates pass. All four contextual flags remain separate from component labels.
+- [x] Capture only daemon version/tags/show metadata. Confirm **Ollama 0.40.13**,
+  unchanged DeepSeek digest/capabilities and high thinking. Preserve the sandboxed
+  connection-denied capture and successful metadata retry; **zero inference**.
+- [x] Freeze **16 total / eight per arm / zero retries**, per-call 24,000 input /
+  16,000 combined generated / 600 seconds, context 40,000. Reserve 384,000 input /
+  256,000 generated / 9,600 seconds. Archived-rate reference **$0.42240**, planning
+  allowance $0.50; billing unknown. Maximum wire 65,177 bytes, estimated 16,295
+  input tokens (21,726 using bytes/3), not tokenizer measurement. Preserve arm
+  retirement, global terminal/no-resume rules, usage evidence and sealed replay.
+- [x] Pass **284 offline tests**: 104 comparison, 22 gateway/contract, 74 mapping,
+  84 delivery/usage. Ruff lint/format and strict mypy pass on eleven scripts.
+  Replay original VA/MA results and **1,751 historical/runtime source pins**.
+  Preserve the interrupted sandbox check and corrected lint/typing findings.
+  Verify the local scoring amendment prevents a shared new semantic error from
+  hiding behind citation recoveries; cases, wires and budget remain unchanged.
+- [x] Freeze cases, fresh material, exact selections, per-claim judgments,
+  adequate-evidence criteria, requests, renderer checks, scoring, stops, budget,
+  metadata, harness and this public plan. Plan SHA-256:
+  `509d552c76faabc1ac1d31345c64b3956b34c8247e01c37c9e7d0f9848b896c8`.
+- [x] Obtain separate live approval bound to this hash, full unpublished
+  prose/context/critique/selections/paragraph view, **Ollama Cloud through the local
+  Ollama daemon**, and the sixteen-call ceiling. No approval or live-run directory
+  is created during preparation. Approval and execution are recorded below;
+  previous budgets and stops remain separate.
+
+Private bundle: `data/diagnostics/reviewer-paragraph-excerpts-v61-2026-11-01/`.
+Even a favorable result supports only further citation-presentation evaluation;
+existing semantic failures, edit necessity, preservation and story quality remain
+separate. All original issue bodies/posted links are preserved, and no external
+issue is edited or closed. No production prompt, graph, schema, canonical prose,
+writer route or mandatory Blueprint checkpoint changes. **Step 19 IN PROGRESS;
+Step 20 NOT STARTED; canary ON HOLD.** See the execution section for current
+inference status.
+
+### MA/PE paragraph-excerpt execution and inspection 2026-11-01
+
+Status: **COMPLETE UNDER THE FROZEN ARM STOP; 10/16 CALLS USED; PE GATE NOT MET;
+NO PRODUCTION ADVANCEMENT.**
+[Results, evidence and recommended local follow-up](../docs/benchmark_reports/reviewer-paragraph-excerpts-v61-results-2026-11-01.md).
+
+- [x] Bind explicit approval to the frozen plan and full prose/context through
+  **Ollama Cloud via the local daemon**. Dispatch ten original requests, with zero
+  retries or replacements. MA completes eight valid reports. PE produces one valid
+  report, then **E-PE-H2-CP** reaches the 16,000 generated-token limit and retires
+  the arm. Its six remaining calls stay unused. No global terminal stop or resume.
+- [x] Preserve the HTTP-200 length response, **1,433-character partial final**,
+  nonempty thinking and verified counters. Salvage no judgment. All ten attempts
+  have known reported usage; reasoning/final token split and actual billing remain
+  unknown. The captured gateway error chain is empty; do not call this an outage.
+- [x] Verify all **21 version observations / 11 model checks** against Ollama
+  **0.40.13** and frozen DeepSeek metadata. Preserve exact wires, high thinking,
+  sampling requests, original controls, source versions and stopping rules.
+- [x] Inspect and seal all **63 returned judgments** before decoding the partial
+  masking key; exclude thinking and make no blind-human-review claim. MA grounds
+  **56/56** (24 historical, 32 fresh). PE grounds **6/7 returned / 6/56 fixed**.
+  One correctly located citation set still fails to prove that a general match
+  consumes the specific private-flourish verification; the paired MA claim passes.
+- [x] Separate **one observed paired semantic/grounded regression** from **49
+  unobserved slots** counted as losses by the fixed scorer: five length slots and
+  44 unstarted. Historical protection misses are unobserved, not new demonstrated
+  errors. All 32 fresh PE slots remain unstarted; seven exact paired units are
+  evaluable. Record frozen outcome **gate_not_met**, with no treatment qualification.
+- [x] Record **0/7 reproduced historical citation gaps** in unchanged MA controls,
+  and zero paired citation recoveries. Historical MA moves from 13/24 grounded and
+  20/24 correct labels to 24/24 on both, under identical visible wires. Treat this
+  as observed repeat variability, not a durable fix or provider-cause finding.
+- [x] Keep the two evaluable contextual flags separate: MA H1/CP and H2/CP ground
+  selected components without explicitly assessing the complete endpoint relation.
+  Corresponding PE flags are unavailable; no automatic whole-relation credit.
+- [x] Verify **129,570 input / 90,283 generated / 399.48 active seconds** within
+  frozen reservations. Archived-rate reference **$0.1472106**, billing unknown.
+  One complete valid resource pair is insufficient for the aggregate screen.
+- [x] Pass **283 offline tests** (103 comparison, 22 gateway/contract, 74 mapping,
+  84 usage), Ruff lint/format and strict mypy on eleven frozen plus three analysis
+  scripts. Exclude only the preparation-only absence-of-approval test; verify actual
+  approval and replay sealed annotations/results. Preserve all **63 frozen files /
+  1,751 source pins**, fourteen original issue bodies and posted URLs.
+- [ ] Preserve the partial-final length capture, H1/PC MA/PE semantic pair and
+  recovered historical MA controls as local regressions. Audit saved delivery
+  resources and identical-control repeatability before another inference proposal.
+  Require a locally justified hypothesis; no next live budget or prompt change is
+  prepared. Keep source location, entailment and complete-relation coverage separate.
+
+Private bundle: `data/diagnostics/reviewer-paragraph-excerpts-v61-2026-11-01/`
+and its `-live`, `-inspection`, `-analysis` siblings. CW-007/CW-008/CW-013 remain
+open; no story-quality qualification or external issue edit. No production prompt,
+graph, schema, canonical prose, writer route or mandatory Blueprint checkpoint
+changed. **Step 19 IN PROGRESS; Step 20 NOT STARTED; inference PAUSED;
+full workflow canary ON HOLD.**
 
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 

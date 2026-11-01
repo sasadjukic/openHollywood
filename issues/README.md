@@ -362,3 +362,49 @@ source/paragraph/reference audit, separating citation mechanics from the two
 remaining semantic contrasts. No next live budget is prepared. CW-007/CW-013 remain
 implicated; CW-008 and every other issue remain open. No external issue edited;
 production prompts unchanged, inference **PAUSED**, canary **ON HOLD**.
+
+**2026-11-01 VA/MA citation mapping audited locally:** the
+[audit and proposed next step](../docs/handoffs/reviewer-citation-mapping-audit-2026-11-01.md)
+preserve **269 exact capture/support files**, including the four failing MA/VA
+pairs and F2/F4 positives. Independent checks find **zero mapping errors across
+2,724 presented reference entries**. Five adjacent-paragraph citation gaps and two
+missing-component gaps remain separate from four semantic false positives. Exact
+lookup locates seven authored missing witnesses, without granting entailment or
+repairing scores. **161 offline tests**, Ruff, strict mypy and historical result
+replay pass; **1,467 source fingerprints** and the original issue bodies/posted
+links remain intact. A provisional **16-call MA/PE paragraph-excerpt comparison**
+is proposed, with unchanged controls and fresh families; nothing is frozen or
+approved for inference. CW-007/CW-013 remain implicated; CW-008/CW-014 and all other
+issues remain open. No external issue edited or production prompt changed;
+live calls **PAUSED**, full workflow canary **ON HOLD**.
+
+**2026-11-01 MA/PE paragraph-excerpt comparison frozen:** the
+[16-call plan](../docs/handoffs/reviewer-paragraph-excerpts-frozen-plan-2026-11-01.md)
+preserves exact historical MA control wires and adds only application-bound
+paragraph text beside prose references in PE. Two historical and two fresh families,
+both source orders, yield **112 judgments / 56 exact pairs**. The frozen gate
+separates citation recoveries from semantic errors and protects 13 historical
+grounded / 20 historical semantic successes plus all 32 fresh PE units. **284
+offline tests**, Ruff, strict mypy, historical result replay and **1,751 source
+fingerprints** pass. Metadata-only capture confirms Ollama **0.40.13** and unchanged
+DeepSeek information. **0/16 inference calls used; separate live approval pending.**
+Original issue bodies/posted URLs remain unchanged. No issue closed, external
+issue edited or production prompt changed; full workflow canary **ON HOLD**.
+
+**2026-11-01 MA/PE execution and inspection complete:** the
+[results report](../docs/benchmark_reports/reviewer-paragraph-excerpts-v61-results-2026-11-01.md)
+records **10/16 calls**, zero retries, nine valid reports and one PE length stop.
+PE's six remaining calls were retired. MA grounds **56/56** judgments; PE grounds
+**6/7 returned / 6/56 fixed**, with one observed semantic regression involving
+general matching versus a specific later verification. The other 49 PE judgment
+slots have no valid result, not 49 observed semantic mistakes. All seven historical
+citation failures recover in unchanged MA controls, so no citation benefit can be
+credited to PE. The frozen gate fails; no fresh PE evidence or aggregate resource
+comparison is available. **283 offline tests**, lint, strict typing and sealed
+result replay pass; all **63 frozen files / 1,751 source pins** are preserved.
+Next work is local preservation of the length/semantic pairs and recovered controls,
+followed by delivery-resource and baseline-repeatability audits. No next live budget
+is prepared. CW-007/CW-008/CW-013 remain open and story quality remains unqualified.
+All fourteen original issue bodies and posted URLs remain intact. No issue closed
+or edited externally; production prompts unchanged, inference **PAUSED**, full
+workflow canary **ON HOLD**.
