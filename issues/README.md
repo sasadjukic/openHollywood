@@ -265,3 +265,68 @@ links remain intact. Recommended local work covers the empty-final capture,
 terminal raw-counter reporting, component citation coverage and selection workload.
 CW-008/CW-013 and all other issues remain open; no external issue edited. Production
 prompts unchanged, live calls **PAUSED**, full workflow canary **ON HOLD**.
+
+**2026-11-01 local SA/VA delivery/citation/workload audit complete:** the
+[audit and next proposal](../docs/handoffs/reviewer-admission-delivery-audit-2026-11-01.md)
+preserves **44 exact fixture files**, a read-only terminal raw-usage supplement
+and the H2 citation contrast. Historical unknown terminal usage and no-resume
+behavior remain intact; the supplement independently verifies the reported
+counters without creating a successful receipt. H2's correct label remains
+separate from missing event coverage. The workload audit records larger historical
+source packets and SA's broader selected set without claiming a causal mechanism.
+**199 offline tests**, Ruff and strict mypy pass; 609 source fingerprints and all
+fourteen issue bodies/posted links are preserved. A **16-call SA/SO selection-only
+comparison** is proposed, not frozen or approved. No new model/daemon/database
+calls or production changes. CW-008/CW-013 and all other issues remain open;
+inference **PAUSED**, full workflow canary **ON HOLD**. No external issue edited.
+
+**2026-11-01 SA/SO selection-only preparation:** the
+[16-call frozen plan](../docs/handoffs/reviewer-selection-only-frozen-plan-2026-11-01.md)
+preserves eight exact SA controls and compares selection alone across H1/H2 and
+never-dispatched F2/F4, both source orders, with unchanged full source packets.
+Ollama **0.40.13** and selected DeepSeek metadata were independently verified
+without generation. The separate runner retires one condition after a trustworthy
+length finish; unknown usage and transport/metadata failures remain global stops.
+SO must deliver 8/8 valid reports and faithfully admit 24/24 targets without
+distortion or opinion factualization. A resource claim needs all eight complete
+pairs and no admission losses; SO receives no support/citation judgment credit.
+**267 offline tests**, Ruff and strict mypy pass; the local closure records the
+freeze and 671 historical/source fingerprints.
+**0/16 calls used; separate live approval pending.** The old six-call SA/VA stop
+and its unused allowance remain unchanged. CW-008/CW-013 and every other issue
+remain open; original issue bodies and posted links are preserved. Production
+prompts unchanged, inference **PAUSED**, canary **ON HOLD**; no external issue edited.
+
+**2026-11-01 SA/SO execution complete under the frozen stop:** the
+[results report](../docs/benchmark_reports/reviewer-selection-only-v61-results-2026-11-01.md)
+records **10/16 calls**, zero retries: eight valid SO outputs, one valid SA output
+and one SA empty-final truncation. SA retired; its six remaining cells were not
+spent. SO passes the bounded selection screen with **24/24 faithful targets**,
+including twelve fresh, **under the complete-report-field context contract**.
+Split event/obligation selections and shortened quotes do not qualify a bare-quote
+handoff. SO was not asked to judge source support. The only complete pair used
+more SO generation and latency, and the required eight-pair resource comparison
+is not evaluable. Retain SO for local staged design, without production, cost or
+story-quality qualification. **266 offline tests**, sealed evidence/score replay,
+Ruff and strict mypy pass; all frozen/source pins and original issue bodies/links
+are preserved. Recommended next work is a local fixture and context-preserving
+handoff audit using the eight saved SO outputs, before any further inference.
+CW-008/CW-013 and all other issues remain open. Production prompts unchanged;
+live calls **PAUSED**; canary **ON HOLD**; no external issue edited.
+
+**2026-11-01 local staged handoff audit complete:** the
+[audit and assessment proposal](../docs/handoffs/reviewer-staged-handoff-audit-2026-11-01.md)
+preserves **154 exact fixtures** and verifies **917 source fingerprints**. Eight
+data-only packets retain all **41 selections / 40 field instances**, including ten
+partial quotes, with complete source/report context and exact provenance. Authored
+coverage links remain outside model input; supported components do not certify
+their relation or authorize a writer repair. **171 offline tests**, 120 mutation
+checks, Ruff, strict mypy and historical result replay pass. The separate export
+has sixteen payload files plus a manifest; identical repeats do not rewrite bytes.
+The next proposal is **16 new VA/MA assessment calls**, comparing unchanged authored
+controls with actual saved model-selected sets; it is **not frozen or approved**.
+Only sixteen selected units exactly match controls, and all 41 must be assessed;
+the eight already-used selector calls remain part of staged resource accounting.
+Zero new model/daemon/database calls or production changes. Original issue bodies
+and fourteen posted links remain preserved; CW-008/CW-013 and all other issues
+remain open. Live calls **PAUSED**, canary **ON HOLD**; no external issue edited.

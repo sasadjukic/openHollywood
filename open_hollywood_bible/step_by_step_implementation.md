@@ -8869,17 +8869,231 @@ See the [results and local next work](../docs/benchmark_reports/reviewer-premise
   mypy on the frozen harness and separate result verifier. Preserve **100 frozen
   files / 397 historical-runtime fingerprints**, production code, fourteen issue
   bodies and posted links. Frozen decision: **`incomplete_no_advancement`**.
-- [ ] Before more inference, preserve the empty-final/length capture and H2
-  citation contrast as local fixtures; audit terminal raw-counter reporting,
-  factual-component citation coverage and SA's combined selection/assessment
-  workload. Then assess a separately approved bounded amendment with a stated
-  resource hypothesis. The eighteen unused slots do not authorize a restart.
+- [x] Preserve the empty-final/length capture and H2 citation contrast as local
+  fixtures; complete the terminal usage, citation-component and workload audits
+  below. Propose a separate 16-call SA/SO selection-only diagnostic. The eighteen
+  unused slots remain unavailable for automatic continuation; the new proposal
+  requires its own preparation and approval.
 
 Private evidence uses the `reviewer-premise-admission-v61-2026-10-31` frozen,
 `-live`, `-inspection` and `-analysis` directories. CW-013 and all other issues
 remain open; no external issue edited. No writer call or story revision occurred.
 **Step 19 IN PROGRESS; Step 20 NOT STARTED; production prompts unchanged;
 inference PAUSED; full workflow canary ON HOLD.**
+
+### SA/VA local delivery, citation and workload audit 2026-11-01
+
+**Status: COMPLETE — local regressions and audits verified; zero new inference,
+daemon or database calls.** See the
+[audit and proposed 16-call SA/SO comparison](../docs/handoffs/reviewer-admission-delivery-audit-2026-11-01.md).
+
+- [x] Preserve **44 exact fixture files** for the empty-final A-SA-H1-CP capture
+  and the A-SA/A-VA-H2-CP citation pair, with requests, reservations, available
+  version evidence, receipts/seals, terminal chain and source/inspection context.
+  Pin the prior publication closure and **609 historical/runtime fingerprints**.
+  Keep the prior decision and **six used / eighteen unstarted** accounting intact.
+- [x] Add a separate offline raw-usage observer and export command. Verify strict
+  envelopes, hash/model/finish bindings and counter consistency. Preserve unknown
+  and conflicting usage, expose over-limit counts separately, reject non-200
+  lookalikes and duplicate accounting, and leave actual billing unknown. Never
+  create a normal receipt, release a reservation or permit a retry/resume.
+- [x] Export all six raw observations with a source/implementation manifest. Keep
+  the historical terminal usage **unknown**, five normal receipts **73,670 input /
+  40,251 generated**, and the independent raw-counter sum **87,926 / 56,251**.
+  Reject existing/evidence destinations and source changes before or during export.
+- [x] Bind an authored H2 component witness map to its exact claim and source.
+  Demonstrate that S316/S336 establishes the obligation and touch, but not the
+  observed pull/sequence; S336/S337/S339 covers the complete claim. Preserve the
+  correct label and historical **SA 6/6, VA 8/9** usability. Mark the map as authored
+  diagnostic evidence, not a general semantic verifier or a writer instruction.
+- [x] Audit unchanged requests and observed output groups. Historical SA inputs
+  have **312/342 references and 51,202/53,914 message-content bytes**; fresh inputs
+  have **13–14 references and 10,469–10,840 bytes**. H1 returns eight units across
+  seven authored groups; H2 returns four across four. Both retain three targets.
+  Two complete SA pairs use **2.53/2.81× generated tokens** and **2.18/2.66× active
+  time** versus VA. Keep these descriptive; no causal mechanism or cost guarantee.
+- [x] Pass **199 offline tests in 54.53 seconds**, Ruff lint/format and strict mypy
+  on six local scripts. Replay original scores, usage and terminal no-resume.
+  Preserve initial static fixes and the inconsistent synthetic zero/cache fixture
+  attempt. Verify the 212-file Python baseline and fourteen issue bodies/links.
+- [x] Propose **16 calls: four families × SA/SO × two source orders**. Preserve
+  H1/H2 and never-run F2/F4; retain full source packets, high thinking and the
+  16,000-output ceiling. SO selects exact premises without judgments. Separate
+  admission/resource feasibility from downstream assessment and story quality.
+- [x] Prepare the separately requested 16-call comparison, including current
+  metadata, exact control wires, selection-only schema, authored scoring and the
+  explicitly proposed per-condition length-stop policy. See the frozen SA/SO
+  preparation below; live approval remains pending.
+
+Private bundle: `data/diagnostics/reviewer-admission-delivery-audit-v61-2026-11-01/`;
+read-only usage export: `data/diagnostics/reviewer-admission-usage-export-v61-2026-11-01/`.
+The local plan has a **zero-call budget**. The old global terminal rule remains in
+force for SA/VA; no production setting, writer route or story prose changed. No
+external issue edited or closed. Human literary-review authority and Blueprint
+approval remain unchanged. **Step 19 IN PROGRESS; Step 20 NOT STARTED;
+production prompts unchanged; inference PAUSED; full workflow canary ON HOLD.**
+
+### Frozen SA/SO premise-selection comparison 2026-11-01
+
+Status: **LOCAL PREPARATION COMPLETE; 0/16 calls used; separate live approval
+pending.** [Frozen plan](../docs/handoffs/reviewer-selection-only-frozen-plan-2026-11-01.md).
+
+- [x] Freeze **four families × SA/SO × PC/CP = 16 requests**, eight per condition.
+  Preserve H1/H2 and previously frozen, never-dispatched F2/F4. Verify all eight
+  SA wire controls exactly. SO changes only the selection task and response
+  contract; full prose/context/report/field inventories/citation indexes remain.
+  No gold labels, target IDs or authored selections enter either request arm.
+- [x] Independently capture **Ollama 0.40.13** and unchanged selected DeepSeek
+  metadata through three successful metadata-only responses. Preserve the first
+  sandbox-blocked version attempt. Retain high thinking, seed 20261022, temperature
+  0.2, top-p 0.95, context 40,000, non-streaming and no format override.
+- [x] Freeze 24,000 input / 16,000 total generated tokens / 600 seconds per attempt;
+  aggregate **384,000 input / 256,000 generated / 9,600 seconds**, with zero retries,
+  repairs, replacements or reallocation. Archived reference reservation $0.42240;
+  planning allowance $0.50, not verified billing. The original six SA/VA attempts
+  and its eighteen unused slots remain separate; its terminal stop cannot resume.
+- [x] Implement and verify independent condition retirement for a trustworthy
+  HTTP-200 length finish, including the exact historical empty-final capture.
+  Preserve its error chain and consumed reservation, capture post-call version,
+  and give no semantic credit. Retire a condition after its four historical cells
+  for zero valid outputs or the same blocking signature in both families.
+  Non-200/transport, uncertain usage, metadata/timing/thinking failures, excess
+  resources, tampering, ambiguous dispatch and cancellation remain global stops.
+- [x] Freeze **24 primary opportunities per condition**, twelve fresh. Inspect
+  all selections and extras; keep exact binding, meaning, omissions, duplicate
+  propositions and opinion factualization separate. SO requires 8/8 valid and
+  24/24 faithful targets without distortions/material errors/opinion factualization.
+  SA labels/reasons/citations remain separate; SO judgments are not requested.
+  Seal source-bound partial-masking notes before decoding condition/resource data.
+- [x] Require **all eight complete valid pairs** for median generated SO/SA ratio
+  at most 0.75, with no primary admission losses. Latency stays descriptive;
+  incomplete controls cannot establish a comparative cost benefit. Include global
+  terminal dispatch in attempted-call counts and all unstarted cells in fixed
+  denominators. A favorable result permits only designing a staged follow-up.
+- [x] Pass **267 offline tests** (68 new comparison, 22 gateway/contract, 84 prior
+  audit and 93 prior SA/VA), Ruff lint/format and strict mypy on ten new scripts.
+  Block real HTTP in the tests; preserve failed preparation/static attempts and
+  the Windows asyncio socket restriction evidence. Recheck **671 historical/source
+  fingerprints**, all fourteen original issue bodies and posted GitHub links.
+- [x] Obtain separate approval bound to the frozen plan, payload/destination and
+  condition-retirement rule. Complete the approved execution under its stops in
+  **10/16 calls**, inspect every valid output, document limitations and update
+  this tracker; see the results below.
+
+Private bundle: `data/diagnostics/reviewer-selection-only-v61-2026-11-01/`.
+The preparation closure records final offline checks and immutable file/source
+hashes. No production/API/frontend code, story prose or prior evidence changed.
+CW-008/CW-013 and all other issues remain open; no external issue edited.
+Human literary-review authority and Blueprint approval are unchanged.
+**Step 19 IN PROGRESS; Step 20 NOT STARTED; production prompts unchanged;
+inference PAUSED; full workflow canary ON HOLD.**
+
+### SA/SO premise-selection results 2026-11-01
+
+Status: **APPROVED RUN COMPLETE UNDER FROZEN CONDITION STOP; SO SELECTION SCREEN
+PASSED; RESOURCE COMPARISON INCOMPLETE; NO PRODUCTION ADVANCEMENT.**
+[Results and next local work](../docs/benchmark_reports/reviewer-selection-only-v61-results-2026-11-01.md).
+
+- [x] Execute **10/16 attempts**, with no retries, repairs or reallocation:
+  SA two attempts (one valid, one empty-final length failure), SO eight valid.
+  Retire SA on **S-SA-H2-CP** at 16,000 generated tokens; leave its six remaining
+  cells unstarted. SO completes its unchanged relative schedule and all four
+  fresh-family calls. Preserve the prior SA/VA stop and counters independently.
+- [x] Preserve the HTTP-200 length envelope, known raw counters, exact gateway
+  error chain and post-call version evidence without treating truncation as a
+  successful response. All **21 daemon-version observations** match **0.40.13**;
+  all **eleven model checks** match the frozen DeepSeek metadata. No global
+  transport/unknown-usage stop or observed service-unavailability response.
+- [x] Inspect and seal notes for all **49 selections / 27 primary opportunities**
+  in nine valid outputs before decoding the trial key. Use partial masking,
+  complete source/report fields and explicit coverage rationales; exclude thinking
+  text. SO retains **24/24 targets**, including **12/12 fresh**, with no observed
+  material meaning distortion or opinion factualization. SA's completed report
+  retains **3/3 primary targets with grounded assessments**. SO assessments are
+  not requested and receive no judgment/citation credit. Count one repeated or
+  overlapping premise in each condition once.
+- [x] Document contextual coverage explicitly: H1/CP and H2/CP split event and
+  obligation selections, while F4/CP's quote omits its field's violation clause.
+  All retain their full bound fields under the frozen contract. **The 24/24 result
+  does not qualify a bare-quote handoff** or whole-report admission completeness.
+- [x] Keep the resource screen **not evaluable**: only one of eight required
+  complete pairs exists. H1/PC uses **14,262 SO versus 13,011 SA generated tokens**
+  (ratio **1.096**) and **48.64 versus 36.15 seconds**. There is no demonstrated
+  efficiency gain. Across all ten attempts, verify **92,521 input / 109,011
+  generated tokens / 327.83 active seconds**; archived-rate reference $0.1585695,
+  actual billing and reasoning/final token splits unknown.
+- [x] Pass **266 post-run offline tests**, plus exact live-evidence/annotation/score
+  replay, Ruff lint/format and strict mypy on **ten frozen + three analysis scripts**.
+  Exclude only the preparation test asserting that approval is absent; verify
+  actual approval binding separately. Preserve the initial mypy name-collision
+  check and correct it with separate directory checks. Verify all **54 frozen
+  files / 671 source pins**, original issue bodies and fourteen posted links.
+- [x] Preserve the new length and contextual-selection pairs as explicit
+  regression fixtures and audit a read-only staged handoff using the eight
+  existing SO outputs. Carry full field context and source/report versions;
+  test dropped attribution, negation, obligation and relation links. Audit real
+  selected-set workload before proposing a separately frozen assessment comparison.
+  See the [local audit](../docs/handoffs/reviewer-staged-handoff-audit-2026-11-01.md)
+  and completion entry below. No additional live budget is prepared or approved.
+
+Private evidence: `data/diagnostics/reviewer-selection-only-v61-2026-11-01/` and
+the `-live`, `-inspection`, `-analysis` siblings. Retain SO as a bounded diagnostic
+selection candidate; downstream assessment accuracy, writer preservation,
+end-to-end efficiency and story quality are unqualified. No production prompt,
+writer route, Blueprint checkpoint or story prose changed. CW-008/CW-013 and all
+other issues remain open; no external issue edited. **Step 19 IN PROGRESS;
+Step 20 NOT STARTED; further inference PAUSED; full workflow canary ON HOLD.**
+
+### Local context-preserving staged handoff audit 2026-11-01
+
+Status: **LOCAL AUDIT COMPLETE; ZERO NEW MODEL/DAEMON/DATABASE CALLS; NO PRODUCTION
+ADVANCEMENT.** [Audit, decisions and next proposal](../docs/handoffs/reviewer-staged-handoff-audit-2026-11-01.md).
+
+- [x] Verify **917 immutable source fingerprints** and preserve **154 exact
+  fixture files** covering all eight SO outputs, the SA empty-final length cell,
+  sealed inspection notes and run accounting. Keep the original ten attempts,
+  six retired cells, raw usage/error chain and all historical scores unchanged.
+- [x] Implement a diagnostic-only data projection with exact quotes, Unicode
+  offsets, field pointers, complete field/report/source context and artifact
+  identities. Retain **41 selections across 40 field instances**, including ten
+  partial-field quotes and the inspected overlapping premise. No semantic
+  deduplication, three-target substitution, inferred support or writer authority.
+- [x] Keep **24 authored coverage groups** separate from model input, including
+  two cross-selection groups and three contextual-completion flags. Establish
+  structural provenance without treating supported components as proof of their
+  relation. Audit four authored attribution/negation/time/availability contrasts
+  and one false-relation counterexample; these are not new model results.
+- [x] Reject all **120 integrity mutations** even after local self-hashes are
+  recomputed. Verify secret checking before export, immutable/partial-destination
+  rejection, absent production identity and rejection of the failed SA response.
+- [x] Export **eight handoffs + eight model views + one manifest**, 533,168 payload
+  bytes, and verify an identical repeat without rewriting. Preserve all sources;
+  no outgoing request, production adapter or persisted schema is introduced.
+- [x] Pass **171 offline tests** (41 new handoff, 46 review-evidence and 84 prior
+  delivery/usage), Ruff lint/format and strict mypy on five local scripts. Replay
+  the prior SA/SO results and new audit deterministically with no inference.
+- [x] Audit the real downstream workload: **41 model-selected versus 24 authored
+  units**, with only **16 exact field/quote matches**. Keep full source packets and
+  all extras. Preserve the prior selector cost of eight calls / 63,000 input /
+  80,000 generated tokens / 245.31 seconds separately from any future assessment.
+- [ ] If requested, prepare the proposed **16-new-call VA/MA comparison**: eight
+  unchanged authored-span VA controls and eight assessments of the actual saved
+  SO selections, H1/H2/F2/F4 in both source orders. Freeze all 41 selected-unit and
+  24 control judgments, sixteen exact paired units, requests, metadata and stops.
+  Require 8/8 valid MA deliveries and 41/41 grounded judgments, plus zero paired
+  grounded losses; keep whole-relation assessment separate. Proposed caps remain
+  24,000 input / 16,000 generated / 600 seconds per attempt, zero retries. This is
+  a proposal, **not frozen or approved**; no selection rerun or budget borrowing.
+
+Private support: `data/diagnostics/reviewer-staged-handoff-audit-v61-2026-11-01/`;
+data-only export: `data/diagnostics/reviewer-staged-handoff-export-v61-2026-11-01/`.
+Full context preserves access to a claim's meaning, not proof of that claim.
+Selected-proposition assessment does not establish whole-claim aggregation,
+autonomous admission completeness, writer preservation, efficiency or story
+quality. Human literary-review authority and Blueprint approval are unchanged.
+CW-008/CW-013 and every other issue remain open; no external issue edited.
+**Step 19 IN PROGRESS; Step 20 NOT STARTED; production prompt61 / graph9 /
+fulfillment policy1 unchanged; live calls PAUSED; full workflow canary ON HOLD.**
 
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 
