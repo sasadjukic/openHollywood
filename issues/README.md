@@ -471,3 +471,40 @@ pass. Original issue bodies and posted URLs remain unchanged. A provisional
 **24-call MA/quote-witness comparison** is proposed after local contract checks;
 nothing is frozen or approved. No model, daemon, database or external issue calls;
 production prompts unchanged; live calls **PAUSED**; canary **ON HOLD**.
+
+**2026-11-02 MA/quote-witness comparison frozen locally:** the
+[24-call plan](../docs/handoffs/reviewer-quote-witness-frozen-plan-2026-11-02.md)
+compares unchanged MA reference outputs with exact source witnesses resolved by
+the application. Four historical wires × two repeats × two arms supply sixteen
+calls; two fresh families in both orders supply eight more. **160 judgments** retain
+semantic/citation separation, positive controls, historical protections and eight
+independent contextual flags. Unresolved quotation binding cannot earn grounding
+credit; the first invalid/empty/length delivery stops both arms. Zero retries.
+Require two distinct paired citation recoveries, no semantic/grounding regressions
+and all fresh WB judgments grounded; insufficient control recurrence is inconclusive.
+**263 offline tests**, Ruff, strict typing and unchanged historical replay pass.
+The freeze preserves **69 files / 2,800 source pins**; metadata confirms Ollama
+0.40.13 and unchanged DeepSeek information. At preparation, **0/24 inference calls;
+separate live approval pending**; subsequent execution is recorded below.
+No production prompts, writer routes, original fourteen issue
+bodies or posted URLs changed; no external issue edits or closures. CW-007/CW-008/
+CW-013 and story-quality qualification remain open. Live calls **PAUSED**; canary
+**ON HOLD**.
+
+**2026-11-02 MA/quote-witness execution and inspection completed:** the
+[results report](../docs/benchmark_reports/reviewer-quote-witness-v61-results-2026-11-02.md)
+records **4/24 calls**, three valid reports and a fourth-call MA length stop at
+16,000 generated tokens. Both arms stopped; twenty unstarted calls are retired,
+with no retries or partial-final scoring. The frozen outcome is **incomplete
+delivery**. Nineteen inspected judgments yield **15 grounded, one citation-only
+failure and three semantic failures**, with 141 unavailable fixed slots. WB locates
+all **23 exact witnesses** and recovers one paired date-realization citation, but
+both arms retain the private-flourish inference and WB overstates next-scene
+opening timing. Only seven judgments have valid paired results; no fresh evidence
+or complete resource comparison is available. **262 offline tests**, Ruff, strict
+typing and sealed result replay pass; the original freeze, fourteen issue bodies
+and posted URLs remain intact. Recommend local regression preservation and delivery-
+headroom/context-preserving workload audit before another inference proposal.
+CW-007/CW-008/CW-013 and story-quality qualification remain open. No external issue
+edits or closures; production prompts unchanged; live calls **PAUSED**; canary
+**ON HOLD**.

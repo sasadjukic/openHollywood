@@ -9587,12 +9587,13 @@ Status: **COMPLETE AND VERIFIED LOCALLY; ZERO INFERENCE OR DAEMON CALLS.**
   bodies/posted URLs, and seal the audit/publication evidence. No external issue
   is edited or closed. Production prompts, graph, canonical prose, writer routes,
   source exporters and mandatory Blueprint checkpoint are unchanged.
-- [ ] Prepare the proposed **24-call MA versus quote-witness binding comparison**
+- [x] Prepare the proposed **24-call MA versus quote-witness binding comparison**
   only after local schema/renderer and ambiguity/resource checks: four unchanged
   historical wires × two repeats × two arms, plus two fresh families × two orders
   × two arms. Keep substantive judging instructions and full context; change
   only the diagnostic evidence-output mechanism. Freeze scoring/stops before
-  seeking separate live approval. No new requests, call budget or approval exists.
+  seeking separate live approval. Preparation and subsequent approved execution
+  are recorded below.
 
 Private bundle: `data/diagnostics/reviewer-binding-semantics-audit-v61-2026-11-02/`.
 The proposal tests whether application-located output witnesses improve citation
@@ -9600,6 +9601,139 @@ binding; it does not claim to solve semantic ambiguity, edit necessity or story
 quality. Preserve literal event claims and craft judgments as distinct evaluation
 objects. **Step 19 IN PROGRESS; Step 20 NOT STARTED; live calls PAUSED; full
 workflow canary ON HOLD.**
+
+### MA/quote-witness binding comparison preparation 2026-11-02
+
+Status at preparation: **FROZEN AND VERIFIED LOCALLY; 0/24 INFERENCE CALLS;
+LIVE APPROVAL PENDING.** Subsequent approval and execution are recorded below.
+[Frozen plan and approval scope](../docs/handoffs/reviewer-quote-witness-frozen-plan-2026-11-02.md).
+
+- [x] Freeze **24 calls / twelve per arm**: four historical H1/H2 presentation-order
+  wires × two repeats × MA/WB, plus two fresh families × both orders × both arms.
+  All historical MA wires remain exact. Full sources, registry, report, admitted
+  assertions, substantive judging instructions and high-thinking sampling remain
+  identical within each pair. Only WB's evidence-output instruction/schema changes.
+- [x] Verify the local witness schema and renderer. WB returns one to eight exact
+  `{version_id, field, quote}` witnesses, each 1–512 characters, at most 8,000 quote
+  characters overall. The application resolves one occurrence inside one registry
+  entry; no occurrence index, fuzzy match, automatic correction or semantic credit.
+  Preserve original witnesses, unresolved statuses and computed references. Recompute
+  renderer projections and display literal source data with no writer authority.
+- [x] Separate structurally valid missing/ambiguous/cross-entry quotes from invalid
+  output: unresolved binding loses citation/grounding credit and continues; malformed
+  output stops both arms. Apply identical whole-registry-field/paragraph evidence
+  adequacy to MA and WB. A locating quote does not itself establish entailment.
+- [x] Freeze **160 judgments / 80 per arm**: 56 supported, twenty unsupported and
+  four uncertain per arm. W1/W2 supply opposite specific-test and plan-opening
+  controls, with explicit event/plan claims, attribution/negation, missing-source
+  uncertainty, reasoned decision, multi-paragraph facts and independent endpoints.
+  Keep historical factual scores and the editorial meaning of “consumes” separate.
+- [x] Freeze source-bound inspection and decision rules: all 24 reports valid,
+  at least two distinct paired citation-only recoveries, zero paired semantic or
+  grounding losses, all **32 fresh WB judgments grounded**, **26 grounded / 40
+  semantic historical protections** retained and no grounded whole-relation loss.
+  Inspect eight separate contextual flags. Repeated recovery at one family/order/
+  claim counts once. Insufficient eligible MA recurrence is inconclusive if other
+  gates pass; unavailable slots remain in fixed denominators without semantic scores.
+- [x] Capture three metadata-only responses: **Ollama 0.40.13**, unchanged DeepSeek
+  digest/capabilities and high thinking. Preserve the initial sandbox-blocked
+  metadata attempt separately. **Zero inference**; no new model or daemon baseline.
+- [x] Freeze **24 total / zero retries**, 24,000 input / 16,000 combined generated /
+  600 active seconds per call, context 40,000; aggregate **576,000 input / 384,000
+  generated / 14,400 seconds**. Archived-rate reference **$0.63360**, planning
+  allowance $0.70; billing unknown. Maximum wire **67,546 bytes**, bytes/3 estimate
+  **22,516**, not a tokenizer measurement. No retired-budget reuse or reallocation.
+- [x] Stop the entire comparison on the first invalid/empty/length final, non-200,
+  transport/timeout, unknown/conflicting usage, missing thinking, invalid timing,
+  resource breach, metadata drift, integrity/dispatch ambiguity or cancellation.
+  Preserve terminal error chains and unknown usage; no partial-final salvage,
+  replacement or allowance increase. Clean sealed-boundary pause only; no stopped-run
+  continuation under the same approval. Valid semantic errors do not stop delivery.
+- [x] Pass **263 offline tests**: 99 comparison, 22 gateway/contracts, 58 binding
+  audit and 84 usage. Ruff lint/format and strict mypy pass on twelve scripts;
+  historical results replay unchanged. Real HTTP/model and database access are
+  blocked during diagnostic tests. Preserve initial lint/type findings, the stale
+  mock trial-ID failure and all corrections before freezing.
+- [x] Freeze **69 files / 2,800 historical/runtime source fingerprints** and the
+  public plan. Plan SHA-256:
+  `9dcc2a77932fb5b6888c422d9a0f869b7801f4305b731c27fda1cf0df48a8f0e`.
+  Verify original fourteen issue bodies and posted URLs; update the local index
+  without external issue edits or closures.
+- [x] Obtain separate plan-bound approval for full unpublished fictional prose /
+  context, reports and admitted assertions to **Ollama Cloud through the local
+  Ollama daemon**, at most 24 calls under these stops. No approval file or live-run
+  directory existed at preparation; the user's subsequent explicit approval and
+  four-call stopped execution are recorded below.
+
+Private bundle: `data/diagnostics/reviewer-quote-witness-v61-2026-11-02/`.
+Production **prompt 61 / graph 9 / fulfillment policy 1**, canonical prose, writer
+routes, exporters and mandatory Blueprint checkpoint remain unchanged. This is a
+mechanical citation-binding diagnostic, with no reviewer promotion, edit-necessity
+decision, preservation or literary-quality qualification. **Step 19 IN PROGRESS;
+Step 20 NOT STARTED; live calls PAUSED; full workflow canary ON HOLD.**
+
+### MA/quote-witness execution and inspection 2026-11-02
+
+Status: **COMPLETE AND VERIFIED; 4/24 CALLS; `incomplete_delivery`; 20 CALLS RETIRED.**
+[Results and recommended local work](../docs/benchmark_reports/reviewer-quote-witness-v61-results-2026-11-02.md).
+
+- [x] Record approval bound to the original freeze and full unpublished prose /
+  context, reports and admitted assertions to **Ollama Cloud through the local
+  Ollama daemon**. Dispatch the exact first four requests; zero retries, replacements,
+  changed prompts, increased limits or retired-budget reuse.
+- [x] Stop both arms on **Q-MA-H2-CP-R1**, the fourth call: HTTP 200, length finish,
+  **16,000 combined generated tokens** and **2,156 final characters** ending inside
+  a JSON reason string. Preserve the raw partial final, opaque thinking, known
+  counters, gateway outcome and cell seal. No partial semantic scores. Retire all
+  twenty unstarted calls; this approval does not allow continuation.
+- [x] Verify three valid reports, four complete attempt records, all exact dispatched
+  wires, **nine matching Ollama 0.40.13 observations and five model checks**. The
+  control length stop is not evidence of WB causation or an HTTP outage. Previous
+  same-wire controls finished at 9,535 / 8,885 / 15,094 generated tokens; this
+  establishes delivery variation, not its cause or a population failure rate.
+- [x] Inspect and seal **19 valid judgments** before trial/repeat-key and resource
+  decoding: **15 grounded, one citation-only failure, three semantic failures**;
+  sixteen correct labels and substantive judgments. Preserve **141 unavailable /
+  160 fixed slots**: MA five grounded / one citation-only / one semantic / 73
+  unavailable; WB ten grounded / zero citation-only / two semantic / 68 unavailable.
+  Partial assistant masking is not blind human review; thinking is excluded.
+- [x] Verify **23/23 WB witnesses located**, all twelve WB units mechanically bound,
+  and three literal source renderings. Record **one distinct paired date-realization
+  citation recovery** in H1/PC Q007 and no losses among seven available paired
+  judgments. Retain both arms' private-flourish inference and WB's unsupported
+  next-scene start-inside inference. Correct location does not establish entailment;
+  the H2 control has no valid result, so no paired semantic difference is inferred.
+- [x] Retain **9/26 historical grounded protections, seventeen unavailable; 10/40
+  semantic protections, thirty unavailable**, with zero observed failures in these
+  protected subsets. Record one explicit grounded contextual relation and seven
+  unavailable flags; no component-label aggregation. No fresh or repeated block ran.
+  The frozen outcome is **incomplete delivery**, without qualification or promotion.
+- [x] Audit **64,351 input / 47,662 combined generated tokens / 155.95 active
+  seconds**, all usage known and within reservations. Archived-rate reference
+  **$0.0764997**; billing and reasoning/final token split unknown. WB H2/CP used
+  15,816 generated tokens; retain the narrow headroom without increasing the cap.
+  No complete paired resource comparison is available.
+- [x] Pass **262 post-run offline tests**: 98 comparison, 22 gateway/contracts,
+  58 prior binding audit and 84 usage. Deselect only the preparation-only
+  approval-absent test. Ruff lint/format, strict mypy on fourteen scripts, real
+  approval binding, sealed source inspection and exact score replay pass. Real
+  HTTP/model and database access is blocked during verification.
+- [x] Preserve the **69-file / 2,800-source freeze**, public plan, original fourteen
+  issue bodies and posted URLs. Seal execution, inspection, analysis and publication;
+  update the local issue index without external edits or issue closures.
+- [ ] Preserve the partial-final stop, paired date recovery, semantic failures and
+  successful witness bindings as regressions. Audit same-wire delivery headroom
+  and whether a narrower assessment workload preserves complete context and
+  compound relations before proposing new inference. Keep factual entailment and
+  editorial suspense judgments distinct. No next live budget or continuation is
+  authorized; the twenty retired calls are not an unused continuation allowance.
+
+Private evidence: `data/diagnostics/reviewer-quote-witness-v61-2026-11-02/` and
+its `-live`, `-inspection`, `-analysis` siblings. Production **prompt 61 / graph 9 /
+fulfillment policy 1**, canonical prose, writer routes, exporters and the mandatory
+Blueprint checkpoint remain unchanged. Citation binding does not qualify edit
+necessity, preservation or story quality. **Step 19 IN PROGRESS; Step 20 NOT
+STARTED; further live calls PAUSED; full workflow canary ON HOLD.**
 
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 
