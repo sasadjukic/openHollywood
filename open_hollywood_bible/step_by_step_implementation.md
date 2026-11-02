@@ -9372,11 +9372,12 @@ NO PRODUCTION ADVANCEMENT.**
   scripts. Exclude only the preparation-only absence-of-approval test; verify actual
   approval and replay sealed annotations/results. Preserve all **63 frozen files /
   1,751 source pins**, fourteen original issue bodies and posted URLs.
-- [ ] Preserve the partial-final length capture, H1/PC MA/PE semantic pair and
+- [x] Preserve the partial-final length capture, H1/PC MA/PE semantic pair and
   recovered historical MA controls as local regressions. Audit saved delivery
   resources and identical-control repeatability before another inference proposal.
   Require a locally justified hypothesis; no next live budget or prompt change is
   prepared. Keep source location, entailment and complete-relation coverage separate.
+  The completed local audit and provisional baseline-only proposal follow below.
 
 Private bundle: `data/diagnostics/reviewer-paragraph-excerpts-v61-2026-11-01/`
 and its `-live`, `-inspection`, `-analysis` siblings. CW-007/CW-008/CW-013 remain
@@ -9384,6 +9385,221 @@ open; no story-quality qualification or external issue edit. No production promp
 graph, schema, canonical prose, writer route or mandatory Blueprint checkpoint
 changed. **Step 19 IN PROGRESS; Step 20 NOT STARTED; inference PAUSED;
 full workflow canary ON HOLD.**
+
+### MA/PE delivery preservation and baseline-repeatability audit 2026-11-01
+
+Status: **LOCAL AUDIT COMPLETE; EXACT REQUEST REPEAT VARIATION VERIFIED;
+NO NEW INFERENCE OR PRODUCTION ADVANCEMENT.**
+[Audit, evidence and proposed next step](../docs/handoffs/reviewer-delivery-repeatability-audit-2026-11-01.md).
+
+- [x] Preserve **258 exact capture/support files** from all ten MA/PE attempts
+  and four original historical MA controls. Retain raw length evidence, H1/PC
+  semantic contrasts, recovered controls and fresh C5/D6 positives. Bind **87
+  inspected judgments**: 75 grounded, seven citation-only failures and five
+  semantic failures, plus four separate contextual flags. No rescoring or salvage.
+- [x] Replay the partial-final length capture with known **16,438 input / 16,000
+  generated / 70.11 seconds**. Its 1,433-character final ends in an unterminated
+  JSON string; 73,535 thinking characters do not establish a reasoning-token split.
+  Preserve unknown billing/split and the empty gateway error chain. Ten current
+  attempts retain their original usage; the six retired PE calls stay closed.
+- [x] Verify **4,164 presented reference entries** with zero mapping errors.
+  Check all 24 paragraph additions in dispatched PE requests against exact sources;
+  stripping those fields restores paired MA wires. Correct location still does
+  not establish the specific-flourish or starting-after-entry inference.
+- [x] Compare four **byte-identical MA wire pairs**, retaining source/version and
+  gold identities. Captured daemon/model metadata agree apart from check timestamps.
+  All four answers, 24 reasons, sixteen citation lists and four labels change;
+  thirteen grounded successes remain, seven citation gaps and four semantic failures
+  recover. Grounding moves **13/24 to 24/24**. Three pairs have unchanged cache
+  counts; effective sampling, cache causality and the underlying cause stay unknown.
+- [x] Retain whole-relation limits: current H1/CP and H2/CP do not explicitly
+  assess the complete endpoint relation despite correct selected components.
+  Older H2/CP asserted it without adequate citations; this is coverage variation,
+  not loss of a previously grounded relation. No automatic whole-field credit.
+- [x] Pass **271 offline tests** (67 new, 46 review-evidence, 84 usage, 74 mapping),
+  Ruff lint/format and strict mypy on four scripts. Retain corrected initial typing
+  findings and successful rerun. Replay original results and all **2,011 source
+  fingerprints**, including 63 frozen MA/PE files / 1,751 prior pins. Verify exact,
+  idempotent fixture export and rejection of corrupt/ambiguous/unsafe inputs.
+- [x] Propose a **twelve-call baseline-only repeatability diagnostic**: three
+  fixed repetitions of each historical MA wire, both families/orders, unchanged
+  high-thinking settings and per-call limits. Measure recurrence and coverage
+  separately from delivery/resources; preserve all 72 slots and stop at the first
+  delivery/integrity/resource failure. Zero retries; no PE, writer or larger cap.
+- [x] Prepare and freeze the twelve-call replication, 72 source
+  judgments, evidence criteria, fixed interleaving, budget/stops and metadata,
+  then submit for separate live approval, still pending. The preparation below
+  records the freeze; prior unused allowances remain closed. Defer citation intervention
+  if the failure does not reproduce; no outcome alone qualifies production.
+
+Private bundle: `data/diagnostics/reviewer-delivery-repeatability-audit-v61-2026-11-01/`.
+No model, daemon or database calls. Original issue bodies/posted URLs remain intact;
+no external issue is edited or closed. Story quality, edit necessity and preservation
+remain separate. No production prompt, graph, schema, writer route, canonical prose
+or mandatory Blueprint checkpoint changed. **Step 19 IN PROGRESS; Step 20 NOT
+STARTED; live calls PAUSED; full workflow canary ON HOLD.**
+
+### Baseline-only MA repeatability diagnostic preparation 2026-11-02
+
+Preparation snapshot: **PREPARED, VERIFIED AND FROZEN; 0/12 INFERENCE CALLS
+AT FREEZE.** Approval and completed execution are recorded below.
+[Frozen requests, scoring, budget and stops](../docs/handoffs/reviewer-baseline-repeatability-frozen-plan-2026-11-02.md).
+
+- [x] Freeze **four exact historical MA wires × three repetitions = twelve
+  calls**, using H1/H2 in both PC/CP source orders. Preserve full source/field
+  context, report, original saved selections, instructions and sampling. Keep
+  block/repeat IDs outside model messages; no PE, selector, writer or prompt edit.
+- [x] Freeze three interleaved blocks: H1/PC–H2/CP–H1/CP–H2/PC;
+  H2/PC–H1/CP–H2/CP–H1/PC; H1/CP–H2/PC–H1/PC–H2/CP. Position variation is
+  incomplete counterbalancing; there are two family clusters, not twelve stories.
+- [x] Freeze **72 judgments**, 54 supported / 18 unsupported, including **21
+  historical citation-target occurrences** and **twelve historical semantic-target
+  occurrences**. Retain **39 grounded / 60 semantic protection occurrences**, plus
+  six separate contextual flags. Adequacy is content coverage, not a ref whitelist.
+- [x] Freeze source-bound inspection and per-wire recurrence/variation scoring.
+  Separate citation-only recurrence, semantic-label recurrence, other observed
+  errors and unavailable slots. No absent result counts as an observed semantic
+  mistake; no component-to-relation aggregation, historical pooling, automatic
+  reliability estimate, writer dispatch or production qualification.
+- [x] Capture **three metadata-only responses** on 2026-11-02. Confirm **Ollama
+  0.40.13**, unchanged DeepSeek digest/capabilities and high thinking. Preserve raw
+  metadata and seals; no baseline amendment needed and **zero inference**.
+- [x] Freeze **12 total / three per wire / zero retries**, with 24,000 input /
+  16,000 combined generated / 600 active seconds per call; requested context
+  40,000. Reserve **288,000 input / 192,000 generated / 7,200 seconds**. Archived-rate
+  reference **$0.31680**, planning allowance $0.35; billing unknown. Maximum wire
+  60,612 bytes, conservative bytes/3 estimate 20,204; not a tokenizer measurement.
+- [x] Stop the entire diagnostic on the **first invalid/empty/length delivery**,
+  non-200/transport failure, unknown/conflicting usage, missing thinking, invalid
+  timing, resource breach, metadata drift, integrity/dispatch ambiguity or
+  cancellation. Continue across semantic errors only. Preserve terminal evidence,
+  unknown usage and all fixed slots; no retry, replacement or reuse of retired PE calls.
+- [x] Pass **253 offline tests**: 80 comparison, 22 gateway/contract, 67 prior
+  repeatability, 84 usage. Ruff lint/format and strict mypy pass on ten scripts;
+  historical MA/PE score replay is unchanged. Retain interrupted sandbox/typing
+  findings and corrected false-positive leakage check; requests never changed.
+- [x] Freeze **51 files / 2,283 historical/runtime source fingerprints** and the
+  public plan. Plan SHA-256:
+  `de0f3fc5674e1d3c99d62f764ed729558703c0c6543a5429c9e6cc76635751f7`.
+- [x] Obtain separate live approval bound to this hash, full unpublished
+  prose/context/report/selections, **Ollama Cloud through the local Ollama daemon**,
+  twelve calls, unchanged high thinking and the first-failure stop. No approval
+  file or live-run directory existed during preparation; the user's subsequent
+  approval and completed twelve-call run are recorded below. Earlier budgets stay closed.
+
+Private bundle: `data/diagnostics/reviewer-baseline-repeatability-v61-2026-11-02/`.
+All fourteen original issue bodies/posted URLs remain intact. No external issue,
+production code, prompt, graph, schema, canonical prose, writer route or mandatory
+Blueprint checkpoint changed. Literary quality, edit necessity and preservation
+remain separate. At preparation: **Step 19 IN PROGRESS; Step 20 NOT STARTED;
+inference PAUSED pending approval; full workflow canary ON HOLD.**
+
+### Baseline-only MA repeatability execution and inspection 2026-11-02
+
+Status: **COMPLETE AND VERIFIED; 12/12 CALLS; KNOWN FAILURE RECURRENCE OBSERVED.**
+[Results and recommended local work](../docs/benchmark_reports/reviewer-baseline-repeatability-v61-results-2026-11-02.md).
+
+- [x] Record plan-bound approval for full unpublished prose/context/report and
+  saved selections to **Ollama Cloud through the local Ollama daemon**. Execute
+  the original twelve-request schedule, three exact repeats per wire, with no
+  retries, replacements, request changes or retired-budget reuse.
+- [x] Verify **12 valid HTTP-200 stop deliveries**, no terminal stop, all exact
+  dispatched wires and per-cell seals. Preserve **25 matching Ollama 0.40.13
+  observations and thirteen model checks**. High thinking and sampling are unchanged.
+- [x] Inspect **72 judgments** against full sources, sealing notes before trial /
+  repeat-key and resource decoding. Partial assistant masking is not blind human
+  review; thinking is excluded. Record **60 grounded / six citation-only / six
+  semantic failures**, **67 correct labels / 66 semantically correct judgments**,
+  with zero unavailable slots. The frozen outcome is
+  **`known_failure_recurrence_observed`**.
+- [x] Record **1/21 historical citation-target recurrences** (H1/CP R1 Q005) and
+  **5/12 historical semantic-label recurrences** (H1/PC Q006 twice, H1/CP Q007
+  three times). Retain five additional H1/PC R2 citation failures and H2/CP R3's
+  correct-label / wrong-reference-type explanation. Correct general-match versus
+  private-flourish semantics occur once in six judgments, with inadequate citations.
+- [x] Retain **35/39 grounded and 60/60 semantic historical protections**; four
+  observed grounding losses, no unavailable slots. Record **one explicit grounded
+  whole relation out of six contextual flags**, separately from component labels.
+  All 24 unit positions vary in reason wording, twelve in citation sets, one in
+  labels. Do not pool prior captures into a reliability estimate or infer a cause.
+- [x] Audit **179,559 input / 112,463 combined generated tokens / 399.03 active
+  seconds** within all limits; all usage known. Largest generation is **15,094**.
+  Archived-rate reference **$0.1888233**; billing and reasoning/final token split
+  remain unknown. Preserve cache counters without inferring cache causation.
+- [x] Pass **252 post-run offline tests**: 79 diagnostic, 22 gateway/contracts,
+  67 repeatability and 84 usage regressions. Deselect only the preparation-only
+  approval-absent test. Ruff lint/format, strict mypy on thirteen scripts, sealed
+  annotation reconstruction and exact score replay pass. Real HTTP/database
+  access is blocked during verification.
+- [x] Preserve **51 frozen files / 2,283 historical/runtime fingerprints**, original
+  fourteen issue bodies and posted URLs. Seal execution, inspection, analysis
+  and publication evidence; update the local issue index without external edits.
+- [x] Preserve the same-wire failure/recovery triples as regressions. Audit
+  citation binding independently from the private-flourish inference and plan
+  reference type. Require local counterexamples and a materially different
+  hypothesis before another treatment proposal; completed locally below.
+
+Private evidence: `data/diagnostics/reviewer-baseline-repeatability-v61-2026-11-02/`
+and its `-live`, `-inspection`, `-analysis` siblings. Production **prompt 61 /
+graph 9 / fulfillment policy 1**, canonical prose, writer routes and the mandatory
+Blueprint checkpoint are unchanged. Mechanical grounding does not establish
+edit necessity, preservation or literary quality. **Step 19 IN PROGRESS; Step 20
+NOT STARTED; further live calls PAUSED; full workflow canary ON HOLD.**
+
+### Repeated-control citation binding and semantic-scope audit 2026-11-02
+
+Status: **COMPLETE AND VERIFIED LOCALLY; ZERO INFERENCE OR DAEMON CALLS.**
+[Audit and proposed next steps](../docs/handoffs/reviewer-binding-semantics-audit-2026-11-02.md).
+
+- [x] Preserve **216 exact capture/support files**, all twelve complete MA
+  deliveries and all four same-wire triples. Pin **2,566 historical sources**;
+  retain all **72 inspected judgments: 60 grounded, six citation-only and six
+  semantic failures**, plus six independent contextual flags. No score repair,
+  favorable-repeat selection or historical evidence mutation.
+- [x] Independently verify **3,924 presented reference entries**, with zero
+  source/version/field/offset/paragraph mapping errors. All repeated wire bytes,
+  source and selected-claim identities match; all four groups retain three
+  different final answers. Resource counters and unknown token splits stay intact.
+- [x] Audit all six citation-only failures. A bounded local witness checker
+  reports whether supplied exact text belongs to submitted references, without
+  repair or semantic credit. **Seven authored anchors × three repeats** yield
+  **14 inside / seven outside citation bindings**. Those seven gaps cover six
+  failures; five witnesses occur literally in reasons, two are source-authored
+  paraphrase anchors. This is not an automatic detector success rate.
+- [x] Preserve the private-flourish distinction: general match, current endpoint
+  violation and specific future verification are separate propositions. Record
+  that “consumes/preempts” can also express an editorial suspense judgment; the
+  frozen factual score cannot decide its literary merit. Do not silently relabel
+  historical captures or conflate absent proof with definite nonoccurrence.
+- [x] Audit planned timing versus observed events using exact blueprint fields.
+  Preserve H2/CP R3's correct unsupported label and incorrect observed-future-scene
+  burden alongside five grounded controls. Add **twelve authored semantic
+  counterexamples**, including positive paraphrased specific tests, negation,
+  attribution, explicit planned starts and missing-source uncertainty. They are
+  local evaluation expectations, not new model results or a semantic classifier.
+- [x] Pass **245 unique offline tests**: 58 new, 46 review-evidence, 67 prior
+  repeatability and 74 mapping. Ruff lint/format and strict mypy pass on five
+  scripts; historical score and new audit replay are unchanged. Retain the initial
+  typing finding and targeted successful recheck. Test ambiguity, missing and
+  cross-paragraph witnesses, invalid bindings, idempotence and conflict rejection.
+  HTTP, sockets, DNS and database access are blocked during audit/tests.
+- [x] Update this tracker and local issue index, preserve original fourteen issue
+  bodies/posted URLs, and seal the audit/publication evidence. No external issue
+  is edited or closed. Production prompts, graph, canonical prose, writer routes,
+  source exporters and mandatory Blueprint checkpoint are unchanged.
+- [ ] Prepare the proposed **24-call MA versus quote-witness binding comparison**
+  only after local schema/renderer and ambiguity/resource checks: four unchanged
+  historical wires × two repeats × two arms, plus two fresh families × two orders
+  × two arms. Keep substantive judging instructions and full context; change
+  only the diagnostic evidence-output mechanism. Freeze scoring/stops before
+  seeking separate live approval. No new requests, call budget or approval exists.
+
+Private bundle: `data/diagnostics/reviewer-binding-semantics-audit-v61-2026-11-02/`.
+The proposal tests whether application-located output witnesses improve citation
+binding; it does not claim to solve semantic ambiguity, edit necessity or story
+quality. Preserve literal event claims and craft judgments as distinct evaluation
+objects. **Step 19 IN PROGRESS; Step 20 NOT STARTED; live calls PAUSED; full
+workflow canary ON HOLD.**
 
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 

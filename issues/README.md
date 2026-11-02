@@ -408,3 +408,66 @@ is prepared. CW-007/CW-008/CW-013 remain open and story quality remains unqualif
 All fourteen original issue bodies and posted URLs remain intact. No issue closed
 or edited externally; production prompts unchanged, inference **PAUSED**, full
 workflow canary **ON HOLD**.
+
+**2026-11-01 MA/PE delivery and baseline repeatability audited locally:** the
+[audit and proposed next step](../docs/handoffs/reviewer-delivery-repeatability-audit-2026-11-01.md)
+preserve **258 capture/support files**, fourteen attempts and 87 inspected
+judgments. PE's partial-final length stop retains verified usage without semantic
+credit or a fabricated reasoning/final token split. The four historical MA wires
+are byte-identical across runs, while seven citation failures and four semantic
+failures recover; all four answers change. Three pairs have identical cache counts.
+This establishes repeat variation, not its cause or durable reliability. All
+**4,164 reference entries** map correctly, while semantic and whole-relation
+coverage limits remain open. **271 offline tests**, Ruff, strict typing and score
+replay pass; **2,011 source pins** and original issue bodies/posted URLs are intact.
+A provisional **twelve-call baseline-only replication** is proposed before another
+citation intervention; nothing is frozen or approved. No model/daemon/database
+calls, production changes, external issue edits or issue closures. Live calls
+**PAUSED**; full workflow canary **ON HOLD**.
+
+**2026-11-02 baseline-only MA repeatability diagnostic frozen:** the
+[twelve-call plan](../docs/handoffs/reviewer-baseline-repeatability-frozen-plan-2026-11-02.md)
+repeats four unchanged historical MA wires three times, with fixed interleaving
+and **72 source-bound judgments**. Citation recurrence, semantic errors, unavailable
+results and six whole-relation flags remain separate. The first delivery failure
+stops the entire diagnostic; zero retries or retired-budget reuse. Metadata-only
+capture confirms **Ollama 0.40.13** and unchanged DeepSeek information. **253 offline
+tests**, Ruff, strict typing and historical score replay pass. The freeze preserves
+**51 files / 2,283 source fingerprints**. At freeze, **0/12 inference calls used
+and separate live approval pending**; completed execution is recorded below.
+Original issue bodies and posted URLs remain intact;
+no external issue is edited or closed. Production prompts unchanged; full workflow
+canary **ON HOLD**.
+
+**2026-11-02 baseline-only MA repeatability diagnostic completed:** the
+[results](../docs/benchmark_reports/reviewer-baseline-repeatability-v61-results-2026-11-02.md)
+record **12/12 calls and valid reports**, no retries or terminal stops, and
+**60/72 grounded judgments**. Six citation-only and six semantic failures remain:
+one historical citation-target recurrence, five historical semantic-label
+recurrences, five other citation failures and one correct-label / wrong-scope
+explanation. The private-flourish inference recurs despite unchanged requests;
+correct reasoning can also cite neighboring passages. The frozen outcome is
+**known failure recurrence observed**, without a provider-cause or population
+reliability claim. Historical protections retain **35/39 grounded and 60/60
+semantic occurrences**; one of six contextual relations is explicitly assessed.
+**252 offline tests**, lint, strict typing and score replay pass; the **51-file /
+2,283-source freeze**, original issue bodies and posted URLs are preserved.
+Recommend local regression preservation and separate citation/semantic audits
+before another treatment proposal. No issue is closed or edited externally;
+production prompts unchanged; further live calls **PAUSED**; canary **ON HOLD**.
+
+**2026-11-02 repeated controls and citation/semantic scope audited locally:** the
+[audit and next-step proposal](../docs/handoffs/reviewer-binding-semantics-audit-2026-11-02.md)
+preserve all twelve controls, **216 exact files / 2,566 source pins**, 72 unchanged
+judgments and six contextual flags. **3,924 presented reference entries** map
+correctly. Twenty-one checks using manually selected witnesses expose seven
+binding gaps across the six citation failures, without automatic correction or
+an automatic-detection claim. Correct location still does not prove the private
+test occurred; “consumes the reveal” also needs separation from a craft concern
+about suspense. Plans can support claims about planned timing without an observed
+future draft. Twelve authored counterexamples preserve those distinctions.
+**245 unique offline tests**, lint, strict typing and historical/new audit replay
+pass. Original issue bodies and posted URLs remain unchanged. A provisional
+**24-call MA/quote-witness comparison** is proposed after local contract checks;
+nothing is frozen or approved. No model, daemon, database or external issue calls;
+production prompts unchanged; live calls **PAUSED**; canary **ON HOLD**.
