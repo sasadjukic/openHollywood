@@ -508,3 +508,23 @@ headroom/context-preserving workload audit before another inference proposal.
 CW-007/CW-008/CW-013 and story-quality qualification remain open. No external issue
 edits or closures; production prompts unchanged; live calls **PAUSED**; canary
 **ON HOLD**.
+
+**2026-11-02 quote-witness regressions and workload audit completed locally:** the
+[audit](../docs/handoffs/reviewer-workload-headroom-audit-2026-11-02.md) preserves
+**163 exact files / 2,966 historical source pins**, all four attempts, fifteen
+grounded judgments, one citation-only failure, three semantic failures and all
+23 successful witness locations. The partial-final stop and twenty retired calls
+remain unchanged. Sixteen saved deliveries show same-wire resource variation:
+H2/CP MA reaches its 16,000-token cap after earlier completions at 8,885–15,094;
+WB H2/CP completes with 184 tokens remaining. No provider cause or workload remedy
+is established. Local previews retain full context and whole linked selections;
+repeating the old schedule in smaller batches would require 64 or 88 calls rather
+than 24. **251 offline tests**, Ruff, strict typing and sealed result replay pass.
+The [investigation synthesis](../docs/handoffs/critic-writer-evidence-and-production-direction-2026-11-02.md)
+recommends a tracked read-only assessment/completion contract using existing local
+prototypes, followed only if warranted by a separately frozen **30-call MA workload
+comparison**. This is a proposal, not new production code or live authorization.
+Diagnostic gains remain distinct from edit necessity and human story quality.
+All fourteen issue bodies and posted URLs remain intact; no external issue edited
+or closed. No model/daemon/database calls; production prompts unchanged; live calls
+**PAUSED**, full workflow canary **ON HOLD**.

@@ -9721,7 +9721,7 @@ Status: **COMPLETE AND VERIFIED; 4/24 CALLS; `incomplete_delivery`; 20 CALLS RET
 - [x] Preserve the **69-file / 2,800-source freeze**, public plan, original fourteen
   issue bodies and posted URLs. Seal execution, inspection, analysis and publication;
   update the local issue index without external edits or issue closures.
-- [ ] Preserve the partial-final stop, paired date recovery, semantic failures and
+- [x] Preserve the partial-final stop, paired date recovery, semantic failures and
   successful witness bindings as regressions. Audit same-wire delivery headroom
   and whether a narrower assessment workload preserves complete context and
   compound relations before proposing new inference. Keep factual entailment and
@@ -9733,6 +9733,67 @@ its `-live`, `-inspection`, `-analysis` siblings. Production **prompt 61 / graph
 fulfillment policy 1**, canonical prose, writer routes, exporters and the mandatory
 Blueprint checkpoint remain unchanged. Citation binding does not qualify edit
 necessity, preservation or story quality. **Step 19 IN PROGRESS; Step 20 NOT
+STARTED; further live calls PAUSED; full workflow canary ON HOLD.**
+
+### Quote-witness regressions, headroom and workload audit 2026-11-02
+
+Status: **COMPLETE AND VERIFIED; LOCAL ONLY; NO NEW INFERENCE.**
+[Audit and provisional workload comparison](../docs/handoffs/reviewer-workload-headroom-audit-2026-11-02.md).
+[Investigation synthesis and production recommendation](../docs/handoffs/critic-writer-evidence-and-production-direction-2026-11-02.md).
+
+- [x] Preserve **163 exact capture/support files** and verify **2,966 historical
+  source pins**, including all four attempts, successful bindings, sealed inspection,
+  usage and the partial-final length stop. Keep the original 69-file / 2,800-source
+  freeze and `incomplete_delivery` outcome unchanged. No retry, repaired JSON or
+  semantic score for the partial response; all twenty retired calls stay retired.
+- [x] Retain all nineteen valid judgments: **fifteen grounded, one citation-only
+  and three semantic failures**. Preserve one distinct paired date-citation recovery,
+  both private-flourish failures, WB's unsupported next-scene opening inference,
+  and **23/23 successful witness locations**. Correct binding is not entailment;
+  the unavailable H2 MA control cannot support a paired-loss claim. No historical
+  rescore; factual completion and an editorial suspense concern remain distinct.
+- [x] Audit **sixteen saved deliveries**, including twelve repeated MA controls.
+  Confirm identical wires within each MA group. H2/CP generation ranges from
+  **8,885 to 16,000 tokens**, with the latest response truncated; WB H2/CP leaves
+  only **184 tokens** of output allowance. Preserve known combined usage and
+  unknown reasoning/final splits. Do not infer provider cause, a population failure
+  rate, context truncation or the effectiveness of a smaller workload.
+- [x] Verify data-only workload previews for all 24 old requests at two limits.
+  Keep complete context, full report and every exact whole selected proposition;
+  retain existing authored cross-selection links without inferring production
+  semantic groups. The old schedule would require **64 calls at three units** or
+  **88 at two**, for the same 160 judgments. No provider requests or budget created.
+- [x] Verify an illustrative completion boundary: exact-once expected batches,
+  immutable shared scope, valid deliveries and no completion for missing/invalid
+  receipts. Complete delivery grants no semantic, whole-relation or writer authority.
+  Full context repeats, so lower per-call workload does not establish lower cost.
+- [x] Pass **251 unique offline tests**: 85 new, 46 read-only evidence, 98 unchanged
+  comparison and 22 gateway/contracts. Ruff lint/format, strict mypy on five current
+  scripts, historical score replay and deterministic audit replay pass. Retain the
+  initial verification's collection/module failures and the corrected explicit
+  script/test scope; copied historical Python remains inert and byte-identical.
+- [x] Document the accumulated writer/critic evidence, model/interface/mode effects,
+  application responsibilities and human-review limits. Distinguish implemented
+  durable handoff/export capabilities from local prototypes and proposed production
+  work. No model ranking, provider-cause finding or better-story claim is added.
+  Original fourteen issue bodies and posted URLs remain unchanged; no issue closed.
+- [ ] Port/extend the existing staged-handoff and workload prototypes into a small
+  tracked, read-only assessment work-item/completion contract. Reuse existing
+  exports; keep support, materiality, craft and writer authorization separate.
+  Replay preserved controls before considering production routing. This is proposed
+  work, not implemented by the present local audit.
+- [ ] If warranted after that local boundary, separately prepare and seek approval
+  for the **provisional 30-call MA workload comparison**: eight full controls and
+  22 batches of at most three whole linked units, four families/both orders,
+  **56 judgments per condition**. Preserve full context; no simultaneous WB change.
+  Freeze exact requests, complete-case scoring, all resource costs and stop rules.
+  Nothing is frozen or live-approved; no retired allowance can transfer.
+
+Private bundle: `data/diagnostics/reviewer-workload-headroom-audit-v61-2026-11-02/`.
+Model, daemon and database calls: **zero**. Product code, prompt 61 / graph 9 /
+fulfillment policy 1, exporters, writer routes and the mandatory Blueprint checkpoint
+are unchanged. Human feel, flow, character and story-breaking assessment remain
+separate from machine-prepared mechanics. **Step 19 IN PROGRESS; Step 20 NOT
 STARTED; further live calls PAUSED; full workflow canary ON HOLD.**
 
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
