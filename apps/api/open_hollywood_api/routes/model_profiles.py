@@ -80,6 +80,11 @@ async def configure_model_profile(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Model profile not found",
         ) from error
+    except ValueError as error:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+            detail=str(error),
+        ) from error
     return ModelProfileSummary.from_record(record)
 
 
@@ -120,7 +125,7 @@ async def activate_model_profile(
     "/models/catalog",
     operation_id="listModelCatalog",
     response_model=ModelCatalog,
-    summary="Discover configured Ollama model catalogs",
+    summary="Discover configured model catalogs",
 )
 async def list_model_catalog(
     catalog: ModelCatalogDependency,

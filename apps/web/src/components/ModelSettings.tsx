@@ -81,7 +81,7 @@ export function ModelSettings({
             />
             <span>
               {isCatalogLoading
-                ? "Discovering Ollama models…"
+                ? "Discovering models…"
                 : `${String(catalog?.models.length ?? 0)} models discovered`}
             </span>
           </div>
@@ -246,7 +246,7 @@ function ModelSelect({
         <option value="">Select a discovered model</option>
         {options.map((model) => (
           <option key={modelKey(model)} value={modelKey(model)}>
-            {model.model_identifier}
+            {model.provider} · {model.model_identifier}
             {model.parameter_size ? ` · ${model.parameter_size}` : ""}
           </option>
         ))}

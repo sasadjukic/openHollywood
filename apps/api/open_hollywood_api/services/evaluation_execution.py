@@ -4,8 +4,10 @@ from __future__ import annotations
 
 import asyncio
 import hashlib
+from collections.abc import Mapping
 from datetime import UTC, datetime
 from decimal import Decimal
+from typing import Any
 from uuid import UUID, uuid5
 
 from open_hollywood_engine.evaluations import (
@@ -29,6 +31,7 @@ from open_hollywood_engine.models import (
     ModelRequest,
     ModelResponse,
     ModelSettings,
+    supports_selection,
 )
 from sqlalchemy import func, insert, select
 from sqlalchemy.orm import Session, sessionmaker
@@ -87,7 +90,7 @@ class DirectBaselineBenchmarkExecutor:
         target = case.baseline_model
         if target is None:
             raise RuntimeError("baseline benchmark case has no model target")
-        if target.provider != self._gateway.provider:
+        if not supports_selection(self._gateway, target.to_selection()):
             raise BenchmarkCaseExecutionError(
                 "provider_not_configured",
                 f"No runtime gateway is configured for provider {target.provider!r}.",
@@ -105,6 +108,8 @@ class DirectBaselineBenchmarkExecutor:
         )
         request = ModelRequest(
             model_identifier=target.model_identifier,
+            provider=target.provider,
+            deployment=target.deployment,
             messages=messages,
             budget=self._call_budget,
             invocation=InvocationContext(
@@ -163,7 +168,8 @@ class DirectBaselineBenchmarkExecutor:
                 invocation_id=invocation_id,
                 code=error.code.value,
                 message=str(error),
-                response=response,
+                response=error.response or response,
+                provider_metadata=error.metadata,
             )
             raise BenchmarkCaseExecutionError(error.code.value, str(error)) from error
         except Exception:
@@ -324,6 +330,7 @@ class DirectBaselineBenchmarkExecutor:
             invocation.latency_ms = response.timing.total_ms
             invocation.request_settings = {
                 **invocation.request_settings,
+                **({"provider_metadata": dict(response.metadata)} if response.metadata else {}),
                 "provider_response_model_identifier": (
                     response.provider_model_identifier or response.model_identifier
                 ),
@@ -403,18 +410,35 @@ class DirectBaselineBenchmarkExecutor:
         code: str,
         message: str,
         response: ModelResponse | None = None,
+        provider_metadata: Mapping[str, Any] | None = None,
     ) -> None:
         safe_message = message.strip()[:2_000] or "Benchmark execution failed."
         with self._session_factory.begin() as session:
             run = session.get(WorkflowRun, run_id)
             invocation = session.get(AgentInvocation, invocation_id)
             if invocation is not None:
+                if provider_metadata:
+                    invocation.request_settings = {
+                        **invocation.request_settings,
+                        "provider_metadata": dict(provider_metadata),
+                    }
                 if response is not None:
                     invocation.input_tokens = response.usage.input_tokens
                     invocation.output_tokens = response.usage.output_tokens
                     invocation.estimated_cost_usd = response.estimated_cost_usd
                     invocation.cost_basis = response.cost_basis
                     invocation.latency_ms = response.timing.total_ms
+                    invocation.request_settings = {
+                        **invocation.request_settings,
+                        **(
+                            {"provider_metadata": dict(response.metadata)}
+                            if response.metadata
+                            else {}
+                        ),
+                        "provider_response_model_identifier": (
+                            response.provider_model_identifier or response.model_identifier
+                        ),
+                    }
                 invocation.status = InvocationStatus.FAILED
                 invocation.completed_at = datetime.now(UTC)
                 invocation.error_code = code

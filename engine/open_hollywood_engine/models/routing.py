@@ -11,7 +11,74 @@ from open_hollywood_engine.models.contracts import (
     ModelRequest,
     ModelResponse,
 )
-from open_hollywood_engine.models.gateway import ModelGateway
+from open_hollywood_engine.models.gateway import (
+    ModelGateway,
+    ModelGatewayError,
+    ModelGatewayErrorCode,
+)
+from open_hollywood_engine.models.profiles import ModelSelection
+
+
+class ProviderModelGateway:
+    """Route exact provider/deployment pairs without inferring from model names."""
+
+    provider = "multi"
+
+    def __init__(
+        self,
+        routes: Mapping[tuple[str, ModelDeployment], ModelGateway],
+        *,
+        selections: frozenset[ModelSelection] | None = None,
+    ) -> None:
+        if not routes or any(key[0] != gateway.provider for key, gateway in routes.items()):
+            raise ValueError("provider routes must match their gateway")
+        self._routes = dict(routes)
+        self._selections = selections
+
+    def supports(self, selection: ModelSelection) -> bool:
+        return (selection.provider, selection.deployment) in self._routes and (
+            self._selections is None or selection in self._selections
+        )
+
+    async def list_models(self) -> tuple[ModelDescriptor, ...]:
+        models: dict[tuple[str, str, ModelDeployment], ModelDescriptor] = {}
+        for gateway in dict.fromkeys(self._routes.values()):
+            for model in await gateway.list_models():
+                selection = ModelSelection(model.provider, model.model_identifier, model.deployment)
+                if self.supports(selection):
+                    models[(model.provider, model.model_identifier, model.deployment)] = model
+        return tuple(models.values())
+
+    async def capabilities(self, model_identifier: str) -> ModelCapabilities:
+        # This legacy method has no provider argument. Never guess across providers.
+        raise ModelGatewayError(
+            ModelGatewayErrorCode.UNSUPPORTED_CAPABILITY,
+            "Inspect capabilities through an explicitly selected provider",
+            retryable=False,
+        )
+
+    async def generate(self, request: ModelRequest) -> ModelResponse:
+        if request.provider is None or request.deployment is None:
+            raise ValueError("routed calls require an explicit provider and deployment")
+        selection = ModelSelection(request.provider, request.model_identifier, request.deployment)
+        if not self.supports(selection):
+            raise ModelGatewayError(
+                ModelGatewayErrorCode.MODEL_NOT_FOUND,
+                "The selected provider/model/deployment is not configured",
+                retryable=False,
+            )
+        return await self._routes[(selection.provider, selection.deployment)].generate(request)
+
+    async def close(self) -> None:
+        for gateway in dict.fromkeys(self._routes.values()):
+            await gateway.close()
+
+
+def supports_selection(gateway: ModelGateway, selection: ModelSelection) -> bool:
+    """Keep injected single-provider gateways compatible with explicit routing."""
+    if isinstance(gateway, ProviderModelGateway):
+        return gateway.supports(selection)
+    return gateway.provider == selection.provider
 
 
 class CampaignModelGateway:

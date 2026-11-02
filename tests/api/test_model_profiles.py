@@ -221,3 +221,57 @@ async def test_unknown_profile_returns_not_found(
     )
 
     assert response.status_code == 404
+
+
+async def test_openai_cloud_model_can_be_switched_without_changing_local_selection(
+    model_profile_client: tuple[AsyncClient, ModelProfileStore],
+) -> None:
+    client, store = model_profile_client
+    profile_id = BUILTIN_PROFILE_IDS[ModelProfileMode.HYBRID]
+    for model in ("gpt-5.4-nano", "gpt-6.1-sol"):
+        response = await client.put(
+            f"/api/v1/model-profiles/{profile_id}",
+            json={
+                "local_model": {
+                    "provider": "ollama",
+                    "model_identifier": "qwen3:8b",
+                    "deployment": "local",
+                },
+                "cloud_model": {
+                    "provider": "openai",
+                    "model_identifier": model,
+                    "deployment": "cloud",
+                },
+            },
+        )
+        assert response.status_code == 200
+        assert store.resolve_role(profile_id, "scene_writer").model_identifier == model
+        assert store.resolve_role(profile_id, "brief_architect").model_identifier == "qwen3:8b"
+    invalid = await client.put(
+        f"/api/v1/model-profiles/{profile_id}",
+        json={
+            "cloud_model": {
+                "provider": "openai",
+                "model_identifier": "unreviewed-model",
+                "deployment": "cloud",
+            },
+        },
+    )
+    assert invalid.status_code == 422
+
+
+async def test_unconfigured_openai_catalog_status_identifies_provider() -> None:
+    catalog = ModelCatalogService(
+        (
+            CatalogSource(
+                key="openai",
+                label="OpenAI",
+                gateway=None,
+                provider="openai",
+                unavailable_detail="Set OPENAI_OH_KEY in the API process.",
+            ),
+        )
+    )
+    result = await catalog.list_catalog()
+    assert result.sources[0].provider == "openai"
+    assert result.sources[0].status == "not_configured"

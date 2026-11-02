@@ -50,6 +50,7 @@ from open_hollywood_engine.models import (
     ModelSelection,
     ModelSettings,
     ModelUsage,
+    supports_selection,
 )
 from open_hollywood_engine.workflows import (
     SCENE_PRODUCTION_GRAPH_VERSION,
@@ -989,6 +990,8 @@ class ProfileRoutedProductionExecutor(SceneProductionExecutor):
         )
         request = ModelRequest(
             model_identifier=execution.selection.model_identifier,
+            provider=execution.selection.provider,
+            deployment=execution.selection.deployment,
             messages=messages,
             budget=execution.call_budget,
             invocation=InvocationContext(
@@ -1004,7 +1007,10 @@ class ProfileRoutedProductionExecutor(SceneProductionExecutor):
                 thinking=False,
             ),
             response_schema=(
-                output_schema if execution.selection.deployment is ModelDeployment.LOCAL else None
+                output_schema
+                if execution.selection.deployment is ModelDeployment.LOCAL
+                or execution.selection.provider == "openai"
+                else None
             ),
         )
         response: ModelResponse | None = None
@@ -1051,6 +1057,8 @@ class ProfileRoutedProductionExecutor(SceneProductionExecutor):
                 str(error),
                 None,
                 usage=error.usage,
+                response=error.response,
+                provider_metadata=error.metadata,
                 failure_layer="provider_transport",
             )
             if error.retryable:
@@ -1243,7 +1251,7 @@ class ProfileRoutedProductionExecutor(SceneProductionExecutor):
                 attempt_number=attempt_number,
                 previous_failure=previous_failure,
             )
-            if selection.provider != self._gateway.provider:
+            if not supports_selection(self._gateway, selection):
                 raise SceneProductionError(
                     f"no runtime gateway is configured for provider {selection.provider!r}"
                 )
@@ -1339,7 +1347,10 @@ class ProfileRoutedProductionExecutor(SceneProductionExecutor):
                     ),
                     "prompt_template_version": execution.prompt_template_version,
                     "run_seed": execution.seed,
-                    "schema_enforced": (execution.selection.deployment is ModelDeployment.LOCAL),
+                    "schema_enforced": (
+                        execution.selection.deployment is ModelDeployment.LOCAL
+                        or execution.selection.provider == "openai"
+                    ),
                     "task_fingerprint": execution.task_fingerprint,
                     "attempt_number": execution.attempt_number,
                     "fallback_applied": bool(execution.fallback_history),
@@ -1359,6 +1370,7 @@ class ProfileRoutedProductionExecutor(SceneProductionExecutor):
                         gateway_schema=(
                             output_schema
                             if execution.selection.deployment is ModelDeployment.LOCAL
+                            or execution.selection.provider == "openai"
                             else None
                         ),
                     ),
@@ -1554,6 +1566,7 @@ class ProfileRoutedProductionExecutor(SceneProductionExecutor):
         *,
         failure_layer: str = "unknown",
         review_failure_evidence: dict[str, Any] | None = None,
+        provider_metadata: Mapping[str, Any] | None = None,
     ) -> None:
         guard = active_secret_guard()
         safe_message = guard.redact_text(message)[:2_000]
@@ -1570,6 +1583,11 @@ class ProfileRoutedProductionExecutor(SceneProductionExecutor):
                 return
             invocation.status = InvocationStatus.FAILED
             invocation.schema_validation_succeeded = schema_valid
+            if provider_metadata:
+                invocation.request_settings = {
+                    **invocation.request_settings,
+                    "provider_metadata": dict(provider_metadata),
+                }
             if response is not None:
                 invocation.input_tokens = response.usage.input_tokens
                 invocation.output_tokens = response.usage.output_tokens
@@ -1627,6 +1645,7 @@ def _apply_response_metadata(
 ) -> None:
     invocation.request_settings = {
         **invocation.request_settings,
+        **({"provider_metadata": dict(response.metadata)} if response.metadata else {}),
         "provider_response_model_identifier": (
             response.provider_model_identifier or response.model_identifier
         ),

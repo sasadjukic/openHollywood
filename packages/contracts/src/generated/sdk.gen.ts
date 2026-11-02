@@ -164,7 +164,7 @@ export const activateModelProfile = <ThrowOnError extends boolean = false>(
   >({ url: "/api/v1/model-profiles/{profile_id}/activate", ...options });
 
 /**
- * Discover configured Ollama model catalogs
+ * Discover configured model catalogs
  *
  * Return dynamic models while reporting each source independently.
  */

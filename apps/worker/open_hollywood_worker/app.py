@@ -22,7 +22,7 @@ from open_hollywood_api.services.production_model_executor import (
 )
 from open_hollywood_api.services.production_workflow import SceneProductionService
 from open_hollywood_api.services.workflow_commands import QueuedWorkflowCommandService
-from open_hollywood_engine.models import ModelGateway, OllamaGateway
+from open_hollywood_engine.models import ModelGateway, runtime_gateway
 
 from open_hollywood_worker.runtime import WorkflowWorker
 
@@ -41,7 +41,7 @@ def create_worker_app(
             database_path = database_path_from_environment()
             worker_engine = create_sqlite_engine(database_path)
             session_factory = create_session_factory(worker_engine)
-            execution_gateway = gateway or OllamaGateway(timeout_seconds=900)
+            execution_gateway = gateway or runtime_gateway(timeout_seconds=900)
             owns_gateway = gateway is None
             blueprint_executor = ProfileRoutedBlueprintNodeExecutor(
                 session_factory=session_factory,

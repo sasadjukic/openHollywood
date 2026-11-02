@@ -5,7 +5,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from open_hollywood_engine.models import OllamaGateway, OllamaHost
+from open_hollywood_engine.models import OllamaGateway, OllamaHost, OpenAIGateway
 from open_hollywood_engine.secrets import EnvironmentSecretStore, ModelSecret
 from sqlalchemy import Engine
 
@@ -73,6 +73,17 @@ async def lifespan(application: FastAPI) -> AsyncIterator[None]:
                     key="ollama_local",
                     label="Ollama on this device",
                     gateway=OllamaGateway(timeout_seconds=10),
+                ),
+                CatalogSource(
+                    key="openai",
+                    label="OpenAI",
+                    provider="openai",
+                    gateway=(
+                        OpenAIGateway(secret_store=secret_store, timeout_seconds=10)
+                        if secret_store.get(ModelSecret.OPENAI_API_KEY) is not None
+                        else None
+                    ),
+                    unavailable_detail="Set OPENAI_OH_KEY in the API/worker process environment.",
                 ),
                 CatalogSource(
                     key="ollama_cloud",

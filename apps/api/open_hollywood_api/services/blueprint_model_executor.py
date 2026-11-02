@@ -40,6 +40,7 @@ from open_hollywood_engine.models import (
     ModelResponse,
     ModelSelection,
     ModelSettings,
+    supports_selection,
 )
 from open_hollywood_engine.workflows import (
     DEFAULT_MAX_GRAPH_STEPS,
@@ -238,10 +239,15 @@ class ProfileRoutedBlueprintNodeExecutor(BlueprintNodeExecutor):
             task=task,
             execution=execution,
             messages=messages,
-            schema_enforced=execution.selection.deployment is ModelDeployment.LOCAL,
+            schema_enforced=(
+                execution.selection.deployment is ModelDeployment.LOCAL
+                or execution.selection.provider == "openai"
+            ),
         )
         request = ModelRequest(
             model_identifier=execution.selection.model_identifier,
+            provider=execution.selection.provider,
+            deployment=execution.selection.deployment,
             messages=messages,
             budget=execution.call_budget,
             invocation=InvocationContext(
@@ -257,7 +263,10 @@ class ProfileRoutedBlueprintNodeExecutor(BlueprintNodeExecutor):
                 thinking=False,
             ),
             response_schema=(
-                response_schema if execution.selection.deployment is ModelDeployment.LOCAL else None
+                response_schema
+                if execution.selection.deployment is ModelDeployment.LOCAL
+                or execution.selection.provider == "openai"
+                else None
             ),
         )
         try:
@@ -294,6 +303,8 @@ class ProfileRoutedBlueprintNodeExecutor(BlueprintNodeExecutor):
                 code=error.code.value,
                 message=str(error),
                 schema_valid=None,
+                response=error.response,
+                provider_metadata=error.metadata,
             )
             if error.retryable:
                 raise RetryableSpecialistError(str(error)) from error
@@ -353,7 +364,7 @@ class ProfileRoutedBlueprintNodeExecutor(BlueprintNodeExecutor):
             if not configuration.is_complete:
                 raise BlueprintWorkflowError("Blueprint model profile is incomplete")
             selection = configuration.selection_for(task.specialist_role)
-            if selection.provider != self._gateway.provider:
+            if not supports_selection(self._gateway, selection):
                 raise BlueprintWorkflowError(
                     f"no runtime gateway is configured for provider {selection.provider!r}"
                 )
@@ -568,6 +579,7 @@ class ProfileRoutedBlueprintNodeExecutor(BlueprintNodeExecutor):
         message: str,
         schema_valid: bool | None,
         response: ModelResponse | None = None,
+        provider_metadata: Mapping[str, Any] | None = None,
     ) -> None:
         safe_message = active_secret_guard().redact_text(message)[:2_000]
         with self._session_factory.begin() as session:
@@ -576,6 +588,11 @@ class ProfileRoutedBlueprintNodeExecutor(BlueprintNodeExecutor):
                 return
             invocation.status = InvocationStatus.FAILED
             invocation.schema_validation_succeeded = schema_valid
+            if provider_metadata:
+                invocation.request_settings = {
+                    **invocation.request_settings,
+                    "provider_metadata": dict(provider_metadata),
+                }
             if response is not None:
                 invocation.input_tokens = response.usage.input_tokens
                 invocation.output_tokens = response.usage.output_tokens
@@ -594,6 +611,7 @@ def _apply_response_metadata(
 ) -> None:
     invocation.request_settings = {
         **invocation.request_settings,
+        **({"provider_metadata": dict(response.metadata)} if response.metadata else {}),
         "provider_response_model_identifier": (
             response.provider_model_identifier or response.model_identifier
         ),

@@ -17,6 +17,7 @@ from open_hollywood_engine.models import (
     ModelProfileMode,
     ModelSelection,
 )
+from open_hollywood_engine.models.openai_catalog import load_model_specs
 from sqlalchemy import select, update
 from sqlalchemy.orm import Session, sessionmaker
 
@@ -56,6 +57,7 @@ class CatalogSource:
     label: str
     gateway: ModelGateway | None
     unavailable_detail: str | None = None
+    provider: str = "ollama"
 
     def __post_init__(self) -> None:
         if not self.key.strip() or not self.label.strip():
@@ -120,6 +122,15 @@ class ModelProfileStore:
         cloud_model: ModelSelection | None,
     ) -> ModelProfileRecord:
         """Replace exact model slots while preserving the preset's fixed policy."""
+        for selection in (local_model, cloud_model):
+            if selection is not None and selection.provider == "openai":
+                spec = load_model_specs().get(selection.model_identifier)
+                if selection.deployment is not ModelDeployment.CLOUD or (
+                    spec is None or not spec.supports_structured_output
+                ):
+                    raise ValueError(
+                        "OpenAI requires a reviewed cloud text model with structured output"
+                    )
         with self._session_factory.begin() as session:
             self._ensure_builtin_profiles(session)
             profile = self._require_profile(session, profile_id)
@@ -253,7 +264,7 @@ class ModelCatalogService:
             return (), CatalogSourceRecord(
                 key=source.key,
                 label=source.label,
-                provider="ollama",
+                provider=source.provider,
                 status="not_configured",
                 detail=source.unavailable_detail,
             )

@@ -24,6 +24,20 @@ to run all three concurrently during this phase.
 
 ## Settings experience
 
+### Additional provider — 2026-11-02
+
+The operator requested OpenAI alongside Ollama for future comparisons.
+[ADR 0040](../docs/adr/0040-openai-responses-provider.md) adds the optional
+Responses adapter and exact provider/deployment routing. This supersedes the
+initial deferral of OpenAI below. Cloud/Hybrid presets can select reviewed OpenAI
+text/structured-output models, including premium IDs; local Ollama remains
+available. Runtime credentials use `OPENAI_OH_KEY`, with no frontend or persisted
+secret. See [setup and model switching](../docs/openai-provider.md).
+
+Only one synthetic connectivity check was authorized and completed. No existing
+profile selection, production prompt, graph, benchmark campaign or testing-policy
+qualification changes. Step 19 remains IN PROGRESS; Step 20 remains NOT STARTED.
+
 Do not begin with a giant provider form. Offer three presets:
 
 - Local: every role uses Ollama.

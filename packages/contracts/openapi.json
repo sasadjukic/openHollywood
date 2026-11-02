@@ -1973,7 +1973,7 @@
             "description": "Successful Response"
           }
         },
-        "summary": "Discover configured Ollama model catalogs",
+        "summary": "Discover configured model catalogs",
         "tags": ["model profiles"]
       }
     },

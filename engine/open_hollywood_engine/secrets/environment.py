@@ -9,7 +9,7 @@ from open_hollywood_engine.secrets.contracts import MissingSecretError, ModelSec
 
 DEFAULT_SECRET_VARIABLES: Mapping[ModelSecret, str] = {
     ModelSecret.OLLAMA_API_KEY: "OLLAMA_API_KEY",
-    ModelSecret.OPENAI_API_KEY: "OPENAI_API_KEY",
+    ModelSecret.OPENAI_API_KEY: "OPENAI_OH_KEY",
     ModelSecret.GOOGLE_API_KEY: "GOOGLE_API_KEY",
 }
 
@@ -45,8 +45,14 @@ class EnvironmentSecretStore:
 
     def configured_values(self) -> tuple[SecretValue, ...]:
         """Return configured model credentials for boundary leak guards."""
-        return tuple(
+        values = tuple(
             value
             for reference in self._variable_names
             if (value := self.get(reference)) is not None
         )
+        # Retain the pre-existing guard for a general OpenAI key, without using
+        # that unrelated credential as an inference fallback for this application.
+        general_openai = self._environment.get("OPENAI_API_KEY")
+        if general_openai is not None and general_openai.strip():
+            return (*values, SecretValue(general_openai))
+        return values

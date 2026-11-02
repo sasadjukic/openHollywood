@@ -42,3 +42,4 @@ tradeoffs. Status values are `Proposed`, `Accepted`, `Superseded`, or `Rejected`
 | [0037](0037-durable-writer-fulfillment-handoff.md) | Durable writer fulfillment evidence | Accepted |
 | [0038](0038-read-only-review-evidence-export.md) | Read-only operator review evidence export | Accepted |
 | [0039](0039-diagnostic-probe-review-export.md) | Diagnostic-probe review export | Accepted |
+| [0040](0040-openai-responses-provider.md) | Optional OpenAI Responses provider | Accepted |

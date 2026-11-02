@@ -2,10 +2,12 @@
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from enum import StrEnum
 from typing import Protocol
 
 from open_hollywood_engine.models.contracts import (
+    JsonValue,
     ModelCapabilities,
     ModelDescriptor,
     ModelRequest,
@@ -26,6 +28,8 @@ class ModelGatewayErrorCode(StrEnum):
     RATE_LIMITED = "rate_limited"
     SECRET_EXPOSURE = "secret_exposure"
     UNSUPPORTED_CAPABILITY = "unsupported_capability"
+    REFUSAL = "refusal"
+    TRUNCATED = "truncated"
 
 
 class ModelGatewayError(RuntimeError):
@@ -38,11 +42,15 @@ class ModelGatewayError(RuntimeError):
         *,
         retryable: bool,
         usage: ModelUsage | None = None,
+        response: ModelResponse | None = None,
+        metadata: Mapping[str, JsonValue] | None = None,
     ) -> None:
         super().__init__(message)
         self.code = code
         self.retryable = retryable
-        self.usage = usage
+        self.usage = response.usage if response is not None else usage
+        self.response = response
+        self.metadata = metadata or {}
 
 
 class ModelGateway(Protocol):

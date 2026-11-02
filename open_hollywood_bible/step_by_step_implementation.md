@@ -9796,6 +9796,47 @@ are unchanged. Human feel, flow, character and story-breaking assessment remain
 separate from machine-prepared mechanics. **Step 19 IN PROGRESS; Step 20 NOT
 STARTED; further live calls PAUSED; full workflow canary ON HOLD.**
 
+### Optional OpenAI provider integration — COMPLETE 2026-11-02
+
+The separately authorized provider addition is implemented under
+[ADR 0040](../docs/adr/0040-openai-responses-provider.md), with
+[setup/model-switching instructions and connectivity evidence](../docs/openai-provider.md).
+
+- [x] Add an `httpx` Responses adapter alongside Ollama without another SDK or
+  provider framework. Retain local/cloud/hybrid profiles, exact provider/model/
+  deployment routing, immutable input lineage and the mandatory Blueprint approval.
+- [x] Resolve the existing OpenAI secret handle from `OPENAI_OH_KEY` at runtime.
+  Preserve leak guards for both application and general OpenAI environment values;
+  never use the general key as an inference fallback. No credential file or stored
+  Windows variable is changed. A read-only audit of all 32 changed/new files passes.
+- [x] Discover account-visible models and intersect them with reviewed text,
+  structured-output, limits and dated rate records. Support economical and premium
+  model switching through existing settings and secret-free catalog extensions.
+  Regenerate the API contracts and label provider names in the model dropdown.
+- [x] Count input before generation and reserve bounded output/cost, including
+  reasoning tokens and conservative cache-write premiums. Persist effective
+  settings, model identity, usage, pricing and safe failure metadata. Published-rate
+  estimates remain unknown actual cost under ADR 0017.
+- [x] Enforce stateless `store=false`, closed structured schemas, application
+  validation, normalized refusal/truncation/errors, cancellation and bounded
+  workflow retries. No automatic replay of an uncertain potentially billed request.
+- [x] Complete the single authorized synthetic request through the new adapter:
+  `gpt-5.6-luna`, valid JSON, 40 input / 16 output / 0 reasoning tokens, normal stop,
+  USD 0.0000292 conservative estimate against a USD 0.0001636 reservation and
+  USD 0.005 ceiling. Actual billing is not fetched. No further live inference.
+- [x] Verify the full Python suite (**1,238 passed**), plus final focused accounting/
+  routing (**4 passed**) and gateway/credential (**48 passed**) runs, including two
+  additional regressions added during full-suite execution. Ruff lint/format,
+  strict mypy (**220 files**), generated contracts, frontend format/lint/type checks,
+  all **11 Vitest tests**, production build and `git diff --check` pass. Async tests
+  run outside the Windows sandbox after its local socket-pair restriction was
+  diagnosed; contract generation succeeds after one transient mapped-file retry.
+
+Existing active model selections, creative prompts, graph behavior, historical
+benchmark evidence and user databases are unchanged. No live story, campaign,
+canary or model sweep is started/resumed. OpenAI production quality, repeatability
+and verified billing remain unevaluated. **Step 19 IN PROGRESS; Step 20 NOT STARTED.**
+
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 
 21. [ ] **Package the stable system with Tauri** and test crash/restart, offline, missing-model, invalid-key, provider-timeout, and low-disk-space behavior.

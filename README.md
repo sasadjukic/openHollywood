@@ -1144,6 +1144,16 @@ Local Ollama must be running only when using local models. Direct Ollama Cloud
 catalog discovery additionally reads `OLLAMA_API_KEY` from the API process
 environment; credentials must never be written to project files.
 
+OpenAI is also available in the Cloud and Hybrid model dropdowns. The backend
+resolves its runtime secret from `OPENAI_OH_KEY`; import an existing Windows User
+value into the API terminal with
+`$env:OPENAI_OH_KEY = [Environment]::GetEnvironmentVariable('OPENAI_OH_KEY', 'User')`
+before starting the worker. Existing processes do not automatically inherit
+new User environment values. No frontend credential or dotenv file is needed.
+See [OpenAI setup and model switching](docs/openai-provider.md) for reviewed
+model IDs, premium-model settings, catalog extensions, budgets and the synthetic
+connectivity check. Existing selections and benchmark campaigns are unchanged.
+
 When a project has three to eight complete, approved Scene Draft artifacts, its
 workspace header enables Markdown, PDF, and DOCX downloads. The same downloads
 are available from:

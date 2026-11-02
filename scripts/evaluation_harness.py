@@ -73,6 +73,8 @@ from open_hollywood_engine.models import (
     ModelSelection,
     OllamaGateway,
     OllamaHost,
+    OpenAIGateway,
+    ProviderModelGateway,
 )
 from open_hollywood_engine.workflows import (
     DIALOGUE_SUBGRAPH_VERSION,
@@ -1093,6 +1095,33 @@ def _ollama_campaign_gateway(
 ) -> ModelGateway:
     if ollama_cloud_base_url is not None and not direct_ollama_cloud:
         raise ValueError("--ollama-cloud-base-url requires --direct-ollama-cloud")
+    selections = _campaign_model_selections(plan, target_keys)
+    if any(selection.provider == "openai" for selection in selections):
+        routes: dict[tuple[str, ModelDeployment], ModelGateway] = {}
+        store = EnvironmentSecretStore()
+        # The frozen exact selection is authoritative; model IDs may overlap
+        # between providers without becoming ambiguous.
+        for selection in selections:
+            key = (selection.provider, selection.deployment)
+            if key in routes:
+                continue
+            if selection.provider == "openai":
+                if selection.deployment is not ModelDeployment.CLOUD:
+                    raise ValueError("OpenAI requires cloud deployment")
+                routes[key] = OpenAIGateway(secret_store=store, timeout_seconds=900)
+            elif direct_ollama_cloud and selection.deployment is ModelDeployment.CLOUD:
+                routes[key] = OllamaGateway.from_secret_store(
+                    store,
+                    host=OllamaHost.CLOUD,
+                    base_url=ollama_cloud_base_url,
+                    timeout_seconds=ollama_timeout_seconds,
+                )
+            else:
+                routes[key] = OllamaGateway(
+                    base_url=ollama_base_url,
+                    timeout_seconds=ollama_timeout_seconds,
+                )
+        return ProviderModelGateway(routes, selections=frozenset(selections))
     model_deployments = _campaign_model_deployments(plan, target_keys)
     if not direct_ollama_cloud:
         return OllamaGateway(
@@ -1123,10 +1152,10 @@ def _ollama_campaign_gateway(
     )
 
 
-def _campaign_model_deployments(
+def _campaign_model_selections(
     plan: BenchmarkPlan,
     target_keys: frozenset[str],
-) -> dict[str, ModelDeployment]:
+) -> tuple[ModelSelection, ...]:
     selections: list[ModelSelection] = []
     for case in plan.cases:
         if case.target_key not in target_keys:
@@ -1143,12 +1172,20 @@ def _campaign_model_deployments(
     if not selections:
         raise ValueError("the campaign has no model selections for the requested targets")
     providers = {selection.provider for selection in selections}
-    if providers != {"ollama"}:
+    if not providers.issubset({"ollama", "openai"}):
         formatted = ", ".join(sorted(providers))
         raise ValueError(
-            "the current operator runtime supports only Ollama campaign selections; "
+            "the operator runtime supports Ollama and OpenAI campaign selections; "
             f"found: {formatted}"
         )
+    return tuple(selections)
+
+
+def _campaign_model_deployments(
+    plan: BenchmarkPlan,
+    target_keys: frozenset[str],
+) -> dict[str, ModelDeployment]:
+    selections = _campaign_model_selections(plan, target_keys)
     model_deployments: dict[str, ModelDeployment] = {}
     for selection in selections:
         existing = model_deployments.get(selection.model_identifier)

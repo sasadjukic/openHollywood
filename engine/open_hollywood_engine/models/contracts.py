@@ -122,6 +122,8 @@ class ModelRequest:
     invocation: InvocationContext
     settings: ModelSettings = field(default_factory=ModelSettings)
     response_schema: Mapping[str, JsonValue] | None = None
+    provider: str | None = None
+    deployment: ModelDeployment | None = None
 
     def __post_init__(self) -> None:
         if not self.model_identifier:
@@ -180,10 +182,16 @@ class ModelUsage:
 
     input_tokens: int
     output_tokens: int
+    reasoning_tokens: int = 0
+    cached_input_tokens: int = 0
 
     def __post_init__(self) -> None:
         if self.input_tokens < 0 or self.output_tokens < 0:
             raise ValueError("token counts must not be negative")
+        if not 0 <= self.reasoning_tokens <= self.output_tokens:
+            raise ValueError("reasoning tokens must be a subset of output tokens")
+        if not 0 <= self.cached_input_tokens <= self.input_tokens:
+            raise ValueError("cached tokens must be a subset of input tokens")
 
 
 @dataclass(frozen=True, slots=True)
@@ -222,6 +230,7 @@ class ModelResponse:
     estimated_cost_usd: Decimal
     provider_model_identifier: str | None = None
     cost_basis: ModelCostBasis = ModelCostBasis.UNKNOWN
+    metadata: Mapping[str, JsonValue] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
         if not self.provider or not self.model_identifier:

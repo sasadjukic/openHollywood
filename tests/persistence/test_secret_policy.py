@@ -18,11 +18,13 @@ from open_hollywood_engine.secrets import SecretLeakError
 from sqlalchemy import Engine, text
 
 
+@pytest.mark.parametrize("variable", ["OLLAMA_API_KEY", "OPENAI_OH_KEY"])
 def test_runtime_credential_cannot_enter_story_records(
     database_engine: Engine,
     monkeypatch: pytest.MonkeyPatch,
+    variable: str,
 ) -> None:
-    monkeypatch.setenv("OLLAMA_API_KEY", "unit-test-runtime-credential")
+    monkeypatch.setenv(variable, "unit-test-runtime-credential")
     session_factory = create_session_factory(database_engine)
 
     with session_factory() as session:

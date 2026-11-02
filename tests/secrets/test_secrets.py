@@ -68,6 +68,20 @@ def test_guard_allows_secret_references_and_token_accounting() -> None:
     )
 
 
+def test_openai_handle_change_preserves_general_key_leak_guard() -> None:
+    store = EnvironmentSecretStore(
+        {
+            "OPENAI_OH_KEY": "synthetic-project-key",
+            "OPENAI_API_KEY": "synthetic-general-key",
+        }
+    )
+    assert store.require(ModelSecret.OPENAI_API_KEY).reveal() == "synthetic-project-key"
+    guard = SecretLeakGuard(store.configured_values())
+    for value in ("synthetic-project-key", "synthetic-general-key"):
+        with pytest.raises(SecretLeakError):
+            guard.ensure_safe({"content": value}, destination="test")
+
+
 def test_known_values_can_be_redacted_from_unavoidable_diagnostics() -> None:
     guard = SecretLeakGuard((SecretValue("unit-test-runtime-credential"),))
 

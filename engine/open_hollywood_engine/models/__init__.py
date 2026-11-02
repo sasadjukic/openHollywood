@@ -1,4 +1,4 @@
-"""Public model-gateway contracts and the first Ollama adapter."""
+"""Public provider-neutral contracts, routing, and Ollama/OpenAI adapters."""
 
 from open_hollywood_engine.models.contracts import (
     InvocationContext,
@@ -21,6 +21,7 @@ from open_hollywood_engine.models.gateway import (
     ModelGatewayErrorCode,
 )
 from open_hollywood_engine.models.ollama import OllamaGateway, OllamaHost
+from open_hollywood_engine.models.openai import OpenAIGateway
 from open_hollywood_engine.models.profiles import (
     BLUEPRINT_SPECIALIST_ROLES,
     DIALOGUE_SPECIALIST_ROLES,
@@ -33,7 +34,12 @@ from open_hollywood_engine.models.profiles import (
     ModelProfileMode,
     ModelSelection,
 )
-from open_hollywood_engine.models.routing import CampaignModelGateway
+from open_hollywood_engine.models.routing import (
+    CampaignModelGateway,
+    ProviderModelGateway,
+    supports_selection,
+)
+from open_hollywood_engine.models.runtime import runtime_gateway
 from open_hollywood_engine.secrets import EnvironmentSecretStore, ModelSecret, SecretValue
 
 __all__ = [
@@ -64,6 +70,10 @@ __all__ = [
     "PRODUCTION_SPECIALIST_ROLES",
     "OllamaGateway",
     "OllamaHost",
+    "OpenAIGateway",
+    "ProviderModelGateway",
+    "runtime_gateway",
+    "supports_selection",
     "SecretValue",
     "BLUEPRINT_SPECIALIST_ROLES",
     "CampaignModelGateway",
