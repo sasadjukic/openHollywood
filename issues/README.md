@@ -528,3 +528,69 @@ Diagnostic gains remain distinct from edit necessity and human story quality.
 All fourteen issue bodies and posted URLs remain intact; no external issue edited
 or closed. No model/daemon/database calls; production prompts unchanged; live calls
 **PAUSED**, full workflow canary **ON HOLD**.
+
+**2026-11-02 tracked assessment work implemented; DeepSeek/Luna plans frozen:**
+the [integration record](../docs/handoffs/assessment-work-integration-2026-11-02.md)
+and [ADR 0041](../docs/adr/0041-read-only-assessment-work.md) add provider-neutral,
+read-only work and completion records. They retain full context and whole linked
+statements, bind exact requests and attempts, and reject incomplete coverage.
+Complete delivery/binding grants no semantic, edit-necessity or writer authority.
+The [frozen plan](../docs/handoffs/reviewer-assessment-workload-frozen-plan-2026-11-02.md)
+prepares **30 attempts per provider / 60 maximum combined**, eight full controls
+and 22 narrow batches each, with 56 judgments per condition/provider. Metadata-only
+checks confirm **Ollama 0.40.13 / DeepSeek** and account-visible **gpt-5.6-luna**;
+credential reuse was explicitly approved, with no secret file or profile change.
+Sixteen runtime-file changes from the user's OpenAI integration have a verified
+baseline amendment; historical captures and scores remain intact. The freeze binds
+**24 files / 3,153 source fingerprints**. **1,278 repository tests and 105 additional
+private tests** pass; focused verification totals 143 with overlap. Ruff and strict
+typing pass on 222 tracked files and six private scripts. All fourteen issues
+remain open; original bodies and posted URLs are preserved. No external issue edit,
+generation or story-bearing token-count request occurred. Production prompts are
+unchanged; both comparisons await live approval; full workflow canary **ON HOLD**.
+
+**2026-11-02 approved DeepSeek/Luna workload comparison completed:** the
+[results](../docs/benchmark_reports/reviewer-assessment-workload-v61-results-2026-11-02.md)
+record **35/60 calls, zero retries**. DeepSeek stops at **5/30** after a complete
+HTTP-200 response assesses all seven context-only selections instead of its two
+active pairs; 25 calls are retired. Luna completes **30/30** with native schema
+delivery, but MA grounds **48/56** judgments versus NA **45/56**. Narrowing recovers
+four fresh citation failures and adds six citation failures plus one temporal
+semantic failure; the private-flourish inference remains shared. Fresh grounding
+is **27/32 MA, 31/32 NA**. Median complete-case generation falls **18.4%**, below
+the 20% screen, while repeated context increases reference cost **55.4%**.
+Neither comparison qualifies the treatment or production story quality.
+
+The tracked component rejects extra scope and preserves incomplete work without
+granting semantic or writer authority. All **128 valid judgments / 224 fixed
+slots** and contextual relation coverage were inspected; citation binding is kept
+separate from evidence adequacy. **142 applicable post-approval tests**, Ruff and
+strict typing pass; the sole deselected test asserts the earlier absence of
+approval files. The original frozen test and the initial state-dependent failure
+are retained. Recommend local scope/citation/semantic regressions and separate
+active-scope/evidence-selection audits before another inference proposal.
+CW-007/CW-008/CW-013/CW-014 and all fourteen issues remain open. Original issue
+bodies and posted URLs remain intact; no external issue changed. Production
+prompts and active profiles are unchanged; live inference **PAUSED**, canary
+**ON HOLD**.
+
+**2026-11-03 assessment scope and citation-section audit completed locally:**
+the [audit](../docs/handoffs/reviewer-scope-citation-audit-2026-11-03.md) preserves
+**422 exact files / 3,153 source pins**, replays all 35 attempts and retains the
+original **109 grounded / twelve citation-only / seven semantic / 96 unavailable**
+slots. DeepSeek's extra selections remain rejected; its 25 retired calls stay
+closed. All sixty frozen requests retain their full context. The broad response
+schema allows 0–12 rows, while the application enforces exact active pairs.
+A private active-slot prototype verifies exact coverage and application-owned
+claim identity without assigning semantic or writer authority.
+
+All **240 cited occurrences** resolve exactly against the model-visible indices;
+the audit finds wrong/omitted selected passages, not an application registry shift.
+Twelve citation-only judgments and three semantic judgments contain citation-content
+problems; other semantic failures persist despite relevant locations. **401 offline
+tests**, Ruff, strict typing and deterministic replay pass. Recommend a tracked
+read-only active-result/renderer slice before any separately frozen citation pilot.
+The provisional sixteen-call Luna MA/witness idea is not frozen or approved; no
+new live allowance is opened. All fourteen issues remain open, original bodies
+and posted links remain intact, and no external issue changes. Production prompts
+unchanged; live calls **PAUSED**, canary **ON HOLD**.

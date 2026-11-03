@@ -9777,17 +9777,18 @@ Status: **COMPLETE AND VERIFIED; LOCAL ONLY; NO NEW INFERENCE.**
   durable handoff/export capabilities from local prototypes and proposed production
   work. No model ranking, provider-cause finding or better-story claim is added.
   Original fourteen issue bodies and posted URLs remain unchanged; no issue closed.
-- [ ] Port/extend the existing staged-handoff and workload prototypes into a small
+- [x] Port/extend the existing staged-handoff and workload prototypes into a small
   tracked, read-only assessment work-item/completion contract. Reuse existing
   exports; keep support, materiality, craft and writer authorization separate.
-  Replay preserved controls before considering production routing. This is proposed
-  work, not implemented by the present local audit.
-- [ ] If warranted after that local boundary, separately prepare and seek approval
+  Replay preserved controls before considering production routing. Completed in
+  the tracked component section below; no production routing is added.
+- [x] If warranted after that local boundary, separately prepare and seek approval
   for the **provisional 30-call MA workload comparison**: eight full controls and
   22 batches of at most three whole linked units, four families/both orders,
   **56 judgments per condition**. Preserve full context; no simultaneous WB change.
   Freeze exact requests, complete-case scoring, all resource costs and stop rules.
-  Nothing is frozen or live-approved; no retired allowance can transfer.
+  Frozen below, with the user's additional independent Luna comparison. Live
+  approval remains pending; no retired allowance can transfer.
 
 Private bundle: `data/diagnostics/reviewer-workload-headroom-audit-v61-2026-11-02/`.
 Model, daemon and database calls: **zero**. Product code, prompt 61 / graph 9 /
@@ -9836,6 +9837,201 @@ Existing active model selections, creative prompts, graph behavior, historical
 benchmark evidence and user databases are unchanged. No live story, campaign,
 canary or model sweep is started/resumed. OpenAI production quality, repeatability
 and verified billing remain unevaluated. **Step 19 IN PROGRESS; Step 20 NOT STARTED.**
+
+### Tracked assessment work and two-provider workload preparation 2026-11-02
+
+Status: **IMPLEMENTED AND VERIFIED; BOTH COMPARISONS FROZEN.** Subsequent approved
+execution and inspection are complete in the entry below.
+[ADR 0041](../docs/adr/0041-read-only-assessment-work.md).
+[Implementation and verification](../docs/handoffs/assessment-work-integration-2026-11-02.md).
+[Frozen approval plan](../docs/handoffs/reviewer-assessment-workload-frozen-plan-2026-11-02.md).
+
+- [x] Implement the provider-neutral read-only assessment work/context/receipt and
+  completion module with 38 tracked authored tests. Keep complete source/report
+  context, exact selected offsets and whole propositions; preserve transitive
+  declared links without discovering semantic groups. Reject source/pointer/quote
+  drift, unknown/duplicate units and split relations. Literal rendering revalidates.
+- [x] Bind receipts to the exact work, batch, request and attempt. Require every
+  expected batch exactly once for complete delivery. Retain known/unknown usage
+  and active time. Delivery and binding remain separate from support, edit necessity,
+  craft and writer permission. No production source adapter, DB schema, public API,
+  frontend route, exporter change or extra human checkpoint is introduced.
+- [x] Record the user's explicit reuse of Windows User `OPENAI_OH_KEY` for local
+  preparation and non-generating preflight. Keep the credential in process memory;
+  no secret file or stored Windows value changes. Confirm account-visible
+  **gpt-5.6-luna**, **Ollama 0.40.13** and unchanged selected DeepSeek metadata.
+  No generation or story-bearing input-token count request is made.
+- [x] Verify and document sixteen historical/current Git blob pairs for the user's
+  OpenAI integration (`a6cdc0b` after `da09633`). Amend the new runtime baseline
+  explicitly; preserve all prior captures, requests, gold, scores and old seals.
+  Do not pretend historical implementation pins describe the newly installed code.
+- [x] Freeze **two independent 30-attempt comparisons**, **60 maximum combined**:
+  eight full MA controls and 22 NA batches per provider, four families in both
+  orders, **56 judgments per condition/provider / 224 fixed slots**. Fresh W1/W2
+  cases are interleaved from the start. Preserve complete context and all original
+  selections while limiting active assessments to three whole linked units.
+- [x] Keep all eight DeepSeek control wires exact. Verify all sixty requests through
+  the actual adapters with mock HTTP. Luna receives its native strict schema and
+  high reasoning; seed/temperature/top-p omissions are explicit. Fix the locally
+  caught null-schema inheritance before freeze. No production prompt changes;
+  cross-provider differences remain descriptive rather than a pure model ranking.
+- [x] Freeze per-call **24,000 input / 16,000 generated tokens / 600 seconds**;
+  per-provider **720,000 input / 480,000 generated / 18,000 seconds / $0.90 planning
+  allowance**. Reference reservations are $0.792 DeepSeek and $0.756 Luna; actual
+  billing remains unknown. Count every batch at complete-case level; increased
+  aggregate per-case allowance and repeated context are explicit. Token-count
+  failures consume scheduled attempts; no extra smoke calls or budget transfer.
+- [x] Freeze adequate-evidence criteria, complete-case delivery/resource scoring,
+  distinct citation/semantic/unavailable outcomes, and separate whole-relation
+  inspection. First delivery failure stops both arms of that provider. Shared
+  integrity/secret failures stop both comparisons. No retries, partial-final rescue,
+  larger limits or model substitution. Unresolved reservations and interrupted
+  post-delivery metadata boundaries cannot authorize another dispatch.
+- [x] Pass the full Python suite: **1,278 tests**. Final focused verification passes
+  **143 tests**: 38 tracked plus 105 private, including sixteen saved captures and
+  all sixty adapter wires. There are **1,383 unique tests overall**, accounting for
+  overlap. Ruff lint/format and strict mypy pass on **222 tracked files and six
+  private scripts**. Historical semantic failures remain unassessed by the mechanical
+  component; no new model recovery or story-quality evidence is claimed.
+- [x] Seal **24 preparation files / 3,153 source fingerprints**, exact provider
+  destinations, settings, requests and stops. Plan SHA-256:
+  `2b38d6547dd5304ef2bc12e9b9fe2209fbdb915ba953cad660d29473137c2702`.
+  Preserve the first unapproved preparation and verification records; at freeze no
+  approval record or live folder existed. Update the local issue index; leave original bodies
+  and posted URLs intact, with no external edits or closures.
+- [x] Obtain separate approval for D, L or both, including full unpublished prose /
+  context to Ollama Cloud through the daemon and/or the OpenAI Responses/count
+  endpoints. Then execute only the frozen selected comparison(s), inspect all final
+  results under the frozen criteria, and update the tracker. The user approved
+  both; execution and inspection are recorded below. Preparation and key reuse
+  alone did not authorize inference.
+
+Private bundle: `data/diagnostics/reviewer-assessment-workload-v61-2026-11-02/`.
+Generation calls at preparation: **zero**. Production prompt 61 / graph 9 / fulfillment policy 1,
+canonical story data, active model profiles, writers and the mandatory Blueprint
+checkpoint remain unchanged. Story-quality qualification remains separate.
+**Step 19 IN PROGRESS; Step 20 NOT STARTED; inference was PAUSED pending approval;
+full workflow canary ON HOLD.**
+
+### DeepSeek/Luna assessment workload execution and inspection 2026-11-02
+
+Status: **COMPLETE; 35/60 CALLS USED, ZERO RETRIES. DEEPSEEK INCOMPLETE;
+LUNA COMPLETE BUT NARROW WORKLOAD NOT QUALIFIED.**
+[Results, resources and recommended local work](../docs/benchmark_reports/reviewer-assessment-workload-v61-results-2026-11-02.md).
+
+- [x] Record explicit approval for both frozen 30-attempt comparisons, full
+  unpublished prose/context and the stated Ollama Cloud/OpenAI destinations.
+  Reverify the original plan hash and 3,153 source pins; keep settings, scoring,
+  prompt 61 / graph 9 / fulfillment policy 1 and both schedules unchanged.
+- [x] Run DeepSeek **5/30 attempts**, four valid responses. On the first narrow
+  H1/CP request, retain the complete HTTP-200 stop response with **8,219 generated
+  tokens** that returns all seven context-only selections instead of the two
+  active pairs. Reject extra scope; preserve usage and the validation error;
+  retire **25 calls**, with no retries or partial semantic credit. One W1/PC pair
+  completes, with **8/8 grounded judgments in each arm**; no delivery recovery.
+- [x] Run Luna **30/30 attempts**, all valid, through input counting and the native
+  Responses adapter using the existing application credential only in process
+  memory. Complete all eight MA/NA case pairs. No extra smoke call, fallback,
+  unknown usage, unresolved reservation or production profile change occurs.
+- [x] Inspect every final-only valid judgment in five shuffled, partially masked
+  packets and seal notes before decoding. Reconcile all **224 fixed slots**:
+  **109 grounded, twelve citation-only, seven semantic, 96 unavailable**. DeepSeek
+  supplies sixteen valid judgments; Luna supplies 112. Exclude thinking text and
+  retain explicit limitations of assistant factual inspection versus human review.
+- [x] Record Luna **MA 48 grounded / five citation-only / three semantic** versus
+  **NA 45 / seven / four**, each out of 56. Retain four W2/PC citation recoveries,
+  six historical citation losses and one H2/PC semantic loss. Private-flourish
+  inference and H2/CP timing remain shared failures. Fresh labels/explanations are
+  correct, but grounding is **27/32 MA versus 31/32 NA**, below the frozen NA screen.
+- [x] Independently inspect the four observed contextual relation slots. Preserve
+  original complete fields and linked selections; identify H1/CP NA's missing
+  match citation. Do not manufacture explicit model whole-relation assessment
+  from component labels. Four DeepSeek relation slots remain unavailable.
+- [x] Account for every batch at complete-case level. Luna uses **76,970 / 201,963
+  input**, **22,536 / 17,882 generated tokens**, **251.09 / 219.79 active seconds**
+  for MA/NA. Median per-case generation reduction is **18.4%**, below 20%; uncached
+  reference cost rises **55.4%**. Aggregate token reduction does not replace the
+  frozen median rule. DeepSeek's one complete pair is insufficient for qualification.
+  Total reference cost is **$0.15154565**; actual billing remains unknown.
+- [x] Replay every sealed receipt and complete-work result. Pass **142 applicable
+  post-approval tests** and Ruff/format/strict mypy for 222 repository files and
+  six frozen scripts. Preserve the initial 142-pass/one-failure run: its sole
+  failure is the now-inapplicable preparation assertion that approvals do not
+  exist. Exclude only that test on the passing rerun; frozen code is unchanged.
+  Record the interrupted sandboxed verification separately. Both read-only
+  analysis scripts pass Ruff/format; no frontend or production code changes here.
+- [x] Publish the results and update the local issue index, retaining all fourteen
+  original issue bodies and posted GitHub links. No external issue edit or closure.
+- [x] Preserve the new scope failure, citation recoveries/losses, semantic failures
+  and fresh controls as local regressions; audit active-pair scope and evidence
+  selection separately before any materially different inference proposal.
+  Completed in the local audit below; this does not authorize another run.
+
+Private evidence: `data/diagnostics/reviewer-assessment-workload-v61-2026-11-02/`
+and its `-D-live`, `-L-live`, `-analysis` siblings. The application component
+withholds completion on failed/missing batches and never assigns factual support,
+edit necessity, craft quality or writer permission. No story rewrite, ordinary
+critic promotion, model-profile activation or workflow canary occurs.
+**Step 19 IN PROGRESS; Step 20 NOT STARTED; live inference PAUSED; canary ON HOLD.**
+
+### Active assessment scope and citation-section audit 2026-11-03
+
+Status: **LOCAL REGRESSIONS PRESERVED; SEPARATE AUDITS COMPLETE AND VERIFIED.**
+[Audit, local slot design and proposed next steps](../docs/handoffs/reviewer-scope-citation-audit-2026-11-03.md).
+
+- [x] Preserve **422 exact capture/support files** and verify **3,153 historical
+  source fingerprints**, including the original result seal, all 35 attempts,
+  full inputs, final responses, usage, inspection notes and completion records.
+  Keep copied Python inert. Preserve the prior tracker/issue-index snapshots
+  separately from their authorized progress updates.
+- [x] Replay **34 valid deliveries and the DeepSeek two-requested/seven-returned
+  rejection**, keeping all 224 slots: **109 grounded, twelve citation-only, seven
+  semantic, 96 unavailable**. Preserve four citation recoveries, seven grounded
+  losses, all fresh positives and unchanged contextual-relation limitations.
+  Keep five DeepSeek attempts consumed and 25 retired; no partial rescue or retry.
+- [x] Audit all **60 frozen request scopes**. Full sources/report/registry remain
+  unchanged between matched MA/NA requests; active pairs and provider wires agree.
+  Every original schema permits 0–12 rows with full report-field IDs and free quote
+  text. Exact active-pair coverage is enforced later by the application validator,
+  which correctly rejected DeepSeek's response. No source trimming is found.
+- [x] Verify a **private data-only active-slot prototype** for all sixty scopes:
+  exact required active keys, no extras, application-owned field/quote/offset
+  identity, unchanged full context and literal rendering. Reject duplicate,
+  missing, wrong-scope and malformed output without repair. Binding leaves
+  citation adequacy, support and writer authority unassigned. No provider request,
+  schema-capability claim, production integration or prompt change is introduced.
+- [x] Independently resolve all sixty actual model-visible source indices:
+  **1,564 entries across eight case/order records**, **240 cited occurrences in
+  128 valid judgments**. Verify exact versions, fields, paragraph numbers, text and
+  offsets. Find no registry shift/context loss. Preserve fifteen citation-content
+  problems: twelve primary citation-only failures and three additional miscites
+  within semantic failures. Four other semantic failures have relevant locations.
+- [x] Distinguish adjacent/wrong paragraph selection, missing compound evidence,
+  wrong planned scene section and current-versus-next-scene source confusion.
+  Reject automatic ID shifting or an exclusive gold-reference whitelist. Correct
+  location remains distinct from factual entailment and literary effect.
+- [x] Pass **401 offline tests**: 213 new regressions/audit checks, 104 applicable
+  frozen harness tests, 38 assessment-work tests and 46 evidence tests. Exclude
+  only the historical preparation assertion that approvals do not yet exist.
+  Pass Ruff/format/strict mypy on five new scripts and 222 repository Python files;
+  pass deterministic audit replay. Block real HTTP, sockets, DNS and SQLite in
+  audit paths. No inference, token-count, metadata, daemon or database operation.
+- [x] Update documentation and issue index; preserve all fourteen original issue
+  bodies and posted GitHub URLs, with no external changes or issue closures.
+- [ ] Next: port the verified active-result contract and literal evidence-location
+  renderer into a small tracked read-only component with authored tests. Keep
+  semantic support, whole-relation credit and writer permission separate.
+- [ ] Only if warranted afterward, prepare a separate **provisional 16-call Luna
+  MA/quote-witness pilot**: unchanged full MA controls, H1/W2 plus two fresh scene
+  families in both orders, evidence output as the sole treatment. Do not combine
+  it with active slots or smaller workloads. Verify adapters/schema/renderer and
+  freeze exact cases, scoring, resources and stops before seeking approval.
+  A possible DeepSeek scope pilot remains separate; retired calls stay closed.
+
+Private bundle: `data/diagnostics/reviewer-scope-citation-audit-v61-2026-11-03/`.
+No production module, API/client contract, database schema, dependency or prompt
+changes. No ordinary critic promotion, writer execution or story-quality claim.
+**Step 19 IN PROGRESS; Step 20 NOT STARTED; live inference PAUSED; canary ON HOLD.**
 
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 

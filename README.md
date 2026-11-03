@@ -1217,6 +1217,18 @@ operator artifacts. No database or model call is made. See
 [ADR 0039](docs/adr/0039-diagnostic-probe-review-export.md) and the
 [twelve-capture export report](docs/handoffs/reviewer-probe-export-results-2026-10-30.md).
 
+The provider-neutral `evaluations.assessment_work` module now supplies read-only
+work items and completion checks for diagnostic assessment. It retains full
+context and whole selected statements, keeps declared relations together, and
+requires every expected batch exactly once. Complete delivery or citation binding
+does not grant factual support, edit necessity or writer permission. See
+[ADR 0041](docs/adr/0041-read-only-assessment-work.md), the
+[implementation record](docs/handoffs/assessment-work-integration-2026-11-02.md),
+and the
+[DeepSeek/Luna workload plan](docs/handoffs/reviewer-assessment-workload-frozen-plan-2026-11-02.md).
+The plan requires separate live approval. This adds no production routing,
+model-profile activation or database change.
+
 Inspect the active revision or roll back one migration during development:
 
 ```powershell
