@@ -1229,6 +1229,16 @@ and the
 The plan requires separate live approval. This adds no production routing,
 model-profile activation or database change.
 
+The companion `evaluations.assessment_result` module binds one required response
+slot per active claim and renders exact source locations alongside full context.
+It retains raw delivery, rejects extra/missing claims and source-identity drift,
+and supplies a derived receipt to the existing completion checks. Location binding
+does not establish evidence adequacy or authorize a writer. See
+[ADR 0042](docs/adr/0042-active-assessment-results-and-evidence-locations.md) and the
+[integration record](docs/handoffs/assessment-result-integration-2026-11-03.md).
+This is a read-only engine component; provider serialization and schema support
+require separate verification. Production prompts and routing remain unchanged.
+
 Inspect the active revision or roll back one migration during development:
 
 ```powershell

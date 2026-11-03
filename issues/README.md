@@ -594,3 +594,25 @@ The provisional sixteen-call Luna MA/witness idea is not frozen or approved; no
 new live allowance is opened. All fourteen issues remain open, original bodies
 and posted links remain intact, and no external issue changes. Production prompts
 unchanged; live calls **PAUSED**, canary **ON HOLD**.
+
+**2026-11-03 tracked assessment-result integration verified:**
+the [implementation](../docs/handoffs/assessment-result-integration-2026-11-03.md)
+and [ADR 0042](../docs/adr/0042-active-assessment-results-and-evidence-locations.md)
+add a read-only active-slot contract and source-location renderer beside the
+existing work/completion component. The application supplies claim identity,
+rejects missing/extra/duplicate selections, verifies exact source versions and
+sections, and retains raw delivery separately from derived location binding.
+Full context stays visible. Evidence adequacy, factual support, edit necessity
+and craft remain unassessed; no writer or whole-relation authority is granted.
+
+**1,363 repository Python tests pass**, including **85 new authored regressions**;
+Ruff/format and strict mypy pass for **224 files**. The 123 focused checks overlap
+the full count. All 422 archived files and 3,153 source fingerprints remain
+unchanged. Historical registries and provider schema support still require
+deliberate adapter verification. Next, optionally prepare the separate 16-call
+Luna MA/quote-witness comparison for approval, with citation selection as its
+only treatment; do not combine active-slot or workload changes.
+
+All fourteen issues remain open, original bodies and posted GitHub URLs remain
+intact, and no external issue changes. Production prompts and routing remain
+unchanged; live calls **PAUSED**, canary **ON HOLD**.

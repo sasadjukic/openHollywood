@@ -10018,9 +10018,10 @@ Status: **LOCAL REGRESSIONS PRESERVED; SEPARATE AUDITS COMPLETE AND VERIFIED.**
   audit paths. No inference, token-count, metadata, daemon or database operation.
 - [x] Update documentation and issue index; preserve all fourteen original issue
   bodies and posted GitHub URLs, with no external changes or issue closures.
-- [ ] Next: port the verified active-result contract and literal evidence-location
+- [x] Port the verified active-result contract and literal evidence-location
   renderer into a small tracked read-only component with authored tests. Keep
   semantic support, whole-relation credit and writer permission separate.
+  Implementation and verification are recorded in the following entry.
 - [ ] Only if warranted afterward, prepare a separate **provisional 16-call Luna
   MA/quote-witness pilot**: unchanged full MA controls, H1/W2 plus two fresh scene
   families in both orders, evidence output as the sole treatment. Do not combine
@@ -10032,6 +10033,47 @@ Private bundle: `data/diagnostics/reviewer-scope-citation-audit-v61-2026-11-03/`
 No production module, API/client contract, database schema, dependency or prompt
 changes. No ordinary critic promotion, writer execution or story-quality claim.
 **Step 19 IN PROGRESS; Step 20 NOT STARTED; live inference PAUSED; canary ON HOLD.**
+
+### Active assessment result integration 2026-11-03
+
+Status: **IMPLEMENTED AND VERIFIED LOCALLY.**
+[Implementation and next step](../docs/handoffs/assessment-result-integration-2026-11-03.md),
+[ADR 0042](../docs/adr/0042-active-assessment-results-and-evidence-locations.md).
+
+- [x] Add the tracked, provider-neutral `evaluations.assessment_result` component
+  beside the unchanged assessment-work/completion contracts. Bind exact work,
+  batch, request and required active slots. Supply claim field/quote/offset
+  identity from the application; reject extra/missing/duplicate model selections.
+- [x] Add an explicit versioned source-location registry. Verify every document
+  identity/version/hash, JSON pointer, field hash, exact Unicode offset and field
+  or paragraph occurrence. Reject section drift rather than shifting citations.
+  Require deliberate adapters for legacy registries and model-visible context.
+- [x] Bind only successful exact raw-final deliveries. Retain original receipt
+  and raw text, expose a separate location-bound receipt to `complete_work`, and
+  preserve incomplete delivery and unknown usage. No failed-final salvage.
+- [x] Render full context, active claims, model judgments and source locations as
+  literal data; recompute binding at render time. Keep support, evidence adequacy,
+  edit necessity and craft unassessed; whole-relation/writer authority remain false.
+- [x] Add **85 authored tracked regressions**; pass **123 focused tests** including
+  the existing 38 work/completion tests. Pass repository-wide Ruff/format and
+  strict mypy for **224 Python files**. Preserve all 422 archived files and 3,153
+  historical source fingerprints unchanged.
+- [x] Pass the final full repository Python suite: **1,363 tests**, including the
+  85 new regressions; focused tests overlap this count. Fix and regress a mutable
+  scope-alias issue before the final run. Pin source hashes across verification;
+  preserve interrupted/superseded attempts separately without counting them as
+  passes. Check UTF-8/LF, document links and diff whitespace; update README, issue
+  index and decisions without changing original issue bodies or posted URLs.
+- [ ] Next, if inference is desired: prepare the separate **16-call Luna
+  MA/quote-witness comparison** for approval. Keep full MA controls, historical
+  H1/W2 and two fresh families in both orders. Evidence output is the only
+  treatment; do not combine active-slot schema or workload changes. Freeze exact
+  requests/scoring/budget/stops after local adapter and witness verification.
+
+No production caller, provider serialization, API/client schema, database change,
+dependency or prompt change. Provider schema support remains unverified. All
+fourteen issues remain open. Live calls are **PAUSED**, canary **ON HOLD**.
+**Step 19 IN PROGRESS; Step 20 NOT STARTED.**
 
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 
