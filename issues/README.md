@@ -616,3 +616,76 @@ only treatment; do not combine active-slot or workload changes.
 All fourteen issues remain open, original bodies and posted GitHub URLs remain
 intact, and no external issue changes. Production prompts and routing remain
 unchanged; live calls **PAUSED**, canary **ON HOLD**.
+
+**2026-11-03 Luna MA/quote-witness comparison frozen locally:**
+the [approval plan](../docs/handoffs/reviewer-luna-witness-frozen-plan-2026-11-03.md)
+uses the requested **`gpt-6-luna`** with explicit high reasoning in both arms.
+Four historical MA wires change only the model identifier. H1/W2 plus two fresh
+families, each in both presentation orders, give **eight pairs / sixteen attempts**,
+**124 fixed judgment slots**. WB changes only evidence output to exact quotations;
+full context and whole-claim workload remain unchanged. Active-slot/workload
+experiments remain separate. Correctly located quotations do not establish
+adequate evidence, semantic support, literary quality or writer permission.
+
+**251 offline tests**, repository Ruff/format/strict typing for **224 files**, nine
+private-script checks and identical request regeneration pass. A native-schema
+property-order mismatch was corrected and regressed before freezing. The plan
+seals **32 files / 3,178 source pins**, with **16 attempts / zero retries**,
+terminal stops, **$0.48 planning allowance** and **$0.176 reference reservation**.
+No generation or story-bearing count call was sent; one authorized catalog check
+confirmed model visibility. Live schema acceptance and quality remain untested.
+
+Next, seek approval of the frozen payload/destination before execution. All
+fourteen issues remain open, original issue bodies and posted URLs are preserved,
+and no external issue changes. Production prompts/profiles unchanged; live calls
+**PAUSED**, canary **ON HOLD**.
+
+**2026-11-03 Luna MA/quote-witness comparison completed:**
+the [results](../docs/benchmark_reports/reviewer-luna-witness-v61-results-2026-11-03.md)
+record **16/16 attempts, zero retries**, with sixteen preceding story-bearing
+token counts and valid structured delivery throughout. All **124 fixed slots**
+were inspected: **MA 50 grounded / eleven citation-only / one semantic** versus
+**WB 51 / nine / two**. Ten citation recoveries are offset by nine grounded losses,
+including one new private-flourish semantic error. Fresh grounding is **27/32 MA,
+28/32 WB**; the no-loss and all-fresh-grounded screens fail. WB is not promoted.
+
+Of **103 WB witnesses, 94 locate and nine remain unresolved**: five invalid
+version/field combinations, two altered literals and two cross-entry quotations.
+Three further correctly located quotations omit a required compound premise.
+The application preserves these distinctions without repair or semantic/writer
+authority. WB adds **38.1% generated tokens / 19.3% active time / 31.1% reference
+cost**. Total reference cost is **$0.039723250**; actual billing remains unknown.
+
+**250 applicable tests** pass, with the single preparation-only approval-absence
+assertion deselected; repository Ruff/format/strict typing and diagnostic replay
+pass. All 32 frozen files and 3,178 source pins remain unchanged. Recommend local
+regression preservation and separate witness-identity, coverage and whole-claim
+semantic audits before any new inference proposal. All fourteen issues remain
+open; original bodies and posted URLs are preserved. Production prompts/profiles
+unchanged; live calls **PAUSED**, canary **ON HOLD**. No external issue changed.
+
+**2026-11-03 source/field and quotation-scope audit completed locally:**
+the [audit](../docs/handoffs/reviewer-witness-contract-audit-2026-11-03.md) preserves
+275 exact files, 3,178 source pins, all 124 judgments and 103 WB witnesses. A
+private source-bound schema retains all 464 legitimate pairs and excludes 1,360
+impossible combinations. It rejects the five saved wrong-pair witnesses while
+retaining all 94 located witnesses; altered and cross-entry quotes still require
+literal location checks. Rejecting two whole saved responses is not a model
+recovery. Provider acceptance and new generation remain untested.
+
+The audit distinguishes a quotation used as an exact evidentiary span from one
+used to locate a complete immutable section. Three real shortened quotes expose
+the historical locator-instruction versus exact-span-scoring ambiguity. Both
+views retain full context and leave support, craft and writer authority unassigned.
+Historical scores remain unchanged, including the separate private-flourish
+semantic failure. H1's historical order blocks also differ in admitted selections;
+their within-block arm comparisons remain matched.
+
+**374 offline tests**, repository Ruff/format/strict typing, four private-script
+checks and deterministic replay pass. Recommend preparing a separate, provisional
+**16-call U/C source-bound schema comparison**, with a declared common
+section-locator contract, H1/F3 plus two fresh families and both presentation
+blocks. It is not frozen or approved. CW-007/CW-013 remain implicated and CW-014
+remains unqualified; all fourteen issues stay open. Original issue bodies and
+posted URLs remain intact. No external issue changed. Production prompts/profiles
+unchanged; zero new live or metadata calls; live calls **PAUSED**, canary **ON HOLD**.

@@ -10022,12 +10022,14 @@ Status: **LOCAL REGRESSIONS PRESERVED; SEPARATE AUDITS COMPLETE AND VERIFIED.**
   renderer into a small tracked read-only component with authored tests. Keep
   semantic support, whole-relation credit and writer permission separate.
   Implementation and verification are recorded in the following entry.
-- [ ] Only if warranted afterward, prepare a separate **provisional 16-call Luna
+- [x] Only if warranted afterward, prepare a separate **provisional 16-call Luna
   MA/quote-witness pilot**: unchanged full MA controls, H1/W2 plus two fresh scene
   families in both orders, evidence output as the sole treatment. Do not combine
   it with active slots or smaller workloads. Verify adapters/schema/renderer and
   freeze exact cases, scoring, resources and stops before seeking approval.
   A possible DeepSeek scope pilot remains separate; retired calls stay closed.
+  Prepared below using the user's requested `gpt-6-luna` model amendment;
+  live execution still requires approval of the new freeze.
 
 Private bundle: `data/diagnostics/reviewer-scope-citation-audit-v61-2026-11-03/`.
 No production module, API/client contract, database schema, dependency or prompt
@@ -10064,16 +10066,171 @@ Status: **IMPLEMENTED AND VERIFIED LOCALLY.**
   preserve interrupted/superseded attempts separately without counting them as
   passes. Check UTF-8/LF, document links and diff whitespace; update README, issue
   index and decisions without changing original issue bodies or posted URLs.
-- [ ] Next, if inference is desired: prepare the separate **16-call Luna
+- [x] Next, if inference is desired: prepare the separate **16-call Luna
   MA/quote-witness comparison** for approval. Keep full MA controls, historical
   H1/W2 and two fresh families in both orders. Evidence output is the only
   treatment; do not combine active-slot schema or workload changes. Freeze exact
   requests/scoring/budget/stops after local adapter and witness verification.
+  Completed in the following preparation entry; no live inference authorized.
 
 No production caller, provider serialization, API/client schema, database change,
 dependency or prompt change. Provider schema support remains unverified. All
 fourteen issues remain open. Live calls are **PAUSED**, canary **ON HOLD**.
 **Step 19 IN PROGRESS; Step 20 NOT STARTED.**
+
+### Luna MA/quote-witness preparation 2026-11-03
+
+Status: **FROZEN AND VERIFIED LOCALLY; LIVE APPROVAL PENDING.**
+[Frozen plan, scoring, budget and approval scope](../docs/handoffs/reviewer-luna-witness-frozen-plan-2026-11-03.md).
+
+- [x] Apply the user's `gpt-6-luna` amendment through a private model specification.
+  Verify official Responses/structured-output/high-reasoning documentation and
+  account model visibility with one authorized non-generating catalog GET. Keep
+  explicit high reasoning in both arms; production catalog and profiles unchanged.
+  Four historical MA wires differ from saved controls only at `/model`; no causal
+  older-versus-newer model improvement claim is permitted.
+- [x] Freeze H1/W2 controls and two fresh full-context families, each in PC/CP
+  presentation order: **eight pairs / sixteen attempts**, **62 judgments per arm /
+  124 fixed slots**, including **32 fresh judgments per arm**. Retain full claims,
+  exact request/count bodies and source versions. Only WB's evidence-output clause
+  and evidence schema item differ; no active-slot or workload intervention.
+- [x] Verify deliberate registry translation and exact-quote location/rendering.
+  Missing/repeated/cross-entry quotations remain unresolved without repair;
+  binding and adequate evidence remain separate. Keep semantic support, literary
+  effect and writer authority unassigned by the application.
+- [x] Freeze per-claim labels and adequate-evidence criteria, all-slot inspection,
+  alternated arm order and conservative continuation screen: complete delivery,
+  two distinct paired citation recoveries, no semantic/grounded loss and all
+  32 fresh WB judgments grounded. Retain separate contextual-relation inspection.
+  Reversed presentations are not independent stories or duplicate recoveries.
+- [x] Freeze **16 attempts / zero retries**, per-attempt **24k input / 16k generated
+  including reasoning / 600 seconds / $0.03 planning allowance**; **$0.48** total
+  allowance and **$0.176** conservative published-rate reference reservation.
+  Count failures/interrupted generation reservations consume attempts. Preserve
+  unknown usage and terminal chains; stop both arms on first invalid delivery or
+  resource/integrity/preflight failure, retire unstarted slots, never replay a
+  terminal run or interrupted catalog reservation. No historical allowance reuse.
+- [x] Pass **251 offline tests**: 89 new harness, 123 assessment work/result and
+  39 provider/routing/execution tests. Pass repository Ruff/format/strict mypy for
+  **224 files**, private checks for **nine scripts**, and identical regeneration.
+  Regress and correct pre-freeze native-schema ordering after disk serialization.
+  Verify **3,178 source pins** unchanged; seal **32 preparation files**.
+- [x] Document the exact model amendment, destination/payload, remaining live
+  compatibility uncertainty and local verification. Preserve all fourteen issue
+  bodies and posted links; update only the local progress index. No external
+  issue update, production prompt/profile change or story rewrite.
+- [x] Obtain approval of the frozen **16-attempt `gpt-6-luna` MA/WB comparison**
+  and full prose/context transmission to OpenAI Responses and its input-count
+  endpoint. Then execute within the freeze, inspect every fixed slot and publish
+  results. No live approval or generation is created by this preparation.
+  Separately approved and executed in the following results entry.
+
+Private bundle: `data/diagnostics/reviewer-luna-witness-v61-2026-11-03/`.
+Plan SHA-256: `abd249390095bffd4a2430bbfd8234f69f688b5ca688398146d8d96b6b65931f`.
+Generation **0**, story-bearing token counts **0**, catalog checks **1**.
+All fourteen issues remain open. **Step 19 IN PROGRESS; Step 20 NOT STARTED;
+live calls PAUSED; canary ON HOLD.**
+
+### Luna MA/quote-witness execution and inspection 2026-11-03
+
+Status: **COMPLETE — 16/16 ATTEMPTS, ZERO RETRIES; WB DOES NOT QUALIFY.**
+[Results, resource accounting and recommended local work](../docs/benchmark_reports/reviewer-luna-witness-v61-results-2026-11-03.md).
+
+- [x] Record explicit user approval for full prose/context at OpenAI Responses
+  and its input-token-count endpoint. Verify the unchanged freeze and execute
+  exactly **16 generations + 16 preceding count requests**, with sixteen catalog
+  preflights. All return valid structured delivery with exact active coverage and
+  expected `gpt-6-luna` identity. No retry, refusal, truncation, transport failure,
+  unknown token totals or resource overflow. All sixteen attempts consumed;
+  zero remaining/retired. Historical budgets stay closed.
+- [x] Inspect **all 124 fixed judgments** against frozen whole-claim expectations
+  and full sources. Retain **MA 50 grounded / eleven citation-only / one semantic**
+  versus **WB 51 / nine / two**, with zero unavailable slots. Fresh grounding is
+  **27/32 MA, 28/32 WB**. Preserve individual source notes and the limitations of
+  arm-masked assistant inspection; no blind human preference claim.
+- [x] Record **ten paired citation recoveries** across nine frozen family/unit
+  keys, offset by **nine grounded losses**, including **one new semantic loss**.
+  The distinct-recovery and delivery screens pass; no-loss and all-fresh-grounded
+  screens fail. Preserve the shared H1-CP private-flourish failure and H1-PC MA
+  success/WB semantic loss. Do not infer whole-relation credit from components.
+- [x] Audit all **103 WB witnesses**: **94 located / nine unresolved** — five
+  wrong version/field combinations, two altered literals and two cross-entry
+  quotations. Eight judgments across four calls retain unresolved binding.
+  Separately record three correctly located quotations missing internal reasoning
+  required by compound claims. Do not repair, shift references or grant automatic
+  containing-paragraph evidence credit. Complete delivery remains distinct from
+  binding, factual support and editorial necessity.
+- [x] Account for **121,422 input / 49,091 generated / 32,324 included reasoning
+  tokens**, 408.06 active seconds and **$0.039723250 conservative reference cost**;
+  actual billing unknown. WB uses 38.1% more generated tokens, 19.3% more active
+  time and 31.1% more reference cost. No delivery-headroom exhaustion observed.
+- [x] Pass **250 applicable post-approval tests**, with only the unchanged
+  preparation-stage approval-absence assertion deselected. Pass repository
+  Ruff/format/strict mypy for **224 files**, diagnostic checks for eleven scripts,
+  exact receipt/source replay and deterministic scoring. Preserve all **32 frozen
+  files / 3,178 source pins**, original issue bodies and posted URLs. No new
+  tracked application code, production profile, prompt or external issue change.
+- [x] Next local work: preserve paired recoveries and new failures as regression
+  fixtures; audit version-bound field constraints separately from witness span
+  adequacy and specific-event versus structural-pacing semantics. Require a
+  materially different, locally justified hypothesis before another live proposal.
+  Keep production prompts unchanged and the canary on hold.
+  Completed in the local contract audit below; no new inference authorized.
+
+Private evidence uses the preparation prefix
+`data/diagnostics/reviewer-luna-witness-v61-2026-11-03/` and its `-L-live` and
+`-analysis` siblings. The completed comparison grants no further inference or
+writer authority. All fourteen issues remain open. **Step 19 IN PROGRESS;
+Step 20 NOT STARTED; live calls PAUSED; canary ON HOLD.**
+
+### Witness source/field and evidence-scope audit 2026-11-03
+
+Status: **COMPLETE LOCALLY — ZERO LIVE CALLS; NO PRODUCTION PROMOTION.**
+[Audit, verification and next proposal](../docs/handoffs/reviewer-witness-contract-audit-2026-11-03.md).
+
+- [x] Preserve **275 exact files / 3,178 historical source pins**, all **124 fixed
+  judgments and 103 witnesses**, including paired recoveries, losses and the H1
+  semantic contrast. Copy archived Python as inert evidence, never execute it.
+  Authenticate all sixteen saved requests and **32 dispatched count/generation
+  body hashes** against the frozen wires. No source or registry shift found.
+- [x] Audit independent source/field enums. A private source-bound witness schema
+  retains all **464 valid pairs** across four families and removes **1,360
+  impossible combinations** from the old 1,824-pair Cartesian product. It excludes
+  exactly the five saved wrong-pair witnesses while retaining all **94 located
+  witnesses**; the two altered literals and two cross-entry quotations still
+  require location validation. This would reject two whole saved responses,
+  not recover them. Native-schema transformation passes locally; provider
+  acceptance and generated behavior remain untested.
+- [x] Make **exact-span evidence** and **section-locator evidence** explicit in
+  a private full-context renderer. Preserve three actual shortened quotations
+  that omit a compound claim's motive although their containing section includes
+  it. Record the locator wording versus stricter frozen scoring as a contract
+  ambiguity. Recommend explicit section-locator semantics for a future selection
+  diagnostic; no production adoption, historical rescoring or automatic support.
+- [x] Keep invocation input-version metadata separate from citable source IDs.
+  Preserve H1/W2's additional historical IDs without expanding witness authority.
+  Record that H1's historical PC/CP admitted selections differ; within-block
+  MA/WB pairs remain matched, but cross-block changes are not pure order effects.
+  Keep specific-event entailment separate from structural-pacing interpretation.
+- [x] Pass **374 offline tests** (163 new, 88 applicable frozen-harness, 123 tracked
+  assessment tests), with one unchanged preparation-stage assertion deselected.
+  Pass repository Ruff/format/strict mypy for **224 files**, four private-script
+  checks, deterministic replay and publication/source integrity checks. No
+  credential, generation, token-count, metadata or daemon call. No tracked
+  application code, production prompt/profile, dependency or schema change.
+- [ ] If inference is desired, prepare the separate **provisional 16-call U/C
+  source-bound schema comparison** for approval: H1/F3 plus two fresh families,
+  both presentation blocks, full context and whole-claim workload. Both arms use
+  the same explicit section-locator contract; only the witness-item schema
+  differs. Declare the common baseline amendment, freeze identical selections
+  across fresh orders, exact requests, per-claim adequacy, budget and terminal
+  stops. Zero retries; do not add active-slot, workload or writer treatments.
+
+Private bundle: `data/diagnostics/reviewer-witness-contract-audit-2026-11-03/`.
+The proposal is **not frozen or approved**. Historical MA/WB scores and no-promotion
+decision remain unchanged. All fourteen issues remain open; original bodies and
+posted URLs are preserved. **Step 19 IN PROGRESS; Step 20 NOT STARTED;
+live calls PAUSED; canary ON HOLD.**
 
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 
