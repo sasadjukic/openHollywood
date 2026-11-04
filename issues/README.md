@@ -689,3 +689,76 @@ blocks. It is not frozen or approved. CW-007/CW-013 remain implicated and CW-014
 remains unqualified; all fourteen issues stay open. Original issue bodies and
 posted URLs remain intact. No external issue changed. Production prompts/profiles
 unchanged; zero new live or metadata calls; live calls **PAUSED**, canary **ON HOLD**.
+
+**2026-11-04 U/C source-field comparison frozen locally:**
+the [approval plan](../docs/handoffs/reviewer-source-field-frozen-plan-2026-11-04.md)
+seals sixteen `gpt-6-luna` high-reasoning attempts across H1/F3 and fresh F5/F6,
+with both presentation blocks: **eight pairs / 124 fixed claim slots**, including
+32 fresh judgments per arm. Both arms explicitly use quotations as section
+locators; only C binds fields to their source versions. The shared evidence-scope
+amendment is declared, historical scores stay unchanged, and H1 cross-block
+differences are not treated as pure order effects.
+
+**378 offline tests** and repository/private static checks pass. All 103 prior
+witnesses replay unchanged; the candidate retains 464 valid source/field pairs
+and excludes 1,360 impossible combinations. The freeze binds **34 files / 3,521
+source fingerprints**, exact requests/gold, per-claim section adequacy, loss and
+recovery screens, **16 attempts / zero retries**, terminal stops, a **$0.48 planning
+allowance** and **$0.176 reference reservation**. Native server acceptance and
+current account access remain unverified. No generation, story-bearing count or
+new catalog request occurred; the visibility observation is explicitly historical.
+
+Next, seek approval for full prose/context at OpenAI Responses and its input-count
+endpoint before execution. This preparation provides no new model-quality evidence
+and closes none of the fourteen issues. Original issue bodies and posted GitHub
+URLs remain intact; no external issue changed. Production prompts/profiles remain
+unchanged; live calls **PAUSED**, canary **ON HOLD**.
+
+**2026-11-04 U/C source-field comparison completed:**
+the [results](../docs/benchmark_reports/reviewer-source-field-v61-results-2026-11-04.md)
+record **16/16 attempts, zero retries**, sixteen preceding story-bearing counts
+and sixteen catalog preflights. All deliveries are valid and all **124 fixed
+judgments** are inspected. U scores **55 grounded / six citation-only / one
+semantic**; C scores **57 / three / two**. Six citation recoveries (five distinct
+frozen full-claim keys, all H1) are offset by four grounded losses, including one
+new private-flourish semantic error. Fresh grounding is **32/32 U, 30/32 C**.
+The frozen continuation screen fails; C is retained as diagnostic evidence.
+
+All C source/field pairs are legal, but **three quotations select a valid field
+containing different text**, and one spans separate paragraphs. U has seven
+unavailable-field witnesses. Of 232 total witnesses, 221 locate. Location still
+does not establish claim coverage, and coupling does not resolve the general-match
+versus specific-private-event semantic failure. Historical scores remain unchanged.
+
+**377 applicable offline tests** and repository/private static checks pass;
+all 34 frozen files, 3,521 source pins and 32 dispatched body hashes verify.
+Total reference cost is **$0.052740250**, with actual billing unknown. Recommend
+local regression preservation and separate source/field, literal/section and
+specific-event audits before any materially different inference proposal.
+CW-007/CW-013 remain implicated and CW-014 remains unqualified; all fourteen issues
+stay open. Original issue bodies and posted URLs remain intact. No external issue
+changed. Production prompts/profiles unchanged; live calls **PAUSED**,
+canary **ON HOLD**.
+
+**2026-11-04 section-receipt and private-event audit completed locally:**
+the [audit](../docs/handoffs/reviewer-section-receipt-audit-2026-11-04.md) preserves
+544 exact files, 3,521 source fingerprints, all 124 U/C judgments and 232 witnesses,
+including the paired recoveries/losses and fresh controls. All original scores
+and eleven unresolved witness outcomes remain unchanged.
+
+Application-owned section receipts retain exact provenance and boundaries but
+select the same sections as existing MA references. Replaying all 62 MA controls
+preserves its eleven citation failures and one semantic failure; receipt aliases
+are not promoted as a new solution. The semantic audit distinguishes general
+authentication, depiction of the specific private procedure, the real endpoint
+violation and an unassessed editorial-overlap concern. H1's absence of a specific
+depiction is separated from F6's explicit denial; historical scores stay intact.
+
+**724 applicable offline tests** and repository/four-script static checks pass.
+Recommend preparing a **provisional sixteen-call claim-interpretation diagnostic**
+with mixed versus explicit factual propositions, unchanged primary context and
+surrounding workload, fresh contrasts and both orders. It is not frozen or
+approved, and cannot establish story quality or writer authority. All fourteen
+issues remain open, original bodies and posted URLs are preserved, and no external
+issue changed. Production prompts/profiles unchanged; zero new live or metadata
+calls; live calls **PAUSED**, canary **ON HOLD**.

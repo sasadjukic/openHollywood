@@ -10218,19 +10218,169 @@ Status: **COMPLETE LOCALLY — ZERO LIVE CALLS; NO PRODUCTION PROMOTION.**
   checks, deterministic replay and publication/source integrity checks. No
   credential, generation, token-count, metadata or daemon call. No tracked
   application code, production prompt/profile, dependency or schema change.
-- [ ] If inference is desired, prepare the separate **provisional 16-call U/C
+- [x] If inference is desired, prepare the separate **provisional 16-call U/C
   source-bound schema comparison** for approval: H1/F3 plus two fresh families,
   both presentation blocks, full context and whole-claim workload. Both arms use
   the same explicit section-locator contract; only the witness-item schema
   differs. Declare the common baseline amendment, freeze identical selections
   across fresh orders, exact requests, per-claim adequacy, budget and terminal
   stops. Zero retries; do not add active-slot, workload or writer treatments.
+  Prepared, approved and executed on 2026-11-04 below.
 
 Private bundle: `data/diagnostics/reviewer-witness-contract-audit-2026-11-03/`.
 The proposal is **not frozen or approved**. Historical MA/WB scores and no-promotion
 decision remain unchanged. All fourteen issues remain open; original bodies and
 posted URLs are preserved. **Step 19 IN PROGRESS; Step 20 NOT STARTED;
 live calls PAUSED; canary ON HOLD.**
+
+### U/C source-field comparison preparation 2026-11-04
+
+Status: **COMPLETE LOCALLY — FROZEN; SUBSEQUENTLY APPROVED AND EXECUTED BELOW.**
+[Frozen cases, requests, scoring, budget and stops](../docs/handoffs/reviewer-source-field-frozen-plan-2026-11-04.md).
+
+- [x] Freeze **sixteen `gpt-6-luna` high-reasoning attempts**, eight matched U/C
+  pairs over H1/F3 historical controls and fresh F5/F6, with both source-order
+  blocks. Retain full context and whole-claim workload: **62 judgments per arm /
+  124 fixed slots**, including **32 fresh judgments per arm**. H1's historical
+  selections differ across blocks; all within-block pairs are matched and fresh
+  selections remain identical across orders.
+- [x] Declare the common **section-locator** amendment. Quotes identify complete
+  immutable fields or prose paragraphs in both arms; adequate section coverage
+  still needs source inspection. Historical U wires change only the shared
+  system evidence-scope clarification. C alone couples versions to their fields
+  in the witness-item schema. No active-slot, workload, writer or model treatment;
+  historical exact-span scores remain unchanged.
+- [x] Verify all **1,824 source/field combinations**: **464 legitimate pairs**
+  retained and **1,360 impossible pairs** excluded. Replay all **103 prior
+  witnesses** unchanged. Native-schema transformation and documented structural
+  limits pass locally; server acceptance and model behavior remain unverified.
+  C's wrong-pair schema violation is a failed delivery; U's schema-valid wrong
+  pair remains unresolved evidence. Preserve both in fixed-slot denominators.
+- [x] Freeze per-claim labels, adequate-section criteria, examples, inspection
+  slots and a local scorer that requires explicit source decisions. Require
+  complete delivery, two distinct family/full-claim citation recoveries, no
+  grounded/semantic/contextual loss and all fresh C judgments grounded. Reordered
+  claims cannot double-count recoveries; location grants no support or edit right.
+- [x] Freeze **16 attempts / zero retries**, at most sixteen preceding story-bearing
+  counts and sixteen catalog preflights. Retain 24,000 input / 16,000 generated
+  tokens and 600 active seconds per attempt; **$0.48 planning allowance / $0.176
+  conservative reference reservation**. Unknown billing remains unknown. Failed
+  counts/interrupted reservations consume attempts; terminal stops retire the
+  remainder. No simplified schema fallback, smoke generation or model substitution.
+- [x] Pass **378 offline tests** (216 diagnostic, 123 assessment, 39 provider/
+  routing/execution), repository Ruff/format/strict mypy for **224 files**, eleven
+  private-script checks and exact regeneration. Seal **34 preparation files /
+  3,521 source fingerprints**. No generation, count or new metadata call. Keep
+  2026-11-03 account visibility explicitly historical; recheck only after approval.
+- [x] Obtain approval of this exact sixteen-attempt U/C comparison and full
+  prose/context at OpenAI Responses **and** its input-token-count endpoint. Then
+  execute once, inspect every fixed slot, document results and update the tracker.
+  Explicit user approval was recorded and execution completed below; preparation
+  alone did not create an approval or live allowance.
+
+Private bundle: `data/diagnostics/reviewer-source-field-v61-2026-11-04/`.
+Plan SHA-256: `b60e255769d5496b8a5632b116ff61b582d26b29df593688e18dea6026dec2c8`.
+All fourteen issues remain open, with original bodies and posted URLs preserved.
+No production prompt/profile, application code, dependency or external issue change.
+**Step 19 IN PROGRESS; Step 20 NOT STARTED; live calls PAUSED; canary ON HOLD.**
+
+### U/C source-field comparison execution 2026-11-04
+
+Status: **COMPLETE — 16/16 ATTEMPTS; INSPECTED; CONTINUATION SCREEN FAILED.**
+[Results, source inspection and recommended local work](../docs/benchmark_reports/reviewer-source-field-v61-results-2026-11-04.md).
+
+- [x] Execute the approved frozen `gpt-6-luna` high-reasoning comparison once:
+  **16 attempts, zero retries**, sixteen story-bearing input counts and sixteen
+  catalog preflights. All deliveries valid; all 32 count/generation body hashes
+  match the freeze. No terminal failure, fallback, replacement or remaining
+  allowance. Preserve the 34 preparation files and 3,521 source fingerprints.
+- [x] Inspect all **124 fixed slots** and their selected complete sections;
+  authenticate notes before decoding/aggregation. Record **U 55 grounded / six
+  citation-only / one semantic** versus **C 57 / three / two**. Six paired
+  recoveries yield five frozen full-claim keys, all in H1. Four grounded losses
+  include the new H1-PC private-flourish semantic error. Fresh grounding is
+  **32/32 U, 30/32 C**. No automatic relation credit or writer authority.
+- [x] Inventory **232 witnesses**: U **111 located / seven unavailable-field**;
+  C **110 located / three missing / one cross-entry**. All C source/field pairs
+  are legal, but legal fields still receive another source's literals. Preserve
+  the extra incorrect scene-ID witness despite otherwise sufficient evidence.
+  A located event alone also fails to evidence an assignment obligation.
+- [x] Apply the unchanged frozen screen: complete delivery, recovery and separate
+  contextual checks pass; no-grounded-loss, no-semantic-loss and all-fresh-grounded
+  checks fail. Retain C as diagnostic evidence without promotion. Preserve the
+  shared section-locator amendment and all historical exact-span scores.
+- [x] Record **138,014 input / 70,977 generated / 45,521 included reasoning
+  tokens**, **591.58 active seconds**, and **$0.052740250 reference cost**.
+  Actual billing remains unknown; all measured counters and frozen limits are
+  accounted for. No truncation or resource exhaustion explains these failures.
+- [x] Pass **377 applicable offline tests**, with one unchanged preparation-only
+  assertion deselected. Pass repository Ruff/format/strict mypy for **224 files**,
+  checks for eleven frozen and three analysis scripts, dispatch/receipt replay,
+  deterministic scoring and source/publication integrity. Original issue bodies
+  and posted GitHub URLs remain intact; no external issue changed.
+- [x] Preserve the recovered controls, new citation/semantic losses and fresh
+  contrasts as local regressions. Audit source/field identity, literal selection
+  and paragraph boundaries separately; evaluate application-owned section
+  receipts against prior reference-selection failures. Separately audit the
+  specific private event versus editorial authentication/pacing claim. Require
+  a materially different, locally justified hypothesis before more inference.
+  Completed in the local audit below; no inference or production promotion.
+
+Private evidence: `data/diagnostics/reviewer-source-field-v61-2026-11-04/`,
+its `-L-live/` sibling and `-analysis/` sibling. No production prompt/profile,
+application code, frontend, dependency or database schema change. No story was
+rewritten. All fourteen issues remain open. **Step 19 IN PROGRESS;
+Step 20 NOT STARTED; live calls PAUSED; canary ON HOLD.**
+
+### Section-receipt and private-event audit 2026-11-04
+
+Status: **COMPLETE LOCALLY — ORIGINAL SCORES PRESERVED; NO NEW LIVE CALLS.**
+[Regression, receipt and semantic audit with next-step proposal](../docs/handoffs/reviewer-section-receipt-audit-2026-11-04.md).
+
+- [x] Preserve **544 exact files / 3,521 historical source fingerprints**,
+  all **124 U/C judgments / 232 witnesses**, both sides of the six recoveries
+  and four losses, the shared semantic failure and successful fresh contrasts.
+  Authenticate all sixteen source presentations and 32 count/generation body
+  hashes. Copied historical Python remains inert; reviewed pure functions were
+  deliberately ported into the tested local audit.
+- [x] Replay every witness unchanged: **221 located / seven unavailable-field /
+  three missing / one cross-entry**. Keep the extra bad witness distinct from
+  inadequate evidence; keep a located event distinct from evidence of an
+  obligation. Preserve U **55/6/1** and C **57/3/2**, with no rescoring or repairs.
+- [x] Verify application-owned section catalogs and receipts across sixteen
+  presentations / **2,016 entries including repeats**. Reject changed identity,
+  content, offsets, paragraphs, duplicate/foreign handles and altered authority.
+  Retain full context and exact sections without implicit adjacent padding.
+- [x] Re-express all **62 historical MA selections** as local receipt views.
+  They select the same sections: **50 grounded / eleven citation-only / one
+  semantic** remains unchanged. This mechanism substantially exists in ADR 0042;
+  do not promote new handle spelling or infer a new citation-selection recovery.
+- [x] Bind eight authored semantic distinctions to complete sources. Separate
+  general match, specific private-event depiction, endpoint violation, plan
+  content and editorial overlap. H1's private procedure is not established;
+  F6 explicitly leaves it undone; F3/F5 perform their procedures through
+  paraphrase. Preserve the frozen mixed-claim scores while leaving pacing
+  effect, craft and edit necessity unassessed.
+- [x] Pass **724 applicable offline tests** (386 new, 215 applicable frozen,
+  123 tracked assessment), with one unchanged preparation-only assertion
+  deselected. Pass repository Ruff/format/strict mypy for **224 files**, four
+  private-script checks, deterministic replay and source/publication integrity.
+  Final formatting correction preserves the Python AST; development records
+  remain available. Original issue bodies and posted URLs remain unchanged.
+- [ ] If further inference is desired, prepare the **provisional sixteen-call
+  claim-interpretation diagnostic**: H1 plus three fresh full-scene families,
+  both orders, mixed structural versus explicit private-event propositions.
+  Hold primary sources, surrounding workload, model/settings and U evidence
+  format fixed within source pairs; treat changed target propositions as
+  explicit amendments, not same-claim recoveries. Freeze complete scoring,
+  exact requests, budget and stops and seek separate approval. This is a
+  measurement diagnostic, not production qualification or a receipt-format trial.
+
+Private bundle: `data/diagnostics/reviewer-section-receipt-audit-2026-11-04/`.
+No production prompt/profile, application, frontend, dependency or schema change.
+No credential access, generation, story-bearing count, catalog or daemon call.
+All fourteen issues remain open; no external issue changed. **Step 19 IN PROGRESS;
+Step 20 NOT STARTED; live calls PAUSED; canary ON HOLD.**
 
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 
