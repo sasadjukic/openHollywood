@@ -762,3 +762,78 @@ approved, and cannot establish story quality or writer authority. All fourteen
 issues remain open, original bodies and posted URLs are preserved, and no external
 issue changed. Production prompts/profiles unchanged; zero new live or metadata
 calls; live calls **PAUSED**, canary **ON HOLD**.
+
+**2026-11-04 Luna reasoning-effort comparison frozen locally:**
+the [approval plan](../docs/handoffs/reviewer-reasoning-effort-frozen-plan-2026-11-04.md)
+holds the sixteen-call interpretation diagnostic and freezes **24 high/xhigh/max
+attempts**, eight matched triples and **186 fixed judgments**. H1/F3 saved controls
+are joined by fresh F7/F8 scenes. Within each block only reasoning effort changes;
+the U evidence contract and all prompts remain fixed. A shared output-cap increase
+from 16,000 to 32,000 tokens is an explicit historical baseline amendment.
+
+**309 offline tests**, repository checks for 224 Python files and eleven private
+script checks pass. The freeze binds **39 files / 3,769 source fingerprints**,
+complete scoring and loss screens, **zero retries**, terminal usage/delivery
+stops, **$0.72 planning allowance** and **$0.456 reference reservation**. The
+recorded manifest line-ending correction preserves all parsed source hashes;
+deterministic replay passes. Current access and xhigh/max acceptance remain
+unverified. No catalog, story-bearing count or generation request occurred.
+
+CW-007/CW-013 remain implicated and CW-014 remains unqualified. All fourteen issues
+stay open; no production benefit or story-quality improvement is claimed. Original
+issue bodies and posted GitHub URLs are preserved; no external issue changed.
+Next is approval of the exact plan and full prose/context at OpenAI Responses
+and its input-count endpoint. Production prompts/profiles unchanged;
+interpretation diagnostic **ON HOLD**, live calls **PAUSED**, canary **ON HOLD**.
+
+**2026-11-04 Luna reasoning-effort comparison completed:**
+the [results](../docs/benchmark_reports/reviewer-reasoning-effort-v61-results-2026-11-04.md)
+record **24/24 valid attempts, zero retries**, all **186 judgments** inspected,
+and unchanged frozen requests. Grounding is **53/62 high, 54/62 xhigh, 57/62 max**;
+both candidates fail the original screen. Xhigh recovers five distinct claims
+but loses four grounded controls; max recovers six but loses two, including an
+unsupported obligation qualification. Fresh grounding is **29/32, 29/32, 31/32**.
+
+The inspection separates wrong source/field pairs, compressed quotations,
+inadequate coverage despite successful location and the recurring private-event
+versus editorial-overlap interpretation. Xhigh recovers the H1-CP private-event
+claim but does not repeat that success in PC. Max adds an unsupported exception
+to the no-match-by-end condition. **383/400 witnesses locate**; no citation is
+repaired. These observations keep CW-007/CW-013 open and do not qualify CW-014.
+
+Median paired latency rises **1.71× at xhigh and 4.11× at max**; generated tokens
+rise **1.70× and 4.32×**. Reference cost totals **$0.169334375**, actual billing
+unknown. The largest max response completes at **31,460/32,000 generated tokens**.
+**339 applicable offline tests** and repository/private static checks pass.
+Checks authenticate captures, notes, frozen scoring and all exact dispatches;
+verification history preserves an analysis-test serialization assertion correction
+without changing scores or evidence. Recommend local regressions and separate
+coverage/interpretation audits before further inference. Original issue bodies
+and GitHub URLs are preserved; no external issue changed. All fourteen remain
+open. Production prompts/profiles unchanged; interpretation diagnostic **ON HOLD**,
+live calls **PAUSED**, canary **ON HOLD**.
+
+**2026-11-04 effort regressions, coverage and obligation audit completed locally:**
+the [audit](../docs/handoffs/reviewer-effort-coverage-audit-2026-11-04.md) preserves
+**415 exact files**, all **186 judgments / 62 matched triples / 124 candidate-high
+pairs**, and **400 witnesses**, with original scores and screens unchanged.
+Eight authored coverage maps replay 48 judgments, separating missing premises
+from wrong locations and preserving adequate coverage with an extra bad witness.
+Ten source-bound interpretation records distinguish specific events from broader
+editorial overlap; neither citation success nor a plausible pacing concern grants
+edit authority. CW-007/CW-013 remain open and CW-014 remains unqualified.
+
+The CW-001 obligation audit retains the frozen unsupported-exception score while
+documenting that free-form production exit states lack a universal temporal type.
+Six authored hypothetical traces distinguish explicit event-history and closing-
+belief conditions; they are not new model results or a rule derived from “by”.
+**1,048 applicable offline tests**, repository checks for **224 Python files**,
+four-script static checks and deterministic replay pass. The one deselected test
+asserts pre-execution state only. Original issue bodies and GitHub URLs remain
+unchanged; all fourteen issues stay open and no external issue changed.
+
+Per the user's sequence, next is a **separate model test** before the sixteen-call
+interpretation diagnostic. Its contrast, model, exact requests, scoring, budget
+and stops still need definition, freezing and approval. No new allowance is
+allocated or reused. Production prompts/profiles unchanged; zero new provider
+calls; interpretation diagnostic **ON HOLD**, live calls **PAUSED**, canary **ON HOLD**.

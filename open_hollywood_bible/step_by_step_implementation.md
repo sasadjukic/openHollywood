@@ -10367,7 +10367,7 @@ Status: **COMPLETE LOCALLY — ORIGINAL SCORES PRESERVED; NO NEW LIVE CALLS.**
   private-script checks, deterministic replay and source/publication integrity.
   Final formatting correction preserves the Python AST; development records
   remain available. Original issue bodies and posted URLs remain unchanged.
-- [ ] If further inference is desired, prepare the **provisional sixteen-call
+- [ ] **ON HOLD by user request:** the **provisional sixteen-call
   claim-interpretation diagnostic**: H1 plus three fresh full-scene families,
   both orders, mixed structural versus explicit private-event propositions.
   Hold primary sources, surrounding workload, model/settings and U evidence
@@ -10381,6 +10381,154 @@ No production prompt/profile, application, frontend, dependency or schema change
 No credential access, generation, story-bearing count, catalog or daemon call.
 All fourteen issues remain open; no external issue changed. **Step 19 IN PROGRESS;
 Step 20 NOT STARTED; live calls PAUSED; canary ON HOLD.**
+
+### Luna reasoning-effort comparison preparation 2026-11-04
+
+Status: **FROZEN AND VERIFIED LOCALLY — LIVE APPROVAL PENDING.**
+[24-call high/xhigh/max approval plan](../docs/handoffs/reviewer-reasoning-effort-frozen-plan-2026-11-04.md).
+
+- [x] Hold the sixteen-call interpretation diagnostic. Freeze an effort-only
+  comparison: H1/F3 saved controls plus fresh F7/F8 complete scene families,
+  both presentation blocks and `gpt-6-luna` high/xhigh/max. **24 attempts,
+  eight triples, 62 claims per effort / 186 fixed slots**, including 32 fresh
+  judgments per effort. Preserve H1's differing historical block selections.
+- [x] Preserve the U section-locator contract, prompts, sources, selected claims,
+  native schema and workload across efforts. The sole between-arm wire change
+  is `/reasoning/effort`. Declare the common historical output-cap amendment
+  **16,000 → 32,000 tokens including reasoning**; historical high messages,
+  schemas and count bodies remain unchanged. No historical-score comparison
+  substitutes for contemporary high controls.
+- [x] Freeze whole-claim labels, adequate-section criteria, interpretation notes,
+  independent contextual-relation inspections, distinct recovery/loss screens
+  and token/latency/cost measurements. Separate missing depiction from explicit
+  denial and event truth from unassessed editorial effect. No semantic automation,
+  story-quality claim or writer permission.
+- [x] Freeze **24 attempts / zero retries**, 24,000 input / 32,000 generated tokens
+  and 600 active seconds per attempt; **$0.72 planning allowance / $0.456
+  conservative reference reservation**. Count failures consume reservations;
+  first terminal failure stops all three efforts. Unknown/inconsistent reasoning
+  usage, delivery/resource failures and identity drift stop without retry or
+  resumed inference. Both story-bearing OpenAI endpoints require approval.
+- [x] Pass **309 offline tests** (147 diagnostic, 123 tracked assessment,
+  39 provider/routing/execution), repository checks for **224 Python files**
+  and all eleven private-script checks. Authenticate/replay sixteen saved U/C
+  captures and verify all actual new adapter wires. Correct a generated-manifest
+  CRLF/LF mismatch without changing its parsed values; preserve initial logs
+  and the successful deterministic replay. No test is deselected.
+- [x] Seal **39 preparation files / 3,769 source fingerprints** and preserve
+  issue bodies/posted URLs. Plan SHA-256:
+  `e81e12309fb400c587e3519065a1d410a9e3a4290c8d65e7b56472239f4d2f75`.
+  Current account access and actual xhigh/max acceptance remain unverified;
+  preparation made zero catalog, story-bearing count or generation requests.
+- [x] Obtain approval for this exact plan, including full prose/context at OpenAI
+  Responses and its input-token-count endpoint. Execute once, inspect all
+  186 fixed slots and document outcomes/resources in the execution record below.
+
+Private bundle: `data/diagnostics/reviewer-reasoning-effort-v61-2026-11-04/`.
+No production application, frontend, profile, prompt, graph, dependency or schema
+change. All fourteen issues remain open; no external issue changed. **Step 19
+IN PROGRESS; Step 20 NOT STARTED; interpretation diagnostic ON HOLD;
+live calls PAUSED; canary ON HOLD.**
+
+### Luna reasoning-effort comparison execution 2026-11-04
+
+Status: **COMPLETE — BOTH HIGHER-EFFORT CANDIDATES FAIL THE FROZEN SCREEN.**
+[Results, source inspection, resources and recommended local work](../docs/benchmark_reports/reviewer-reasoning-effort-v61-results-2026-11-04.md).
+
+- [x] Execute the approved frozen plan once: **24/24 valid attempts**, exactly
+  24 generation dispatches, 24 story-bearing count requests and 24 catalog
+  preflights, **zero retries**. All 48 count/generation body hashes and HTTP 200
+  responses authenticate; no fallback, terminal stop or unused allowance remains.
+  Keep all **39 frozen files / 3,769 source fingerprints** unchanged.
+- [x] Inspect all **186 fixed judgments**, 400 witnesses and three contextual
+  relations in the frozen SHA order, saving source notes before decoding effort
+  and usage. Preserve **high 53 grounded / 7 citation / 2 semantic**, **xhigh
+  54 / 7 / 1**, **max 57 / 2 / 3**. Fresh grounding is **29/32, 29/32, 31/32**;
+  fully grounded reports are **3/8, 2/8, 4/8** respectively.
+- [x] Apply the unchanged candidate screens. Xhigh has **five distinct recoveries
+  and four grounded losses**; max has **six recoveries and two losses**, including
+  a new unsupported obligation qualification. Neither grounds every fresh claim.
+  Both recover H1's contextual citation relation without a contextual loss.
+  No promotion or automatic selective-effort policy is qualified.
+- [x] Separate the xhigh H1-CP specific-event recovery from continuing broader
+  editorial-overlap interpretations. Record max's unsupported reversible-event
+  exception to the no-match-by-end obligation; even waiving that penalty would
+  not make its frozen screen pass. Preserve all original scores and explanations.
+- [x] Inspect F7's missing general-check coverage despite located witnesses,
+  F8's repeated compressed quotation, F3's lost high controls and H1's extra
+  bad witness. Retain **383 located / 13 unavailable-field / 4 missing** witnesses
+  without repair. No semantic authority follows from successful location.
+- [x] Record **205,695 input / 287,245 generated / 247,085 included reasoning
+  tokens**, **2,379.62 active seconds / 43.30 minutes runner wall time** and
+  **$0.169334375 conservative reference cost**, actual billing unknown. Matched
+  median latency ratios are **1.71× xhigh / 4.11× max** against high; generated
+  ratios are **1.70× / 4.32×**. Max's successful F3-CP uses **31,460/32,000**
+  generated tokens, leaving only 540 of headroom. No truncation explains failures.
+- [x] Pass **339 applicable offline tests** (308 frozen/tracked and 31 analysis),
+  with one unchanged preparation-only assertion deselected. Pass repository
+  Ruff/format/strict mypy for **224 files** and all **eleven frozen / seven analysis
+  scripts**, capture/body replay, frozen scoring and inspection-order verification.
+  Retain the initial analysis test's tuple/JSON-array comparison failure and its
+  assertion-only correction; all 31 analysis tests pass on rerun. Frozen scoring,
+  source judgments and live evidence remain unchanged.
+- [x] Preserve the recovered/lost pairs, unsupported explanation, fresh coverage
+  contrasts and near-cap successful delivery as local regressions. Audit section
+  coverage independently of location, and specific-event/editorial interpretation
+  alongside the by-end obligation qualification. Completed in the local audit
+  below. The separate next model test still needs its own definition, freeze and
+  approval; the interpretation diagnostic remains on hold.
+
+Private evidence: `data/diagnostics/reviewer-reasoning-effort-v61-2026-11-04/`,
+its `-L-live` and `-analysis` siblings, and the operator execution record.
+No production application, profile, prompt, graph, dependency, database or writer
+routing change. No story was revised. All fourteen issues remain open and no
+external issue changed. **Step 19 IN PROGRESS; Step 20 NOT STARTED;
+live calls PAUSED; interpretation diagnostic ON HOLD; canary ON HOLD.**
+
+### Effort regression, coverage and obligation audit 2026-11-04
+
+Status: **COMPLETE LOCALLY — NO NEW PROVIDER CALLS.**
+[Audit, regression boundaries and next sequence](../docs/handoffs/reviewer-effort-coverage-audit-2026-11-04.md).
+
+- [x] Preserve **415 exact files / 3,769 historical source fingerprints**, all
+  **186 judgments**, **62 matched triples / 124 candidate-high pairs** and all
+  **400 witnesses**. Authenticate 24 complete contexts and 48 count/generation
+  bodies. Retain successful controls, grounded losses, original interpretation
+  notes and the max F3-CP delivery with only **540 generated tokens of headroom**.
+  Original scores, screens and source judgments remain unchanged.
+- [x] Audit coverage separately from location using **eight authored premise
+  maps / 48 target replays**. Preserve F7's missing current-check premise despite
+  located citations, F8's noncontiguous quotation and H1's extra bad witness
+  despite adequate date coverage. Keep known alternative sections; unlisted
+  evidence needs inspection rather than automatic rejection. Coverage, support,
+  story quality and edit necessity receive no automatic semantic authority.
+- [x] Bind **ten interpretation records** to complete source context. Separate
+  H1's general match, specific private procedure and plausible editorial overlap;
+  preserve F3's paraphrased fulfillment, F7's absence and F8's explicit denial.
+  The final answers support predicate substitution in particular responses,
+  not a claim about hidden reasoning or the model's inability to distinguish them.
+- [x] Audit the no-match obligation against the exact production assignment and
+  boundary contracts. Keep the frozen unsupported-exception score. Production's
+  free-form exit state does not supply a universal temporal type; six authored
+  hypothetical traces distinguish explicit event-history and closing-belief
+  contracts without parsing prose, changing scores or authorizing exceptions.
+- [x] Pass **1,048 applicable offline tests**: 689 new local, 146 frozen harness,
+  123 tracked assessment and 90 production controls. Deselect only the unchanged
+  preparation-only assertion. Pass repository Ruff/format/strict mypy for **224
+  files**, separate checks for four private scripts and deterministic replay.
+  Keep original issue bodies and posted URLs intact; all fourteen remain open.
+- [ ] Define and prepare the user-requested **separate model test before returning
+  to the sixteen-call interpretation diagnostic**. Specify the capability/model
+  contrast, retain paired controls and full context, disclose provider/schema/
+  effort/resource differences, then freeze requests, scoring, budget and stops
+  for approval. No model, request set, live approval or new allowance is implied
+  by this completed local audit.
+
+Private bundle: `data/diagnostics/reviewer-effort-coverage-audit-2026-11-04/`.
+No production prompt/profile, application, schema, dependency or writer-routing
+change. No credential access or live metadata/count/generation call.
+**Step 19 IN PROGRESS; Step 20 NOT STARTED; live calls PAUSED;
+interpretation diagnostic ON HOLD; canary ON HOLD.**
 
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 
