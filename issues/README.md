@@ -932,3 +932,78 @@ promotion. No new provider calls or credential access occurred. Original issue
 bodies and posted URLs remain intact; all fourteen issues stay open. Production
 prompts unchanged; live calls **PAUSED**, interpretation diagnostic **ON HOLD**,
 canary **ON HOLD**.
+
+### Sol-high interpretation preparation — 2026-11-05
+
+The [16-attempt interpretation plan](../docs/handoffs/reviewer-interpretation-frozen-plan-2026-11-05.md)
+is frozen locally and awaits separate live approval. It compares mixed structural
+consumption claims with explicit procedure-depiction claims using H1 and three fresh
+families, both source orders and `gpt-6.1-sol` at high reasoning. Both historical H1
+mixed request bodies remain exact controls. Within each pair, only the target report
+field and selected quotation change; full sources, U evidence contract and surrounding
+controls remain fixed.
+
+This prepares further diagnostic evidence relevant to CW-007/CW-013. It does not close
+either issue, assign factual gold to reader effect or qualify a writer change under
+CW-014. The original mixed factual scores, event truth, interpretation, binding and
+coverage remain separate. **112 fixed claim slots and two contextual relations** will
+be inspected. Any favorable result without both repeated H1 mixed disagreements is
+feasibility evidence only.
+
+**294 offline tests** and repository/private static checks pass. The plan freezes
+16 generation attempts, at most 16 story-bearing counts and 16 catalog reads, zero
+retries, a **$6.08 conservative reference reservation / $9.60 planning allowance**,
+and a stop on the first terminal failure. No provider calls occurred during
+preparation. All fourteen issue bodies and posted GitHub URLs are preserved; no
+external issue is edited or closed. Production prompts unchanged; live calls
+**PAUSED** pending approval; canary **ON HOLD**.
+
+### Sol-high interpretation results — 2026-11-05
+
+The [completed interpretation diagnostic](../docs/benchmark_reports/reviewer-interpretation-v61-results-2026-11-05.md)
+used **16/16 attempts**, 16 input counts and 16 catalog checks, with valid delivery
+throughout and no retries. All **112 slots and both contextual relations** were
+inspected. Frozen totals are **M 48/56 grounded and E 50/56**; all **196 quotations
+locate**. Explicit procedure targets pass **8/8**, but the frozen comparison screen
+fails and H1's historical editorial interpretation repeats in only one order.
+
+The eleven citation-only misses concern fresh Q001 claims whose bare event wording
+has assignment-authority evidence criteria. Both I1 mixed causal-label mismatches
+also expose a difference between procedure occurrence and the stated by-identifying
+mechanism. Original scores are retained with source-bound qualifications; these are
+not eleven false choice judgments or two unambiguous failures to recognize the
+performed procedure. The one paired control loss is retained at I2-CP Q001.
+
+**309 offline tests** and repository/diagnostic static checks pass, with only the
+preparation-only unapproved-state assertion deselected. Reference cost is
+**$0.701455**; actual billing is unknown. These findings inform CW-007/CW-013 without
+closing them or qualifying story quality under CW-014. Next recommended work is
+local regression preservation and a claim-scope/gold audit before more inference.
+All fourteen issue bodies and posted URLs remain unchanged; no external issue is
+edited or closed. Production prompts unchanged; further live calls **PAUSED**;
+full workflow canary **ON HOLD**.
+
+### Claim-scope and whole-claim gold audit — 2026-11-05
+
+The [local audit](../docs/handoffs/reviewer-claim-scope-gold-audit-2026-11-05.md)
+preserves **368 exact files / 4,929 historical fingerprints**, all **112 original
+judgments**, **56 mixed/explicit unit pairs**, both H1 same-request histories and
+all **196 evidence quotations**. Frozen scores remain **M 48/56 grounded, E 50/56**;
+the failed screen is unchanged. No historical answer, gold or score is repaired.
+
+The whole-claim review flags twelve bare-event controls with assignment-authority
+criteria and all eight mixed consumption targets before reuse as clean factual
+tests. The two I1 by-identifying omissions are included in those eight; successful
+I2/I3 labels do not remove their mixed scope. These are authored design findings,
+not a corrected model accuracy score. Existing production rules already distinguish
+facts, required relations, current endpoints and independent craft. Exact binding
+does not certify the intended proposition or a necessary rewrite.
+
+**284 offline tests**, repository checks for 224 files, five-script static checks
+and deterministic replay pass; nothing is deselected. This advances evidence for
+CW-007/CW-013 without closing them or qualifying story quality under CW-014.
+Next proposed work is a **16-attempt scope-separated repeatability diagnostic**
+with four fresh requirement/occurrence contrasts, both orders and two repeats.
+It is not prepared, frozen or approved. No new provider calls occurred. Original
+issue bodies and all fourteen posted URLs remain intact; no external issue changed.
+Production prompts unchanged; live calls **PAUSED**; canary **ON HOLD**.

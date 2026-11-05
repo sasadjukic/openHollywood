@@ -10671,11 +10671,11 @@ Status: **COMPLETE LOCALLY — ZERO NEW PROVIDER CALLS.**
   Deselect only the unchanged preparation-only no-live-run assertion. Repository
   Ruff/format/strict mypy pass for **224 files**, and final checks pass for all
   **four private scripts**. Preservation/audit outputs reproduce deterministically.
-- [ ] Prepare, if authorized, the proposed **16-call Sol-high interpretation
+- [x] Prepare, after authorization, the proposed **16-call Sol-high interpretation
   comparison**: H1 plus three fresh families, mixed versus explicit-event wording,
   both orders, full context and unchanged controls. Freeze distinct propositions,
   exact requests, scoring, metadata, resources and stops before separate live
-  approval. The current proposal is not frozen and grants no new call allowance.
+  approval. Completed in the frozen preparation below; no live allowance is approved.
 
 Private bundle: `data/diagnostics/reviewer-model-scope-audit-2026-11-05/`.
 No production application, profile, prompt, graph, schema, dependency or writer
@@ -10683,6 +10683,144 @@ route changed. No key loaded, inference/count/catalog/daemon call or production
 database operation. All fourteen issue bodies and posted GitHub URLs remain intact;
 no external issue changed. **Step 19 IN PROGRESS; Step 20 NOT STARTED;
 live calls PAUSED; interpretation diagnostic ON HOLD; canary ON HOLD.**
+
+### Sol-high interpretation diagnostic preparation 2026-11-05
+
+Plan: [Sol-high interpretation frozen plan](../docs/handoffs/reviewer-interpretation-frozen-plan-2026-11-05.md).
+
+- [x] Freeze **16 attempts**: historical H1 plus three freshly authored complete
+  scene families, mixed versus explicit-procedure target propositions, both source
+  orders, one `gpt-6.1-sol` model at high reasoning. Keep the U section-locator
+  instructions, full sources, surrounding controls, schema and resources fixed
+  within pairs. Preserve the two historical Sol H1 mixed count/generation bodies
+  and work fingerprints. Declare all target/report/selection/identity amendments.
+- [x] Freeze **112 claim slots** (16 targets, 96 controls) and two separate H1-CP
+  endpoint-relation inspections. Preserve original mixed factual-contract scores;
+  inspect explicit event truth, final-reason interpretation, binding, coverage and
+  unsupported premises separately. No same-claim recovery, inferred reader effect,
+  edit necessity, automatic relation support or production promotion.
+- [x] Freeze **16 generation attempts, 16 story-bearing count requests and 16
+  catalog reads**, no retries/fallback/terminal resume. Reserve 24,000 input and
+  32,000 generated tokens including reasoning, 600 active seconds per attempt;
+  **$6.08 conservative reference / $9.60 planning allowance**. Stop the comparison
+  on the first terminal delivery/resource/identity/preflight failure. Failed count
+  and interrupted dispatch reservations stay consumed; unknown usage stays unknown.
+- [x] Review current official Sol documentation; verify the actual OpenAI adapter
+  with mocked HTTP, exact wire comparisons and output validation. Current account
+  access/server acceptance await approval; **zero catalog/count/generation calls**
+  occurred during preparation. Both full-context story-bearing endpoints are
+  explicitly identified in the plan.
+- [x] Pass **294 tests** (132 local, 123 tracked assessment, 39 provider/routing/
+  execution), repository Ruff/format/strict mypy for **224 files**, and the same
+  static checks for **14 diagnostic scripts**. Reproduce cases, requests, fixed
+  slots and paired-isolation audit. Preserve initial unfrozen preparation artifacts
+  and document inventory/schema-order/test-port fixes; no test is deselected.
+- [x] Seal **70 files / 4,929 source fingerprints** under plan SHA-256
+  `de3c4e83943b40bcff58481581e0d3cd1fabc7ca411bf495051423e834e3c5f0`.
+- [x] Obtain separate explicit approval for the frozen plan, including full prose/
+  context at OpenAI Responses and its input-count endpoint; then execute once,
+  inspect every fixed slot and both relations, document results and update this
+  tracker. Favorable explicit results without repeated mixed H1 disagreement mean
+  feasibility only. Further adequate-evidence failures require a new hypothesis.
+
+Private bundle: `data/diagnostics/reviewer-interpretation-v61-2026-11-05/`.
+Production prompts, profiles, graph, writer route and dependencies are unchanged.
+All fourteen issue bodies and posted URLs remain intact; no external issue changed.
+**Step 19 IN PROGRESS; Step 20 NOT STARTED; interpretation diagnostic FROZEN awaiting
+approval; live calls PAUSED; full workflow canary ON HOLD.**
+
+### Sol-high interpretation diagnostic execution 2026-11-05
+
+Report: [Sol-high interpretation results](../docs/benchmark_reports/reviewer-interpretation-v61-results-2026-11-05.md).
+
+- [x] Execute the approved frozen schedule **once: 16/16 attempts and valid
+  reports**, 16 full-context input counts and 16 catalog checks. Preserve the
+  original manifest, requests, claims, gold, resources and stops. No retry,
+  fallback, extra probe or terminal failure. Production prompts remain unchanged.
+- [x] Inspect and authenticate **all 112 fixed claim slots and both H1-CP
+  contextual relations**. Retain original frozen totals: **M 48/56 grounded,
+  five citation-only and three semantic-category mismatches; E 50/56 grounded,
+  six citation-only and no semantic mismatch**. All **196 quotations locate**;
+  both endpoint relations are adequate. Mixed targets 5/8, explicit targets 8/8;
+  controls M 43/48 and E 42/48; one paired control loss at I2-CP Q001.
+- [x] Record that the **frozen screen fails**. H1 M repeats its editorial reading
+  in PC but answers the specific event correctly in CP, despite exact historical
+  control bodies. The both-orders recurrence gate fails; explicit results remain
+  feasibility evidence, not a demonstrated wording recovery or production promotion.
+- [x] Preserve a separate, source-bound scope audit without rescoring: all twelve
+  fresh Q001 statements use bare event wording while their criteria require
+  assignment authority; eleven lack that citation despite true observed-choice
+  explanations. Both I1 mixed labels reject the by-identifying causal mechanism,
+  while supported gold followed procedure occurrence alone. Keep those authored
+  limitations distinct from unambiguous model factual errors or binding failures.
+- [x] Record **116,234 input / 41,087 generated tokens**, including **15,394
+  reasoning**, and **20,619 cached input**. Active time totals **587.63s**,
+  median **36.40s**, maximum **58.99s**; operator wall time **703.74s**.
+  Frozen-rate reference **$0.701455**, actual billing unknown; no unknown usage
+  and all limits respected.
+- [x] Pass **309 offline tests**: 131 applicable frozen harness, 16 result
+  authentication, 123 tracked assessment and 39 provider/routing/execution.
+  Deselect only the preparation-only unapproved-state assertion; independently
+  recheck actual denominators and ceilings. Pass repository Ruff/format/strict
+  mypy for **224 files**, plus the same checks for **14 frozen and seven analysis
+  scripts**. Replay sealed delivery, source evidence, scoring and scope renderings.
+- [x] Preserve the H1 repeated histories, I1 causal pairs and fresh
+  Q001 source-authority contrasts as local regression fixtures. Audit observed
+  event / assignment obligation / causal mechanism / editorial effect in claim
+  admission and gold authoring before proposing more inference. Keep whole-claim
+  evidence criteria explicit and do not turn factual assessment into writer authority.
+  Completed in the local claim-scope/gold audit below; original scores remain intact.
+
+Private roots: `data/diagnostics/reviewer-interpretation-v61-2026-11-05/`,
+`...-M-live/`, and `...-analysis/`. Public plan stays immutable. No application,
+profile, dependency, graph or writer-route change; no new routine human checkpoint.
+All fourteen issue bodies and posted URLs remain intact; no external issue changed.
+**Step 19 IN PROGRESS; Step 20 NOT STARTED; further live calls PAUSED;
+production prompts unchanged; full workflow canary ON HOLD.**
+
+### Claim-scope and whole-claim gold audit 2026-11-05
+
+Handoff: [Claim-scope and whole-claim gold audit](../docs/handoffs/reviewer-claim-scope-gold-audit-2026-11-05.md).
+
+- [x] Preserve **368 exact files / 4,929 historical fingerprints**, all **112
+  original judgments**, **56 mixed/explicit unit pairs**, both exact H1 histories
+  with all seven judgments per order, and all **196 evidence quotations**. Retain
+  full requests/context, gold, final reasons, original inspections, both endpoint
+  relations and the I2-CP control loss. No response repair or historical rescore.
+- [x] Audit every selected whole claim against its field, source authority, gold
+  and evidence criterion. Record **112 authored scope reviews / 28 full-work
+  renders**. Flag twelve bare-event/obligation controls and all eight mixed targets
+  for redesign before reuse as clean factual tests; the two I1 means omissions are
+  included in those eight. Preserve favorable mixed controls as well as failures.
+  Ninety-two other slots have no newly identified conflict under their declared
+  scope; this is a design classification, not a corrected accuracy denominator.
+- [x] Verify an offline declaration-consistency prototype that rejects identity
+  drift, missing source authority and declared predicate/qualifier mismatches.
+  Document its limit: authored semantics are not automatically proven. Preserve
+  absence/explicit negation/unavailable-source distinctions, compound coverage,
+  contextual temporal scope and prior materiality judgments. All new factual,
+  editorial, craft, edit-necessity and writer authority remain unassigned.
+- [x] Confirm the existing production obligation, causation/order, endpoint and
+  independent-craft rules. Active assessment scope binds identities but does not
+  settle semantic predicate type. No production prompt/schema/profile/route change,
+  no new human checkpoint, and no promotion from valid citations to necessary edits.
+- [x] Pass **284 offline tests** (145 local, 16 result-authentication, 123 tracked
+  assessment), with nothing deselected. Pass repository Ruff/format/strict mypy
+  for **224 files**, the same checks for **five audit scripts**, and deterministic
+  source/score/audit replay. Original **M 48/56, E 50/56** and failed screen remain.
+- [ ] If authorized, prepare the proposed **16-attempt scope-separated repeatability
+  diagnostic**: four fresh requirement/occurrence contrasts, both orders, two exact
+  repeats, seven explicit whole claims per request, unchanged Sol-high/U controls.
+  Freeze gold and adequate evidence before responses; separately inspect means and
+  endpoint relations. Keep literary effect outside factual gold. Submit exact
+  requests, resource reservations, scoring and stops for separate live approval.
+
+Private bundle: `data/diagnostics/reviewer-claim-scope-gold-audit-2026-11-05/`.
+No inference, input-count, catalog, daemon or production-database access. The next
+diagnostic is proposed, not prepared/frozen/approved. All fourteen issue bodies and
+posted URLs remain intact; no external issue changed. **Step 19 IN PROGRESS;
+Step 20 NOT STARTED; production prompts/profiles unchanged; live calls PAUSED;
+full workflow canary ON HOLD.**
 
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 
