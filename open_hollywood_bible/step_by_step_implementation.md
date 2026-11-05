@@ -10517,18 +10517,172 @@ Status: **COMPLETE LOCALLY — NO NEW PROVIDER CALLS.**
   preparation-only assertion. Pass repository Ruff/format/strict mypy for **224
   files**, separate checks for four private scripts and deterministic replay.
   Keep original issue bodies and posted URLs intact; all fourteen remain open.
-- [ ] Define and prepare the user-requested **separate model test before returning
+- [x] Define and prepare the user-requested **separate model test before returning
   to the sixteen-call interpretation diagnostic**. Specify the capability/model
   contrast, retain paired controls and full context, disclose provider/schema/
   effort/resource differences, then freeze requests, scoring, budget and stops
-  for approval. No model, request set, live approval or new allowance is implied
-  by this completed local audit.
+  for approval. The user subsequently selected Terra/Sol/Astra at high reasoning;
+  the completed preparation is recorded below. No live approval follows from
+  either local preparation or this audit.
 
 Private bundle: `data/diagnostics/reviewer-effort-coverage-audit-2026-11-04/`.
 No production prompt/profile, application, schema, dependency or writer-routing
 change. No credential access or live metadata/count/generation call.
 **Step 19 IN PROGRESS; Step 20 NOT STARTED; live calls PAUSED;
 interpretation diagnostic ON HOLD; canary ON HOLD.**
+
+### Frozen Terra/Sol/Astra model comparison preparation 2026-11-04
+
+Status: **COMPLETE — APPROVED AND EXECUTED; RESULTS RECORDED BELOW.**
+[Approval plan, comparisons, scoring, resources and stops](../docs/handoffs/reviewer-model-comparison-frozen-plan-2026-11-04.md).
+
+- [x] Freeze `gpt-6.1-terra`, `gpt-6.1-sol` and `gpt-6-astra`, each at **high**
+  reasoning, with **eight attempts per model / 24 total**. Reuse the exact four
+  cases and eight order blocks from the reasoning experiment: **62 claims per
+  model / 186 fixed slots**. Only `/model` changes in count/generation bodies;
+  prompts, full context, selected claims, U evidence contract and schemas stay
+  identical. All 24 work/context identities match the saved Luna-high controls.
+- [x] Freeze contemporary three-model comparisons and separately labeled
+  **historical Luna-high** comparisons. Preserve absolute scores and distinct
+  recoveries/protected losses; retain interpretation-sensitive observations and
+  the original whole-claim gold. F7/F8 are reused controls, not new generalization
+  evidence. DeepSeek is not a matched numerical baseline; no causal efficient-
+  versus-frontier or story-quality conclusion is qualified by this design.
+- [x] Retain **24,000 input / 32,000 generated tokens including reasoning /
+  600 active seconds per attempt**, **zero retries**, at most 24 story-bearing
+  counts and 24 catalog preflights. Freeze **$19.76 token-max reference reservation
+  / $31.20 planning allowance**, with no model-to-model transfers. Actual charges
+  remain unknown. First terminal delivery/resource/identity failure stops all
+  three models; no fallback, replacement, terminal resume or smoke generation.
+- [x] Review current official model capabilities and rates without provider
+  requests; use diagnostic-only specs through the existing adapter. Existing
+  credential reuse was already authorized; check presence only. Actual account
+  access and native-schema acceptance remain unverified. Preserve both story-
+  bearing destinations and the explicit approval boundary.
+- [x] Pass **324 offline tests**: 162 diagnostic, 123 assessment and 39 provider/
+  routing/execution. Pass repository Ruff/format/strict mypy for **224 files** and
+  eleven private scripts. Reproduce all preparation artifacts; authenticate all
+  24 earlier captures and **383 located / 13 unavailable-field / four missing**
+  witnesses unchanged. Retain the initial type-annotation finding and 315-test
+  record, corrected before final verification; no test is deselected.
+- [x] Seal **37 preparation files / 4,635 source fingerprints**. Plan SHA-256:
+  `2b38b3c1dc0ac9c3440ed97475dbe6adf260d15a3746f74f59ba481f2328bedc`.
+  At preparation closure no approval file or live directory existed. Issue bodies and posted
+  URLs remain unchanged; all fourteen issues remain open.
+- [x] Obtain approval of the exact 24-attempt freeze, including full prose/context
+  at OpenAI Responses **and** its input-count endpoint. Execute once, inspect every
+  fixed slot and document model/resource differences in the execution record below.
+  No prior allowance was reused.
+
+Private bundle: `data/diagnostics/reviewer-model-comparison-v61-2026-11-04/`.
+No production application, prompt, profile, graph, schema, dependency or writer
+routing change. No new catalog, story-bearing count or inference request.
+**Step 19 IN PROGRESS; Step 20 NOT STARTED; live calls PAUSED;
+interpretation diagnostic ON HOLD; canary ON HOLD.**
+
+### Terra/Sol/Astra model comparison execution 2026-11-04
+
+Status: **COMPLETE — ALL THREE PASS THE HISTORICAL REPLICATION SCREEN.**
+[Results, interpretation contrasts, resources and recommended next steps](../docs/benchmark_reports/reviewer-model-comparison-v61-results-2026-11-04.md).
+
+- [x] Execute the approved runner once: **24/24 valid attempts**, eight per model
+  at high reasoning, exactly **24 generation / 24 story-bearing count / 24 catalog
+  requests**, **zero retries**. Authenticate all 48 count/generation body hashes
+  and HTTP 200 responses. No fallback, terminal stop, unstarted slot or unused
+  allowance. Preserve all **37 frozen files / 4,635 source fingerprints** unchanged.
+- [x] Inspect all **186 judgments / 385 witnesses / three contextual relations**
+  in the declared SHA order before model/resource decoding. Preserve **Terra
+  62 grounded / zero citation / zero semantic**, **Sol 60 / zero / two**, **Astra
+  60 / zero / two**. All witnesses locate, all selected evidence covers the frozen
+  premises, and all three models ground all **32 reused F7/F8 slots**. Fully grounded
+  responses are **8/8, 6/8 and 6/8** respectively.
+- [x] Apply the original screens. All three recover seven historical citation
+  slots across six distinct claims with no grounded/new semantic/contextual loss.
+  Terra also recovers H1's private-event claim in both presentations: seven distinct
+  recoveries versus six for Sol/Astra. All pass the historical screen; no production
+  qualification follows. Contemporary Sol/Astra have identical classifications,
+  each losing the same two H1 slots versus Terra and adding no recovery.
+- [x] Preserve the four Sol/Astra H1 interpretation disagreements. Their final
+  explanations explicitly adopt editorial payoff consumption, not literal private-
+  procedure performance. Keep the frozen specific-event score and separate reading
+  notes; all F3 performance/F7 absence/F8 denial contrasts are grounded. Record the
+  non-operative H1-PC annotation index mismatch (private event is Q006, date is
+  Q007) without modifying requests, gold, criteria or scorer.
+- [x] Record **205,695 input / 70,572 generated / 29,083 included reasoning tokens**,
+  **1,058.92 active seconds / 20.53 minutes runner wall time**, and **$2.81333625
+  conservative reference cost**, actual billing unknown. Terra/Sol/Astra median
+  active latencies are **26.74 / 44.03 / 57.87 seconds**; reference costs are
+  **$0.17947125 / $0.41780250 / $2.21606250**. Maximum generated use is 4,569/32,000;
+  no truncation or delivery-resource limit explains the disagreements.
+- [x] Pass **354 applicable offline tests** (323 frozen/tracked plus 31 analysis),
+  repository Ruff/format/strict mypy for **224 files**, and separate checks for
+  **eleven frozen / seven analysis scripts**. Deselect only the unchanged
+  preparation-only no-live-run assertion. Preserve the initial verifier-string
+  lint finding and its corrected static checks; tests, scores and captures unchanged.
+- [x] Preserve matched controls and interpretation disagreements as local
+  regressions and audit factual-event versus editorial-payoff scope. Completed
+  in the November 5 local audit below. Terra high remains a promising narrow
+  read-only assessment candidate; fresh-family validation and explicit approval
+  are needed before further inference or production routing.
+
+Private evidence: `data/diagnostics/reviewer-model-comparison-v61-2026-11-04/`,
+its `-M-live` and `-analysis` siblings, and the operator execution record.
+Historical Luna is not a concurrent arm; DeepSeek is not a matched numerical
+baseline. No story-quality or writer-preservation benefit is established. No
+production prompt/profile, application, schema, dependency or writer-routing
+change; no story revised or external issue changed. All fourteen issues remain
+open. **Step 19 IN PROGRESS; Step 20 NOT STARTED; live calls PAUSED;
+interpretation diagnostic ON HOLD; canary ON HOLD.**
+
+### Model-pair regressions and factual/editorial scope audit 2026-11-05
+
+Status: **COMPLETE LOCALLY — ZERO NEW PROVIDER CALLS.**
+[Preserved evidence, scope findings and proposed sixteen-call next step](../docs/handoffs/reviewer-model-scope-audit-2026-11-05.md).
+
+- [x] Preserve **503 exact files / 4,635 historical fingerprints**, all **186
+  current judgments**, **62 matched triples / 186 contemporary pairs**, and **186
+  historical Luna-high pairs**. Authenticate 24 complete contexts, all 48 current
+  count/generation bodies, original final reasons, inspection notes and scores.
+  Keep **Terra 62/62, Sol 60/62 and Astra 60/62 grounded** unchanged.
+- [x] Replay all **385 current witnesses** with successful location and all **117
+  historical Luna-high witnesses**, retaining 108 located/seven unavailable-field/
+  two missing. Preserve successful controls, all six H1 interpretation answers and
+  three independent contextual inspections. No evidence repair or rescoring.
+- [x] Reuse eight authored coverage maps over **48 current targets**, retaining
+  full source context and distinguishing anchor coverage from entailment. Add six
+  explicit scope specifications / **36 source-bound views** and six literal H1
+  renders. Bind original case/claim/selection/request identities; do not infer
+  intended predicates from words or model identity, or grant semantic/edit authority.
+- [x] Audit observed event, planned procedure, current obligation, editorial
+  hypothesis and edit necessity separately. Preserve F3's paraphrased performance,
+  F7's absence of depiction and F8's explicit nonperformance. Keep H1's original
+  specific-event scores and Sol/Astra's explicit editorial readings together;
+  neither reading erases the independent endpoint breach or fulfilled decision.
+- [x] Audit production's existing compliance/craft and comparison contracts.
+  Confirm active assessment scope binds IDs/coverage rather than the proposition's
+  factual/editorial meaning; shape and citation checks do not certify that meaning.
+  Preserve optional preferences, genuine independent craft defects and repeated
+  assignment complaints in their existing routes. No blanket editorial demotion,
+  automatic edit-necessity inference or extra human checkpoint is introduced.
+- [x] Pass **1,631 distinct applicable tests**: 1,248 local, 161 frozen harness,
+  123 tracked assessment and 99 production controls. The initial combined 1,620
+  pass, followed by nine focused production checks and two added renderer identity
+  regressions; one existing renderer positive is rechecked without double counting.
+  Deselect only the unchanged preparation-only no-live-run assertion. Repository
+  Ruff/format/strict mypy pass for **224 files**, and final checks pass for all
+  **four private scripts**. Preservation/audit outputs reproduce deterministically.
+- [ ] Prepare, if authorized, the proposed **16-call Sol-high interpretation
+  comparison**: H1 plus three fresh families, mixed versus explicit-event wording,
+  both orders, full context and unchanged controls. Freeze distinct propositions,
+  exact requests, scoring, metadata, resources and stops before separate live
+  approval. The current proposal is not frozen and grants no new call allowance.
+
+Private bundle: `data/diagnostics/reviewer-model-scope-audit-2026-11-05/`.
+No production application, profile, prompt, graph, schema, dependency or writer
+route changed. No key loaded, inference/count/catalog/daemon call or production
+database operation. All fourteen issue bodies and posted GitHub URLs remain intact;
+no external issue changed. **Step 19 IN PROGRESS; Step 20 NOT STARTED;
+live calls PAUSED; interpretation diagnostic ON HOLD; canary ON HOLD.**
 
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 

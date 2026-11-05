@@ -837,3 +837,98 @@ interpretation diagnostic. Its contrast, model, exact requests, scoring, budget
 and stops still need definition, freezing and approval. No new allowance is
 allocated or reused. Production prompts/profiles unchanged; zero new provider
 calls; interpretation diagnostic **ON HOLD**, live calls **PAUSED**, canary **ON HOLD**.
+
+**2026-11-04 Terra/Sol/Astra model comparison frozen locally:**
+the [approval plan](../docs/handoffs/reviewer-model-comparison-frozen-plan-2026-11-04.md)
+freezes **24 attempts**, eight each for `gpt-6.1-terra`, `gpt-6.1-sol` and
+`gpt-6-astra`, all at **high** reasoning. The same four families, eight order blocks
+and **186 fixed judgments** preserve full context and original gold; only model
+identity changes in the exact count/generation bodies. F7/F8 are reused controls.
+
+Contemporary model pairs and historical Luna-high comparisons remain separate;
+DeepSeek supplies background only. Interpretation-sensitive claims retain their
+scores and separate reading notes. No general model-tier superiority, story-
+quality benefit or production promotion follows from this bounded design.
+CW-007/CW-013 remain implicated; CW-014 remains unqualified.
+
+**324 offline tests**, repository checks for 224 Python files, eleven private-
+script checks and deterministic replay pass. All 24 earlier captures and their
+400 witness outcomes reproduce unchanged. The freeze binds **37 files / 4,635
+source fingerprints**, **zero retries**, a **$19.76 reference reservation / $31.20
+planning allowance** and shared terminal stops. Actual billing remains unknown.
+The initial local type-annotation finding and its corrected verification remain
+documented. Account access/server acceptance are unverified; no catalog, count
+or generation request occurred.
+
+Next is approval of this exact plan and full prose/context at Responses and its
+input-count endpoint. All fourteen issue bodies and posted URLs remain intact;
+no external issue changed. Production prompts/profiles unchanged; interpretation
+diagnostic **ON HOLD**, live calls **PAUSED**, canary **ON HOLD**.
+
+
+**2026-11-04 Terra/Sol/Astra comparison completed:**
+the [results](../docs/benchmark_reports/reviewer-model-comparison-v61-results-2026-11-04.md)
+record **24/24 valid attempts, zero retries**, at high reasoning with unchanged
+full context, claims and evidence contract. All **186 judgments / 385 witnesses**
+were inspected. Grounding is **Terra 62/62, Sol 60/62, Astra 60/62**; all witnesses
+locate and all three ground the 32 reused F7/F8 slots. All three pass the frozen
+historical Luna-high replication screen, recovering seven citation slots without
+losing a grounded control. Terra additionally recovers the private-event claim
+in both H1 presentations. This is promising evidence for CW-007/CW-013, not closure.
+
+Sol and Astra's four remaining scores reflect the same specific-event versus
+editorial-payoff interpretation. Their reasons explicitly distinguish structural
+preemption from literal performance; they do not claim to have observed the
+private test. Preserve original gold and both readings. All three correctly handle
+F3's performed test, F7's absence and F8's explicit denial, and add no unsupported
+exception to H1's no-match obligation. CW-001's broader temporal contract and
+CW-010's edit-necessity distinction remain open; CW-014 remains unqualified.
+
+Terra is the strongest narrow assessment candidate in this run, with **26.74-second
+median active latency / $0.17947125 reference cost**, versus **44.03 seconds /
+$0.41780250 Sol** and **57.87 seconds / $2.21606250 Astra**. Total reference cost is
+**$2.81333625**, actual billing unknown. Historical Luna comparisons are not
+concurrent, and DeepSeek is not a matched numerical baseline. No writer or story-
+quality result follows. **354 applicable offline tests**, repository checks for
+224 files, and eleven frozen/seven analysis script checks pass. Retain one initial
+verifier-string lint finding and corrected static checks; no evidence or score changed.
+
+Next: preserve paired regressions, audit factual-event/editorial scope, then revisit
+the held interpretation diagnostic before considering production routing. Original
+issue bodies and all fourteen posted GitHub URLs remain intact; no external issue
+changed. Production prompts/profiles unchanged; interpretation diagnostic **ON HOLD**,
+live calls **PAUSED**, canary **ON HOLD**.
+
+
+**2026-11-05 model-pair regressions and assessment-scope audit completed locally:**
+the [audit](../docs/handoffs/reviewer-model-scope-audit-2026-11-05.md) preserves
+**503 exact files / 4,635 historical fingerprints**, all 186 current judgments,
+186 contemporary model pairs and 186 historical Luna-high pairs. All 385 current
+witnesses replay successfully; all 117 historical witnesses retain their original
+108 located/seven unavailable-field/two missing outcomes. Original scores remain
+**Terra 62/62, Sol 60/62, Astra 60/62 grounded**. No capture is repaired or rescored.
+
+Six authored scope specifications produce 36 views separating event truth,
+assignment obligations, editorial hypotheses and edit necessity, with complete
+original context. H1's four Sol/Astra failures retain their frozen specific-event
+scores and explicit editorial readings. F3 performance, F7 absence of depiction
+and F8 explicit nonperformance remain distinct. This preserves evidence relevant
+to CW-007/CW-013 without claiming closure or hidden reasoning knowledge.
+
+The production audit confirms existing compliance/craft and repetition comparison
+rules. Active claim IDs and valid citations do not settle what proposition is being
+judged; a plausible pacing concern does not certify an unobserved event or a necessary
+rewrite. Optional preferences and genuine independent craft defects retain separate
+routes. H1's independent endpoint breach and fulfilled decision remain intact.
+CW-001/CW-010 stay open, and CW-014 remains unqualified.
+
+**1,631 distinct applicable tests**, repository checks for 224 files, four-script
+static checks and deterministic replay pass. One preparation-only state assertion
+is deselected; a repeated renderer positive is not double counted. The proposed
+next step is a **16-call Sol-high interpretation comparison**, with H1, three fresh
+families, two target formulations and both orders. It is **not frozen or approved**;
+Terra remains a promising narrow factual-assessment candidate, not a production
+promotion. No new provider calls or credential access occurred. Original issue
+bodies and posted URLs remain intact; all fourteen issues stay open. Production
+prompts unchanged; live calls **PAUSED**, interpretation diagnostic **ON HOLD**,
+canary **ON HOLD**.
