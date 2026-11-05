@@ -1007,3 +1007,82 @@ with four fresh requirement/occurrence contrasts, both orders and two repeats.
 It is not prepared, frozen or approved. No new provider calls occurred. Original
 issue bodies and all fourteen posted URLs remain intact; no external issue changed.
 Production prompts unchanged; live calls **PAUSED**; canary **ON HOLD**.
+
+### Scope-separated repeatability preparation — 2026-11-05
+
+The [frozen local plan](../docs/handoffs/reviewer-scope-repeatability-frozen-plan-2026-11-05.md)
+prepares **16 Sol-high attempts**, four fresh requirement/occurrence families, both
+source orders and two exact-body repeats. It freezes **112 slots / 28 case-bound
+claims**, keeping requirement, observed choice, procedure, means, endpoint,
+attribution and unavailable-continuation questions separate. Full context and U
+instructions remain unchanged. Gold and adequate evidence are fixed before responses;
+all 112 slots must be grounded for the bounded screen. Stable wrong answers do not
+pass, and this is not a corrected historical score or a craft-quality evaluation.
+
+**322 offline tests** pass, with nothing deselected, alongside repository checks
+for 224 files and separate checks for 14 scripts. The package seals **89 files /
+5,307 source fingerprints**. An initial unfrozen gate/bell example was clarified
+before freeze to exclude an indirect-causation reading; every dependent request
+was regenerated and reverified. No live model response informed that clarification.
+
+The ceiling is **16 generation attempts**, plus at most **16 story-bearing input
+counts and 16 catalog reads**, with zero retries and **$6.08 reference reservation /
+$9.60 planning allowance**. No provider calls occurred during preparation. Separate
+approval of both full-context endpoints is pending. CW-007/CW-013 remain open and
+CW-014 remains unqualified; all fourteen original issue bodies and posted URLs are
+preserved. No external issue changed. Production prompts/profiles unchanged; live
+calls **PAUSED**; canary **ON HOLD**.
+
+### Scope-separated repeatability results — 2026-11-05
+
+The [completed Sol-high diagnostic](../docs/benchmark_reports/reviewer-scope-repeatability-v61-results-2026-11-05.md)
+passes its frozen bounded screen: **16/16 valid reports, 112/112 grounded claim
+slots, 169/169 located quotations**. All **56 exact-repeat pairs and 56 source-order
+pairs** agree and are grounded on both sides. The single execution used 16 generation
+attempts, 16 full-context input counts and 16 catalog checks, with no retries or
+terminal failures. Cases, gold, requests and all frozen source fingerprints remain
+unchanged.
+
+The four fresh families distinguish assignment requirements, observed choices,
+procedure completion, complete means relations, endpoints, attribution and missing
+continuation scope. This is evidence for a bounded read-only claim-scope integration
+check, not a causal repair of the previous tests or proof of reliable ordinary
+editorial judgment. Original historical scores remain unchanged; better stories,
+necessary edits and writer preservation remain unqualified.
+
+**336 offline tests**, repository checks for 224 files and separate checks for
+22 diagnostic/analysis/operator scripts pass. A local inspection-preview key-order
+replay defect was corrected without changing any parsed report content, inspection,
+score or frozen file; the first logs and preview are preserved. Reference cost is
+**$0.487650**; actual billing is unknown. Next recommended work is local regression
+preservation and the bounded read-only integration check before further inference.
+CW-007/CW-013 remain open and CW-014 unqualified. All fourteen original issue bodies
+and posted URLs remain intact; no external issue changed. Production prompts
+unchanged; live calls **PAUSED**; full workflow canary **ON HOLD**.
+
+### Read-only claim-scope integration — 2026-11-05
+
+The [bounded local integration](../docs/handoffs/assessment-claim-scope-integration-2026-11-05.md)
+preserves **448 exact files / 5,307 historical fingerprints**, all **56 repeat and
+56 source-order pairs**, and their 112 original judgments. A new tracked read-only
+module binds authored claim/evidence predicates, source authority, material
+qualifiers and complete context to exact selected statements. Missing or conflicting
+scope stays visible. It does not infer semantic truth or authorize edits.
+
+Replay covers **32 full works / 224 declarations**: the new 112 are declared
+consistent; the historical set retains 92 consistent and the same 20 needing scope
+review. Original scores and all favorable/failing controls are unchanged. These
+are declaration checks, not independently discovered semantic judgments or a new
+model accuracy measure. Native result display retains existing binding and
+completion rules; historical responses are not converted into new receipts.
+
+**1,394 repository tests plus 37 private tests pass**, including 31 new tracked
+regressions, with nothing deselected. Repository lint/format/strict types pass for
+226 files; separate checks pass for four integration scripts. No live calls or
+credential access occurred. Next recommended work is a local scope-admission audit
+of up to twelve already exported ordinary-v61 probe captures before more inference.
+
+CW-007/CW-013 gain integration evidence without closure; CW-014 remains unqualified.
+All fourteen original issue bodies and posted URLs remain intact; no external
+issue changed. Production prompts/profiles/routing unchanged; live calls **PAUSED**;
+full workflow canary **ON HOLD**.

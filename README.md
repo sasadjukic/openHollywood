@@ -1239,6 +1239,16 @@ does not establish evidence adequacy or authorize a writer. See
 This is a read-only engine component; provider serialization and schema support
 require separate verification. Production prompts and routing remain unchanged.
 
+`evaluations.assessment_claim_scope` adds authored claim-scope declarations and a
+literal audit display beside those components. It binds exact selections to
+declared predicates, source authority, material qualifiers and evidence scope,
+while exposing missing or conflicting declarations. It preserves complete context
+and can display a native bound result without changing its schema or completion
+behavior. Consistent declarations do not prove factual support, evidence adequacy,
+editorial effect or edit necessity. There is no automatic scope extraction or
+writer route. See [ADR 0043](docs/adr/0043-read-only-claim-scope-declarations.md)
+and the [bounded integration record](docs/handoffs/assessment-claim-scope-integration-2026-11-05.md).
+
 Inspect the active revision or roll back one migration during development:
 
 ```powershell

@@ -10808,12 +10808,13 @@ Handoff: [Claim-scope and whole-claim gold audit](../docs/handoffs/reviewer-clai
   assessment), with nothing deselected. Pass repository Ruff/format/strict mypy
   for **224 files**, the same checks for **five audit scripts**, and deterministic
   source/score/audit replay. Original **M 48/56, E 50/56** and failed screen remain.
-- [ ] If authorized, prepare the proposed **16-attempt scope-separated repeatability
+- [x] Prepare the **16-attempt scope-separated repeatability
   diagnostic**: four fresh requirement/occurrence contrasts, both orders, two exact
   repeats, seven explicit whole claims per request, unchanged Sol-high/U controls.
   Freeze gold and adequate evidence before responses; separately inspect means and
   endpoint relations. Keep literary effect outside factual gold. Submit exact
   requests, resource reservations, scoring and stops for separate live approval.
+  Completed in the frozen preparation below; no live calls are authorized by it.
 
 Private bundle: `data/diagnostics/reviewer-claim-scope-gold-audit-2026-11-05/`.
 No inference, input-count, catalog, daemon or production-database access. The next
@@ -10821,6 +10822,145 @@ diagnostic is proposed, not prepared/frozen/approved. All fourteen issue bodies 
 posted URLs remain intact; no external issue changed. **Step 19 IN PROGRESS;
 Step 20 NOT STARTED; production prompts/profiles unchanged; live calls PAUSED;
 full workflow canary ON HOLD.**
+
+### Scope-separated repeatability preparation 2026-11-05
+
+Plan: [Sol-high scope-separated repeatability frozen plan](../docs/handoffs/reviewer-scope-repeatability-frozen-plan-2026-11-05.md).
+
+- [x] Freeze four fresh complete scene families crossing required/optional
+  investigation with undertaken/not-undertaken investigation, both presentation
+  orders and two interleaved repeats: **16 attempts / 112 slots / 28 case-bound
+  claims**. Keep Sol-high, U section-locator instructions, full context, seven-claim
+  workload, adapter settings and resource ceilings unchanged. Exact count and
+  generation bodies repeat within each family/order; attempt identities differ.
+- [x] Audit all whole claims and freeze explicit requirement, choice, procedure,
+  means, endpoint, attribution and unavailable-continuation gold. Require matching
+  claim/gold/evidence predicates and complete material-component inventories.
+  Exclude editorial consumption from factual gold; keep both sides of endpoint
+  relations and distinguish absence, explicit nonperformance and unavailable scope.
+- [x] Freeze all fixed-slot delivery/semantic/citation/grounded scores, **56 exact
+  repeat pairs and 56 presentation-order pairs**, with a screen requiring every
+  slot grounded. Stable wrong labels, true subsets and missing authority fail.
+  No gold repair, denominator shrinkage, writer authority or story-quality claim.
+- [x] Freeze **16 generation attempts, 16 full-context input counts, 16 catalog
+  reads**, no retries/fallback/terminal resume. Reserve 24,000 input / 32,000
+  generated tokens including reasoning and 600 active seconds per attempt,
+  **$6.08 conservative reference / $9.60 planning allowance**. Stop on first terminal
+  delivery/resource/identity/preflight failure; semantic failures remain scored.
+- [x] Review current official Sol documentation, retain the existing model spec,
+  and verify actual adapter bodies with mocked transport. Account access and live
+  schema acceptance remain untested. **Zero catalog/count/generation calls** during
+  preparation; credential reuse authorization is retained without loading a key.
+- [x] Preserve the initial unfrozen build, clarify S2's gate lift as completed
+  before the bell cord is touched, and regenerate every dependent artifact before
+  freeze. No model response informed this correction. Pass **322 offline tests**
+  (160 local, 123 tracked assessment, 39 provider/routing/execution), with nothing
+  deselected; repository Ruff/format/strict mypy for **224 files**, separate checks
+  for **14 scripts**, and deterministic case/request/gold/scoring/audit replay.
+- [x] Seal **89 files / 5,307 source fingerprints** under plan SHA-256
+  `36c22411309c27d1a5a59e75ed135df3b9a4db9aebbaf25754a9934e2e345a6b`.
+- [x] Obtain separate explicit approval of the frozen plan, including full prose/
+  context at OpenAI Responses and its input-count endpoint. Then execute once,
+  inspect all fixed slots and repeat/order contrasts, document results and update
+  this tracker. Passing permits only a proposed bounded read-only integration
+  check; it does not promote production routing or authorize writer changes.
+  Completed in the execution record below.
+
+Private root: `data/diagnostics/reviewer-scope-repeatability-v61-2026-11-05/`.
+All fourteen issue bodies and posted URLs remain intact; no external issue changed.
+**Step 19 IN PROGRESS; Step 20 NOT STARTED; diagnostic FROZEN awaiting approval;
+production prompts/profiles unchanged; live calls PAUSED; canary ON HOLD.**
+
+### Scope-separated repeatability execution 2026-11-05
+
+Report: [Sol-high scope-separated repeatability results](../docs/benchmark_reports/reviewer-scope-repeatability-v61-results-2026-11-05.md).
+
+- [x] Execute the approved frozen schedule **once: 16/16 generation attempts and
+  valid reports**, 16 full-context input counts and 16 successful catalog checks.
+  Retain Sol-high/U, exact request bodies, all sources, gold, budget and stops.
+  No retry, fallback, extra probe, terminal failure or production prompt change.
+- [x] Inspect and authenticate **all 112 fixed slots**, including full means and
+  endpoint relations, material explanations and adequate cited-section coverage.
+  **112/112 grounded; 16/16 wholly grounded reports; 169/169 quotations locate**.
+  Every family scores 28/28 and every claim class 16/16. The frozen screen passes.
+- [x] Inspect **56 exact-repeat pairs and 56 source-order pairs**: all labels agree
+  and both sides are grounded; zero recoveries or losses. Preserve all original
+  reasons and citation sets without requiring identical wording. These pair counts
+  reuse the fixed slots and do not add independent samples.
+- [x] Record the narrow interpretation: explicit assignment authority, observed
+  choice, defined procedure, whole means, endpoint, attribution and unavailable
+  scope work on these fresh short families. No historical rescore, causal repair
+  claim, population reliability claim, writer authority or craft qualification.
+- [x] Record **58,980 input / 34,020 generated tokens**, including **9,175 reasoning**
+  and **33,794 cached input**. Active time totals **449.18s**, median **26.88s**,
+  maximum **40.16s**; operator wall time **557.55s**. Frozen-rate reference cost
+  **$0.487650**, actual billing unknown; all usage known and limits respected.
+- [x] Pass **336 offline tests**: 159 applicable frozen tests, 15 result/renderer
+  regressions, 123 tracked assessment and 39 provider/routing/execution tests.
+  Deselect only the preparation-only unapproved-state assertion and separately
+  verify actual denominators/ceilings. Repository Ruff/format/strict mypy pass for
+  **224 files**, plus checks for **22 diagnostic/analysis/operator scripts**.
+  Replay sealed captures, scoring and complete inspection exports. Preserve the
+  initial preview key-order replay failure; fix only analysis serialization and
+  verify unchanged parsed contents plus two independent hash-seed replays.
+- [x] Preserve these repeat/order controls as regression fixtures and perform the
+  proposed bounded read-only claim-scope integration check in the tracked
+  assessment component. Bind whole claims, declared predicates, authority and
+  material qualifiers to full source context. Keep authored semantic judgment,
+  editorial effect and writer authority separate. Verify offline before deciding
+  whether another ordinary-review generalization experiment is justified.
+  Completed in the bounded integration record below.
+
+Private roots: `data/diagnostics/reviewer-scope-repeatability-v61-2026-11-05/`,
+`...-M-live/`, and `...-analysis/`. All 89 frozen files and 5,307 source fingerprints
+remain intact. No application, dependency, profile, graph or writer-route change;
+no new routine human checkpoint. All fourteen issue bodies and posted URLs are
+unchanged; no external issue changed. **Step 19 IN PROGRESS; Step 20 NOT STARTED;
+production prompts unchanged; further live calls PAUSED; canary ON HOLD.**
+
+### Read-only claim-scope integration and repeat/order regressions 2026-11-05
+
+Handoff: [Claim-scope integration](../docs/handoffs/assessment-claim-scope-integration-2026-11-05.md).
+Decision: [ADR 0043](../docs/adr/0043-read-only-claim-scope-declarations.md).
+
+- [x] Preserve **448 exact files / 5,307 historical fingerprints**, all **56 repeat
+  pairs and 56 presentation-order pairs**, and the 112 original inspected slots,
+  full requests/context, receipts and 169 quotations. Keep original scores and
+  earlier failed histories unchanged; archived Python remains inert.
+- [x] Add a tracked, pure **read-only claim-scope declaration and audit display**
+  beside the existing work/result components. Bind whole selected statements,
+  complete report fields, declared predicates, source authority and material
+  qualifiers to exact work/source identity. Reject drift and expose missing,
+  conflicting or unresolved scope without making semantic judgments.
+- [x] Keep complete-field absence coverage, explicit nonperformance and unavailable
+  scope distinct. Preserve full context and render literal source sections. Allow
+  an optional native result only through the unchanged result-binding boundary;
+  do not translate historical raw responses into invented native receipts.
+- [x] Replay **32 full works / 224 declarations**. New repeatability slots are
+  **112 declared consistent**; the historical set retains **92 consistent and the
+  same 20 scope-review findings**. These are declaration statuses, not corrected
+  model scores or independently discovered semantics. Factual support, evidence
+  adequacy, editorial effect, edit necessity and craft remain unassessed; whole-
+  relation credit and writer authorization remain false.
+- [x] Pass the full Python suite: **1,394 tests**, including **31 new tracked scope
+  tests**; pass **37 separate private replay tests** (**1,431 distinct tests**, none
+  deselected). Repository Ruff/format/strict mypy pass for **226 files**, with the
+  same checks for **four integration scripts**. Reproduce source preservation,
+  declarations and all full-context renders; pin checked source files before/after.
+- [ ] Perform the proposed local ordinary-review scope-admission audit on **up to
+  twelve already exported ordinary-v61 probe captures**. Recheck provenance and
+  complete context, retain unchanged selected claims, and record factual,
+  mixed/editorial, missing-authority and unresolved scopes. Verify the adapter and
+  literal displays locally before proposing any new bounded live comparison.
+
+Private bundle: `data/diagnostics/assessment-claim-scope-integration-2026-11-05/`.
+No provider/daemon/input-count/catalog requests, credential access or application
+database access. No production caller, dependency, migration, public API/client
+schema, profile, prompt, graph, writer route or new human checkpoint. Source roles
+and semantic interpretations remain authored, not automatically certified. All
+fourteen issue bodies and posted URLs are unchanged; no external issue changed.
+**Step 19 IN PROGRESS; Step 20 NOT STARTED; production prompts unchanged;
+live calls PAUSED; full workflow canary ON HOLD.**
 
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 
