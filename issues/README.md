@@ -1086,3 +1086,125 @@ CW-007/CW-013 gain integration evidence without closure; CW-014 remains unqualif
 All fourteen original issue bodies and posted URLs remain intact; no external
 issue changed. Production prompts/profiles/routing unchanged; live calls **PAUSED**;
 full workflow canary **ON HOLD**.
+
+### Ordinary-review scope admission — 2026-11-05
+
+The [local twelve-capture audit](../docs/handoffs/reviewer-ordinary-scope-admission-2026-11-05.md)
+reproduces all previously exported ordinary-v61 probes and preserves **327 exact
+files**. They retain synthetic diagnostic provenance, rather than becoming durable
+production reviews. The audit keeps **163 complete explanatory fields** intact:
+**71 factual candidates, 82 editorial/mixed, six unresolved interpretations and
+four needing specific next-scene authority**. These authored admission categories
+do not change original model scores or supply new factual gold.
+
+Twelve work previews and **21 full-context renders** retain qualifiers, historical
+repair quotations and six recovered old drafts, with recovered-only material kept
+outside the historical visible-evidence registry. The four Elara comparisons rely
+on next-scene starting-state authority absent from the visible contract. Editorial
+consumption, event occurrence, procedure, means and endpoint claims remain distinct.
+The component checks declaration consistency; it does not discover semantic truth
+or authorize a writer.
+
+**264 focused tests**, repository lint/format/strict types for **226 files** and
+separate checks for **six scripts** pass. Source/export/render replay is exact;
+production code and prompts are unchanged. The proposed next step is local
+preparation of a **16-attempt Sol-high ordinary-claim generalization diagnostic**,
+conditional on defensible whole-field gold and adequate evidence within the
+existing citation budget. It is not frozen or approved; unresolved and editorial
+claims must not be rewritten into easier factual gold.
+
+CW-007/CW-013 gain applicability evidence without closure; CW-014 remains
+unqualified. All fourteen original issue bodies and posted URLs remain unchanged;
+no external issue changed. No new provider calls occurred. Live calls **PAUSED**;
+full workflow canary **ON HOLD**.
+
+### Ordinary-review transfer preparation — 2026-11-05
+
+The [frozen local plan](../docs/handoffs/reviewer-ordinary-transfer-frozen-plan-2026-11-05.md)
+prepares **16 Sol-high attempts / 96 fixed slots**, using twelve unchanged whole
+explanations from two saved ordinary-v61 probes and twelve authored control claims
+across two fresh scene families. Both source orders and two exact-body repeats
+are frozen. All twelve saved claims have supported gold; fresh controls supply
+false compound explanations, attribution errors and unavailable-continuation
+uncertainty. Separate cohort results are required; this does not establish
+precision on naturally false ordinary reviews.
+
+Full prose, story context and surrounding reports remain available. Gold and
+adequate evidence are fixed before inference, with at most four example witnesses
+under the unchanged eight-witness limit. The source index excludes mechanical
+metadata and covered duplicate excerpts from citation eligibility while keeping
+the full source content visible. Legacy critic response/retry formatting stays
+in preserved original evidence. U instructions, output headroom and resource
+ceilings remain unchanged. Exact input counts await approved preflight; overflow
+stops without cutting context or increasing the budget.
+
+**348 offline tests** and repository lint/format/strict types for **226 files** pass,
+alongside separate checks for **15 scripts**. The package seals **80 files / 768
+source fingerprints**. Budget: sixteen generation attempts, at most sixteen
+story-bearing counts and sixteen catalog reads, zero retries, **$6.08 reference
+reservation / $9.60 planning allowance**. No provider calls or approval file exist.
+
+CW-007/CW-013 remain open; CW-014 remains unqualified. All fourteen original issue
+bodies and posted URLs are intact; no external issue changed. Production prompts
+unchanged; live calls **PAUSED awaiting approval**; canary **ON HOLD**.
+
+### Ordinary-review transfer results — 2026-11-06
+
+The [approved Sol-high diagnostic](../docs/benchmark_reports/reviewer-ordinary-transfer-v61-results-2026-11-06.md)
+completed **16/16 attempts**, sixteen full-context input counts and sixteen catalog
+reads, with no retries or delivery failures. All **96 slots** were inspected:
+**87 grounded, eight citation-only failures and one semantic scope failure**.
+Saved ordinary explanations score **39/48**; fresh authored controls **48/48**.
+Labels match gold in **95/96**, and all **214 witnesses** bind exactly, but the
+all-grounded screen fails. The saved subset contains only supported claims and
+does not establish precision on naturally false ordinary-review explanations.
+
+Elena's obligation is misread as an outstanding-repair question once, then recovers
+on an identical repeat. All four Elena responses correctly identify the endpoint
+breach but omit the required ending paragraph for two claims. Both the 48 repeat
+pairs and 48 order pairs have **47 agreements / 43 both grounded**; stable
+incomplete evidence does not count as success.
+
+**361 offline tests** and repository lint/format/strict types for **226 files**
+pass, with checks for **18 private scripts**. An analysis-only export typing issue
+was corrected and its initial evidence retained; fourteen result tests pass again.
+All **80 frozen files / 768 source fingerprints** remain intact. Usage: **208,648
+input / 40,607 generated**, including **15,213 reasoning**; **$0.927690** frozen-rate
+reference cost, actual billing unknown. All resource limits were respected.
+
+Recommended next work is local preservation of the failure/recovery and ending-
+coverage pairs, then separate audits of selected-field truth versus repair
+necessity and endpoint evidence obligations before more inference. This adds
+evidence for CW-007/CW-013 without closure; CW-014 remains unqualified. All fourteen
+original issue bodies and posted URLs remain unchanged; no external issue changed.
+Production prompts unchanged; further live calls **PAUSED**; canary **ON HOLD**.
+
+### Obligation scope and endpoint evidence audit — 2026-11-06
+
+The [local audit](../docs/handoffs/reviewer-obligation-endpoint-audit-2026-11-06.md)
+preserves **334 exact files / 768 historical fingerprints**, all **96 judgments**,
+**214 witnesses** and both sets of **48 repeat/order pairs**. Original results
+remain **87 grounded / eight citation-only / one semantic**, with successful
+controls and the failed/recovered obligation pair retained.
+
+The obligation field's truth differs from whether its surrounding recommendation
+requires another repair. Endpoint evidence also depends on the temporal question:
+a forbidden event before a deadline can be established without an ending citation,
+while a state-at-end claim or material ending qualification may need one. All
+eight old failures remain under the frozen rule; that rule needs explicit scope
+before reuse. Two reasons additionally discuss uncited ending facts.
+
+The unchanged read-only component renders **16 works / 96 declarations**, with
+**84 declared consistent / twelve needing scope review**; these are authored
+design findings, not new accuracy scores. Twelve local contrasts and three draft
+work-brief previews retain the distinction between declaration consistency and
+semantic adequacy. **207 tests**, repository lint/format/strict types for **226
+files**, and checks for **five scripts** pass. No production code changed.
+
+Next proposed work is local preparation of a **24-attempt Sol-high U / explicit
+work-brief comparison**, with fresh families, both orders and exact repeats,
+conditional on unambiguous whole-claim/evidence admission. It is not frozen or
+approved. CW-007/CW-013 remain open; CW-014 remains unqualified. All fourteen
+original issue bodies and posted URLs are unchanged; no external issue changed.
+No live calls or credential-store/database access occurred. Production prompts
+unchanged; live calls **PAUSED**; full workflow canary **ON HOLD**.

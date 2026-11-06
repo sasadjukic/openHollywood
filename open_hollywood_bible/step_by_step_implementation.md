@@ -10947,7 +10947,7 @@ Decision: [ADR 0043](../docs/adr/0043-read-only-claim-scope-declarations.md).
   deselected). Repository Ruff/format/strict mypy pass for **226 files**, with the
   same checks for **four integration scripts**. Reproduce source preservation,
   declarations and all full-context renders; pin checked source files before/after.
-- [ ] Perform the proposed local ordinary-review scope-admission audit on **up to
+- [x] Perform the proposed local ordinary-review scope-admission audit on **up to
   twelve already exported ordinary-v61 probe captures**. Recheck provenance and
   complete context, retain unchanged selected claims, and record factual,
   mixed/editorial, missing-authority and unresolved scopes. Verify the adapter and
@@ -10959,6 +10959,215 @@ database access. No production caller, dependency, migration, public API/client
 schema, profile, prompt, graph, writer route or new human checkpoint. Source roles
 and semantic interpretations remain authored, not automatically certified. All
 fourteen issue bodies and posted URLs are unchanged; no external issue changed.
+**Step 19 IN PROGRESS; Step 20 NOT STARTED; production prompts unchanged;
+live calls PAUSED; full workflow canary ON HOLD.**
+
+### Ordinary-review scope-admission audit 2026-11-05
+
+Handoff: [Ordinary-review scope admission](../docs/handoffs/reviewer-ordinary-scope-admission-2026-11-05.md).
+
+- [x] Reuse the exact **twelve previously exported ordinary-v61 probe captures**:
+  six initial and six post-reviews, with **12/12 compatible**, zero exclusions or
+  replacements. Reproduce their exported JSON through the existing authenticated
+  adapter. Preserve **327 exact files**, including failed predecessors, writer
+  dependencies, full raw/normalized reviews and saved native audits. Keep synthetic
+  diagnostic provenance separate from durable production review identity.
+- [x] Inventory and inspect **163 complete explanatory fields** without splitting
+  sentences, rewriting claims or removing qualifiers. Retain IDs, categorical
+  labels, numerical scores and exact source quotations as full context with an
+  explicit excluded-field inventory. Author **71 factual candidates, 82 editorial
+  or mixed fields, six unresolved interpretations and four missing-specific-
+  authority fields**. These are scope-admission categories, not factual gold or
+  corrected model accuracy scores.
+- [x] Exercise twelve read-only work previews and **21 full-context renders**.
+  Bind declarations to exact work/field/text identity, preserve whole means and
+  endpoint relations, and retain all six locally recovered older drafts without
+  promoting them into historically visible evidence. Record the absent next-scene
+  entry-state authority in all four Elara comparisons. Keep local operation hashes
+  distinct from provider requests and do not fabricate native assessment receipts.
+- [x] Pass **264 focused tests**, none deselected: 154 assessment, 46 comparison,
+  37 probe-export and 27 private audit tests. Repository Ruff/format/strict mypy
+  pass for **226 files**, with separate checks for **six audit scripts**. Replay
+  all exports, annotations and renders deterministically; verify unchanged
+  original evidence and application/test sources before/after checks. The initial
+  private metadata-key assertion was corrected without changing audit judgments.
+- [x] Prepare the proposed **16-attempt Sol-high ordinary-claim generalization
+  diagnostic** locally: two saved scene families plus two fresh families, both
+  presentation orders and two exact-body repeats. First author whole-field gold
+  and adequate evidence for a bounded factual subset, preserving all material
+  clauses and the existing citation contract. Stop on unresolved interpretation,
+  missing authority or an inadequate citation budget; do not simplify originals
+  or assign factual gold to editorial judgments. Freeze requests, scoring, ceilings
+  and stops only after qualification, then submit for approval before live calls.
+
+Private bundle: `data/diagnostics/reviewer-ordinary-scope-admission-v61-2026-11-05/`.
+This establishes a usable local factual subset, not reliable ordinary criticism,
+necessary editing, preservation or improved story quality. The next diagnostic
+is proposed, not prepared, frozen or authorized. No provider/daemon/input-count/
+catalog requests, credential retrieval, application database access or production
+code changes occurred. All fourteen issue bodies and posted URLs remain unchanged;
+CW-007/CW-013 gain applicability evidence while CW-014 remains unqualified.
+**Step 19 IN PROGRESS; Step 20 NOT STARTED; production prompts unchanged;
+live calls PAUSED; full workflow canary ON HOLD.**
+
+### Ordinary-review transfer diagnostic preparation 2026-11-05
+
+Plan: [Frozen Sol-high ordinary-review transfer](../docs/handoffs/reviewer-ordinary-transfer-frozen-plan-2026-11-05.md).
+
+- [x] Freeze **16 Sol-high attempts**: two saved ordinary-v61 probe families and
+  two fresh authored scene families, both source orders and two exact-body repeats.
+  Select **six complete fields per request / 24 unique claims / 96 fixed slots**.
+  Preserve all twelve saved explanations and full surrounding reports unchanged.
+  Retain all nineteen unselected explanatory fields in the two reports as context.
+- [x] Author whole-field gold, material components and adequate-evidence criteria
+  before inference. Saved claims are **12 supported**; fresh controls are **four
+  supported, six unsupported and two uncertain**. Keep 48 saved slots separate
+  from 48 fresh-control slots; do not infer natural-error precision from this
+  positive saved subset. Examples use at most **four of eight permitted witnesses**.
+  No whole-scene absence claim needing more than eight sections is shortened to fit.
+- [x] Preserve full story context, critic task instructions, current prose and
+  raw reviews. Keep legacy output-schema/retry-format scaffolding in original
+  evidence rather than the new source packet. Freeze an explicit source-structure
+  registry policy: metadata and duplicate catalog text remain visible, duplicate
+  evidence is covered by primary sections, and nonduplicate catalog text remains
+  eligible. Verify unchanged source text, reports and gold across this refinement.
+- [x] Keep Sol-high/U instructions, section-locator semantics, output headroom and
+  resource ceilings unchanged. Require **all 96 slots grounded**, retaining failed
+  and undispatched slots, and inspect **48 repeat pairs / 48 source-order pairs**.
+  Separate location, whole-claim semantics, material explanation and adequacy;
+  stable wrong answers or a true subset cannot pass.
+- [x] Freeze **16 generation attempts**, at most **16 story-bearing input counts
+  and 16 catalog reads**, zero retries; 24,000 input / 32,000 generated tokens and
+  600 active seconds per attempt, plus 25 seconds catalog timeout. Retain **$6.08
+  reference reservation / $9.60 planning allowance**. Exact input counts and server
+  acceptance await approved preflight; overflow stops before generation without
+  truncation, budget enlargement, replacement or terminal resume.
+- [x] Pass **348 offline tests**, none deselected: 155 private harness/design,
+  154 tracked assessment and 39 provider/routing/execution tests. Repository
+  Ruff/format/strict mypy pass for **226 files** and separately for **15 scripts**.
+  Replay exact bodies, gold, source presentation, slot identities and admission.
+  Seal **80 frozen files / 768 source fingerprints**. A minimal reproduction
+  isolated the Windows sandbox event-loop startup stall; offline verification
+  completed with credentials removed and mocked/blocked networking outside it.
+- [x] Following separate approval of this plan and both full-context OpenAI
+  endpoints, execute once within the frozen ceiling, inspect every fixed slot,
+  document cohort/pair results and update the tracker. Completed 2026-11-06;
+  the execution and results are recorded below.
+
+Private bundle: `data/diagnostics/reviewer-ordinary-transfer-v61-2026-11-05/`.
+Plan SHA-256: `488369a1af1ebe7f18a6d02aae50f67ecd8d5d5a28b39821cd6864d84cd3926d`.
+No production code/profile/prompt/graph/routing changes, new dependency, database
+access or new human checkpoint. All fourteen issue bodies and posted URLs remain
+unchanged. CW-007/CW-013 remain open; CW-014 remains unqualified. A pass would not
+authorize a writer or establish edit necessity, preservation or better stories.
+**Step 19 IN PROGRESS; Step 20 NOT STARTED; frozen preparation complete;
+approved execution recorded below; production prompts unchanged;
+further live calls PAUSED; full workflow canary ON HOLD.**
+
+### Ordinary-review transfer diagnostic execution 2026-11-06
+
+Results: [Sol-high ordinary-review transfer](../docs/benchmark_reports/reviewer-ordinary-transfer-v61-results-2026-11-06.md).
+
+- [x] Execute the frozen schedule once: **16/16 Sol-high attempts**, sixteen
+  full-context Responses requests, sixteen story-bearing input counts and sixteen
+  catalog reads. All deliver validly; zero retries, replacements, extra probes,
+  fallback or terminal resumes. Preserve exact bodies, final outputs, receipts,
+  usage and seals. Every frozen resource limit is respected.
+- [x] Inspect **96/96 fixed slots** against complete primary sources and unchanged
+  gold/criteria: **87 grounded, eight citation-only failures, one semantic scope
+  failure, zero unavailable**. Support labels agree in **95/96** slots; all **214
+  witnesses** bind exactly. Four permitted empty uncertainty evidence sets remain
+  distinct from actual quotations. Correct binding does not certify adequacy.
+- [x] Report cohorts separately: saved ordinary explanations **39/48 grounded**
+  (Elara 24/24, Elena 15/24); fresh authored controls **48/48**. The twelve saved
+  claims all have supported gold and synthetic probe provenance. Do not infer
+  natural-error precision, a source-origin causal effect or production reliability.
+- [x] Inspect **48 repeat pairs and 48 order pairs**: each has 47/48 label/category
+  agreements and 43/48 both-grounded pairs. Preserve the S2 Q002 first-CP failure
+  and exact-repeat recovery. Its reason recognizes the obligation and fulfillment
+  but the first label assesses repair necessity instead of the selected obligation.
+  Preserve all eight S2 Q005/Q006 ending-coverage failures: correct boundary
+  judgments, but no citation of final S573 as required by the frozen criteria.
+- [x] Record **208,648 input / 40,607 generated tokens**, including **15,213
+  reasoning** and **110,177 cached input**. All usage known; active time **564.92s**,
+  median **30.32s**, maximum **66.11s**. Frozen-rate reference **$0.927690**, actual
+  billing unknown. Exact input counts equal delivered usage, including saved
+  packets at 23,310 and 22,714 tokens under the 24,000 limit.
+- [x] Pass **361 offline tests**, with only the obsolete unapproved-state test
+  deselected and actual approval/coverage checked separately. Repository
+  lint/format/strict types pass for **226 files**, and private checks for **18
+  scripts**. Correct an analysis-only explicit-export typing issue; preserve the
+  initial failure and verify all fourteen result tests again. Replay full-context
+  displays and authenticated scoring without changing any frozen file or judgment.
+- [x] Preserve the new ordinary-obligation and ending-coverage pairs as regressions;
+  audit selected-field truth versus surrounding repair necessity and endpoint
+  evidence coverage locally. Examine whether answer-free scope declarations and
+  explicit evidence obligations are justified before proposing another bounded
+  live comparison. Do not relax this run's gold, append citations silently or
+  authorize writers from support labels. Completed in the local audit below.
+
+Private roots: `data/diagnostics/reviewer-ordinary-transfer-v61-2026-11-05/`,
+`...-M-live/` and `...-analysis/`. All **80 frozen files / 768 source fingerprints**
+remain intact. The frozen all-96-grounded screen **does not pass**. No production
+code/profile/prompt/graph/routing, dependency, database or human-checkpoint change.
+All fourteen issue bodies and posted URLs remain unchanged; no external issue
+changed. CW-007/CW-013 remain open; CW-014 remains unqualified. Edit necessity,
+writer preservation and craft remain separate, unqualified questions.
+**Step 19 IN PROGRESS; Step 20 NOT STARTED; production prompts unchanged;
+further live calls PAUSED; full workflow canary ON HOLD.**
+
+### Ordinary-obligation scope and endpoint evidence audit 2026-11-06
+
+Handoff: [Obligation scope and endpoint evidence](../docs/handoffs/reviewer-obligation-endpoint-audit-2026-11-06.md).
+
+- [x] Preserve **334 exact files / 768 historical fingerprints**, all sixteen
+  requests/receipts and complete contexts, **96 original judgments**, **48 repeat
+  pairs** and **48 order pairs**, including all successful controls. Reauthenticate
+  both dispatched bodies, whole selections and **214 witnesses**. Archived Python
+  remains inert; the original **87 grounded / eight citation-only / one semantic**
+  score and cohort/pair results are unchanged.
+- [x] Audit obligation truth separately from fulfillment and outstanding repair.
+  Preserve all four Elena Q002 assessments, including the first CP scope failure
+  and its exact-repeat recovery. Record that the per-claim obligation declaration
+  is offline gold, not model-visible admission; surrounding repair context remains
+  available. Do not infer another edit from a supported requirement.
+- [x] Audit forbidden establishment by a deadline, endpoint state, throughout
+  compliance, complete absence and material explanation qualifiers separately.
+  Preserve all eight original ending-citation failures. Record that the frozen
+  ending/persistence criterion needs explicit temporal justification before reuse;
+  the omissions alone do not establish eight unambiguous logical evidence failures.
+  Two Q005 reasons also introduce sender uncertainty from the uncited ending.
+- [x] Exercise the unchanged tracked read-only declaration component on **16 full
+  works / 96 declarations**, with sixteen literal renders: **84 declared consistent,
+  twelve requiring scope review**. These authored design findings include passing
+  responses and do not rescore the model. No native historical receipt conversion,
+  automatic evidence repair, semantic certification or writer authority.
+- [x] Add **twelve authored local contrasts**: four requirement/performance cells
+  and eight temporal/coverage cases, including an unsuitable declaration that
+  passes a mechanical section-set check. Prepare three local work-brief previews
+  with whole selections/full context; no frozen request, live call or gold leak
+  through expected-label or correct-witness fields. Future neutrality/admission
+  remains an authored review, not something proved by schema validation.
+- [x] Pass **207 tests**, none deselected: 53 new local regressions/design tests
+  and 154 tracked assessment tests. Repository lint/format/strict mypy pass for
+  **226 files**, plus checks for **five audit scripts**. Replay all preserved data,
+  source declarations, full-context renders and contrasts with external access
+  blocked. Initial private formatting/type annotations were corrected before
+  recorded verification; no historical data or application code changed.
+- [ ] Prepare the proposed **24-attempt Sol-high U / explicit-work-brief comparison**
+  only after local admission: three families including two fresh ones, two orders,
+  two repeats and two arms, provisionally six whole claims per request / 144 slots.
+  Retain admissible ordinary anchors and identify newly authored temporal claims
+  separately. Freeze full contexts, neutral task scopes, per-claim evidence/gold,
+  controls, budget and stops before seeking approval of either story-bearing
+  endpoint. This proposal is not a frozen plan or authorization for inference.
+
+Private bundle: `data/diagnostics/reviewer-obligation-endpoint-audit-v61-2026-11-06/`.
+No provider, input-count, catalog or daemon calls; no credential-store/database
+access. No production code, prompt, profile, graph, dependency, public API or
+human-checkpoint changes. All fourteen issue bodies and posted URLs remain intact;
+no external issue changed. CW-007/CW-013 remain open; CW-014 remains unqualified.
+Factual support, necessary repair and creative quality remain distinct questions.
 **Step 19 IN PROGRESS; Step 20 NOT STARTED; production prompts unchanged;
 live calls PAUSED; full workflow canary ON HOLD.**
 
