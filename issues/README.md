@@ -1208,3 +1208,78 @@ approved. CW-007/CW-013 remain open; CW-014 remains unqualified. All fourteen
 original issue bodies and posted URLs are unchanged; no external issue changed.
 No live calls or credential-store/database access occurred. Production prompts
 unchanged; live calls **PAUSED**; full workflow canary **ON HOLD**.
+
+### U / explicit-work-brief preparation — 2026-11-06
+
+The [frozen plan](../docs/handoffs/reviewer-work-brief-frozen-plan-2026-11-06.md)
+prepares **24 Sol-high attempts / 144 fixed slots** across three complete families,
+two conditions, both presentation orders and two exact repeats. B adds a neutral
+per-field task/evidence brief to unchanged U; no answers or citation locations are
+supplied. Four saved ordinary anchors retain their text/gold, and new temporal
+claims are identified separately from historical endpoint failures.
+
+Whole-claim gold, evidence obligations, non-regression gates, the **$9.12 reference /
+$14.40 planning** budget and zero-retry terminal stops are frozen. **333 tests** and
+repository/private lint, format and strict types pass. **61 files / 727 source
+fingerprints** are sealed; all **768 predecessor fingerprints** still match.
+There are **zero live calls** and no approval record. This is preparation, not
+evidence that the brief improves assessment or qualifies rewriting.
+
+CW-007/CW-013 remain open; CW-014 remains unqualified. All fourteen issue bodies
+and posted URLs remain unchanged; no external issue changed. Production prompts
+unchanged; live execution awaits approval; full workflow canary **ON HOLD**.
+
+### U / explicit-work-brief execution — 2026-11-06
+
+The [completed comparison](../docs/benchmark_reports/reviewer-work-brief-v61-results-2026-11-06.md)
+uses **24/24 valid attempts**, 24 full-context input counts and 24 catalog checks,
+with no retries. All **144 slots** were inspected: **U 71/72 grounded; B 72/72**,
+one semantic scope failure recovered by B and no regressions. All **217 witnesses**
+bind exactly. The frozen B screen passes, based on one underlying claim and one
+failing control response; it does not qualify production or repair necessity.
+
+U's second Elena CP repeat acknowledges the assignment obligation but labels it
+unsupported after evaluating whether another repair is needed. Its identical
+first repeat passes; matched B and all B repeats stay with obligation truth.
+Both repeat/order comparisons have **71/72 label agreements and both-grounded
+pairs**. New temporal claims pass in both conditions without changing historical
+endpoint scores. Ancillary concessions and extra repair language remain explicitly
+separate from cited factual support and writer permission.
+
+Usage is **227,836 input / 42,879 generated**, including **16,029 reasoning**;
+**$0.998380** frozen-rate reference cost, actual billing unknown. **16 new offline
+result tests** and repository/private checks pass; the 333-test frozen preparation
+remains intact. All **61 frozen files / 727 source fingerprints** are unchanged.
+
+Next recommended work is preservation and a bounded **local read-only work-brief
+integration check**, keeping obligation, fulfillment and repair necessity separate.
+No further inference is needed first. CW-007/CW-013 remain open; CW-014 remains
+unqualified. All fourteen issue bodies/posted URLs remain unchanged; no external
+issue changed. Production prompts unchanged; live calls **PAUSED**; canary **ON HOLD**.
+
+### Work-brief regressions and read-only integration — 2026-11-06
+
+The [local integration check](../docs/handoffs/reviewer-work-brief-integration-audit-2026-11-06.md)
+preserves **433 files / 727 historical fingerprints**, the failing U / matched B /
+passing identical U repeat and all controls. Original scores remain **U 71/72;
+B 72/72 grounded**; all **217 witnesses** rebind exactly. All 72 arm, 72 repeat
+and 72 order pairs remain historical observations, without rescoring.
+
+The new tracked pure component binds authored questions, temporal scope, source
+authority and evidence obligations to exact work and declaration fingerprints.
+It renders **24 full works / 144 declarations**, keeps missing or unresolved scope
+visible and preserves full context. Declaration consistency does not certify
+interpretation or brief neutrality. Obligation truth, observed fulfillment and
+repair necessity stay separate; supported labels and complete delivery grant no
+writer permission. It generates no model input or production dispatch.
+
+**1,417 repository tests and 50 private tests pass**, with repository/private lint,
+formatting and strict types green. Next proposed work is broader ordinary-review
+admission from the existing inventory, followed only if justified by a separately
+frozen **32-attempt U/B comparison**. No plan or new inference budget is approved
+here. Autonomous brief authoring and story-quality benefit remain unqualified.
+
+CW-007/CW-013 gain regression/integration evidence; CW-014 remains unqualified.
+All fourteen issues remain open, with their original bodies and posted URLs
+unchanged. No external issue was edited. Production prompts unchanged; live calls
+**PAUSED**; full workflow canary **ON HOLD**.

@@ -11154,13 +11154,13 @@ Handoff: [Obligation scope and endpoint evidence](../docs/handoffs/reviewer-obli
   source declarations, full-context renders and contrasts with external access
   blocked. Initial private formatting/type annotations were corrected before
   recorded verification; no historical data or application code changed.
-- [ ] Prepare the proposed **24-attempt Sol-high U / explicit-work-brief comparison**
+- [x] Prepare the proposed **24-attempt Sol-high U / explicit-work-brief comparison**
   only after local admission: three families including two fresh ones, two orders,
   two repeats and two arms, provisionally six whole claims per request / 144 slots.
   Retain admissible ordinary anchors and identify newly authored temporal claims
   separately. Freeze full contexts, neutral task scopes, per-claim evidence/gold,
   controls, budget and stops before seeking approval of either story-bearing
-  endpoint. This proposal is not a frozen plan or authorization for inference.
+  endpoint. Completed in the frozen preparation below; inference remains unapproved.
 
 Private bundle: `data/diagnostics/reviewer-obligation-endpoint-audit-v61-2026-11-06/`.
 No provider, input-count, catalog or daemon calls; no credential-store/database
@@ -11168,6 +11168,150 @@ access. No production code, prompt, profile, graph, dependency, public API or
 human-checkpoint changes. All fourteen issue bodies and posted URLs remain intact;
 no external issue changed. CW-007/CW-013 remain open; CW-014 remains unqualified.
 Factual support, necessary repair and creative quality remain distinct questions.
+**Step 19 IN PROGRESS; Step 20 NOT STARTED; production prompts unchanged;
+live calls PAUSED; full workflow canary ON HOLD.**
+
+### Sol-high U / explicit-work-brief frozen preparation 2026-11-06
+
+Plan: [U / explicit work brief](../docs/handoffs/reviewer-work-brief-frozen-plan-2026-11-06.md).
+
+- [x] Freeze **24 attempts / 144 fixed slots**: three complete scene families,
+  U and B, both source orders and two exact-body repeats. Keep Sol `high`, generic
+  U instructions, the section-locator contract and output headroom unchanged.
+  B adds only a neutral per-field task/evidence brief; removing it reproduces U.
+- [x] Retain four unchanged Elena ordinary fields and original gold, plus two
+  explicitly authored temporal fields on the same full context and two fresh
+  scene families. Separate **32 ordinary / 16 authored-on-saved / 96 fresh slots**.
+  Preserve the previous endpoint failures and gold without retroactive rescoring.
+- [x] Freeze whole-claim components, temporal scope, adequate evidence and all
+  controls. Distinguish obligation, fulfillment and repair necessity; occurrence
+  within an interval, endpoint state and whole-interval absence; speaker/negation,
+  conjunction and unavailable continuation. Example citations are not a whitelist.
+  Author-reviewed brief neutrality is not an automated semantic guarantee.
+- [x] Freeze **72 U/B pairs, 72 repeat pairs and 72 order pairs**. A positive brief
+  screen requires all **72 B slots grounded**, a matched semantic/citation recovery
+  and zero losses on grounded U controls. Both arms perfect is a ceiling result;
+  unavailable outputs remain in the denominator. No rewrite or craft qualification.
+- [x] Freeze **24 generation attempts**, at most 24 full-context counts and 24
+  catalog reads, zero retries/fallback/terminal resume. Keep 24,000 input / 32,000
+  generated tokens and 600 active seconds per attempt, plus 25-second catalog
+  timeout. Total reference reservation **$9.12**, planning allowance **$14.40**;
+  neither is current price verification or actual billing. Exact counts await
+  approval; overflow stops without trimming context or raising the budget.
+- [x] Pass **333 offline tests**, none deselected; repository lint/format/strict
+  types for **226 files** and private checks for **19 scripts**. Replay all exact
+  requests, full-context examples and admissions; exercise the 24-attempt ledger
+  and terminal failures with mocks. Record and resolve the Windows sandbox asyncio
+  initialization issue and pre-freeze development findings; no provider calls.
+- [x] Seal **61 files / 727 source fingerprints**, and separately verify all **768
+  predecessor fingerprints**. Freeze SHA-256:
+  `f667d4cd2907d5ee75bb1d37dcc22a1ad99f8b12ea8f44d6022b805cd978dd6d`.
+- [x] Obtain approval of this exact plan and full prose/context at OpenAI Responses
+  and its input-count endpoint before running once. Inspect all 144 fixed slots,
+  pairs and resource overhead; document results before proposing integration.
+
+Private bundle: `data/diagnostics/reviewer-work-brief-v61-2026-11-06/`.
+No generation, input-count, catalog or daemon calls; no actual approval record or
+live execution directory. Production code/prompts/profiles/graph/routing and all
+fourteen issue bodies/posted URLs remain intact. No external issue changed.
+CW-007/CW-013 remain open; CW-014 remains unqualified.
+**Step 19 IN PROGRESS; Step 20 NOT STARTED; live calls PAUSED; canary ON HOLD.**
+
+### Sol-high U / explicit-work-brief execution 2026-11-06
+
+Report: [U / explicit-work-brief results](../docs/benchmark_reports/reviewer-work-brief-v61-results-2026-11-06.md).
+
+- [x] Execute the approved frozen schedule once: **24/24 valid generation attempts,
+  24 full-context input counts and 24 catalog checks**, no retries, fallback,
+  invalid/truncated output or terminal resume. Respect every frozen limit; no
+  active call remains. Preserve approval separately from the immutable plan.
+- [x] Inspect all **144 fixed slots**: **U 71/72 grounded; B 72/72**. Overall
+  **143 grounded / one semantic scope failure / zero citation-only or unavailable**.
+  All **217 witnesses** bind exactly; all 24 complete literal views are retained.
+- [x] Preserve `EB-2-S2-U-CP` Q002 and its matched B recovery. U recognizes that
+  Elena's decision is required and already fulfilled, but labels the selected
+  obligation unsupported after assessing outstanding repair. B stays with the
+  explicit obligation question. U's identical first CP and both PC responses pass;
+  all four B responses pass. Correct story facts do not rescue a wrong-scope label.
+- [x] Report cohorts separately: **31/32 saved ordinary**, **16/16 authored temporal
+  claims on saved context**, **96/96 fresh authored**. Do not rescore the preceding
+  endpoint failures or infer natural-error precision from these selected claims.
+- [x] Check **72 U/B pairs**: one recovery, zero regressions. Both **72 repeat pairs**
+  and **72 order pairs** have 71 label agreements and 71 both-grounded pairs.
+  B passes its frozen improvement screen; the all-144-grounded flag remains false.
+  Retain the single-claim/single-control-failure limit on the inference.
+- [x] Apply frozen evidence materiality transparently: fourteen notes identify
+  ancillary contextual concessions without granting uncited sections evidence
+  credit. Keep one U reason's extra repair characterization separate from factual
+  support. Repair necessity, craft and writer authorization remain unqualified.
+- [x] Record **227,836 input / 42,879 generated tokens**, including **16,029 reasoning**
+  and **122,852 cached input**; all usage known. Active time **677.15s**, median
+  **18.69s**, maximum **68.51s**. Frozen-rate reference **$0.998380**, actual billing
+  unknown. B adds **3,484 input tokens** while using **3,959 fewer generated / 4,505
+  fewer reasoning tokens** in this run. Resource differences are descriptive.
+- [x] Pass **16 new offline result tests**, with the **333 frozen preparation tests**
+  retained rather than counted again. Repository lint/format/strict types pass for
+  **226 files**, plus checks for **23 private scripts**. Replay authenticated results,
+  complete views and fixed-slot scoring. All **61 frozen files / 727 fingerprints**
+  still match the approved plan; no frozen or historical result was edited.
+- [x] Preserve the failure/recovery, repeat and successful control pairs as local
+  regressions, then do the bounded read-only work-brief integration check. Bind
+  scope/evidence obligations to unchanged whole selections and full context; keep
+  unresolved scope explicit and prevent obligation support from becoming a
+  repair-required signal. No further inference is needed before this local check.
+
+Private roots: `data/diagnostics/reviewer-work-brief-v61-2026-11-06/`,
+`...-M-live/` and `...-analysis/`. B is retained as promising diagnostic evidence,
+not production qualification. No production code, prompts, profiles, graph,
+routing, dependency, persistence or human-checkpoint change. All fourteen issue
+bodies and posted URLs remain intact; no external issue changed. CW-007/CW-013
+remain open; CW-014 remains unqualified.
+**Step 19 IN PROGRESS; Step 20 NOT STARTED; production prompts unchanged;
+further live calls PAUSED; full workflow canary ON HOLD.**
+
+### Read-only work-brief integration and pair regressions 2026-11-06
+
+Handoff: [work-brief integration audit](../docs/handoffs/reviewer-work-brief-integration-audit-2026-11-06.md).
+Decision: [ADR 0044](../docs/adr/0044-read-only-assessment-work-brief-previews.md).
+
+- [x] Preserve **433 exact files / 727 historical source fingerprints**, all 24
+  responses and 144 original inspections. Retain the failing U / matched B /
+  passing identical U repeat and every temporal/compound/uncertainty control.
+  Recheck **217 exact witness bindings** and all **72 arm, 72 repeat and 72 order
+  pairs**. Original score stays **U 71/72; B 72/72 grounded**; no new judgments.
+- [x] Add a pure tracked authored work-brief preview bound to exact work and
+  scope-declaration fingerprints. Preserve original selections, full fields and
+  full context. Missing briefs and unresolved declarations remain visible;
+  no question is synthesized and no model input or dispatch operation is added.
+- [x] Render **24 full works / 144 declarations** through the tracked component.
+  All are declared consistent under the authored mapping, including the original
+  failed model slot; this is not semantic correctness or production admission.
+  U previews are identified as post-hoc local material, never historical model
+  input. Native result validation and existing completion remain unchanged.
+- [x] Keep obligation existence, observed fulfillment and repair necessity
+  separate. Full delivery, exact evidence location and a supported model label
+  cannot authorize a writer. Preserve the known limit: a structurally valid brief
+  can still ask the wrong question; semantic interpretation and neutrality remain
+  unverified. No automatic classifier or additional human checkpoint.
+- [x] Pass the full Python suite: **1,417 tests**, including **23 new tracked tests**,
+  plus **50 private regression tests** (**1,467 distinct tests**). Repository Ruff,
+  formatting and strict mypy pass for **228 Python files**; all four private
+  scripts pass their separate checks. Expected malformed-fixture warnings remain
+  explicit. The full suite completes in 280.39s outside the Windows sandbox after
+  an asyncio startup limitation and an undersized initial helper timeout. No live
+  calls or production settings changed; no failed run is counted as passing.
+- [ ] Prepare a broader ordinary-review transfer workload from the existing
+  twelve-capture / 163-field inventory. Admit unchanged whole fields from up to
+  four saved review packets; preserve excluded/editorial/unresolved fields and
+  visibility limits. If four broader packets qualify, propose a **32-attempt U/B
+  comparison** (four packets × two conditions × two orders × two repeats), with
+  exact gold/evidence criteria and unchanged controls. No plan or new call budget
+  is frozen here; seek live approval only after local preparation.
+
+Private bundle: `data/diagnostics/reviewer-work-brief-integration-v61-2026-11-06/`.
+All fourteen issue bodies and posted URLs remain unchanged. CW-007/CW-013 remain
+open; CW-014 remains unqualified. No production prompts, profiles, graph, routing,
+acceptance gates, persistence, dependencies, API/client schema or canary changes.
 **Step 19 IN PROGRESS; Step 20 NOT STARTED; production prompts unchanged;
 live calls PAUSED; full workflow canary ON HOLD.**
 
