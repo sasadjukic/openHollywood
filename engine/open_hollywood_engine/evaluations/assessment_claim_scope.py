@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import re
+from collections.abc import Set
 from typing import Annotated, Literal
 
 from pydantic import Field, JsonValue
@@ -40,8 +41,22 @@ Predicate = Literal[
     "plan_content",
     "unavailable_document_content",
     "editorial_effect",
+    "historical_attribution",
+    "historical_event",
+    "historical_violation",
+    "requested_repair",
 ]
-SourceRole = Literal["assignment", "draft", "definition", "plan", "availability"]
+SourceRole = Literal[
+    "assignment",
+    "draft",
+    "definition",
+    "plan",
+    "availability",
+    "historical_critic_assertion",
+    "historical_excerpt",
+    "historical_assignment",
+    "requested_repair",
+]
 
 
 class MaterialComponent(Record):
@@ -145,6 +160,35 @@ def _complete_fields(work: AssessmentWork, entries: list[EvidenceLocation]) -> b
     return True
 
 
+def required_source_roles(predicates: Set[str]) -> set[str]:
+    """Mechanical declared-predicate requirements, never semantic source classification."""
+    required: set[str] = set()
+    if predicates & {"assignment_obligation", "endpoint_compliance"}:
+        required.add("assignment")
+    if predicates & {
+        "observed_event",
+        "observed_choice",
+        "observed_procedure",
+        "observed_means_relation",
+        "endpoint_compliance",
+        "speaker_attribution",
+    }:
+        required.add("draft")
+    if "observed_procedure" in predicates:
+        required.add("definition")
+    if "plan_content" in predicates:
+        required.add("plan")
+    if "historical_attribution" in predicates:
+        required.add("historical_critic_assertion")
+    if predicates & {"historical_event", "historical_violation"}:
+        required.add("historical_excerpt")
+    if "historical_violation" in predicates:
+        required.add("historical_assignment")
+    if "requested_repair" in predicates:
+        required.add("requested_repair")
+    return required
+
+
 def _issues(
     work: AssessmentWork, d: ClaimScopeDeclaration, registry: EvidenceRegistry
 ) -> list[str]:
@@ -162,22 +206,7 @@ def _issues(
     predicates = set(d.claim_predicates + d.evidence_predicates)
     if "editorial_effect" in predicates:
         issues.append("editorial_effect_requires_separate_assessment")
-    required: set[str] = set()
-    if predicates & {"assignment_obligation", "endpoint_compliance"}:
-        required.add("assignment")
-    if predicates & {
-        "observed_event",
-        "observed_choice",
-        "observed_procedure",
-        "observed_means_relation",
-        "endpoint_compliance",
-        "speaker_attribution",
-    }:
-        required.add("draft")
-    if "observed_procedure" in predicates:
-        required.add("definition")
-    if "plan_content" in predicates:
-        required.add("plan")
+    required = required_source_roles(predicates)
     roles = {s.role for s in d.source_scopes if s.evidence_refs}
     issues.extend("missing_source_role:" + role for role in sorted(required - roles))
     by_ref = {e.ref: e for e in registry.entries}

@@ -11466,13 +11466,11 @@ Report: [historical evidence authority and realization audit](../docs/handoffs/r
   failures, restore four lint-modified archive copies from unchanged hashed
   originals, and resolve test temporary-directory setup locally. All originals
   and final copies reauthenticate. No live calls, credentials or application DB.
-- [ ] Next: a bounded read-only authority/materiality integration slice with
-  explicit historical roles, binding/visibility receipts and authored material
-  obligations. Then admit defensible positive/negative authority controls and
-  fresh families. If justified, prepare the proposed **24-attempt B/H receipt
-  comparison** (three packets × two conditions × two orders × two repeats),
-  with equal prospectively audited gold and unchanged model/settings. No cases,
-  requests, budget or approval for that experiment are frozen here.
+- [x] Implement the bounded read-only authority/materiality integration slice with
+  explicit historical roles, copying/visibility records and authored material
+  obligations. Completed and verified in the integration record below.
+  Positive/negative control admission and the conditional 24-attempt B/H comparison
+  remain pending; no future cases, requests, budget or approval are frozen here.
 
 Private root: `data/diagnostics/reviewer-historical-authority-v61-2026-11-07/`.
 All fourteen issue bodies and posted URLs remain unchanged; no external issue
@@ -11480,6 +11478,55 @@ edited. CW-007/CW-013 stay open; CW-014 remains unqualified. No automatic semant
 admission, natural-error precision, repair necessity, preservation or story-quality
 claim. Production prompts/profiles/graph/gates unchanged. **Step 19 IN PROGRESS;
 Step 20 NOT STARTED; live calls PAUSED; full workflow canary ON HOLD.**
+
+### Read-only historical authority integration 2026-11-07
+
+Report: [implementation, verification and next step](../docs/handoffs/assessment-authority-integration-2026-11-07.md).
+Contract: [ADR 0045](../docs/adr/0045-read-only-assessment-authority-and-obligations.md).
+
+- [x] Add the pure tracked authority preview beside the existing assessment
+  work/result/scope/brief components. Bind to exact work, request and declarations;
+  add distinct historical assertion/excerpt/assignment and requested-repair roles.
+  Keep existing serialized defaults, result/completion behavior and callers intact.
+- [x] Bind each evidence obligation to an existing selected unit and declared
+  material-component index. Check declared predicates and required source roles;
+  reject unknown/duplicate/inactive malformed entries and preserve missing or
+  unresolved obligations. Citation examples are not a whitelist. Free-text meaning
+  and completeness remain authored, not automatically verified.
+- [x] Recompute historical copying against separately supplied source bodies,
+  with version, document/field hashes, pointers, offsets and exact text. Keep
+  absent proof unverified. Preserve request-bound excerpt/full-body visibility
+  declarations separately from actual context. Archive authentication, original
+  critique linkage, chronology and visibility remain adapter responsibilities;
+  copying does not establish event truth, violation, edit necessity or writer access.
+- [x] Authenticate the preceding **595-file seal** and render all **32 full works**
+  unchanged. Map five unique whole fields to **40 repeated declarations**:
+  32 structurally consistent, eight R1 historical-scope findings still unresolved.
+  Keep the other 88 active units visibly undeclared. Recheck 40 repeated historical
+  bindings for five unique quotations. No old body becomes historical model input.
+- [x] Keep R3 Q003's date-relation obligations separate from Q002/Q004 realization.
+  Preserve old gold, raw results and scores: **U 52/64; B 63/64**, 11 recoveries,
+  no regressions; B remains unqualified. No synthetic native receipt or rescore.
+- [x] Pass the full **1,454-test Python suite**, including **37 new tracked tests**,
+  plus **37 private tests**: **1,491 distinct passes**. Root lint/format/strict types
+  pass for **230 Python files**; private checks pass for three helpers. All eight
+  recorded checks pass. Stop the sandbox async-startup stall and retain its log;
+  the authorized local run outside the sandbox passes in 268.53s. Test credentials
+  are removed; persistence tests use isolated fixtures. No live calls or app DB.
+- [ ] Next: inspect up to **12 saved ordinary-review captures** for three small
+  admission packets spanning positive, negative and unavailable/uncertain authority
+  contrasts. Retain a known control and fresh families if available. Preserve
+  ambiguous whole claims; report missing natural negatives/families rather than
+  presenting authored controls as natural-error precision. Only after justified
+  local admission, prepare the proposed **24-attempt Sol-high B/H** provenance
+  comparison and submit exact cases/requests/gold/budget/stops for approval.
+
+Private root: `data/diagnostics/assessment-authority-integration-2026-11-07/`.
+No migration, dependency, API/client schema, exporter eligibility, production
+prompt/profile/graph/gate, writer route or mandatory checkpoint change. All fourteen
+issue bodies and posted URLs unchanged; CW-007/CW-013 remain open and CW-014 remains
+unqualified. No automatic semantic admission or story-quality qualification.
+**Step 19 IN PROGRESS; Step 20 NOT STARTED; live calls PAUSED; canary ON HOLD.**
 
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 

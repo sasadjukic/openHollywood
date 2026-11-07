@@ -1386,3 +1386,32 @@ provenance-receipt diagnostic. No next cases, requests or budget are frozen.
 CW-007/CW-013 remain open; CW-014 remains unqualified. All fourteen issue bodies
 and posted URLs are unchanged, with no external issue edit. Production prompts
 unchanged; live calls **PAUSED**; full workflow canary **ON HOLD**.
+
+### Read-only authority integration — 2026-11-07
+
+The [tracked integration](../docs/handoffs/assessment-authority-integration-2026-11-07.md)
+adds historical source roles, exact-copy proof and claim-specific evidence
+obligations to the read-only assessment component. [ADR 0045](../docs/adr/0045-read-only-assessment-authority-and-obligations.md)
+records the authority limits. The component preserves full context and separates
+local historical bodies from what the model originally saw. Copying and declared
+consistency cannot establish truth, a justified repair or writer permission.
+
+All 32 saved works render unchanged. Five unique selected fields produce 40
+repeated declarations: 32 structurally consistent and eight R1 readings still
+unresolved. Another 88 active units remain visibly undeclared in this bounded
+bridge. Forty repeated bindings for five unique historical quotations match.
+R3 Q003's prospective date-gap obligations do not add realization; Q002/Q004 and
+the story assignment still require it. Original gold and model scores remain
+**U 52/64; B 63/64**, with B's qualification gate still failed.
+
+**1,454 repository tests + 37 private tests pass (1,491 distinct)**, including 37
+new tracked authority tests. Repository/private lint, formatting and strict types
+pass. The preceding 595-file audit seal is intact. No live calls or production
+prompt/gate changes occurred. No issue was closed or edited externally.
+
+Next is bounded local admission of positive, negative and uncertain authority
+controls from up to twelve saved reviews, seeking fresh families. Only then
+consider freezing the proposed 24-attempt B/H provenance comparison. No new
+experiment is frozen. All fourteen issue bodies/posted URLs remain unchanged;
+CW-007/CW-013 stay open and CW-014 remains unqualified. Live calls **PAUSED**;
+full workflow canary **ON HOLD**.
