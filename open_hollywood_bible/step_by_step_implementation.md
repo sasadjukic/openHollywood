@@ -11513,13 +11513,11 @@ Contract: [ADR 0045](../docs/adr/0045-read-only-assessment-authority-and-obligat
   recorded checks pass. Stop the sandbox async-startup stall and retain its log;
   the authorized local run outside the sandbox passes in 268.53s. Test credentials
   are removed; persistence tests use isolated fixtures. No live calls or app DB.
-- [ ] Next: inspect up to **12 saved ordinary-review captures** for three small
-  admission packets spanning positive, negative and unavailable/uncertain authority
-  contrasts. Retain a known control and fresh families if available. Preserve
-  ambiguous whole claims; report missing natural negatives/families rather than
-  presenting authored controls as natural-error precision. Only after justified
-  local admission, prepare the proposed **24-attempt Sol-high B/H** provenance
-  comparison and submit exact cases/requests/gold/budget/stops for approval.
+- [x] Complete the bounded admission pass over **12 saved ordinary-review captures**;
+  see the following entry. Admit ten positive and four uncertain whole-field
+  controls; hold eleven ambiguous readings. No clear natural negative or fresh
+  family was admitted. The proposed **24-attempt Sol-high B/H** comparison is
+  **not ready to freeze** from this selection; no requests or live budget prepared.
 
 Private root: `data/diagnostics/assessment-authority-integration-2026-11-07/`.
 No migration, dependency, API/client schema, exporter eligibility, production
@@ -11527,6 +11525,53 @@ prompt/profile/graph/gate, writer route or mandatory checkpoint change. All four
 issue bodies and posted URLs unchanged; CW-007/CW-013 remain open and CW-014 remains
 unqualified. No automatic semantic admission or story-quality qualification.
 **Step 19 IN PROGRESS; Step 20 NOT STARTED; live calls PAUSED; canary ON HOLD.**
+
+### Saved-review authority-control admission 2026-11-07
+
+Report: [local admissions, verification and B/H readiness](../docs/handoffs/reviewer-authority-admission-2026-11-07.md).
+
+- [x] Inspect the exact twelve previously exported ordinary-v61 probe reviews:
+  six initial and six post-revision, covering the two familiar Elara/Elena families.
+  Retain full prose, actual assignments/boundaries, whole reviewer fields, original
+  messages and local provenance. No replacements or additional semantic reviews.
+- [x] Preserve all **163 field dispositions** and author **10 positive / 0 negative /
+  4 unavailable-uncertain controls** with material components and illustrative
+  evidence locations. Hold eleven whole-field ambiguities; leave 138 other fields
+  without new authority gold. Do not claim a full 163-field accuracy rescore.
+- [x] Distinguish supported criticism of a defective draft from an unsupported
+  reviewer inference. Preserve uncertainty where the visible next-scene authority
+  lacks a starting-state field; do not fill the negative bucket with missing proof.
+  Hold known R1 historical violation/attribution and editorial/private-turn readings.
+- [x] Retain known R3/R4 controls. Apply R3 Q003's prospective date-relation reading
+  without adding realization; Q002/Q004 and the story assignment still require it.
+  Preserve all original gold and scores: **U 52/64; B 63/64**, B unqualified.
+- [x] Authenticate **450 scope-seal members**, **88 integration-seal members** and
+  **304 immutable source files** (overlapping checks). Keep 23 historical tracked
+  references separate, recording three subsequent implementation/documentation
+  changes. Recheck 11 old quotation occurrences / six unique texts across six
+  post-reviews; exact copying grants no event, obligation or repair-necessity credit.
+- [x] Pass **242 tests: 214 existing component + 28 private admission tests**,
+  repository lint/format/strict types for 230 Python files and the same checks for
+  four private helpers. Seven checks pass; retain the initial 303-versus-304 file
+  count assertion failure. All source works and fourteen issue bodies unchanged.
+- [x] Assess B/H readiness: **NOT READY from these saved reviews**. No clear natural
+  negative and no fresh family were admitted. This is not evidence that no model
+  errors exist or that other archives contain no suitable negatives.
+- [ ] Next: prepare an explicitly authored local authority-control set across
+  three fresh families, with supported, contradicted and unavailable-authority
+  claims, full context, explicit earlier/current assignments and reviewable
+  whole-field gold. Keep natural controls as calibration; make no natural-error
+  precision claim for authored negatives. After local admission, reconsider an
+  explicitly scoped **24-attempt B/H mechanism diagnostic**, then separately freeze
+  exact requests, scoring, budget and stops for approval before live endpoints.
+
+Private root: `data/diagnostics/reviewer-authority-admission-v61-2026-11-07/`.
+Only local audit helpers and documentation added. No production implementation,
+prompt/profile/graph/gate, schema, dependency, provider or database change. No
+inference/input-count/catalog/daemon calls; no external issue edits. All fourteen
+issue bodies and posted URLs unchanged. CW-007/CW-013 remain open; CW-014 remains
+unqualified. No new experiment frozen or approved. **Step 19 IN PROGRESS;
+Step 20 NOT STARTED; live calls PAUSED; full workflow canary ON HOLD.**
 
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 

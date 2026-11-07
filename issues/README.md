@@ -1415,3 +1415,28 @@ consider freezing the proposed 24-attempt B/H provenance comparison. No new
 experiment is frozen. All fourteen issue bodies/posted URLs remain unchanged;
 CW-007/CW-013 stay open and CW-014 remains unqualified. Live calls **PAUSED**;
 full workflow canary **ON HOLD**.
+
+### Saved-review authority-control admission — 2026-11-07
+
+The [bounded admission audit](../docs/handoffs/reviewer-authority-admission-2026-11-07.md)
+inspects the same twelve ordinary-v61 probe reviews. It admits **10 positive,
+0 clear negative and 4 unavailable/uncertain whole-field controls**, with eleven
+interpretation holds and 138 other fields without new authority gold. All 163
+field dispositions and complete source works are retained. Supported criticism
+of a defective draft is a positive reviewer-claim control; it cannot substitute
+for a negative test of false criticism.
+
+The proposed **24-attempt B/H comparison is not ready to freeze from this set**:
+no clear natural negative and no fresh family were admitted. Next is an explicitly
+authored local authority-control set with full context and supported, contradicted
+and unavailable cases. Such a mechanism diagnostic would not measure natural-error
+precision. Ambiguous whole claims and R1's historical-violation reading remain held.
+R3's prospective date/realization distinction does not rescore the old run.
+
+**242 tests pass (214 existing + 28 private)**; repository/private lint, formatting
+and strict types pass. The 450-member scope seal, 88-member integration seal and
+304 immutable source files verify; 11 historical quotation occurrences match.
+No production code, prompt, original gold or score changed. No model, input-count,
+catalog or daemon calls occurred; no new live plan was frozen. All fourteen issue
+bodies/posted URLs remain unchanged. CW-007/CW-013 stay open; CW-014 remains
+unqualified. Live calls **PAUSED**; full workflow canary **ON HOLD**.
