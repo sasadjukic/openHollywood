@@ -11557,13 +11557,11 @@ Report: [local admissions, verification and B/H readiness](../docs/handoffs/revi
 - [x] Assess B/H readiness: **NOT READY from these saved reviews**. No clear natural
   negative and no fresh family were admitted. This is not evidence that no model
   errors exist or that other archives contain no suitable negatives.
-- [ ] Next: prepare an explicitly authored local authority-control set across
-  three fresh families, with supported, contradicted and unavailable-authority
-  claims, full context, explicit earlier/current assignments and reviewable
-  whole-field gold. Keep natural controls as calibration; make no natural-error
-  precision claim for authored negatives. After local admission, reconsider an
-  explicitly scoped **24-attempt B/H mechanism diagnostic**, then separately freeze
-  exact requests, scoring, budget and stops for approval before live endpoints.
+- [x] Prepare the explicitly authored local control set; see the following entry.
+  Three fresh families admit **18 whole fields: six supported, six contradicted,
+  six unavailable**. Natural-review admissions and their unresolved gap remain
+  unchanged. Local controls now justify preparing a separate **24-attempt B/H
+  mechanism freeze**; no provider requests, live budget or approval yet exist.
 
 Private root: `data/diagnostics/reviewer-authority-admission-v61-2026-11-07/`.
 Only local audit helpers and documentation added. No production implementation,
@@ -11572,6 +11570,52 @@ inference/input-count/catalog/daemon calls; no external issue edits. All fourtee
 issue bodies and posted URLs unchanged. CW-007/CW-013 remain open; CW-014 remains
 unqualified. No new experiment frozen or approved. **Step 19 IN PROGRESS;
 Step 20 NOT STARTED; live calls PAUSED; full workflow canary ON HOLD.**
+
+### Authored authority controls and B/H readiness 2026-11-07
+
+Report: [three fresh families, verification and readiness](../docs/handoffs/reviewer-authored-authority-controls-2026-11-07.md).
+
+- [x] Author complete earlier/current scenes for the seed-house sluice, observatory
+  booking and cinema reel families. Supply explicit version-specific assignments,
+  authored reviewer allegations/requests and exact historical quotations. Declare
+  six named unavailable documents without inventing their contents.
+- [x] Admit **18 whole-field controls**, two supported, two explicitly contradicted
+  and two uncertain per family. Inspect every material component against full
+  sources and record prospective gold, rationales and adequate evidence. Keep
+  copying/attribution distinct from events, repair requests from obligations,
+  earlier/current authority separate, and date relations distinct from realization.
+- [x] Verify all 18 native scope/brief/obligation declarations in three six-unit
+  batches. Bind three quoted spans and three complete older-prose fields. Fix the
+  initial missing whole-body bindings without weakening the tracked contract.
+  Exact copying and structural consistency leave semantic support unassessed.
+- [x] Render **12 local B/H/order prototypes** with identical shared sources,
+  claims and briefs. H adds only a case-level derived provenance/copy receipt.
+  Verify both source/claim orders retain full context, deterministic repeats and
+  gold exclusion even when all labels/rationales are changed. Prototype sizes show
+  H adds **6,211–6,252 bytes**; token counts and live performance remain unmeasured.
+- [x] Pass **244 tests: 214 existing assessment tests + 30 new local tests**;
+  repository lint/format/strict types for 230 Python files and the same checks for
+  four private helpers. Seven checks pass. Authenticate the prior 55-file admission
+  seal. All fourteen issue bodies, old gold, evidence and scores remain unchanged.
+- [x] Assess readiness: **READY FOR LOCAL FREEZE of the 24-attempt authored B/H
+  mechanism comparison; NOT READY FOR LIVE EXECUTION**. Proposed shape remains
+  three packets × two conditions × two orders × two exact repeats: 144 fixed
+  claim slots if later frozen. Authored negatives do not establish natural-error
+  precision or resolve the saved-review admission gap.
+- [ ] Next: prepare the Sol-high adapter/model binding and exact provider requests;
+  verify input/output/reasoning headroom, freeze whole-claim scoring and evidence
+  criteria, token/cost budget, 24-attempt accounting and stops, then submit the
+  frozen plan for approval before either story-bearing endpoint. Measure delivery,
+  class-specific correctness, grounded coverage, repeat/order stability, latency
+  and usage separately. Keep saved natural controls as separate calibration.
+
+Private root: `data/diagnostics/reviewer-authored-authority-v61-2026-11-07/`.
+Only local authored material/helpers and documentation added. No production code,
+prompt/profile/graph/gate, schema, dependency, provider or database change. No
+inference/input-count/catalog/daemon or credential-store call. No external issue
+edit. CW-007/CW-013 remain open; CW-014 unqualified. No production, writer-preservation
+or craft success claimed. **Step 19 IN PROGRESS; Step 20 NOT STARTED;
+live calls PAUSED; full workflow canary ON HOLD.**
 
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 

@@ -1440,3 +1440,28 @@ No production code, prompt, original gold or score changed. No model, input-coun
 catalog or daemon calls occurred; no new live plan was frozen. All fourteen issue
 bodies/posted URLs remain unchanged. CW-007/CW-013 stay open; CW-014 remains
 unqualified. Live calls **PAUSED**; full workflow canary **ON HOLD**.
+
+### Authored authority controls — 2026-11-07
+
+The [local control preparation](../docs/handoffs/reviewer-authored-authority-controls-2026-11-07.md)
+adds three fresh fictional scene families and **18 whole-field controls: six
+supported, six explicitly contradicted and six unavailable/uncertain**. Complete
+earlier/current sources, actual assignment versions, review allegations/requests
+and claim-specific evidence obligations remain distinct. All gold is explicitly
+assistant-authored; these are not collected model errors or independent human gold.
+
+All 18 native declarations validate; three quoted spans and three complete older
+fields bind exactly. Twelve local B/H/order prototypes retain the same full sources,
+claims and briefs. H adds a derived provenance/copy receipt without hidden story facts
+or gold. Changing every gold label/rationale leaves the presentations unchanged.
+
+**244 tests pass (214 existing + 30 new)**, with repository/private lint, formatting
+and strict types. The earlier 55-file admission seal remains intact. The set is
+**ready for a local 24-attempt B/H mechanism freeze**, not live execution or production
+qualification. Exact requests, scoring, resource budgets and stops remain to be frozen
+and approved. The saved natural-negative gap and all earlier results stay unchanged.
+
+No production code/prompt, old gold or score changed. No provider, input-count,
+catalog, daemon or credential-store calls occurred. All fourteen issue bodies and
+posted URLs remain unchanged. CW-007/CW-013 stay open; CW-014 remains unqualified.
+Live calls **PAUSED**; full workflow canary **ON HOLD**.
