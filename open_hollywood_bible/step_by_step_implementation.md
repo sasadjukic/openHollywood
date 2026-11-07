@@ -11602,12 +11602,11 @@ Report: [three fresh families, verification and readiness](../docs/handoffs/revi
   three packets × two conditions × two orders × two exact repeats: 144 fixed
   claim slots if later frozen. Authored negatives do not establish natural-error
   precision or resolve the saved-review admission gap.
-- [ ] Next: prepare the Sol-high adapter/model binding and exact provider requests;
-  verify input/output/reasoning headroom, freeze whole-claim scoring and evidence
-  criteria, token/cost budget, 24-attempt accounting and stops, then submit the
-  frozen plan for approval before either story-bearing endpoint. Measure delivery,
-  class-specific correctness, grounded coverage, repeat/order stability, latency
-  and usage separately. Keep saved natural controls as separate calibration.
+- [x] Prepare the Sol-high adapter/model binding and exact provider requests;
+  freeze whole-claim scoring/evidence criteria, resource budget, accounting and
+  stops; verify locally and submit the 24-attempt plan below. Actual input counts
+  and server acceptance remain post-approval checks. Saved natural controls remain
+  separate calibration; neither story-bearing endpoint has been called.
 
 Private root: `data/diagnostics/reviewer-authored-authority-v61-2026-11-07/`.
 Only local authored material/helpers and documentation added. No production code,
@@ -11616,6 +11615,158 @@ inference/input-count/catalog/daemon or credential-store call. No external issue
 edit. CW-007/CW-013 remain open; CW-014 unqualified. No production, writer-preservation
 or craft success claimed. **Step 19 IN PROGRESS; Step 20 NOT STARTED;
 live calls PAUSED; full workflow canary ON HOLD.**
+
+### Sol-high authored-authority B/H frozen preparation 2026-11-07
+
+Plan: [24-attempt design, scoring, budget, stops and verification](../docs/handoffs/reviewer-authority-bh-frozen-plan-2026-11-07.md).
+
+- [x] Freeze three authored families and all **18 unchanged whole claims/gold**,
+  with two supported, two explicitly contradicted and two uncertain per family.
+  Preserve complete earlier/current sources, version-specific assignments,
+  allegations/requests and named unavailable records. No saved natural gold changed.
+- [x] Freeze **24 Sol-high attempts**: three families × B/H × two source/claim
+  presentation orders × two exact repeats. B supplies full sources and explicit
+  work briefs; H appends the source-only provenance/copy receipt. Gold stays out of
+  both. Freeze exact native schemas, messages, artifact identities, generation and
+  count bodies. Repeats are identical; pair execution order reverses on repeat two.
+- [x] Freeze **144 assessment slots**, 72 per condition and 24 per class/condition.
+  Separate delivery/binding, labels, full-component coverage, adequate citations
+  and faithful explanations. Require raw-final/request-bound inspection; retain
+  invalid/unrun slots in denominators without calling them semantic errors. Freeze
+  paired/stable recovery, regression and ceiling rules; no production qualification.
+- [x] Freeze 24-attempt accounting: at most **24 generations + 24 story-bearing
+  input-count POSTs**, plus 24 catalog GETs. Per attempt: 24k input, 32k generated
+  including reasoning, 600 active seconds and 25 catalog seconds. Planning allowance
+  **$14.40**; conservative reviewed-rate bound **$9.12**. Unknown usage remains null.
+  No retries, fallback, repair, continuation or released reservations. First delivery,
+  binding, usage, metadata, resource or transport failure retires the remainder.
+- [x] Verify actual adapter rendering against mocks, every fixed request and a
+  complete mocked run. Correct a pre-freeze native-schema serialization-order mismatch
+  locally, retaining superseded drafts. Verify strict schema/ID/reference boundaries,
+  hash drift, approval absence, cancellation, interrupted reservations and exclusive
+  locks. Confirm gold mutation cannot change requests. No production adapter changed.
+- [x] Pass **338 tests (85 private + 253 existing)** and all ten recorded checks:
+  repository lint/format/strict types for 230 Python files; private checks for ten
+  helpers; deterministic requests, scoring slots, budget and stops. Preserve the
+  64-member authored-controls seal. Seal **48 local files + 296 source pins**.
+- [x] Submit immutable plan SHA-256
+  `53638172ce2ead7f42810934478ce59dac69630eacea0d73f8d6775691d60d90`.
+  Public Sol documentation/rates rechecked; no account catalog or input-count check.
+- [x] Obtain separate approval for this frozen plan and full prose/context at
+  OpenAI Responses **and** its input-count endpoint. Execute once within 24 attempts,
+  inspect every fixed slot, document outcomes/overhead and update this tracker;
+  execution and results are recorded below. Gold, requests and rules stayed frozen.
+
+Private root: `data/diagnostics/reviewer-authority-bh-v61-2026-11-07/`.
+No live approval artifact, inference, input-count, catalog or daemon calls. Production
+code/prompts/profiles/graph/gates, writer routes and the Blueprint checkpoint remain
+unchanged. All fourteen issue bodies/posted URLs unchanged; no external issue edited.
+CW-007/CW-013 remain open; CW-014 unqualified. Authored mechanism results cannot
+establish natural-negative precision, necessary editing, preservation or story quality.
+**Step 19 IN PROGRESS; Step 20 NOT STARTED; diagnostic FROZEN AWAITING APPROVAL;
+live calls PAUSED; full workflow canary ON HOLD.**
+
+### Sol-high authored-authority B/H execution and inspection 2026-11-07
+
+Report: [completed comparison, evidence, resources and proposed local work](../docs/handoffs/reviewer-authority-bh-v61-results-2026-11-07.md).
+
+- [x] Record explicit approval against plan SHA-256
+  `53638172ce2ead7f42810934478ce59dac69630eacea0d73f8d6775691d60d90`.
+  Verify all 48 frozen files and 296 source pins before dispatch; execute once with
+  `gpt-6.1-sol` / `high`, unchanged native schema, exact requests and schedule.
+- [x] Complete **24/24 attempts**: 24 generation POSTs, 24 separate full-context
+  input-count POSTs and 24 catalog GETs. All deliveries and native completions valid;
+  every count/generation HTTP 200. No stop, retry, repair, continuation, fallback,
+  extra judge call or unreported usage. All attempts spent; no resampling allowance.
+- [x] Directly inspect **144/144 slots** against complete sources and prospective
+  whole-claim gold. Bind every annotation to its request and raw final. **B 72/72;
+  H 72/72 grounded**, including material coverage, adequate citations and faithful
+  explanations. Each class passes 24/24 per condition; each family passes 24/24.
+  All 36 family/claim/condition groups pass both orders and repeats. This is assistant
+  inspection against authored controls, not independent human adjudication.
+- [x] Apply the frozen decision: **72 grounded paired ties; zero recoveries and
+  zero regressions**. H's recovery criterion is not met; this is a ceiling tie.
+  Both arms distinguish allegations from events, genuine repair requests from current
+  assignment authority, old/current obligations, date relation from realization,
+  exact quotation from complete proof, and missing documents from available evidence.
+- [x] Reconcile usage: **164,312 input; 21,383 generated including 7,076 reasoning;
+  82,120 cached input**. Every counted input equals reported generation input. H adds
+  **21,192 input tokens (+29.6%)**. Mean active time B 10.40s / H 10.74s; this single
+  run does not establish a reliable causal latency penalty. Conservative reference
+  cost **$0.62461**, actual billing unverified, within $9.12 bound / $14.40 allowance.
+- [x] Revalidate sealed captures, exact wire/final bindings, completion hash and
+  source integrity; reproduce annotated scoring/accounting locally. The unchanged
+  338-test preparation baseline remains applicable. The new local analysis helper
+  passes lint/format/strict types. A local export's relative-path rejection was
+  resolved using absolute paths; no provider request or frozen edit resulted.
+- [x] Preserve all twelve successful B/H authority and uncertain-control pairs as
+  regressions; audit the read-only assessment/export path with B's full source/work-
+  brief context and the provenance/copy receipt available separately to the operator.
+  Local verification and the remaining supported-export gap are recorded below.
+- [ ] Require a materially harder, clearly admitted ordinary-review authority contrast
+  before another inference proposal. Do not repeat these ceiling controls as a
+  substitute for the unresolved natural-negative admission gap.
+
+Private results: `data/diagnostics/reviewer-authority-bh-v61-2026-11-07-results/`;
+sealed captures: sibling `reviewer-authority-bh-v61-2026-11-07-M-live/`.
+No production prompts/profiles/code/graph/gates, writer dispatch or Blueprint
+checkpoint changed. All fourteen issue bodies/posted URLs intact; no external issue
+edited. CW-007/CW-013 stay open; CW-014 remains unqualified. This result supports
+clear authored authority discrimination, not natural-review precision, edit necessity,
+preservation or craft. **Step 19 IN PROGRESS; Step 20 NOT STARTED;
+further live calls PAUSED; full workflow canary ON HOLD.**
+
+### B/H success regressions and read-only B export audit 2026-11-07
+
+Report: [preserved pairs, native rendering, boundaries and next steps](../docs/handoffs/reviewer-bh-b-export-audit-2026-11-07.md).
+
+- [x] Authenticate and preserve **636 unique historical files** from the sealed
+  preparation, sources, captures, results and contemporaneous public summaries.
+  Keep historical executable files inert. Preserve **all twelve B/H pairs,
+  24 actual responses and 144 recorded inspected slots**, with unchanged requests,
+  gold and annotations. The saved B 72/72 / H 72/72 ceiling tie is not a new inference
+  result, independent adjudication or model-repeatability measurement.
+- [x] Audit all **twelve B** native authority renders. Retain complete work/messages,
+  all twelve context documents, raw finals and actual delivery receipts. Parse exact
+  frozen message sections and match dispatch identities. Rebind only operator-side
+  work/declaration/request identities from the authored prototype; semantic content,
+  source bodies, obligations and all original artifacts remain unchanged.
+- [x] Retain **72 structurally consistent claim declarations and 24 exact historical
+  bindings** (eighteen unique claims, six unique bindings). Keep the case receipt
+  separate from B's model input. Report archive/visibility verification separately;
+  do not turn core preview flags, structural binding or authored free text into
+  semantic truth, prior-critic visibility, edit necessity or writer permission.
+- [x] Test drift, missing scope/authority/body/visibility, wrong source roles,
+  stale identities, irrelevant but bindable citations, literal-render escaping,
+  gold exclusion, failed delivery, explicit unknown usage, export provenance
+  rejection, path containment, exact reuse/conflict refusal and output secret checks.
+- [x] Audit current callers/exporters: no external static assessment-component
+  imports in **115 other application/engine/script files**; no native archive CLI
+  or production caller found. Ordinary-review database lineage and the registered
+  diagnostic-probe contract cannot admit these native B captures. Preserve both.
+- [x] Pass **345 tests: 77 new private + 214 existing assessment + 54 exporter**.
+  All eight recorded checks pass: repository lint/format/strict types for 230 Python
+  files, the same checks for four private helpers, deterministic replay and tests.
+  Preserve all original code, frozen input, raw capture and prior scoring hashes.
+- [ ] Next: implement a tracked read-only native diagnostic-assessment archive
+  adapter/CLI for the registered archive, selecting at most twelve B captures;
+  verify/export the same set with full context and separate operator receipt.
+  Authenticate exact identities, preserve usage/unknowns, refuse incompatible or
+  conflicting material and leave semantic judgments/readiness explicit. No provider,
+  production graph, writer dispatch or application database writes are needed.
+- [ ] Retain the natural-negative admission gap. Require a materially harder
+  ordinary-review authority contrast and defensible whole-claim gold before
+  another inference proposal; no new live experiment or budget is frozen.
+
+Private root: `data/diagnostics/reviewer-bh-b-export-audit-v61-2026-11-07/`.
+Only ignored local fixtures/audit helpers and documentation added. No production
+code/prompt/profile/graph/gate, canonical artifact, schema or dependency changed.
+No inference/input-count/catalog/daemon request or application database access.
+All fourteen issue bodies/posted URLs unchanged; no external issue edited.
+CW-007/CW-013 stay open; CW-014 remains unqualified. Rendering is locally verified;
+supported export integration and production/craft qualification remain incomplete.
+**Step 19 IN PROGRESS; Step 20 NOT STARTED; live calls PAUSED;
+full workflow canary ON HOLD.**
 
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 

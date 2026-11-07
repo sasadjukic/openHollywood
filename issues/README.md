@@ -1465,3 +1465,77 @@ No production code/prompt, old gold or score changed. No provider, input-count,
 catalog, daemon or credential-store calls occurred. All fourteen issue bodies and
 posted URLs remain unchanged. CW-007/CW-013 stay open; CW-014 remains unqualified.
 Live calls **PAUSED**; full workflow canary **ON HOLD**.
+
+### Sol-high B/H authority comparison frozen — 2026-11-07
+
+The [local frozen plan](../docs/handoffs/reviewer-authority-bh-frozen-plan-2026-11-07.md)
+uses three authored families, eighteen whole claims and **24 attempts / 144 fixed
+slots**. B supplies full context and explicit work briefs; H adds only the derived
+provenance/copy receipt. Six supported, six contradicted and six uncertain controls
+remain unchanged. This is an authored mechanism comparison, not natural-error precision.
+
+Exact requests, both presentation orders/repeats, native schema, gold, whole-claim
+scoring, adequate-evidence criteria, resource budget and first-failure stops are
+sealed. **338 tests pass (85 private + 253 existing)**; repository/private lint,
+formatting and strict types pass. The pre-freeze schema-order replay mismatch was
+fixed in local preparation; production code and old evidence were unchanged.
+
+Awaiting separate approval: at most 24 generations and 24 separate full-context
+input-count requests, with no retries. No live calls occurred. All fourteen issue
+bodies/posted URLs remain unchanged. CW-007/CW-013 stay open; CW-014 remains
+unqualified. Production prompts unchanged; live calls **PAUSED**; canary **ON HOLD**.
+
+### Sol-high B/H authority comparison completed — 2026-11-07
+
+The [completed comparison](../docs/handoffs/reviewer-authority-bh-v61-results-2026-11-07.md)
+used all **24 approved attempts**, with valid delivery and all **144 slots inspected**.
+**B and H each passed 72/72 grounded whole-claim assessments**, including all three
+support classes, scene families, presentation orders and repeats. There were zero
+paired recoveries/regressions: the frozen decision is a **ceiling tie**, not evidence
+that appending H improves accuracy. H added **29.6% input tokens**.
+
+Both arms handled explicit historical/current authority contrasts, authentic but
+non-authoritative requests, quotation versus event truth, realization scope and
+unavailable sources. These were deliberately clear authored controls and assistant
+inspection, not natural-error precision or independent human adjudication. The
+natural-negative admission gap and all prior failures remain open evidence.
+
+The approved run made 24 generations, 24 separate story-bearing count requests and
+24 catalog GETs, without retries or extra judge calls. Usage is fully reported;
+conservative reference cost is **$0.62461**, actual billing unverified. Frozen files,
+capture seals and native completions verify; the analysis reproduces locally.
+
+Proposed next work: preserve representative successful pairs as regressions, audit
+the read-only B context/export path while retaining the receipt for operator review,
+and require a materially harder admitted ordinary-review contrast before more
+inference. No production change or issue closure is implied. All fourteen issue
+bodies and posted URLs are unchanged. CW-007/CW-013 stay open; CW-014 remains
+unqualified. Further live calls **PAUSED**; full workflow canary **ON HOLD**.
+
+### B/H successes and read-only B export audit — 2026-11-07
+
+The [local audit](../docs/handoffs/reviewer-bh-b-export-audit-2026-11-07.md) preserves
+**all twelve B/H pairs, 24 responses and 144 recorded inspected slots** under an
+authenticated 636-file historical snapshot. Gold, requests and prior results remain
+unchanged: B 72/72 and H 72/72 is the saved ceiling tie, not a fresh inference result.
+
+All twelve B captures render through the tracked native authority view with full
+context, original messages/finals and actual delivery receipts. Operator-side
+identity rebinding leaves semantic declarations and historical bodies unchanged.
+The provenance/copy receipt stays separate from B's model input. Seventy-two
+structural findings and 24 exact bindings do not establish semantic truth, necessary
+editing or craft. Regressions explicitly retain those boundaries and writer denial.
+
+**345 tests pass (77 new private + 214 assessment + 54 exporter)**; all eight
+recorded checks pass, including repository/private lint, formatting, strict types
+and deterministic replay. Existing ordinary-review and diagnostic-probe exporters
+have incompatible provenance contracts; the native components have no supported
+archive CLI or production caller. Next is a small tracked read-only native archive
+exporter, initially for at most twelve B captures, followed by export verification.
+
+The natural-negative admission gap remains; harder defensible ordinary-review
+controls are required before another inference proposal. No live plan is frozen,
+no production prompt/code changed and no application database was accessed. All
+fourteen issue bodies/posted URLs remain intact; no external issue was edited.
+CW-007/CW-013 stay open; CW-014 remains unqualified. Live calls **PAUSED**;
+full workflow canary **ON HOLD**.
