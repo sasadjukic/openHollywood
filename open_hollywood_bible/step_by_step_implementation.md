@@ -11300,13 +11300,15 @@ Decision: [ADR 0044](../docs/adr/0044-read-only-assessment-work-brief-previews.m
   explicit. The full suite completes in 280.39s outside the Windows sandbox after
   an asyncio startup limitation and an undersized initial helper timeout. No live
   calls or production settings changed; no failed run is counted as passing.
-- [ ] Prepare a broader ordinary-review transfer workload from the existing
+- [x] Prepare a broader ordinary-review transfer workload from the existing
   twelve-capture / 163-field inventory. Admit unchanged whole fields from up to
   four saved review packets; preserve excluded/editorial/unresolved fields and
   visibility limits. If four broader packets qualify, propose a **32-attempt U/B
   comparison** (four packets × two conditions × two orders × two repeats), with
-  exact gold/evidence criteria and unchanged controls. No plan or new call budget
-  is frozen here; seek live approval only after local preparation.
+  exact gold/evidence criteria and unchanged controls. The following preparation
+  admits four packets for a **positive-claim transfer/evidence screen only**;
+  naturally wrong-claim precision remains untested. See its separate freeze and
+  approval boundary below.
 
 Private bundle: `data/diagnostics/reviewer-work-brief-integration-v61-2026-11-06/`.
 All fourteen issue bodies and posted URLs remain unchanged. CW-007/CW-013 remain
@@ -11314,6 +11316,170 @@ open; CW-014 remains unqualified. No production prompts, profiles, graph, routin
 acceptance gates, persistence, dependencies, API/client schema or canary changes.
 **Step 19 IN PROGRESS; Step 20 NOT STARTED; production prompts unchanged;
 live calls PAUSED; full workflow canary ON HOLD.**
+
+### Broader ordinary-review U/B admission and preparation 2026-11-06
+
+Plan: [ordinary-review positive-claim U/B comparison](../docs/handoffs/reviewer-ordinary-brief-frozen-plan-2026-11-06.md).
+
+- [x] Audit the existing twelve-capture / 163-field inventory and admit **16
+  unchanged whole fields from four saved packets**, all previously untested in
+  the ordinary-transfer diagnostic. Retain the original inventory and report
+  fields. Within the selected 56-field packet set, 36 fields remain held and four
+  are outside the four-field workload; the other 107 inventory fields retain their
+  prior disposition without new gold. No artificial negatives or rewritten claims.
+- [x] Declare the narrower qualification: all **16 gold judgments are supported**.
+  This tests missed support, scope substitution and material evidence coverage,
+  not naturally false-claim precision or uncertainty discrimination. Four packets
+  cover two closely related scene families; repeated slots are not independent.
+  Correct critic explanations can describe a genuinely defective draft.
+- [x] Preserve only historically visible story context, full current prose and
+  full raw reports. Keep prior allegations/excerpts distinct from current draft
+  events; do not expose complete recovered older prose as historical visibility.
+  Resolve **16 original inline locator occurrences** uniquely against their exact
+  current catalog/version without treating resolution as semantic proof. Historical
+  attribution still requires the historical record. Keep editorial and ambiguous
+  fields held; do not force historical-review roles into unsupported scope enums.
+- [x] Prepare **32 exact Sol-high U/B requests**, four fields each, with both orders
+  and two exact body repeats: **128 fixed slots / 64 per condition**. Twelve
+  post-review claims supply 96 slots; four initial-review claims supply 32. B adds
+  only the authored brief. No gold, new evidence or example reference enters model
+  input. Four fields differs from the earlier six; no causal historical recovery
+  claim. Require B 64/64 grounded, a paired U recovery and zero regressions for
+  the positive brief screen; all-grounded arms are a ceiling, not benefit.
+- [x] Retain the 24,000-input / 32,000-generated / 600-second per-attempt limits,
+  zero retries/fallback/resume, first-terminal stop and all missing fixed slots.
+  Budget at most **32 generations plus 32 separate story-bearing input counts**
+  and 32 catalog checks; **$19.20 planning / $12.16 conservative reservation**.
+  Exact input counts and current account availability remain unchecked. Full
+  prose/context at both OpenAI endpoints requires separate live approval.
+- [x] Pass **370 focused offline tests** (154 private and 216 tracked), including
+  the complete mock schedule and first-terminal stop. All twelve recorded checks
+  pass: repository Ruff/format/strict types for **228 Python files**, the same
+  checks for **19 private scripts**, deterministic preparation/scoring/limits,
+  admission and exact review rendering. Retain the 22 expected malformed-fixture
+  serializer warnings. Local async verification runs outside the Windows sandbox;
+  no provider traffic occurs. Freeze **68 files / 1,753 source fingerprints** under
+  plan SHA-256 `b6bec287634f81bcba4464eeb9326817144c639ccfbef976a28bfab98dfa1ab1`.
+  No real approval artifact or live execution directory exists.
+- [x] Obtain explicit approval of the frozen positive-claim plan before live
+  catalog/count/generation calls; execute once within 32 attempts and inspect all
+  128 slots. See the 2026-11-07 execution record below. The approved run is complete;
+  no additional inference or production promotion is authorized.
+
+Private bundle: `data/diagnostics/reviewer-ordinary-brief-v61-2026-11-06/`.
+All fourteen issue bodies and posted URLs remain unchanged. CW-007/CW-013 remain
+open; CW-014 remains unqualified. This does not establish ordinary-review precision,
+automatic brief authoring, edit necessity, prose preservation or story quality.
+No production code, prompts, profiles, graph, routing, acceptance gates, persistence,
+dependencies, API/client schema or human checkpoint changed.
+**Step 19 IN PROGRESS; Step 20 NOT STARTED; live calls PAUSED;
+full workflow canary ON HOLD.**
+
+### Broader ordinary-review U/B execution 2026-11-07
+
+Report: [ordinary-review U/B results](../docs/benchmark_reports/reviewer-ordinary-brief-v61-results-2026-11-07.md).
+
+- [x] Execute the exact approved **32-attempt Sol-high U/B** schedule once with
+  full prose/context at OpenAI Responses and its input-count endpoint. Record
+  **32 valid responses, 32 generations, 32 story-bearing counts and 32 catalog
+  checks**, zero retries/fallbacks/additional inference. Keep all 128 fixed slots.
+- [x] Inspect every slot and authenticate all **386 exact witnesses**. Frozen
+  outcomes: **U 52/64 grounded; B 63/64**, with **11 matched recoveries and zero
+  regressions**. Totals are **115 grounded / four semantic / nine citation-only /
+  zero unavailable**; 124/128 labels match gold and all 128 bindings are complete.
+  B **does not pass** the all-64 gate. It passes fifteen of sixteen four-slot claim
+  gates; U passes thirteen. Stable labels do not substitute for adequate evidence.
+- [x] Separate all three failure subjects: R1's four U historical-scope uncertainty
+  failures; R3's four U current-requirement/realization coverage failures and one
+  B realization omission; R4's four U missing historical-attribution citations.
+  The other 104 slots are grounded. Record all 64 matched, 64 repeat and 64 order
+  pairs; repeats and orders each have 64/64 label agreement but 57/64 both-grounded
+  pairs. The final B failure's identical first CP body passed.
+- [x] Preserve the interpretation limit: complete older prose is unavailable;
+  source excerpts, attributed allegations and historical event truth differ.
+  R3 Q003's text asserts corrected dates and a required gap, while the frozen
+  rubric additionally demands realization. Retain the original failure/score and
+  flag a local materiality/authority audit rather than retroactively relaxing gold
+  or inferring a need for a story edit. All sixteen gold labels are supported;
+  natural false-positive precision remains untested.
+- [x] Account for **737,060 input / 78,892 generated tokens**, including **34,530
+  reasoning**, and 403,099 cached input tokens. Active count/generation time is
+  **940.02s**, median 28.43s, maximum 51.06s. Conservative frozen-rate reference cost
+  **$2.631570**; actual billing unknown. Maximum input count **23,568/24,000** and
+  generation **3,695/32,000**. No delivery/resource stop or truncation occurred.
+- [x] Pass **16 new offline result tests** and all nine final recorded checks.
+  Repository lint/format/strict types pass for **228 Python files**; private checks
+  cover **24 scripts**. Correct the test helper's fixed-fence assumption, preserve
+  its initial failed check and rerun all result tests; no capture/gold/score changes.
+  All **68 frozen files / 1,753 source fingerprints** remain unchanged. The 370
+  preparation tests are retained, not counted as newly rerun. No new live calls.
+- [x] Preserve the failure/recovery pairs and passing identical controls as local
+  regressions. Audit historical event/claim/excerpt scope and provenance, then R3's
+  minimum material evidence, realization demand and requested-repair versus actual
+  assignment authority. Keep this run's scoring intact and document any later gold
+  amendment separately. Assess a bounded read-only representation in the existing
+  component; require defensible false-claim controls and a materially justified
+  hypothesis before more inference. No new experiment or budget frozen here.
+
+Private roots: `data/diagnostics/reviewer-ordinary-brief-v61-2026-11-06/`, its
+`-M-live/` sibling, and `data/diagnostics/reviewer-ordinary-brief-v61-2026-11-07-analysis/`.
+All fourteen issue bodies and posted URLs remain unchanged. CW-007/CW-013 stay open;
+CW-014 remains unqualified. No production prompts, profiles, graph, routing, gates,
+persistence, dependencies, API/client schema or mandatory human checkpoint changed.
+No precision, automatic brief authoring, edit necessity, preservation or story-quality
+qualification. **Step 19 IN PROGRESS; Step 20 NOT STARTED; further live calls PAUSED;
+full workflow canary ON HOLD.**
+
+### Historical authority and R3 materiality audit 2026-11-07
+
+Report: [historical evidence authority and realization audit](../docs/handoffs/reviewer-historical-authority-audit-2026-11-07.md).
+
+- [x] Preserve **566 exact files**, authenticate the 470-file evaluation seal and
+  all **68 frozen files / 1,753 historical fingerprints**. Replay 32 requests,
+  128 slots and **386 exact witnesses**; retain all **64 U/B, 64 repeat and 64
+  order pairs**, including the final R3 B failure and identical passing control.
+  Original scores stay **U 52/64; B 63/64**, 11 recoveries, zero regressions;
+  B still fails its frozen all-64 gate. No retrospective gold or score changes.
+- [x] Trace historical evidence through the version-bound critic resolver,
+  saved issue, repair-record copy and local probe validation. Recheck **five
+  unique exact quotations across three post-review packets**, source draft and
+  critique versions, target/index, scene/revision, body/field hashes and offsets.
+  Complete older prose and verification proof remain local-only, not historically
+  visible model evidence. An authentic excerpt does not certify the critic's
+  interpretation, historical obligation or edit necessity.
+- [x] Retain R1's event/violation-versus-attribution ambiguity for future admission;
+  do not silently weaken the whole field to the recorded allegation. Preserve R4's
+  material historical-attribution requirement and current decision evidence.
+- [x] Audit R3 Q003 against its complete selected field. Record a **separate
+  prospective materiality decision**: history, current dates and actual authority
+  for the required gap are material; character realization is not a separate
+  assertion of this field. Realization remains material to Q002/Q004 and the
+  actual scene assignment. Keep four authored semantic contrasts separate from
+  model evidence, and keep the original realization-based failure and score.
+- [x] Assess the existing read-only component: its source-role vocabulary cannot
+  distinguish historical assertion, bound excerpt and requested repair. Do not map
+  those to current draft/assignment to force structural admission. No production
+  schema, prompt, renderer, caller or writer permission changed in this audit.
+- [x] Pass **62 private + 214 tracked tests (276 distinct)**, repository
+  lint/format/strict types for **228 Python files**, and the same checks for five
+  audit scripts; all eight final checks pass. Preserve initial development/check
+  failures, restore four lint-modified archive copies from unchanged hashed
+  originals, and resolve test temporary-directory setup locally. All originals
+  and final copies reauthenticate. No live calls, credentials or application DB.
+- [ ] Next: a bounded read-only authority/materiality integration slice with
+  explicit historical roles, binding/visibility receipts and authored material
+  obligations. Then admit defensible positive/negative authority controls and
+  fresh families. If justified, prepare the proposed **24-attempt B/H receipt
+  comparison** (three packets × two conditions × two orders × two repeats),
+  with equal prospectively audited gold and unchanged model/settings. No cases,
+  requests, budget or approval for that experiment are frozen here.
+
+Private root: `data/diagnostics/reviewer-historical-authority-v61-2026-11-07/`.
+All fourteen issue bodies and posted URLs remain unchanged; no external issue
+edited. CW-007/CW-013 stay open; CW-014 remains unqualified. No automatic semantic
+admission, natural-error precision, repair necessity, preservation or story-quality
+claim. Production prompts/profiles/graph/gates unchanged. **Step 19 IN PROGRESS;
+Step 20 NOT STARTED; live calls PAUSED; full workflow canary ON HOLD.**
 
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 

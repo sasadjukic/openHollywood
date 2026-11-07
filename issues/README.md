@@ -1283,3 +1283,106 @@ CW-007/CW-013 gain regression/integration evidence; CW-014 remains unqualified.
 All fourteen issues remain open, with their original bodies and posted URLs
 unchanged. No external issue was edited. Production prompts unchanged; live calls
 **PAUSED**; full workflow canary **ON HOLD**.
+
+### Broader ordinary-review U/B admission and freeze — 2026-11-06
+
+The [frozen positive-claim transfer plan](../docs/handoffs/reviewer-ordinary-brief-frozen-plan-2026-11-06.md)
+admits **16 unchanged whole fields from four saved packets** in the existing
+twelve-capture / 163-field inventory. The new fields cover post-review historical
+attribution/current correction, compound explanations and quoted source locators.
+Full original reports and historically visible story context remain intact;
+editorial, ambiguous and unavailable-authority claims remain held. Sixteen original
+inline locator occurrences resolve uniquely without becoming semantic proof.
+
+All sixteen gold labels are **supported**. This qualifies only for missed-support,
+scope and evidence-coverage testing; naturally false-claim precision and uncertainty
+discrimination are untested. Four packets cover two closely related scene families.
+No artificial negative cases or changed historical scores were introduced.
+
+The **32-attempt Sol-high U/B** plan crosses both orders and exact repeats, with
+four fields per request: **128 slots, 64 per condition**. B adds only an authored
+question/time/authority/evidence brief. It must ground all 64 slots, recover a
+paired U failure and introduce no regression to pass this limited screen; a shared
+ceiling establishes no benefit. The maximum is 32 generations plus 32 separate
+story-bearing input counts, with zero retries and first-terminal stopping.
+Planning allowance is **$19.20**, conservative frozen-rate reservation **$12.16**;
+actual billing and input counts remain unknown.
+
+**370 focused offline tests** pass (154 private / 216 tracked), with repository
+lint/format/strict types for 228 Python files and the same checks for 19 private
+scripts. All twelve recorded checks pass; expected malformed-fixture warnings are
+retained. The seal binds **68 files / 1,753 source fingerprints**. No catalog,
+input-count or generation call occurred; no real approval or live run exists.
+
+CW-007/CW-013 receive admission/preparation evidence only; CW-014 remains
+unqualified. All fourteen issues remain open, their bodies/posted URLs unchanged.
+No external issue was edited. Automatic brief authoring, precision, repair necessity
+and story quality remain unqualified. Production prompts unchanged; live calls
+**PAUSED pending approval**; full workflow canary **ON HOLD**.
+
+### Broader ordinary-review U/B execution — 2026-11-07
+
+The [completed comparison](../docs/benchmark_reports/reviewer-ordinary-brief-v61-results-2026-11-07.md)
+used exactly **32 attempts**, 32 generations, 32 story-bearing counts and 32 catalog
+checks, with zero retries. All responses are valid; all **128 slots** were inspected.
+Frozen outcomes: **U 52/64; B 63/64 grounded**, with **11 matched recoveries and no
+regressions**. B **fails the frozen all-64 gate**. All 386 quotations bind exactly;
+the remaining problems concern scope or evidence coverage, not location failure.
+
+Four U failures concern Elara's recorded crossing versus unavailable full historical
+prose. Four U date-correction and four U decision-correction slots have citation
+coverage/authority failures. The final B date-correction slot omits realization
+evidence required by the frozen criterion, despite citing it for other claims.
+Its identical first CP response passed. All other 104 slots are grounded.
+
+The criterion's materiality needs local examination: the selected correction text
+expressly asserts corrected dates and a required gap, whereas the rubric additionally
+requires realization. Historical event truth, attributed claims, verified excerpts
+and requested changes also have different authority. Preserve the measured scores;
+do not silently remove the failed gate or conclude that a story rewrite is needed.
+All gold is supported, so naturally false-claim precision remains untested.
+
+Usage: **737,060 input / 78,892 generated**, including **34,530 reasoning**;
+**$2.631570** conservative frozen-rate reference cost, actual billing unknown.
+**16 new offline result tests** and all final repository/private checks pass. The
+initial test-helper fence assumption was corrected with its failed record retained;
+no model output, gold or score changed. All **68 frozen files / 1,753 fingerprints**
+remain intact. The 370 preparation tests were not counted as newly rerun.
+
+Next recommended work is local regression preservation and an audit of historical
+source scope/provenance and minimum material evidence before any further inference.
+CW-007/CW-013 remain open; CW-014 remains unqualified. All fourteen issue bodies and
+posted URLs are unchanged; no external issue was edited. Production prompts unchanged;
+live calls **PAUSED**; full workflow canary **ON HOLD**.
+
+### Historical authority and R3 materiality audit — 2026-11-07
+
+The [local audit](../docs/handoffs/reviewer-historical-authority-audit-2026-11-07.md)
+preserves **566 exact files**, all 128 inspected slots and 386 witness bindings,
+and all failure/recovery/repeat/order pairs. Frozen scores remain **U 52/64;
+B 63/64**, with 11 recoveries and no regressions; B's failed gate is unchanged.
+
+All **five historical quotations across three post-review packets** match their
+bound saved drafts. Exact copying, critic attribution, historical event truth,
+requested repair and actual assignment authority remain distinct. Complete old
+prose was recovered locally; it was not model-visible evidence. R1's whole-field
+event/violation reading remains an admission question, not a demonstrated general
+model incapacity.
+
+R3 Q003 asserts corrected dates and a required gap, not a separate realization
+event. A prospective materiality decision removes that extra predicate only from
+a future assessment of this field; Q002/Q004 and the scene assignment still require
+realization. Original gold and scores are untouched. No story edit is warranted
+merely by this evaluation mismatch.
+
+**62 new private + 214 existing tracked tests pass**, with repository and private
+lint/format/strict types. All 68 frozen files / 1,753 source fingerprints and final
+archive copies match. The report records development corrections and successful
+verification; no live/model/input-count/catalog/daemon calls occurred.
+
+Next is a bounded read-only authority/materiality integration slice and admission
+of positive/negative controls before considering the proposed 24-attempt B/H
+provenance-receipt diagnostic. No next cases, requests or budget are frozen.
+CW-007/CW-013 remain open; CW-014 remains unqualified. All fourteen issue bodies
+and posted URLs are unchanged, with no external issue edit. Production prompts
+unchanged; live calls **PAUSED**; full workflow canary **ON HOLD**.
