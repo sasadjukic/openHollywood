@@ -1673,3 +1673,80 @@ holds and semantic nonqualification visible and writer permission false. Natural
 negative/fresh-family gaps remain; no live plan or budget is frozen. All fourteen
 issue bodies and posted URLs unchanged; CW-007/CW-013 remain open and CW-014
 unqualified. Live calls **PAUSED**; full workflow canary **ON HOLD**.
+
+### Source-bound completion publication design — 2026-11-12
+
+The [design report](../docs/handoffs/assessment-completion-design-2026-11-12.md)
+and [proposed ADR 0049](../docs/adr/0049-source-bound-assessment-completion-publication.md)
+define an authored-fixture submission and read-only publisher over registered probe
+intakes. Original source authentication, authored response provenance and derived
+binding/completion remain distinct; a model-origin label or matching hashes cannot
+establish a new model delivery. All semantic and editing qualification stays open.
+
+The same six claims retain 51 fields, four holds and 41 unselected fields. Four
+private design previews reuse all 24 files exactly. Checks refuse 29 invalid
+source/submission mutations and six parser mutations; **268 existing tests pass**,
+plus lint, formatting and strict types. Prior source evidence remains intact.
+No production code, prompt, model call or user database access is involved.
+
+Next: implement and qualify the narrow authored-fixture/probe-only application
+publisher, including filesystem/secret/drift failures. The design is complete;
+that implementation and authenticated model-delivery support remain pending.
+Natural-negative and fresh-family gaps remain; no live plan or budget is frozen.
+All fourteen issue bodies and posted URLs unchanged. CW-007/CW-013 remain open;
+CW-014 unqualified. Production prompts unchanged; live calls **PAUSED**;
+canary **ON HOLD**.
+
+
+### Read-only authored completion publisher — 2026-11-12
+
+The [implementation report](../docs/handoffs/assessment-completion-publisher-2026-11-12.md)
+and [accepted ADR 0049](../docs/adr/0049-source-bound-assessment-completion-publication.md)
+record a tracked source-bound completion component, read-only application publisher
+and operator `prepare`/`publish` commands. Only explicitly authored responses over
+registered probe sources are accepted; existing B archive eligibility is unchanged.
+
+The same six claims retain 51 fields, four holds and 41 unselected fields. All
+24 completion files publish and reuse byte/mtime-exactly. Source/response/scope
+bindings and native completion are recomputed; semantic support, adequate evidence,
+necessary editing and craft remain unassessed, and writer permission remains false.
+
+**544 tests pass (72 new + 472 existing)**, plus lint, formatting and strict types.
+Checks cover source/terminal-history retention, strict submissions, protected paths,
+secret and drift refusal, exclusive writes, partial-output preservation and exact
+reuse. Original source pins and prior evidence remain intact. No live calls or
+user database access occurred; production prompts remain unchanged.
+
+Next: a bounded local provenance/admission audit of up to six saved assessment
+deliveries, then a minimal authenticated-delivery adapter design if justified.
+Do not invent missing request/terminal evidence. No live plan or budget is frozen.
+All fourteen issue bodies and posted URLs unchanged; CW-007/CW-013 remain open,
+CW-014 unqualified. Natural-negative/fresh-family and story-quality gaps remain.
+Live calls **PAUSED**; full workflow canary **ON HOLD**.
+
+
+### Six saved assessment deliveries — 2026-11-12
+
+The [local admission audit](../docs/handoffs/assessment-delivery-admission-2026-11-12.md)
+verified six historical B deliveries across all three families and both orders.
+All six qualify under their original registered native archive contract; their
+36 slots represent eighteen distinct authored claims. The existing exporter already
+supports them and remains unchanged.
+
+None matches the current N06/N07/N10/N11 intake works: all 24 cross-work attachments
+are refused. Twelve additional checks refuse count/generation body hashes substituted
+for frozen request identity. Terminal/usage/final evidence is retained, while omitted
+response-level IDs, headers, reasoning items and raw HTTP bytes remain explicitly
+absent. No provider-signed attestation or actual billed cost is inferred.
+
+**369 existing tests pass**, plus lint, formatting and strict types. Earlier source
+and implementation evidence is preserved. No application code, prompts, tests,
+exporter eligibility, model call or user database access changed.
+
+Next: design the prospective intake-bound request/terminal contract locally, with
+separate digest namespaces and explicit failed/unknown-usage behavior. Reuse the
+existing archive exporter instead of adding a duplicate adapter. This six-delivery
+positive selection does not qualify broader delivery support or story quality.
+No live plan is frozen. All fourteen issue bodies/posted URLs unchanged;
+CW-007/CW-013 remain open, CW-014 unqualified. Live calls **PAUSED**;
+full workflow canary **ON HOLD**.

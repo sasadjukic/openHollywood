@@ -1,0 +1,143 @@
+{
+  "$comment": "Shape specification generated from the authored submission parser. Source authentication and completion are recomputed by the application.",
+  "$defs": {
+    "AuthoredAttempt": {
+      "additionalProperties": false,
+      "properties": {
+        "batch_id": {
+          "maxLength": 200,
+          "minLength": 1,
+          "pattern": "\\S",
+          "title": "Batch Id",
+          "type": "string"
+        },
+        "fixture_id": {
+          "maxLength": 200,
+          "minLength": 1,
+          "pattern": "\\S",
+          "title": "Fixture Id",
+          "type": "string"
+        },
+        "local_input_bytes_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Local Input Bytes Sha256",
+          "type": "string"
+        },
+        "raw_final": {
+          "maxLength": 64000,
+          "minLength": 1,
+          "title": "Raw Final",
+          "type": "string"
+        }
+      },
+      "required": [
+        "fixture_id",
+        "batch_id",
+        "local_input_bytes_sha256",
+        "raw_final"
+      ],
+      "title": "AuthoredAttempt",
+      "type": "object"
+    },
+    "SourcePin": {
+      "additionalProperties": false,
+      "properties": {
+        "briefs_canonical_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Briefs Canonical Sha256",
+          "type": "string"
+        },
+        "declarations_canonical_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Declarations Canonical Sha256",
+          "type": "string"
+        },
+        "intake_manifest_bytes_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Intake Manifest Bytes Sha256",
+          "type": "string"
+        },
+        "intake_result_bytes_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Intake Result Bytes Sha256",
+          "type": "string"
+        },
+        "review_id": {
+          "maxLength": 200,
+          "minLength": 1,
+          "title": "Review Id",
+          "type": "string"
+        },
+        "source_canonical_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Source Canonical Sha256",
+          "type": "string"
+        },
+        "source_origin": {
+          "const": "diagnostic_probe",
+          "title": "Source Origin",
+          "type": "string"
+        },
+        "work_canonical_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Work Canonical Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "source_origin",
+        "review_id",
+        "intake_manifest_bytes_sha256",
+        "intake_result_bytes_sha256",
+        "source_canonical_sha256",
+        "work_canonical_sha256",
+        "declarations_canonical_sha256",
+        "briefs_canonical_sha256"
+      ],
+      "title": "SourcePin",
+      "type": "object"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "attempts": {
+      "items": {
+        "$ref": "#/$defs/AuthoredAttempt"
+      },
+      "maxItems": 12,
+      "minItems": 1,
+      "title": "Attempts",
+      "type": "array"
+    },
+    "authored_by": {
+      "maxLength": 1200,
+      "minLength": 1,
+      "pattern": "\\S",
+      "title": "Authored By",
+      "type": "string"
+    },
+    "contract": {
+      "const": "assessment-authored-submission-1",
+      "title": "Contract",
+      "type": "string"
+    },
+    "origin": {
+      "const": "authored_fixture",
+      "title": "Origin",
+      "type": "string"
+    },
+    "source": {
+      "$ref": "#/$defs/SourcePin"
+    }
+  },
+  "required": [
+    "contract",
+    "origin",
+    "authored_by",
+    "source",
+    "attempts"
+  ],
+  "title": "AuthoredSubmission",
+  "type": "object"
+}

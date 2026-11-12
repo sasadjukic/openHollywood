@@ -11985,11 +11985,12 @@ Existing contracts: ADRs 0041–0044, 0046–0048. No new production contract in
   six-claim rehearsal; database tests use isolated fixtures and fake gateways.
 - [x] Preserve all 71 prior qualification members, earlier admission/intake seals and
   1,166 original source pins. No application database access or production code changes.
-- [ ] Design a bounded source-bound completion envelope and read-only publisher.
+- [x] Design a bounded source-bound completion envelope and read-only publisher.
   Distinguish authored fixtures from authenticated model delivery, preserve intake
   dispositions and exact request/source bindings, recompute validation/completion,
   and expose semantic nonqualification. Qualify against these same six claims before
   adding a general CLI or route. Do not route from complete_delivery alone.
+  Completed in the bounded design entry below; application implementation remains pending.
 - [ ] Keep natural-negative/fresh-family and story-quality gaps explicit. Authored
   unsupported labels are not negative gold. More inference needs a materially
   different question, defensible contrasts and a separately approved frozen plan.
@@ -12000,6 +12001,160 @@ fourteen issue bodies and posted URLs unchanged; no external issue edited.
 CW-007/CW-013 remain open; CW-014 unqualified. Production prompts/profiles/graph/gates,
 writer routing, canonical artifacts, schemas and Blueprint checkpoint unchanged.
 **Step 19 IN PROGRESS; Step 20 NOT STARTED; live calls PAUSED; canary ON HOLD.**
+
+### Source-bound completion publication design 2026-11-12
+
+Report: [envelope, publication boundary and verification](../docs/handoffs/assessment-completion-design-2026-11-12.md).
+Decision: [proposed ADR 0049](../docs/adr/0049-source-bound-assessment-completion-publication.md).
+Contract: [design-only submission schema](../docs/contracts/assessment-completion-submission-design-1.schema.json).
+
+Status: bounded local design **COMPLETE**; application publisher implementation
+**NOT STARTED**. No new inference experiment or budget is frozen.
+
+- [x] Specify an authored-fixture submission over registered diagnostic-probe intake.
+  Keep original-source authentication, new-response provenance and derived completion
+  distinct. Reject model-delivery labels and caller approval/receipt/usage fields;
+  no self-supplied hash or manifest establishes provider provenance.
+- [x] Bind exact source/intake/manifest, work, declarations, briefs, original batches
+  and offline input bytes. Recompute native binding and completion; require all
+  expected batches exactly once and both complete delivery and binding.
+- [x] Define full-envelope JSON/Markdown, fixed files, manifest-last publication,
+  secret checks, resource bounds, source-drift refusal, protected paths, exclusive
+  creation and byte-exact reuse. Filesystem implementation/qualification remains pending.
+  Keep semantic support, evidence adequacy, necessary editing and craft unassessed;
+  writer permission false. Authored usage is not applicable, never measured inference.
+- [x] Verify the same **six claims in four works**, retaining **51 fields, four holds
+  and 41 unselected fields**. Authenticate the complete original source bundles,
+  retain raw baseline responses and reuse all **24** preview files byte/mtime-exactly.
+  Refuse **29** source/submission mutations and **six** parser mutations; pass valid
+  controls through the same parser. Exercise multi-batch coverage with a separate
+  authored toy, not a new admission or model observation.
+- [x] Pass **268 applicable existing tests**, including the 25 rehearsal tests;
+  Ruff/format/strict mypy pass for **246 files** (244 repository + two private helpers).
+  Retain the existing 56 mutation-fixture warnings. Real-source checks block network
+  and SQLite. Earlier seals and **1,166 original source pins** remain unchanged.
+- [x] Implement the tracked pure envelope and read-only authored-fixture/probe-only
+  publisher/command. Qualify filesystem failure, secret, drift and exact-reuse behavior
+  and replay these same six claims. Keep registered B exporter eligibility unchanged.
+  Completed in the implementation entry below; authenticated model deliveries remain deferred.
+- [ ] Separately design and qualify authenticated saved-model-delivery provenance
+  and any SQLite completion-publication branch before admitting them. No production
+  route or live request is enabled by this design.
+- [ ] Retain natural-negative, fresh-family, necessary-edit and story-quality gaps.
+  Authored labels do not fill them; another live comparison needs a materially new
+  question and a separately approved frozen plan.
+
+Private root: `data/diagnostics/assessment-completion-design-2026-11-12/`.
+Only design documentation/schema added to tracked files. Production code, tests,
+dependencies, artifact/database schemas, prompts/profiles/graph/gates and Blueprint
+checkpoint unchanged. All fourteen issue bodies/posted URLs unchanged.
+CW-007/CW-013 remain open; CW-014 unqualified.
+**Step 19 IN PROGRESS; Step 20 NOT STARTED; live calls PAUSED; canary ON HOLD.**
+
+### Read-only authored completion publisher 2026-11-12
+
+Report: [implementation, replay and next step](../docs/handoffs/assessment-completion-publisher-2026-11-12.md).
+Decision: [accepted ADR 0049](../docs/adr/0049-source-bound-assessment-completion-publication.md).
+
+Status: narrow implementation and local qualification **COMPLETE**. New model
+deliveries and SQLite completion publication remain unsupported. No live plan frozen.
+
+- [x] Add a pure source-bound authored completion component, read-only application
+  service and `scripts/assessment_completion.py`. `prepare` generates exact offline
+  inputs and an incomplete template; `publish` revalidates explicit author/source/
+  input/batch/raw-response bindings and recomputes native binding and completion.
+- [x] Authenticate registered probe sources through the existing collector, including
+  October 17 external parents. Verify the complete intake bundle and recompile its
+  selected work. Accept no caller trust pins, receipts, usage or approval fields.
+  Reject future model-delivery and saved-database origin labels.
+- [x] Retain the full original pending intake, holds, unselected fields, declarations
+  and briefs. Preserve authored origin and usage-not-applicable metadata. Complete
+  delivery/binding grants no factual, evidence-adequacy, editorial, craft, necessary-edit
+  or writer approval. Keep the registered B archive exporter unchanged.
+- [x] Implement bounded secret-checked JSON/Markdown publication, source/submission
+  drift refusal, disjoint protected paths, exclusive creation, manifest-last commits
+  and exact reuse. Refuse linked/traversal paths and partial/extra/changed output;
+  retain interrupted output without automatic repair or deletion.
+- [x] Pass **544 applicable tests: 72 new (32 domain, 40 application/CLI) + 472 existing**.
+  Ruff/format/strict mypy pass for **251 files** (250 repository + one acceptance helper).
+  Existing 56 mutation warnings retained. Full suite passed outside the Windows sandbox
+  after an existing async saved-review test stalled there; isolated test databases only.
+- [x] Replay the same **six claims across N06/N07/N10/N11** through the tracked command.
+  Keep **51 fields, four holds and 41 unselected fields**; retain unchanged authored
+  raw responses and all original scopes. Create twelve preparation files and 24
+  publication files; verify byte/mtime-exact reuse of all publication files.
+- [x] Preserve **1,166 original source pins**, **1,516 prior private evidence members**
+  and all 711 existing baseline files outside the five authorized documentation
+  updates. Preserve pre-change design-document hashes. Network/SQLite blocked in
+  the real-source replay; no user database access or live inference.
+- [x] Audit provenance/admission for up to six saved assessment deliveries locally.
+  Require exact saved request, source/work/scope/batch identity, raw response, terminal
+  outcome and honest usage. Record non-results for missing/mismatched bindings; never
+  invent a request history or promote authored fixtures into model evidence.
+  Completed in the six-delivery audit below: original archive admission 6/6,
+  attachment to the four current intake works 0/24.
+- [ ] Use that audit to design the smallest authenticated-delivery adapter and local
+  failure fixtures. Any new inference needs a separately approved frozen plan.
+  SQLite completion publication, production routing and writer dispatch stay deferred.
+
+Private root: `data/diagnostics/assessment-completion-publisher-2026-11-12/`.
+No existing runtime/test module, registered archive eligibility, dependency, migration,
+API/client contract, production prompt/profile/graph/gate, canonical artifact or human
+checkpoint changed. Six additive Python files, generated schema and documentation.
+All fourteen issue bodies and posted URLs unchanged; CW-007/CW-013 remain open,
+CW-014 unqualified. Natural-negative, fresh-family and story-quality gaps remain.
+**Step 19 IN PROGRESS; Step 20 NOT STARTED; live calls PAUSED; canary ON HOLD.**
+
+### Six saved assessment deliveries: provenance and readiness 2026-11-12
+
+Report: [local admission audit and adapter readiness](../docs/handoffs/assessment-delivery-admission-2026-11-12.md).
+
+Status: bounded audit **COMPLETE**. Existing native B export remains qualified;
+the selected deliveries cannot complete current intake. Ready for prospective
+request/terminal contract design, not broader adapter implementation or live inference.
+
+- [x] Fix six candidates before inspection: first B repeat, three families and both
+  presentation orders. Authenticate the registered immutable archive's **636 source
+  members** using the existing exporter; inspect no additional delivery. Historical
+  programs remain inert. Confirm selected entries exactly equal earlier saved exports.
+- [x] Admit **6/6 original deliveries**, retaining **36 slots / eighteen distinct
+  authored claims**, complete context, request/body/final identities, terminal metadata,
+  known token usage and unknown actual billing. All are historical Sol-high responses
+  on authored controls; none is new inference or a new semantic judgment.
+- [x] Compare each delivery with N06/N07/N10/N11. All **24 cross-work attachments**
+  are refused by the native binder; source/work/claim/unit/declaration/brief identities
+  differ. Shared `batch-001` names do not confer authority. Current preparation remains
+  explicitly authored offline input, with no corresponding provider request in these
+  selected deliveries. This is a bounded selection, not an exhaustive archive census.
+- [x] Audit digest namespaces and confirm **twelve wrong-request refusals** when count
+  or generation body hashes replace frozen request identity. Preserve original and
+  derived operator auxiliary records separately; certify no earlier critic visibility.
+- [x] Audit the pinned capture's safe retention as text, without executing it. Full
+  final text and terminal/usage evidence remain; response-level IDs, headers, reasoning
+  items and original HTTP response bytes are absent. The saved raw digest is not
+  independently recomputable from the sanitized body. Retain the registered local
+  integrity contract; do not claim provider-signed proof or invent missing metadata.
+- [x] Pass **369 applicable existing tests**, plus Ruff/format/strict mypy on **251
+  files** (250 repository + one audit helper). Retain 56 existing mutation warnings.
+  Block all network/SQLite in actual audit. Preserve **821 prior private members**,
+  source hashes/mtimes, ordinary-review pins, production code and existing tests.
+- [ ] Design a bounded prospective intake-bound request manifest and terminal receipt.
+  Fix source/intake/work/scope/brief/batch bindings before dispatch; distinguish logical
+  request, count body, generation body, raw final and retained-response fingerprints.
+  Preserve actual outcomes and unknown usage, safe metadata and semantic nonqualification.
+- [ ] Verify that contract locally with authored success, refusal, length, non-200,
+  interrupted delivery, unknown usage and mismatched-source/body fixtures. Reuse the
+  existing native archive exporter; do not duplicate it. Any broader adapter or new
+  inference plan needs this missing boundary qualified first.
+
+Private root: `data/diagnostics/assessment-delivery-admission-2026-11-12/`.
+No application/domain/CLI/test, prompt/profile/graph/gate, schema, database, exporter
+eligibility, writer dispatch or checkpoint changes. No new live budget frozen.
+The positive selection contains no observed failed/partial/unknown-token delivery;
+software fixtures do not fill that observation gap or establish story quality.
+All fourteen issue bodies and posted URLs unchanged. CW-007/CW-013 remain open;
+CW-014 unqualified. **Step 19 IN PROGRESS; Step 20 NOT STARTED;
+live calls PAUSED; canary ON HOLD.**
 
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 

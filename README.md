@@ -1320,8 +1320,61 @@ verifies intake through native result binding, completion and literal rendering
 using explicitly authored responses. Its private bundles are rehearsal artifacts;
 the registered B archive exporter does not admit arbitrary intake completions.
 Complete delivery and citation binding leave evidence adequacy, factual support
-and writer permission unqualified. A general completion publisher remains a
-separate design step; this rehearsal makes no model call or production-route change.
+and writer permission unqualified. The subsequent
+[source-bound completion design](docs/handoffs/assessment-completion-design-2026-11-12.md)
+and [ADR 0049](docs/adr/0049-source-bound-assessment-completion-publication.md)
+define an authored-fixture publisher over registered probe sources, with exact
+source/input binding and recomputed completion. The narrow authored publisher is
+now implemented as described below. Authenticated model delivery needs a separately
+qualified adapter. Live calls remain paused and the canary on hold.
+
+### Read-only authored assessment completion
+
+Prepare exact offline batch inputs from one compatible declared probe-intake member:
+
+```powershell
+uv run --extra api python scripts/assessment_completion.py prepare `
+  --intake PATH_TO_INTAKE_BUNDLE/review-01.json `
+  --output data/exports/authored-inputs-001
+```
+
+This authenticates the registered original archive, revalidates the saved intake
+and writes full-context `input-NN.json` files, `submission.template.json` and a
+preparation manifest. The template intentionally has blank `authored_by` and
+`raw_final` fields and is not a valid submission yet. Copy it outside that immutable
+directory, identify the local author and fill each existing batch's `raw_final`
+with an authored JSON response matching that input's schema. Retain the generated
+source pins, batch IDs and input digests. These are fixtures, not model responses.
+
+```powershell
+uv run --extra api python scripts/assessment_completion.py publish `
+  --intake PATH_TO_INTAKE_BUNDLE/review-01.json `
+  --submission PATH_TO_AUTHORED_SUBMISSION.json `
+  --output data/exports/authored-completion-001
+```
+
+The command recomputes native binding and whole-work completion, then publishes
+the exact intake, canonical submission, source receipt, full envelope, literal
+Markdown view and manifest. All original holds/unselected fields remain visible.
+Complete delivery and binding leave factual support, adequate evidence, editing
+necessity and craft unassessed; writer permission remains false. No model call,
+database access or workflow dispatch occurs.
+
+Use new output directories outside the intake, source archives and submission.
+Exact repeats verify and reuse every file without writes; stale sources, secret
+content, linked/protected paths and partial/changed/extra output are refused.
+An interrupted publication can leave a directory without a manifest; it is never
+automatically repaired or deleted. Both commands emit summary-only status/errors.
+Only authored fixtures over registered diagnostic-probe sources are supported;
+saved database reviews and authenticated model deliveries are not admitted here.
+See the [implementation and verification report](docs/handoffs/assessment-completion-publisher-2026-11-12.md)
+and [submission schema](docs/contracts/assessment-authored-submission-1.schema.json).
+
+The subsequent [six-delivery admission audit](docs/handoffs/assessment-delivery-admission-2026-11-12.md)
+verified the selected saved B deliveries under their original archive contract.
+None matches the current intake work. Reuse the existing native archive exporter;
+broader delivery support first needs a prospective intake-bound request/terminal
+contract. No model delivery can be attached by relabeling an authored submission.
 
 Inspect the active revision or roll back one migration during development:
 
