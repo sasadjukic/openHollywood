@@ -1593,3 +1593,83 @@ a materially different question and defensible contrasts; no live budget is froz
 All fourteen issue bodies and posted URLs remain unchanged; no external issue was
 edited. CW-007/CW-013 stay open, CW-014 remains unqualified. Production prompts
 unchanged; live calls **PAUSED**; full workflow canary **ON HOLD**.
+
+### Tracked read-only intake and scope policy — 2026-11-12
+
+The [implementation report](../docs/handoffs/assessment-intake-integration-2026-11-12.md)
+and [ADR 0047](../docs/adr/0047-read-only-ordinary-review-intake.md) record the new
+engine component, offline adapter and CLI. The path reuses supported ordinary-review
+and registered probe contracts, preserving full context and whole explanatory fields.
+Explicit declarations produce pending work; unresolved, mixed and editorial fields
+remain visible holds. No assessment result, model request or writer permission is made.
+
+Literal procedure claims require definition/performance scope. Dramatic effect is
+a separate editorial question; the private-flourish ambiguity and historical gold
+remain unchanged. Authored interpretation is not automatically verified. Recovered
+provenance stays separate from actual critic-visible authority.
+
+All five compatible newly admitted probes pass acceptance: **61 fields retained,
+six pending claims and three holds**. All 28 output files reuse without writes;
+1,293 prior private audit members remain intact. **379 tests pass (53 new + 326
+existing)**, with repository/private lint, formatting and strict types passing.
+Saved-review behavior is verified against isolated test databases and fake gateways.
+No live calls or user application database access occurred.
+
+Next: separately qualify the two additional archive contracts and replay the seven
+remaining audited reviews locally. No new live experiment is frozen; natural-negative
+and fresh-family gaps remain. All fourteen issue bodies and posted URLs unchanged;
+CW-007/CW-013 stay open, CW-014 remains unqualified. Production prompts unchanged;
+live calls **PAUSED**; full workflow canary **ON HOLD**.
+
+### October 17 contracts and remaining intake replay — 2026-11-12
+
+The [qualification report](../docs/handoffs/oct17-intake-qualification-2026-11-12.md)
+and [ADR 0048](../docs/adr/0048-oct17-probe-intake-contracts.md) register the two
+additional archive contracts for seven explicit ordinary-review IDs. Distinct
+receipt formats, external parent lineage, inherited version namespaces and E1
+literal materialization are authenticated without running archived programs.
+
+N06–N12 retain **90 fields, ten pending claims, six holds and 74 unselected fields**.
+Across all twelve audited reviews: **151 fields, sixteen pending, nine holds,
+126 unselected**. Existing whole claims, declarations, briefs and gold are unchanged;
+no semantic assessment or writer permission was generated. Mixed, ambiguous and
+editorial holds stay visible, including the distinction between style praise and
+an absence-of-duplication claim.
+
+**447 tests pass, including 22 new tests**; lint, formatting and strict types pass.
+All 44 new output files reuse without writes; prior private audits and 1,166 source
+pins are intact. The previous five intake sources remain exactly equal. No live
+calls or user database access occurred.
+
+Next: bounded local completion/export rehearsal on at most six pending units, with
+explicitly authored response fixtures and full context. Natural-negative and
+fresh-family gaps remain; no new inference budget is frozen. All fourteen issue
+bodies and posted URLs unchanged. CW-007/CW-013 remain open; CW-014 unqualified.
+Production prompts unchanged; live calls **PAUSED**; canary **ON HOLD**.
+
+### Six-claim completion/export rehearsal — 2026-11-12
+
+The [rehearsal report](../docs/handoffs/assessment-completion-rehearsal-2026-11-12.md)
+records six existing pending whole claims in four unchanged work items: 51 fields,
+four holds and 41 unselected fields retained. All responses and delivery receipts
+are explicitly authored fixtures; no model or story-quality evidence was added.
+
+All **113 scenario checks** match expectations: 20 bound with semantics unassessed,
+85 correctly rejected, four missing-batch cases incomplete and four raw-receipt
+cases with binding unresolved. Inadequate but valid citations can still bind;
+complete delivery/citation binding does not establish adequate evidence or repair
+necessity. N11's eleven-location scope is not an eleven-citation mandate; its
+baseline explicitly uses five visible locations under the existing eight-ref bound.
+
+The registered B archive exporter correctly refuses these local completions. The
+27 inspection artifacts use native renderers and a separately labeled rehearsal
+manifest; all verify exact reuse. **472 tests pass (25 new + 447 existing)**, plus
+lint, formatting and strict types. Prior archives and original source pins remain
+intact. No production code, prompts, exporter eligibility or user database changed.
+
+Next: a bounded local design for a source-bound completion envelope and read-only
+publisher, with explicit authored-versus-authenticated delivery provenance. Keep
+holds and semantic nonqualification visible and writer permission false. Natural
+negative/fresh-family gaps remain; no live plan or budget is frozen. All fourteen
+issue bodies and posted URLs unchanged; CW-007/CW-013 remain open and CW-014
+unqualified. Live calls **PAUSED**; full workflow canary **ON HOLD**.

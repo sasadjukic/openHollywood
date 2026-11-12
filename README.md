@@ -1217,6 +1217,15 @@ operator artifacts. No database or model call is made. See
 [ADR 0039](docs/adr/0039-diagnostic-probe-review-export.md) and the
 [twelve-capture export report](docs/handoffs/reviewer-probe-export-results-2026-10-30.md).
 
+The same command also supports seven explicitly qualified October 17 reviews:
+four ordinary initials in `fulfillment-contrasts-v61-2026-10-17-live`, and the
+ordinary craft-source review plus E0/E1 post-reviews in
+`fulfillment-adjudication-edits-v61-2026-10-17-live`. Their sibling preparations
+are required; the post-reviews also require the contrasts preparation/live pair
+for their parent critique. Selection is limited to the seven IDs listed in the
+[qualification report](docs/handoffs/oct17-intake-qualification-2026-11-12.md).
+Archive trust is selected by pinned closure bytes; there is no CLI pin override.
+
 Export the separately registered November 7 native B assessment captures:
 
 ```powershell
@@ -1273,6 +1282,46 @@ behavior. Consistent declarations do not prove factual support, evidence adequac
 editorial effect or edit necessity. There is no automatic scope extraction or
 writer route. See [ADR 0043](docs/adr/0043-read-only-claim-scope-declarations.md)
 and the [bounded integration record](docs/handoffs/assessment-claim-scope-integration-2026-11-05.md).
+
+Prepare read-only ordinary-review assessment intake from the supported sources:
+
+```powershell
+uv run --extra api python scripts/assessment_intake.py probe `
+  --archive data/diagnostics/production-fulfillment-v61-2026-10-16-live `
+  --review-id s19101-elena-clean-initial `
+  --output data/diagnostics/intake-inventory
+```
+
+Repeat `--review-id` for one to twelve distinct captures. For compatible saved
+production reviews, use `saved --database data/open_hollywood.db` and exact
+invocation IDs from the existing review-evidence inventory. The database adapter
+uses the existing read-only export contract; incompatible records remain non-results.
+The probe command supports the registered October 16 archive and the seven
+qualified October 17 reviews described above. See
+[ADR 0048](docs/adr/0048-oct17-probe-intake-contracts.md) for exact format and lineage rules.
+
+The first command writes full-context review views and an empty `plan.json`.
+Copy that plan outside the immutable output directory, identify its author, and
+add explicit whole-field choices using the displayed field/statement identities
+and source references. Each factual choice needs a native scope declaration and
+work brief. Then repeat the command with `--plan PATH_TO_AUTHORED_PLAN` and a new
+output directory. See the [intake guide and verification report](docs/handoffs/assessment-intake-integration-2026-11-12.md)
+for the plan shape and limits.
+
+Literal procedure claims require declared definition and performance scope.
+Editorial, mixed and ambiguous claims remain visible holds. Pending work keeps
+complete context and original provenance but contains no model request, assessment
+result or writer permission. Exact repeats reuse every file without writes;
+changed or partial output is refused. No inference or production routing changes.
+See [ADR 0047](docs/adr/0047-read-only-ordinary-review-intake.md).
+
+The [six-claim local completion rehearsal](docs/handoffs/assessment-completion-rehearsal-2026-11-12.md)
+verifies intake through native result binding, completion and literal rendering
+using explicitly authored responses. Its private bundles are rehearsal artifacts;
+the registered B archive exporter does not admit arbitrary intake completions.
+Complete delivery and citation binding leave evidence adequacy, factual support
+and writer permission unqualified. A general completion publisher remains a
+separate design step; this rehearsal makes no model call or production-route change.
 
 Inspect the active revision or roll back one migration during development:
 

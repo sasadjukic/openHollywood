@@ -11,15 +11,23 @@ from uuid import NAMESPACE_URL, uuid5
 from open_hollywood_engine.evaluations import probe_review_evidence as domain
 from open_hollywood_engine.evaluations.contracts import canonical_sha256
 from open_hollywood_engine.evaluations.probe_review_evidence import (
+    CONTRASTS,
+    EDITS,
+    OCT17_SELECTIONS,
+    ArchiveTrial,
+    CrossArchiveProbeSnapshot,
+    EditManifest,
     FileRole,
+    Manifest,
     ProbeArchiveContract,
     ProbeAttempt,
     ProbeFile,
-    ProbeManifest,
     ProbeProjection,
     ProbeProof,
     ProbeSnapshot,
     Trial,
+    parse_manifest,
+    parse_model_json,
     project_probe,
     relative_path,
     validate_attempt,
@@ -42,13 +50,28 @@ SUPPORTED = ProbeArchiveContract(
     preparation_closure_sha256="c9494ba2c56e95c07152bd25e213cffdb4c37cf8b58e122d6457341ffe2799c2",
     live_closure_sha256="74d282a77aac675e4d9c1104c236124caa0df87d937444ed028e37c88c68309b",
 )
+REGISTERED = (
+    SUPPORTED,
+    ProbeArchiveContract(
+        experiment=CONTRASTS,
+        plan_sha256="9d01888c27a0aa45eaa126cf47824540591ce3867aa5324c44dbc48fb8371b9e",
+        preparation_closure_sha256="8991649304da976309c4b10b2570fbbb0a51f94bc1f2d6931fc884c4adb8df0f",
+        live_closure_sha256="995a563aab7b041c3d14d5545d43ffe7acaf8b2a6a2a2fa248912183b67b2439",
+    ),
+    ProbeArchiveContract(
+        experiment=EDITS,
+        plan_sha256="765fd0499eb2ddb87f97e32cdfcb65b338b544c9be2e452f34bc16e4da0368a2",
+        preparation_closure_sha256="6bc44e4df0e2f8ff278f513421ef458417ae738dea9d503fde65437fbf2d0968",
+        live_closure_sha256="628f9108c682a0c108319f61109cbc48b715a0350c2c0c0669dae2678d36255b",
+    ),
+)
 MAX_FILE_BYTES = 8 * 1024 * 1024
 MAX_ARCHIVE_BYTES = 128 * 1024 * 1024
 MAX_EXPORT_BYTES = 32 * 1024 * 1024
 
 
 class ProbeExportEntry(Record):
-    snapshot: ProbeSnapshot
+    snapshot: CrossArchiveProbeSnapshot | ProbeSnapshot
     projection: ProbeProjection
 
 
@@ -57,7 +80,7 @@ class ProbeExport(Record):
     origin: Literal["diagnostic_probe"] = "diagnostic_probe"
     archive_path: str
     preparation_path: str
-    trial_ids: tuple[Trial, ...] = Field(min_length=1, max_length=12)
+    trial_ids: tuple[ArchiveTrial, ...] = Field(min_length=1, max_length=12)
     entries: tuple[ProbeExportEntry, ...]
     implementation_sha256: str
     live_calls: Literal[0] = 0
@@ -74,6 +97,27 @@ def _path(root: Path, name: str) -> Path:
     return candidate
 
 
+def archive_contract(live: Path) -> ProbeArchiveContract:
+    """Trust comes from registered closure bytes, never a caller-supplied plan."""
+    with _path(live.resolve(strict=True), "closure.json").open("rb") as stream:
+        data = stream.read(MAX_FILE_BYTES + 1)
+    require(len(data) <= MAX_FILE_BYTES, "probe_archive_too_large")
+    digest = hashlib.sha256(data).hexdigest()
+    matches = [c for c in REGISTERED if c.live_closure_sha256 == digest]
+    require(len(matches) == 1, "unsupported_probe_archive")
+    return matches[0]
+
+
+def protected_archives(live: Path, contract: ProbeArchiveContract) -> tuple[Path, ...]:
+    roots: tuple[Path, ...] = (live.resolve(), live.with_name(contract.experiment).resolve())
+    if contract.experiment == EDITS:
+        roots += (
+            live.with_name(CONTRASTS).resolve(),
+            live.with_name(CONTRASTS + "-live").resolve(),
+        )
+    return roots
+
+
 class _Archive:
     """Cache exact authenticated bytes; every read is bounded and non-executable."""
 
@@ -85,6 +129,7 @@ class _Archive:
             "incomplete_probe_archive",
         )
         self.bytes: dict[tuple[str, str], bytes] = {}
+        self._parent: _Archive | None = None
         self.total = 0
         self.proof = ProbeProof(
             contract=contract,
@@ -103,9 +148,15 @@ class _Archive:
             object_value(self.proof.live_closure.document().get("operator_evidence_sha256")),
         )
         plan = self.proof.plan.document()
-        self.verify_bytes("prepared", "cases.json", string_value(plan.get("cases_sha256")))
-        for name, digest in object_value(plan.get("prepared_sha256")).items():
-            self.verify_bytes("prepared", "prepared/" + relative_path(name), string_value(digest))
+        if contract.experiment == EDITS:
+            self.verify_members("prepared", object_value(plan.get("file_sha256")))
+        else:
+            key = "case_sha256" if contract.experiment == CONTRASTS else "cases_sha256"
+            self.verify_bytes("prepared", "cases.json", string_value(plan.get(key)))
+            for name, digest in object_value(plan.get("prepared_sha256")).items():
+                self.verify_bytes(
+                    "prepared", "prepared/" + relative_path(name), string_value(digest)
+                )
 
     def data(self, area: str, name: str) -> bytes:
         key = (area, name)
@@ -173,12 +224,23 @@ class _Archive:
         )
         projection = project_probe(snapshot, self.proof.contract)
         dependencies = self.dependencies(snapshot, projection.manifest)
-        return snapshot.model_copy(update={"dependencies": dependencies})
+        snapshot = snapshot.model_copy(update={"dependencies": dependencies})
+        if isinstance(projection.manifest, EditManifest):
+            parent_reader = self.external_parent()
+            parent = parent_reader.snapshot("s19201-elara-embedded-initial")
+            return CrossArchiveProbeSnapshot(**snapshot.model_dump(), parent_snapshot=parent)
+        return snapshot
 
-    def dependencies(
-        self, snapshot: ProbeSnapshot, manifest: ProbeManifest
-    ) -> tuple[ProbeFile, ...]:
-        if manifest.stage == "initial":
+    def external_parent(self) -> _Archive:
+        if self._parent is None:
+            path = self.live.with_name(CONTRASTS + "-live")
+            contract = archive_contract(path)
+            require(contract.experiment == CONTRASTS, "probe_parent_lineage_mismatch")
+            self._parent = _Archive(path, contract)
+        return self._parent
+
+    def dependencies(self, snapshot: ProbeSnapshot, manifest: Manifest) -> tuple[ProbeFile, ...]:
+        if manifest.stage in {"initial", "craft_source"}:
             prepared = self.sealed("prepared", f"prepared/{manifest.trial}.json")
             require(
                 prepared.document() == snapshot.attempts[0].document("request"),
@@ -190,7 +252,7 @@ class _Archive:
         writer = manifest.source_trial
         writer_manifest_file = self.sealed("live", f"probes/{writer}/manifest.json")
         writer_summary = self.sealed("live", f"probes/{writer}/summary.json")
-        wm = ProbeManifest.model_validate_json(writer_manifest_file.text)
+        wm = parse_manifest(writer_manifest_file.text, self.proof.contract)
         require(
             (wm.stage, wm.kind, wm.seed, wm.arm)
             == ("writer", manifest.kind, manifest.seed, manifest.arm),
@@ -212,10 +274,34 @@ class _Archive:
         receipt = writer_attempt.document("receipt")
         require(receipt.get("status") == "validated", "probe_missing_writer")
         draft = object_value(receipt.get("result"))
+        if isinstance(wm, EditManifest):
+            prepared_writer = self.sealed("prepared", f"prepared/{writer}.json")
+            require(
+                prepared_writer.document() == writer_attempt.document("request"),
+                "probe_prepared_request_mismatch",
+            )
+            require(
+                wm.experiment == manifest.experiment
+                and wm.case_id == manifest.case_id
+                and wm.source_trial == "s19201-elara-embedded-initial",
+                "probe_writer_identity_mismatch",
+            )
+            if wm.arm == "E1":
+                domain.verify_exact_edit_materialization(writer_request, writer_attempt)
+            else:
+                require(
+                    wm.request_projection == "ordinary_production"
+                    and parse_model_json(
+                        string_value(writer_attempt.document("capture").get("content"))
+                    )
+                    == draft,
+                    "probe_writer_materialization_mismatch",
+                )
         expected_version = str(
             uuid5(
                 NAMESPACE_URL,
-                f"{manifest.experiment}:{manifest.case_id}:scene_draft:{canonical_sha256(draft)}",
+                f"{CONTRASTS if isinstance(wm, EditManifest) else manifest.experiment}:"
+                f"{manifest.case_id}:scene_draft:{canonical_sha256(draft)}",
             )
         )
         current = snapshot.attempts[-1].document("request")
@@ -235,19 +321,29 @@ class _Archive:
         )
         require(wm.source_trial is not None, "probe_missing_parent_review")
         parent = wm.source_trial
-        parent_summary = self.sealed("live", f"probes/{parent}/summary.json")
+        assert parent is not None
+        parent_reader = self.external_parent() if isinstance(wm, EditManifest) else self
+        if isinstance(wm, EditManifest):
+            parent_snapshot = parent_reader.snapshot(parent)
+            require(
+                original_inputs[:-1]
+                == parent_snapshot.attempts[-1].document("request").get("inputs"),
+                "probe_parent_input_mismatch",
+            )
+        parent_summary = parent_reader.sealed("live", f"probes/{parent}/summary.json")
         ps = parent_summary.document()
         n = ps.get("attempts")
         require(
             ps.get("status") == "validated" and type(n) is int and n in (1, 2),
             "probe_missing_parent_review",
         )
-        parent_receipt = self.sealed("live", f"probes/{parent}/attempt-{n}-result.json")
+        parent_receipt = parent_reader.sealed("live", f"probes/{parent}/attempt-{n}-result.json")
         review = object_value(parent_receipt.document().get("result"))
         version = str(
             uuid5(
                 NAMESPACE_URL,
-                f"{manifest.experiment}:{manifest.case_id}:critique:{canonical_sha256(review)}",
+                f"{SUPPORTED.experiment if isinstance(wm, EditManifest) else manifest.experiment}:"
+                f"{manifest.case_id}:critique:{canonical_sha256(review)}",
             )
         )
         require(
@@ -260,25 +356,30 @@ class _Archive:
             in original_inputs,
             "probe_parent_lineage_mismatch",
         )
-        return (
+        dependencies = (
             writer_manifest_file,
             writer_summary,
             *writer_attempt.files.values(),
-            parent_summary,
-            parent_receipt,
         )
+        if isinstance(wm, EditManifest):
+            return (*dependencies, prepared_writer)
+        return (*dependencies, parent_summary, parent_receipt)
 
 
 def collect_probe_export(
-    archive: Path, trial_ids: tuple[str, ...], *, _contract: ProbeArchiveContract = SUPPORTED
+    archive: Path, trial_ids: tuple[str, ...], *, _contract: ProbeArchiveContract | None = None
 ) -> ProbeExport:
     """CLI uses only the registered contract; injection supports authored local tests."""
     require(
         1 <= len(trial_ids) <= 12 and len(set(trial_ids)) == len(trial_ids),
         "invalid_probe_selection",
     )
+    _contract = _contract or archive_contract(archive)
     for trial in trial_ids:
-        TypeAdapter(Trial).validate_python(trial)
+        if _contract.experiment in OCT17_SELECTIONS:
+            require(trial in OCT17_SELECTIONS[_contract.experiment], "unsupported_probe_review")
+        else:
+            TypeAdapter(Trial).validate_python(trial)
     reader = _Archive(archive, _contract)
     entries = []
     for trial in trial_ids:
@@ -392,9 +493,10 @@ def render_probe(entry: ProbeExportEntry) -> str:
 
 
 def write_probe_export(
-    destination: Path, export: ProbeExport, *, _contract: ProbeArchiveContract = SUPPORTED
+    destination: Path, export: ProbeExport, *, _contract: ProbeArchiveContract | None = None
 ) -> Literal["created", "reused"]:
     body = export.model_dump(mode="json")
+    _contract = _contract or archive_contract(Path(export.archive_path))
     guard = active_secret_guard()
     guard.ensure_safe(body, destination="probe review export")
     require(
@@ -405,7 +507,7 @@ def write_probe_export(
     require(
         not any(
             destination.resolve().is_relative_to(Path(path).resolve())
-            for path in (export.archive_path, export.preparation_path)
+            for path in protected_archives(Path(export.archive_path), _contract)
         ),
         "protected_probe_archive",
     )

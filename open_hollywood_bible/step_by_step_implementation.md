@@ -11845,13 +11845,15 @@ Report: [selection, whole-claim decisions, verification and next steps](../docs/
   reuses 1,273 source/derived files with unchanged bytes and modification times.
   All 1,166 original evidence members and 50 prior native-export acceptance members
   remain intact. No application code, dependency, schema or frontend changes.
-- [ ] Implement a bounded tracked read-only ordinary-review intake path using
+- [x] Implement a bounded tracked read-only ordinary-review intake path using
   supported export contracts, explicit whole-field selections and authored scope/
   brief declarations. Export pending work plus explicit holds; refuse incompatible
   archives and retain provenance/visibility separately. Verify full-context retention
   and unsupported/ambiguous cases without inference or writer routing.
-- [ ] Record the named-procedure versus editorial-effect interpretation policy
-  using the held examples. Require a materially different question and defensible
+- [x] Record the named-procedure versus editorial-effect interpretation policy
+  using the held examples; ADR 0047 and the implementation record below preserve
+  existing ambiguous gold and distinguish literal performance from dramatic effect.
+- [ ] Require a materially different question and defensible
   whole-claim contrasts before inference. This set has **zero unambiguous contradicted
   admissions, ten distinct prose bodies and no fresh family**; do not claim negative
   precision or generalization, or repeat authored B/H ceiling controls to fill the gap.
@@ -11861,6 +11863,142 @@ All fourteen issue bodies/posted URLs unchanged; no external issue edited.
 CW-007/CW-013 remain open; CW-014 unqualified. No provider/input-count/catalog/daemon
 call or application database access. Production prompts/profiles/graph/gates,
 writer routing and Blueprint checkpoint unchanged. No new live budget frozen.
+**Step 19 IN PROGRESS; Step 20 NOT STARTED; live calls PAUSED; canary ON HOLD.**
+
+### Tracked read-only ordinary-review intake and scope policy 2026-11-12
+
+Report: [implementation, operator flow and five-capture acceptance](../docs/handoffs/assessment-intake-integration-2026-11-12.md).
+Decision: [ADR 0047](../docs/adr/0047-read-only-ordinary-review-intake.md).
+
+- [x] Add the pure intake component, offline application adapter and CLI. Reuse
+  the existing supported SQLite review and registered October 16 probe contracts;
+  retain exact original provenance, messages, complete current prose and whole
+  report fields. Keep raw probe, normalized review and native audit identities
+  separate; saved-review intake does not invent missing raw model output.
+- [x] Bind explicit whole-field choices and native scope/brief declarations to
+  source/work fingerprints. Revalidate exact selections, pointers, references and
+  source roles. Inventory makes no admission; missing/ambiguous scope stays held;
+  all-held input produces no pending work. Retain all context and unselected fields.
+  Recovered operator provenance cannot become registry evidence.
+- [x] Clarify factual, literal-procedure, editorial-effect, mixed and ambiguous
+  readings. Literal procedures require declared definition and draft scope;
+  mixed/ambiguous fields stay whole and held. Keep H03's historical interpretation
+  and gold unchanged. Structural validity cannot certify authored interpretation,
+  factual support, editorial value, necessary editing or story quality.
+- [x] Recompute results and re-read source records before publication, including
+  after rendering. Enforce bounded IO, protected/linked paths, secret guards,
+  literal rendering, manifest-last writes and byte-exact reuse. Reject modified,
+  partial or conflicting output. No result, completion receipt or writer dispatch.
+- [x] Verify the five compatible newly admitted captures through both CLI modes:
+  **61 whole fields retained, six pending claims, three holds and 52 unselected
+  fields**. Reuse all 28 output files without byte/mtime changes. Preserve all
+  1,293 prior private admission members. Network/database blocked for acceptance.
+- [x] Pass **379 tests: 53 new intake + 326 existing assessment/export tests**.
+  Repository lint/format/strict mypy pass for 240 Python files; private acceptance
+  helper also passes (241 files in recorded commands). Isolated SQLite/fake-gateway
+  tests verify no database/WAL writes. Correct and regress the native twelve-unit
+  batch limit; preserve every field across batches. No frontend/build changes.
+- [x] Separately qualify the two October 17 probe contracts and replay the remaining
+  seven already-audited reviews through the same intake, preserving existing claims,
+  declarations and holds. See the qualification and acceptance record below; real
+  compound obligations, repair history and unavailable authority are covered locally.
+- [ ] Retain the natural-negative/fresh-family gaps. No new live plan or budget is
+  frozen. Require a materially different question and defensible contrasts before
+  further inference; do not promote pending work to automatic repair authority.
+
+Private root: `data/diagnostics/assessment-intake-integration-2026-11-12/`.
+Original assessment modules/exporters and all production prompts/profiles/graph/gates
+unchanged. No canonical artifact, schema, dependency or Blueprint checkpoint change.
+No provider/input-count/catalog/daemon call or user application database access.
+All fourteen issue bodies/posted URLs unchanged; no external issue edited.
+CW-007/CW-013 remain open; CW-014 unqualified. **Step 19 IN PROGRESS;
+Step 20 NOT STARTED; live calls PAUSED; full workflow canary ON HOLD.**
+
+### October 17 archive qualification and seven-review intake replay 2026-11-12
+
+Report: [qualification, acceptance and next step](../docs/handoffs/oct17-intake-qualification-2026-11-12.md).
+Decision: [ADR 0048](../docs/adr/0048-oct17-probe-intake-contracts.md).
+
+- [x] Register the two exact preparation/live contracts and allow only N06–N12's
+  seven ordinary-review IDs. Verify complete member seals, prepared requests,
+  distinct sent/receipt formats and terminal capture evidence. Preserve the original
+  October 16 contract and reject unsupported seeds, judgment-only arms and writers
+  as review selections. No CLI trust-pin override or historical code execution.
+- [x] Authenticate both post-reviews' external N07 parent and complete writer input
+  prefix. Preserve inherited critique/revision namespaces, raw/normalized/audit
+  separation and separately namespaced parent provenance. Reproduce E1's literal
+  edit application and exact saved materialization; protect all source archive roots.
+- [x] Replay all seven through both CLI modes with unchanged whole fields, native
+  declarations, briefs and prior holds: **90 fields, ten pending claims, six holds,
+  74 unselected**. Prior gold stays external. All twelve audited reviews now total
+  **151 fields, sixteen pending claims, nine holds and 126 unselected fields**.
+- [x] Reuse all **44** new output files without byte/mtime changes. Preserve the
+  **1,293** prior admission members, **73** prior intake members and **1,166** original
+  source pins. N01–N05 re-collect to exactly the same intake sources. Network and
+  SQLite blocked for real acceptance; no application database access.
+- [x] Pass **447 applicable tests**, including **22 new** format/lineage/edit tests;
+  repeat the final 22 after the last adapter refinement. Repository/private Ruff,
+  formatting and strict mypy pass for **243 files** (242 repository + one helper).
+  Existing 56 mutation-fixture warnings remain. No frontend/build changes.
+- [x] Rehearse the local completion/export path for six existing pending units
+  spanning compound obligation, visible repair history and unavailable authority.
+  See the completion rehearsal below: full context/scope retained, stale/incomplete
+  inputs rejected and no writer permission. The registered archive exporter correctly
+  refuses authored completions; the publisher gap is documented before any adapter.
+- [ ] Keep natural-negative/fresh-family gaps explicit. A later inference proposal
+  needs a materially different question and defensible whole-claim contrasts.
+  No new live plan or budget is frozen; pending work is not automatic repair authority.
+
+Private root: `data/diagnostics/oct17-intake-qualification-2026-11-12/`.
+All fourteen issue bodies and posted URLs unchanged; no external issue edited.
+CW-007/CW-013 remain open; CW-014 unqualified. Production prompts/profiles/graph/gates,
+writer routing, canonical artifacts and Blueprint checkpoint unchanged.
+**Step 19 IN PROGRESS; Step 20 NOT STARTED; live calls PAUSED; canary ON HOLD.**
+
+### Six-claim local completion and export rehearsal 2026-11-12
+
+Report: [authored completion rehearsal, boundaries and next step](../docs/handoffs/assessment-completion-rehearsal-2026-11-12.md).
+Existing contracts: ADRs 0041–0044, 0046–0048. No new production contract introduced.
+
+- [x] Select N06/Q001, N07/Q004–Q005, N10/Q003/Q007 and N11/Q003 before response
+  construction. Keep four pending works distinct: **six claims, 51 whole report
+  fields, four holds and 41 unselected fields**, with complete messages, prose,
+  provenance, declarations and briefs. Existing claim text, gold and intake unchanged.
+- [x] Freeze exact local input documents, authored baseline responses, 28 scenarios
+  per work and one N11 citation-budget case. Mark all responses/receipts/views as
+  authored fixtures, never provider wires or model observations. Token fields remain
+  null; zero synthetic active time is not an inference measurement. No live budget.
+- [x] Pass **113 authored scenario checks**: 20 bound with semantics unassessed,
+  85 correctly refused, four missing-batch completions incomplete and four valid
+  unbound receipts with binding unresolved. Preserve all sources and deny writer
+  permission. Deliberately inadequate/outside-scope citations bind only structurally.
+- [x] Verify N11's eleven declared locations cannot all fit the eight-citation
+  response bound. Explicitly select five visible baseline locations; no truncation,
+  inferred adequacy, scope-whitelist rule or limit change.
+- [x] Verify two refusals at the registered B archive export boundary without output.
+  Save **27** separately labeled private rehearsal artifacts with native literal
+  renderers and byte/mtime-exact reuse. Document the missing general completion
+  envelope/publisher; do not fabricate provider history or widen archive eligibility.
+- [x] Pass **472 applicable tests: 25 new + 447 existing**; repository/private Ruff,
+  formatting and strict mypy pass for **245 files** (244 repository + one helper).
+  Existing 56 mutation-fixture warnings remain. Network/SQLite blocked for the actual
+  six-claim rehearsal; database tests use isolated fixtures and fake gateways.
+- [x] Preserve all 71 prior qualification members, earlier admission/intake seals and
+  1,166 original source pins. No application database access or production code changes.
+- [ ] Design a bounded source-bound completion envelope and read-only publisher.
+  Distinguish authored fixtures from authenticated model delivery, preserve intake
+  dispositions and exact request/source bindings, recompute validation/completion,
+  and expose semantic nonqualification. Qualify against these same six claims before
+  adding a general CLI or route. Do not route from complete_delivery alone.
+- [ ] Keep natural-negative/fresh-family and story-quality gaps explicit. Authored
+  unsupported labels are not negative gold. More inference needs a materially
+  different question, defensible contrasts and a separately approved frozen plan.
+
+Private root: `data/diagnostics/assessment-completion-rehearsal-2026-11-12/`.
+Only authored regression tests/helper and documentation added in this step. All
+fourteen issue bodies and posted URLs unchanged; no external issue edited.
+CW-007/CW-013 remain open; CW-014 unqualified. Production prompts/profiles/graph/gates,
+writer routing, canonical artifacts, schemas and Blueprint checkpoint unchanged.
 **Step 19 IN PROGRESS; Step 20 NOT STARTED; live calls PAUSED; canary ON HOLD.**
 
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.

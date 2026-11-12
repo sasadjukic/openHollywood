@@ -45,3 +45,5 @@ tradeoffs. Status values are `Proposed`, `Accepted`, `Superseded`, or `Rejected`
 | [0040](0040-openai-responses-provider.md) | Optional OpenAI Responses provider | Accepted |
 | [0043](0043-read-only-claim-scope-declarations.md) | Read-only claim-scope declarations and literal audits | Accepted |
 | [0046](0046-read-only-native-assessment-archive-export.md) | Read-only native assessment archive export | Accepted |
+| [0047](0047-read-only-ordinary-review-intake.md) | Read-only ordinary-review intake and explicit procedural/editorial scope | Accepted |
+| [0048](0048-oct17-probe-intake-contracts.md) | October 17 probe contracts and cross-archive intake lineage | Accepted |

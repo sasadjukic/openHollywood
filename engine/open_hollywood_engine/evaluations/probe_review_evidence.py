@@ -6,7 +6,7 @@ import json
 from pathlib import PurePosixPath
 from typing import Annotated, Literal
 
-from pydantic import Field, JsonValue, model_validator
+from pydantic import Field, JsonValue, TypeAdapter, model_validator
 
 from open_hollywood_engine.evaluations.contracts import canonical_sha256
 from open_hollywood_engine.evaluations.review_evidence import (
@@ -28,6 +28,22 @@ from open_hollywood_engine.evaluations.review_evidence import (
 )
 
 Trial = Annotated[str, Field(pattern=r"^[a-z0-9][a-z0-9-]{0,119}$")]
+ArchiveTrial = Annotated[str, Field(pattern=r"^[a-z0-9][a-zA-Z0-9_-]{0,119}$")]
+CONTRASTS = "fulfillment-contrasts-v61-2026-10-17"
+EDITS = "fulfillment-adjudication-edits-v61-2026-10-17"
+OCT17_SELECTIONS = {
+    CONTRASTS: (
+        "s19201-elara-compound-outcome-initial",
+        "s19201-elara-embedded-initial",
+        "s19201-elara-missing-decision-initial",
+        "s19201-elena-compound-outcome-initial",
+    ),
+    EDITS: (
+        "s19401-elara-craft-craft_source-ordinary",
+        "s19401-elara-embedded-post-E0",
+        "s19401-elara-embedded-post-E1",
+    ),
+}
 FileRole = Literal["request", "sent", "receipt", "capture", "reservation", "outcome"]
 
 
@@ -117,11 +133,8 @@ class ProbeProof(Record):
         require(members.get(file.path) == file.sha256, "unsealed_probe_file")
 
 
-class ProbeManifest(Record):
+class _ManifestIdentity(Record):
     experiment: Trial
-    trial: Trial
-    stage: Literal["initial", "post", "writer"]
-    arm: Literal["none", "current", "evidence"]
     kind: Trial
     case_id: str
     seed: int
@@ -132,8 +145,53 @@ class ProbeManifest(Record):
     source_commit: str
     synthetic_unapproved_context: Literal[True]
     input_artifact_sha256: dict[Identifier, Digest]
-    source_trial: Trial | None
     evidence_type: Literal["isolated_comparison_not_full_workflow_or_story_acceptance"]
+
+
+class ProbeManifest(_ManifestIdentity):
+    trial: Trial
+    stage: Literal["initial", "post", "writer"]
+    arm: Literal["none", "current", "evidence"]
+    source_trial: Trial | None
+
+
+class ContrastManifest(ProbeManifest):
+    writer_source_policy: None
+
+
+class CraftManifest(_ManifestIdentity):
+    trial: ArchiveTrial
+    stage: Literal["craft_source"]
+    arm: Literal["ordinary"]
+    block: Literal["craft"]
+    request_projection: Literal["ordinary_production"]
+    source_trial: None
+
+
+class EditManifest(_ManifestIdentity):
+    trial: ArchiveTrial
+    stage: Literal["writer", "post"]
+    arm: Literal["E0", "E1"]
+    block: Literal["fixed_edits"]
+    request_projection: Literal["ordinary_production", "exact_edits"]
+    writer_source_policy: Literal["fixed_saved_ordinary_review"]
+    source_trial: ArchiveTrial
+
+
+Manifest = ProbeManifest | ContrastManifest | CraftManifest | EditManifest
+
+
+def parse_manifest(text: str, contract: ProbeArchiveContract) -> Manifest:
+    manifest: Manifest = TypeAdapter(Manifest).validate_json(text)
+    expected: tuple[type[_ManifestIdentity], ...]
+    if contract.experiment == CONTRASTS:
+        expected = (ContrastManifest,)
+    elif contract.experiment == EDITS:
+        expected = (CraftManifest, EditManifest)
+    else:
+        expected = (ProbeManifest,)
+    require(type(manifest) in expected, "unsupported_probe_manifest")
+    return manifest
 
 
 class ProbeInvocation(Record):
@@ -147,7 +205,7 @@ class ProbeRequest(Record):
     budget: JsonObject
     inputs: tuple[ArtifactView, ...]
     invocation: ProbeInvocation
-    manifest: ProbeManifest
+    manifest: Manifest
     messages: tuple[SavedMessage, ...]
     model_identifier: Literal["gemma4:31b-cloud"]
     prompt_sha256: Digest
@@ -169,6 +227,10 @@ class ProbeSnapshot(Record):
     summary: ProbeFile
     attempts: tuple[ProbeAttempt, ...] = Field(min_length=1, max_length=2)
     dependencies: tuple[ProbeFile, ...] = ()
+
+
+class CrossArchiveProbeSnapshot(ProbeSnapshot):
+    parent_snapshot: ProbeSnapshot
 
 
 class ProbeSpan(Record):
@@ -219,7 +281,7 @@ class ProbeSource(Record):
 
 class ProbeProjection(Record):
     origin: Literal["diagnostic_probe"] = "diagnostic_probe"
-    manifest: ProbeManifest
+    manifest: Manifest
     successful_attempt: int
     raw_model_content: str
     normalized_review: JsonObject
@@ -253,9 +315,79 @@ def parse_model_json(content: str) -> JsonObject:
     return strict_object(document)
 
 
-def validate_attempt(
-    attempt: ProbeAttempt, manifest: ProbeManifest, proof: ProbeProof
-) -> ProbeRequest:
+def verify_exact_edit_materialization(request: ProbeRequest, attempt: ProbeAttempt) -> None:
+    """Reproduce the sealed E1 literal edit protocol; never execute archived programs."""
+    require(
+        isinstance(request.manifest, EditManifest)
+        and request.manifest.stage == "writer"
+        and request.manifest.arm == "E1"
+        and request.manifest.request_projection == "exact_edits",
+        "unsupported_probe_edit_protocol",
+    )
+    bases = [
+        a
+        for a in request.inputs
+        if a.artifact_kind == "scene_draft" and a.content.get("revision_number") == 0
+    ]
+    require(len(bases) == 1, "probe_edit_base_mismatch")
+    base = bases[0]
+    prose = string_value(base.content.get("prose"))
+    raw = parse_model_json(string_value(attempt.document("capture").get("content")))
+    metadata = {"scene_id", "scene_number", "title", "revision_number", "is_complete"}
+    require(
+        set(raw) == metadata | {"base_draft_version_id", "base_prose_sha256", "edits"}
+        and raw.get("base_draft_version_id") == base.artifact_version_id
+        and raw.get("base_prose_sha256") == text_hash(prose),
+        "probe_edit_base_mismatch",
+    )
+    edits = objects(raw.get("edits"))
+    require(len(edits) <= 64, "probe_edit_ranges_mismatch")
+    ranges: list[JsonValue] = []
+    cursor = 0
+    pieces: list[str] = []
+    for edit in edits:
+        require(set(edit) == {"old_text", "occurrence", "new_text"}, "probe_edit_ranges_mismatch")
+        old, new = string_value(edit.get("old_text")), string_value(edit.get("new_text"))
+        occurrence = edit.get("occurrence")
+        require(
+            bool(old) and type(occurrence) is int and occurrence > 0, "probe_edit_ranges_mismatch"
+        )
+        assert isinstance(occurrence, int)
+        positions: list[int] = []
+        offset = 0
+        while (found := prose.find(old, offset)) >= 0:
+            positions.append(found)
+            offset = found + 1
+        require(occurrence <= len(positions), "probe_edit_ranges_mismatch")
+        start = positions[occurrence - 1]
+        end = start + len(old)
+        require(start >= cursor, "probe_edit_ranges_mismatch")
+        ranges.append(
+            {
+                "start": start,
+                "end": end,
+                "start_byte": len(prose[:start].encode()),
+                "end_byte": len(prose[:end].encode()),
+                "new_text": new,
+            }
+        )
+        pieces.extend((prose[cursor:start], new))
+        cursor = end
+    materialized = "".join((*pieces, prose[cursor:]))
+    receipt = attempt.document("receipt")
+    require(
+        receipt.get("result") == {**{k: raw[k] for k in metadata}, "prose": materialized}
+        and receipt.get("edit_audit")
+        == {
+            "base_version_id": base.artifact_version_id,
+            "materialized_prose_sha256": text_hash(materialized),
+            "ranges": ranges,
+        },
+        "probe_writer_materialization_mismatch",
+    )
+
+
+def validate_attempt(attempt: ProbeAttempt, manifest: Manifest, proof: ProbeProof) -> ProbeRequest:
     require(
         set(attempt.files) == {"request", "sent", "receipt", "capture", "reservation", "outcome"},
         "incomplete_probe_attempt",
@@ -281,13 +413,15 @@ def validate_attempt(
     require(messages_hash(request.messages) == request.prompt_sha256, "probe_prompt_hash_mismatch")
     roles: tuple[FileRole, ...] = ("sent", "receipt", "capture", "reservation", "outcome")
     sent, receipt, capture, reservation, outcome = (attempt.document(k) for k in roles)
+    compact_receipt = proof.contract.experiment == EDITS
     require(
-        sent.get("attempt")
-        == receipt.get("attempt")
-        == reservation.get("attempt")
-        == attempt.number,
+        receipt.get("attempt") == reservation.get("attempt") == attempt.number,
         "probe_attempt_identity_mismatch",
     )
+    if compact_receipt:
+        require(sent == attempt.document("request"), "probe_sent_request_mismatch")
+    else:
+        require(sent.get("attempt") == attempt.number, "probe_attempt_identity_mismatch")
     require(
         reservation.get("trial") == manifest.trial
         and reservation.get("plan_sha256") == proof.plan.sha256
@@ -311,10 +445,15 @@ def validate_attempt(
         == outcome.get("response_sha256"),
         "probe_response_hash_mismatch",
     )
-    require(
-        receipt.get("response_length") == len(response) and outcome.get("status") == "returned",
-        "probe_incomplete_response",
-    )
+    require(outcome.get("status") == "returned", "probe_incomplete_response")
+    if compact_receipt:
+        require(
+            "response_length" not in receipt and "finish_reason" not in receipt,
+            "unsupported_probe_receipt",
+        )
+    else:
+        require(receipt.get("response_length") == len(response), "probe_incomplete_response")
+        require(receipt.get("finish_reason") == "stop", "probe_incomplete_response")
     require(
         capture.get("provider") == "ollama"
         and capture.get("deployment") == "cloud"
@@ -322,7 +461,7 @@ def validate_attempt(
         "probe_model_mismatch",
     )
     require(
-        capture.get("finish_reason") == receipt.get("finish_reason") == "stop",
+        capture.get("finish_reason") == "stop",
         "probe_incomplete_response",
     )
     usage = object_value(capture.get("usage"))
@@ -340,11 +479,18 @@ def project_probe(snapshot: ProbeSnapshot, contract: ProbeArchiveContract) -> Pr
     snapshot.proof.verify(contract)
     for file in (snapshot.manifest, snapshot.summary, *snapshot.dependencies):
         snapshot.proof.verify_member(file)
-    manifest = ProbeManifest.model_validate_json(snapshot.manifest.text)
+    manifest = parse_manifest(snapshot.manifest.text, contract)
+    if contract.experiment in OCT17_SELECTIONS:
+        require(manifest.trial in OCT17_SELECTIONS[contract.experiment], "unsupported_probe_review")
+    if isinstance(snapshot, CrossArchiveProbeSnapshot):
+        project_probe(snapshot.parent_snapshot, snapshot.parent_snapshot.proof.contract)
     require(
-        manifest.experiment == contract.experiment and manifest.stage in {"initial", "post"},
+        manifest.experiment == contract.experiment
+        and manifest.stage in {"initial", "post", "craft_source"},
         "unsupported_probe_review",
     )
+    if isinstance(manifest, EditManifest):
+        require(manifest.request_projection == "ordinary_production", "unsupported_probe_review")
     require(
         snapshot.manifest.area == snapshot.summary.area == "live"
         and snapshot.manifest.path == f"probes/{manifest.trial}/manifest.json"
