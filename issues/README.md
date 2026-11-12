@@ -1564,3 +1564,32 @@ Require complete version-specific evidence and defensible whole-claim gold; reta
 ambiguity as a hold. No new inference plan is frozen. All fourteen issue bodies
 and posted URLs remain unchanged; CW-007/CW-013 stay open and CW-014 remains
 unqualified. Production prompts unchanged; live calls **PAUSED**; canary **ON HOLD**.
+
+### Bounded ordinary-review admission — 2026-11-12
+
+The [local admission report](../docs/handoffs/ordinary-review-admission-2026-11-12.md)
+records twelve previously unadmitted ordinary-v61 diagnostic reviews and 151 whole
+explanatory fields. **Fourteen supported and two uncertain controls qualify;
+nine interpretation/editorial holds remain.** No unambiguous contradicted whole
+claim was admitted. The set contains ten distinct prose versions in the same two
+families, with no fresh family. These are prospective assistant judgments, not
+new inference scores or independent human adjudication.
+
+The audit adds compound-obligation, endpoint and repair-history controls. It retains
+the distinction between visible authority and recovered context, and between a
+named procedure and its editorial effect. A missed repeated sentence does not turn
+style praise into an explicit false absence claim. Full original fields and
+historical scoring remain unchanged.
+
+Twelve pending works retain full context and sixteen explicit selections through
+the native scope/brief renderer. No assessment result, model request or writer
+permission is created. **258 tests pass (44 private + 214 existing)**; repository
+and private lint, formatting and strict types pass. All 1,166 source members and
+the prior native export's 50 private acceptance members remain intact.
+
+Next is a small tracked read-only intake path for supported ordinary-review export
+contracts, preserving explicit selections and holds. A new inference proposal needs
+a materially different question and defensible contrasts; no live budget is frozen.
+All fourteen issue bodies and posted URLs remain unchanged; no external issue was
+edited. CW-007/CW-013 stay open, CW-014 remains unqualified. Production prompts
+unchanged; live calls **PAUSED**; full workflow canary **ON HOLD**.

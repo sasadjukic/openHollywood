@@ -11798,12 +11798,13 @@ Decision: [ADR 0046](../docs/adr/0046-read-only-native-assessment-archive-export
   files; the private acceptance helper also passes, 235 files in recorded commands.
   Document CLI usage and the archive contract. Existing ordinary/probe exporters and
   all five assessment domain components remain unchanged.
-- [ ] Next: perform a bounded local intake/admission check for harder ordinary-review
+- [x] Perform a bounded local intake/admission check for harder ordinary-review
   claims, using up to twelve previously unadmitted saved reviews if available and
   complete version-specific source evidence. Separate factual/editorial scope,
   assignment authority, whole-claim interpretation and evidence availability.
   Retain ambiguous claims as holds; do not fabricate natural-negative precision.
-  Require defensible harder controls before any new inference proposal.
+  The completed twelve-review audit below admits supported/uncertain controls;
+  the contradicted-claim and fresh-family gaps remain before further inference.
 
 Private acceptance/export root: `data/diagnostics/native-assessment-export-2026-11-12/`.
 No production prompt/profile/graph/gate, writer route, canonical artifact, schema,
@@ -11814,6 +11815,53 @@ CW-007/CW-013 stay open; CW-014 remains unqualified. Supported operator export i
 complete for this registered archive; autonomous assessment, writer preservation
 and story-quality qualification are not established. **Step 19 IN PROGRESS;
 Step 20 NOT STARTED; live calls PAUSED; full workflow canary ON HOLD.**
+
+### Bounded ordinary-review intake and admission 2026-11-12
+
+Report: [selection, whole-claim decisions, verification and next steps](../docs/handoffs/ordinary-review-admission-2026-11-12.md).
+
+- [x] Inventory metadata for 66 ordinary-v61 captures in three original archives;
+  freeze twelve previously unadmitted reviews before detailed inspection, with
+  no replacements or overlap with the November 7 admission set. Authenticate
+  1,166 original/snapshot members without executing archived programs. Synthetic
+  diagnostic provenance remains explicit; these are not durable production reviews.
+- [x] Inspect complete prose, visible assignment/boundary/repair context and
+  **151 whole explanatory fields**. Admit **14 supported and 2 uncertain** controls;
+  retain **9 interpretation/editorial holds** and 126 fields without new factual gold.
+  Preserve exact whole claims, raw pointers/hashes, material components, evidence
+  requirements and identified assistant rationale. No prior gold or score changes.
+- [x] Distinguish compound obligations, decisions versus endpoints, chronology,
+  date relation versus realization, repair attribution versus earlier events, and
+  unavailable future-start authority. Verify two repair-copy receipts for one
+  unique earlier quotation; keep recovered full inputs separate from actual visibility.
+  Preserve the missed repetition without turning style praise into false factual gold.
+- [x] Replay **12 full-context pending works / 16 active whole fields** through
+  native scope/brief rendering. Holds remain in full context but outside active
+  selections. No model request, assessment result, completion receipt, inferred
+  production lineage or writer permission is created. Structural consistency is
+  distinct from semantic correctness and editorial value.
+- [x] Pass **258 tests: 44 new private + 214 existing assessment tests**; repository
+  and private Ruff/format/strict mypy pass for **239 Python files**. Offline replay
+  reuses 1,273 source/derived files with unchanged bytes and modification times.
+  All 1,166 original evidence members and 50 prior native-export acceptance members
+  remain intact. No application code, dependency, schema or frontend changes.
+- [ ] Implement a bounded tracked read-only ordinary-review intake path using
+  supported export contracts, explicit whole-field selections and authored scope/
+  brief declarations. Export pending work plus explicit holds; refuse incompatible
+  archives and retain provenance/visibility separately. Verify full-context retention
+  and unsupported/ambiguous cases without inference or writer routing.
+- [ ] Record the named-procedure versus editorial-effect interpretation policy
+  using the held examples. Require a materially different question and defensible
+  whole-claim contrasts before inference. This set has **zero unambiguous contradicted
+  admissions, ten distinct prose bodies and no fresh family**; do not claim negative
+  precision or generalization, or repeat authored B/H ceiling controls to fill the gap.
+
+Private root: `data/diagnostics/ordinary-review-admission-2026-11-12/`.
+All fourteen issue bodies/posted URLs unchanged; no external issue edited.
+CW-007/CW-013 remain open; CW-014 unqualified. No provider/input-count/catalog/daemon
+call or application database access. Production prompts/profiles/graph/gates,
+writer routing and Blueprint checkpoint unchanged. No new live budget frozen.
+**Step 19 IN PROGRESS; Step 20 NOT STARTED; live calls PAUSED; canary ON HOLD.**
 
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 
