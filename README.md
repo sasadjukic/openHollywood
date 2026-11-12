@@ -1217,6 +1217,31 @@ operator artifacts. No database or model call is made. See
 [ADR 0039](docs/adr/0039-diagnostic-probe-review-export.md) and the
 [twelve-capture export report](docs/handoffs/reviewer-probe-export-results-2026-10-30.md).
 
+Export the separately registered November 7 native B assessment captures:
+
+```powershell
+uv run --extra api python scripts/assessment_archive_export.py `
+  --archive data/diagnostics/reviewer-bh-b-export-audit-v61-2026-11-07/captures `
+  --trial-id BH-1-A-B-SC `
+  --output data/diagnostics/native-assessment-export
+```
+
+Repeat `--trial-id` for one to twelve distinct B captures. This command requires
+the immutable local archive snapshot from the previous B/H audit; it does not
+read the current checkout as historical evidence. The CLI authenticates the
+registered seal and complete source closure, then replays the native assessment
+contracts without running archived programs, calling a model or opening a database.
+
+Each selected capture has full-context JSON, literal Markdown and a separate
+operator provenance/copy receipt. Original requests, finals, delivery and usage
+remain intact; the receipt was absent from B model input. Missing scope evidence
+stays visible. Structural checks do not establish factual support, edit necessity
+or craft and cannot authorize a writer. Gold and scoring annotations are excluded.
+An exact repeat reuses all files without writes; changed, partial or extra output
+is refused. Incomplete/failed deliveries and incompatible archives are not admitted.
+See [ADR 0046](docs/adr/0046-read-only-native-assessment-archive-export.md) and the
+[twelve-capture verification report](docs/handoffs/native-assessment-export-2026-11-12.md).
+
 The provider-neutral `evaluations.assessment_work` module now supplies read-only
 work items and completion checks for diagnostic assessment. It retains full
 context and whole selected statements, keeps declared relations together, and

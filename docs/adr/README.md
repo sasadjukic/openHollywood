@@ -44,3 +44,4 @@ tradeoffs. Status values are `Proposed`, `Accepted`, `Superseded`, or `Rejected`
 | [0039](0039-diagnostic-probe-review-export.md) | Diagnostic-probe review export | Accepted |
 | [0040](0040-openai-responses-provider.md) | Optional OpenAI Responses provider | Accepted |
 | [0043](0043-read-only-claim-scope-declarations.md) | Read-only claim-scope declarations and literal audits | Accepted |
+| [0046](0046-read-only-native-assessment-archive-export.md) | Read-only native assessment archive export | Accepted |

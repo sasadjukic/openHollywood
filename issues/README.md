@@ -1539,3 +1539,28 @@ no production prompt/code changed and no application database was accessed. All
 fourteen issue bodies/posted URLs remain intact; no external issue was edited.
 CW-007/CW-013 stay open; CW-014 remains unqualified. Live calls **PAUSED**;
 full workflow canary **ON HOLD**.
+
+### Native assessment archive exporter — 2026-11-12
+
+The [implementation report](../docs/handoffs/native-assessment-export-2026-11-12.md)
+records the new tracked read-only application service and CLI. It authenticates
+the registered 636-member native B archive, retains complete original inputs and
+results, and keeps the operator provenance/copy receipt separate from model input.
+Existing ordinary/probe exporters and the five assessment domain components are
+unchanged. No production provenance or writer permission is inferred.
+
+All **twelve B captures** export successfully: every Markdown view is byte-identical
+to the earlier audited view, with original work/request/final/receipt evidence
+unchanged. The 38-file bundle retains 72 delivered units and 24 historical bindings;
+exact reuse changes no output modification times. All 716 prior private audit
+members remain intact. **326 tests pass (58 new + 268 existing)**, with repository
+lint, formatting and strict types passing. No live call or application database
+access occurred.
+
+The supported-export gap is closed for this archive, without closing the broader
+semantic issues. Next is a bounded local intake/admission check for harder ordinary
+review claims from up to twelve previously unadmitted saved reviews, if available.
+Require complete version-specific evidence and defensible whole-claim gold; retain
+ambiguity as a hold. No new inference plan is frozen. All fourteen issue bodies
+and posted URLs remain unchanged; CW-007/CW-013 stay open and CW-014 remains
+unqualified. Production prompts unchanged; live calls **PAUSED**; canary **ON HOLD**.

@@ -11748,12 +11748,13 @@ Report: [preserved pairs, native rendering, boundaries and next steps](../docs/h
   All eight recorded checks pass: repository lint/format/strict types for 230 Python
   files, the same checks for four private helpers, deterministic replay and tests.
   Preserve all original code, frozen input, raw capture and prior scoring hashes.
-- [ ] Next: implement a tracked read-only native diagnostic-assessment archive
+- [x] Implement a tracked read-only native diagnostic-assessment archive
   adapter/CLI for the registered archive, selecting at most twelve B captures;
   verify/export the same set with full context and separate operator receipt.
   Authenticate exact identities, preserve usage/unknowns, refuse incompatible or
   conflicting material and leave semantic judgments/readiness explicit. No provider,
   production graph, writer dispatch or application database writes are needed.
+  Implementation and twelve-capture verification are recorded below on 2026-11-12.
 - [ ] Retain the natural-negative admission gap. Require a materially harder
   ordinary-review authority contrast and defensible whole-claim gold before
   another inference proposal; no new live experiment or budget is frozen.
@@ -11767,6 +11768,52 @@ CW-007/CW-013 stay open; CW-014 remains unqualified. Rendering is locally verifi
 supported export integration and production/craft qualification remain incomplete.
 **Step 19 IN PROGRESS; Step 20 NOT STARTED; live calls PAUSED;
 full workflow canary ON HOLD.**
+
+### Read-only native assessment archive exporter 2026-11-12
+
+Report: [implementation, twelve-capture verification and next steps](../docs/handoffs/native-assessment-export-2026-11-12.md).
+Decision: [ADR 0046](../docs/adr/0046-read-only-native-assessment-archive-export.md).
+
+- [x] Add a tracked application service and operator CLI for one to twelve explicit
+  native B captures from the registered November 7 archive. Authenticate its
+  **636-member immutable snapshot** through the pinned results seal and plan hash;
+  do not use the mutable checkout, execute archived code, or accept new CLI trust pins.
+- [x] Verify frozen work/request/message identity, actual dispatch and response
+  evidence, raw final, complete native delivery and saved usage. Validate original
+  auxiliary bindings before deriving operator-side identities. Preserve full context,
+  original and derived declarations, separate receipts, explicit unknown usage and
+  visible scope holds. Exclude gold/semantic scoring from exported assessment content.
+- [x] Publish full JSON/native Markdown/operator-receipt groups, index and manifest.
+  Recompute supplied exports, recheck sources after rendering, apply secret guards,
+  bound IO and reject unsafe/linked paths, incompatible archives, partial delivery,
+  conflicting or incomplete destinations. Exact repeats reuse files without writes.
+  Native semantic flags remain unassessed and writer permission remains false.
+- [x] Run the supported CLI on **all twelve B captures** with networking/database
+  operations blocked. Verify **12/12 byte-identical Markdown views**, unchanged full
+  works/requests/finals/saved receipts and case receipts. Retain **72 delivered units
+  and 24 historical-copy bindings**. Publish 38 files; exact reuse leaves all output
+  modification times unchanged. All 716 preceding private audit members remain intact.
+- [x] Pass **326 tests: 58 new archive-export + 214 existing assessment + 54 existing
+  exporter tests**. Repository Ruff/format/strict types pass for 234 tracked Python
+  files; the private acceptance helper also passes, 235 files in recorded commands.
+  Document CLI usage and the archive contract. Existing ordinary/probe exporters and
+  all five assessment domain components remain unchanged.
+- [ ] Next: perform a bounded local intake/admission check for harder ordinary-review
+  claims, using up to twelve previously unadmitted saved reviews if available and
+  complete version-specific source evidence. Separate factual/editorial scope,
+  assignment authority, whole-claim interpretation and evidence availability.
+  Retain ambiguous claims as holds; do not fabricate natural-negative precision.
+  Require defensible harder controls before any new inference proposal.
+
+Private acceptance/export root: `data/diagnostics/native-assessment-export-2026-11-12/`.
+No production prompt/profile/graph/gate, writer route, canonical artifact, schema,
+dependency or Blueprint checkpoint change. No inference/input-count/catalog/daemon
+calls or application database access. No new live experiment or budget frozen.
+All fourteen issue bodies/posted URLs remain unchanged; no external issue edited.
+CW-007/CW-013 stay open; CW-014 remains unqualified. Supported operator export is
+complete for this registered archive; autonomous assessment, writer preservation
+and story-quality qualification are not established. **Step 19 IN PROGRESS;
+Step 20 NOT STARTED; live calls PAUSED; full workflow canary ON HOLD.**
 
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 
