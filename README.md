@@ -1376,6 +1376,51 @@ None matches the current intake work. Reuse the existing native archive exporter
 broader delivery support first needs a prospective intake-bound request/terminal
 contract. No model delivery can be attached by relabeling an authored submission.
 
+The [intake-bound request/terminal design](docs/handoffs/assessment-request-terminal-design-2026-11-13.md)
+now specifies that boundary, with separate source/presentation/endpoint/final hashes,
+application-owned dispatch evidence, explicit failed terminals and honest unknown
+usage. Three fixture-only schemas and a local prototype are verified against the
+four existing intake works and authored failure scenarios. These are design
+artifacts, not runnable provider requests. The subsequent
+[tracked fixture implementation](docs/handoffs/assessment-terminal-integration-2026-11-13.md)
+provides the local preparation and terminal-audit path below. Production prompts
+remain unchanged, live calls paused and the canary on hold.
+
+### Fixture request preparation and terminal audit
+
+```powershell
+uv run --extra api python scripts/assessment_delivery.py prepare `
+  --intake PATH_TO_INTAKE/review-01.json --run-id local-check-001 `
+  --output data/exports/fixture-requests-001
+
+uv run --extra api python scripts/assessment_delivery.py capture-fixture `
+  --intake PATH_TO_INTAKE/review-01.json `
+  --preparation data/exports/fixture-requests-001 `
+  --fixtures PATH_TO_AUTHORED_FIXTURES.json `
+  --output data/exports/fixture-journal-001
+
+uv run --extra api python scripts/assessment_delivery.py audit `
+  --intake PATH_TO_INTAKE/review-01.json `
+  --preparation data/exports/fixture-requests-001 `
+  --journal data/exports/fixture-journal-001 `
+  --output data/exports/fixture-audit-001
+```
+
+Copy the generated `fixtures.template.json` outside the immutable preparation
+directory, name its author and fill its fixed authored replies before capture.
+These commands support registered probe intake and in-process mock transport only.
+They make no provider, count or generation calls and accept no real model origin.
+See the [operator guide](docs/handoffs/assessment-terminal-integration-2026-11-13.md)
+for the fixture format, limits and failure behavior.
+
+Capture checks actual outgoing bytes and flushes an intent before invoking the
+fixture. Every existing journal is refused for capture; there is no resume or retry.
+Audit can export failures and interrupted prefixes without changing the journal.
+Complete publication requires a closed journal and binding for every original batch.
+Unknown usage remains unknown; authored counts are not billing. Exact preparation
+and audit repeats reuse bytes without rewriting them. Semantic support, adequate
+evidence, editing and craft remain unassessed; writer permission stays false.
+
 Inspect the active revision or roll back one migration during development:
 
 ```powershell

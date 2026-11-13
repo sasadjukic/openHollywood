@@ -140,6 +140,7 @@ def _registry(work: AssessmentWork) -> EvidenceRegistry:
     strict_object(documents[0].content_json)
     registry = EvidenceRegistry.model_validate_json(documents[0].content_json)
     sources = {d.identity: d for d in work.context.documents if d.kind == "source"}
+    parsed_sources: dict[str, JsonObject] = {}
     fields: dict[tuple[str, str], str] = {}
     for entry in registry.entries:
         require(entry.document_id in sources, "unknown_evidence_document")
@@ -148,7 +149,9 @@ def _registry(work: AssessmentWork) -> EvidenceRegistry:
         require(document.content_sha256 == entry.document_sha256, "evidence_document_mismatch")
         key = (document.identity, entry.field_pointer)
         if key not in fields:
-            fields[key] = _field(strict_object(document.content_json), entry.field_pointer)
+            if document.identity not in parsed_sources:
+                parsed_sources[document.identity] = strict_object(document.content_json)
+            fields[key] = _field(parsed_sources[document.identity], entry.field_pointer)
         field = fields[key]
         require(text_hash(field) == entry.field_sha256, "evidence_field_mismatch")
         require(0 <= entry.start < entry.end <= len(field), "invalid_evidence_offsets")

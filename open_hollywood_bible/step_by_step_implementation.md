@@ -12138,11 +12138,11 @@ request/terminal contract design, not broader adapter implementation or live inf
   files** (250 repository + one audit helper). Retain 56 existing mutation warnings.
   Block all network/SQLite in actual audit. Preserve **821 prior private members**,
   source hashes/mtimes, ordinary-review pins, production code and existing tests.
-- [ ] Design a bounded prospective intake-bound request manifest and terminal receipt.
+- [x] Design a bounded prospective intake-bound request manifest and terminal receipt.
   Fix source/intake/work/scope/brief/batch bindings before dispatch; distinguish logical
   request, count body, generation body, raw final and retained-response fingerprints.
   Preserve actual outcomes and unknown usage, safe metadata and semantic nonqualification.
-- [ ] Verify that contract locally with authored success, refusal, length, non-200,
+- [x] Verify that contract locally with authored success, refusal, length, non-200,
   interrupted delivery, unknown usage and mismatched-source/body fixtures. Reuse the
   existing native archive exporter; do not duplicate it. Any broader adapter or new
   inference plan needs this missing boundary qualified first.
@@ -12155,6 +12155,111 @@ software fixtures do not fill that observation gap or establish story quality.
 All fourteen issue bodies and posted URLs unchanged. CW-007/CW-013 remain open;
 CW-014 unqualified. **Step 19 IN PROGRESS; Step 20 NOT STARTED;
 live calls PAUSED; canary ON HOLD.**
+
+### Intake-bound request and terminal design 2026-11-13
+
+Report: [request/terminal contract and verification](../docs/handoffs/assessment-request-terminal-design-2026-11-13.md).
+Decision: [proposed ADR 0050](../docs/adr/0050-intake-bound-assessment-request-terminal-design.md).
+
+Status: bounded local design **COMPLETE**. The fixture implementation is now complete
+in the entry below; real provider delivery remains unqualified. No live budget frozen.
+
+- [x] Specify one immutable request payload per original batch, with complete ordered
+  work coverage, source/intake/declaration/brief pins, exact full-context presentation,
+  schema, adapter/implementation identity, provider settings, unique attempt/budget
+  slot and separately named count/generation byte and canonical body fingerprints.
+  The payload hash excludes its wrapper; the whole-work plan references manifests
+  without a circular back-reference. Hash agreement is not source authentication.
+- [x] Specify application-owned pre-send intent and actual-byte capture, terminal
+  evidence and derived receipt. Interrupted generation consumes an attempt with
+  unknown usage; count failures prevent generation. Preserve safe error chains,
+  available response IDs, exact final text and nullable usage. Do not equate retained
+  response hashes with absent raw HTTP bytes, count estimates with billed tokens,
+  successful binding with semantic truth, or terminal records with completed work.
+- [x] Generate three strict **fixture-only** design schemas. Reject caller-origin
+  promotion, undeclared fields and digest substitution. The prototype uses an
+  `.invalid` destination and synthetic model, not production prompts or provider
+  wire formats. No runtime parser admits these design contracts.
+- [x] Authenticate N06/N07/N10/N11 through the existing registered collector and replay
+  their six unchanged authored responses with full context: **51 fields, four holds,
+  41 unselected fields**. Check **26 scenarios** (four full-context replays plus 22
+  compact authored branches), **37 mutation refusals**, and separate complete/failed
+  two-batch accounting. Network and SQLite are blocked. All new responses are fixtures.
+- [x] Pass **369 existing regression tests** with 56 existing mutation warnings;
+  Ruff, formatting and strict mypy pass on **252 files** (250 repository + two private
+  design helpers). Verify prior evidence/source preservation. No application/domain,
+  CLI, existing test, prompt/profile/graph/gate or exporter eligibility changes.
+- [x] Implement the narrow tracked manifest-preparation and terminal-audit boundary
+  with injected transport fixtures, actual callback body checks, durable intent,
+  crash/cancellation and unknown-usage qualification. Reuse source collection and
+  native binding/completion; keep failed audit output separate from completion.
+- [ ] Qualify a real renderer/provider mapping and authenticated-delivery branch
+  before proposing live inference. Current historical positives do not establish
+  this new path's real failed/partial/unknown-token behavior.
+
+Private root: `data/diagnostics/assessment-request-terminal-design-2026-11-13/`.
+No user database access, provider metadata/count/generation calls, writer permission,
+semantic rescore or new human checkpoint. The preliminary redundant full-context
+matrix was interrupted; its partial outputs are explicitly excluded from acceptance.
+All fourteen issue bodies and posted URLs unchanged. CW-007/CW-013 remain open;
+CW-014 unqualified. **Step 19 IN PROGRESS; Step 20 NOT STARTED;
+live calls PAUSED; full workflow canary ON HOLD.**
+
+### Tracked fixture preparation and terminal auditing 2026-11-13
+
+Report: [implementation, verification and next step](../docs/handoffs/assessment-terminal-integration-2026-11-13.md).
+Decision: [accepted ADR 0050](../docs/adr/0050-intake-bound-assessment-request-terminal-design.md).
+
+Status: narrow local implementation **COMPLETE**. Real provider adapter and
+authenticated model-delivery branch **NOT QUALIFIED**. No live plan/budget frozen.
+
+- [x] Add the pure `assessment_delivery` component, application service and operator
+  CLI: `prepare`, `capture-fixture`, `audit`. Six runtime schemas are separate from
+  historical design inputs. Reuse registered source collection, native binding,
+  completion and immutable publication. Preserve original work/scope/briefs/holds.
+- [x] Commit complete original request sets, exact presentation/body fingerprints,
+  unique attempts, one count/generation allowance per batch and zero retries. Fix
+  synthetic provider/model and `.invalid` endpoints; only mock transport is admitted.
+  No caller model-origin promotion, credentials, default network transport or new
+  production prompt. The generation-only option must be chosen before capture.
+- [x] Verify actual method/URL/body and allowed headers at the callback boundary.
+  Write and flush/fsync chained intent before transport, then outcome and final stop.
+  Refuse every existing journal; no retry/resume/repair. Count failure, invalid result
+  and partial/unknown usage stop further fixture dispatch. Preserve safe gateway
+  chains, exact finals and unknown usage; observed HTTP status overrides body claims.
+- [x] Reconstruct audit/completion from saved journal evidence. Missing outcomes retain
+  consumed intent and unknown usage/time. Failed or missing batches cannot complete
+  a subset; missing final stop prevents completed-publication eligibility even when
+  native bindings exist. Export failures visibly without changing the source journal.
+- [x] Profile repeated source JSON decoding in native registry validation and parse
+  each document once per invocation. Preserve all binding checks and fresh validation
+  across calls. Add duplicate-key, changed-field and parse-count regressions. One
+  instrumented N06 load/audit sample improves from 75.894 to 20.536 seconds; this is
+  local overhead, not a model-latency or production benchmark claim.
+- [x] Pass **602 tests**: 80 new plus 522 existing, with 56 existing mutation warnings.
+  Ruff/format/strict mypy pass on **257 files** (256 repository + one private helper).
+  Existing async SQLite regressions use isolated fixtures outside the sandbox after
+  a sandbox stall; no user database or live provider is accessed.
+- [x] Replay N06/N07/N10/N11 through tracked commands: **six unchanged authored claims,
+  51 fields, four holds, 41 unselected fields**. Verify exact preparation/audit reuse,
+  all four duplicate-capture refusals and unchanged original source bytes/mtimes.
+  Four mock count plus four mock generation invocations; **zero live calls**.
+- [x] Preserve **900 earlier sealed members**, **1,166 original source pins** and
+  **723 baseline files** outside the seven documented existing-file edits. Retain
+  superseded/partial pre-optimization verification separately from final acceptance.
+- [ ] Qualify one real provider renderer/response mapping locally against saved
+  original-work request/terminal examples and authored failure fixtures. Verify exact
+  generation/count bodies, safe metadata, model identity, stops and honest usage.
+- [ ] Only after local provider qualification, prepare a small intake-bound live
+  smoke test for separate approval. No current fixture receipt authenticates a real
+  model delivery or authorizes writer edits; story-quality qualification remains open.
+
+Private root: `data/diagnostics/assessment-terminal-integration-2026-11-13/`;
+accepted four-work bundles are under `verified/`. Native source exports, authored
+publisher, production prompts/profiles/graph/gates, workflow checkpoints and all
+fourteen issue bodies/posted URLs remain unchanged. CW-007/CW-013 remain open;
+CW-014 unqualified. **Step 19 IN PROGRESS; Step 20 NOT STARTED;
+live calls PAUSED; full workflow canary ON HOLD.**
 
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 

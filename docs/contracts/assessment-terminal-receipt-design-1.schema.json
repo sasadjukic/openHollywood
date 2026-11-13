@@ -1,0 +1,685 @@
+{
+  "$comment": "Local design fixture shape only. Hash consistency is not authentication. No application parser accepts this contract; terminal receipts must be derived.",
+  "$defs": {
+    "AssessmentReceipt": {
+      "additionalProperties": false,
+      "description": "Delivery facts only. A structurally valid result is still semantically unassessed.",
+      "properties": {
+        "active_seconds": {
+          "minimum": 0,
+          "title": "Active Seconds",
+          "type": "number"
+        },
+        "assessed_unit_ids": {
+          "default": [],
+          "items": {
+            "maxLength": 200,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Assessed Unit Ids",
+          "type": "array"
+        },
+        "attempt_id": {
+          "maxLength": 200,
+          "minLength": 1,
+          "title": "Attempt Id",
+          "type": "string"
+        },
+        "batch_id": {
+          "maxLength": 200,
+          "minLength": 1,
+          "title": "Batch Id",
+          "type": "string"
+        },
+        "binding": {
+          "default": "unresolved",
+          "enum": [
+            "unresolved",
+            "complete"
+          ],
+          "title": "Binding",
+          "type": "string"
+        },
+        "input_tokens": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Input Tokens"
+        },
+        "output_tokens": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Output Tokens"
+        },
+        "reasoning_tokens": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Reasoning Tokens"
+        },
+        "request_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Request Sha256",
+          "type": "string"
+        },
+        "result_sha256": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Result Sha256"
+        },
+        "status": {
+          "enum": [
+            "valid",
+            "invalid",
+            "length",
+            "refusal",
+            "transport_error",
+            "cancelled"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "work_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Work Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "work_sha256",
+        "batch_id",
+        "request_sha256",
+        "attempt_id",
+        "status",
+        "active_seconds"
+      ],
+      "title": "AssessmentReceipt",
+      "type": "object"
+    },
+    "ErrorLink": {
+      "additionalProperties": false,
+      "properties": {
+        "category": {
+          "maxLength": 200,
+          "minLength": 1,
+          "pattern": "\\S",
+          "title": "Category",
+          "type": "string"
+        },
+        "code": {
+          "anyOf": [
+            {
+              "maxLength": 200,
+              "minLength": 1,
+              "pattern": "\\S",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Code"
+        },
+        "layer": {
+          "enum": [
+            "client",
+            "daemon",
+            "gateway",
+            "provider"
+          ],
+          "title": "Layer",
+          "type": "string"
+        },
+        "safe_message": {
+          "maxLength": 1200,
+          "title": "Safe Message",
+          "type": "string"
+        }
+      },
+      "required": [
+        "layer",
+        "category",
+        "code",
+        "safe_message"
+      ],
+      "title": "ErrorLink",
+      "type": "object"
+    },
+    "Exchange": {
+      "additionalProperties": false,
+      "properties": {
+        "dispatched_body_bytes_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Dispatched Body Bytes Sha256",
+          "type": "string"
+        },
+        "dispatched_body_canonical_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Dispatched Body Canonical Sha256",
+          "type": "string"
+        },
+        "disposition": {
+          "enum": [
+            "response",
+            "interrupted",
+            "transport_error",
+            "cancelled"
+          ],
+          "title": "Disposition",
+          "type": "string"
+        },
+        "endpoint_canonical_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Endpoint Canonical Sha256",
+          "type": "string"
+        },
+        "local_error_chain": {
+          "items": {
+            "$ref": "#/$defs/ErrorLink"
+          },
+          "maxItems": 8,
+          "title": "Local Error Chain",
+          "type": "array"
+        },
+        "observed_raw_http_bytes_sha256": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Observed Raw Http Bytes Sha256"
+        },
+        "raw_http_bytes_retained": {
+          "const": false,
+          "title": "Raw Http Bytes Retained",
+          "type": "boolean"
+        },
+        "retained_response": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RetainedResponse"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "retained_response_canonical_sha256": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Retained Response Canonical Sha256"
+        },
+        "stage": {
+          "enum": [
+            "input_count",
+            "generation"
+          ],
+          "title": "Stage",
+          "type": "string"
+        }
+      },
+      "required": [
+        "stage",
+        "endpoint_canonical_sha256",
+        "dispatched_body_bytes_sha256",
+        "dispatched_body_canonical_sha256",
+        "disposition",
+        "retained_response",
+        "retained_response_canonical_sha256",
+        "observed_raw_http_bytes_sha256",
+        "raw_http_bytes_retained",
+        "local_error_chain"
+      ],
+      "title": "Exchange",
+      "type": "object"
+    },
+    "JsonValue": {},
+    "RetainedResponse": {
+      "additionalProperties": false,
+      "properties": {
+        "contract": {
+          "const": "safe-response-design-1",
+          "title": "Contract",
+          "type": "string"
+        },
+        "counted_input_tokens": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Counted Input Tokens"
+        },
+        "error_chain": {
+          "items": {
+            "$ref": "#/$defs/ErrorLink"
+          },
+          "maxItems": 8,
+          "title": "Error Chain",
+          "type": "array"
+        },
+        "finish_reason": {
+          "anyOf": [
+            {
+              "maxLength": 200,
+              "minLength": 1,
+              "pattern": "\\S",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Finish Reason"
+        },
+        "http_status": {
+          "maximum": 599,
+          "minimum": 100,
+          "title": "Http Status",
+          "type": "integer"
+        },
+        "raw_final": {
+          "anyOf": [
+            {
+              "maxLength": 64000,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Raw Final"
+        },
+        "response_id": {
+          "anyOf": [
+            {
+              "maxLength": 200,
+              "minLength": 1,
+              "pattern": "\\S",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Response Id"
+        },
+        "returned_model": {
+          "anyOf": [
+            {
+              "maxLength": 200,
+              "minLength": 1,
+              "pattern": "\\S",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Returned Model"
+        },
+        "state": {
+          "enum": [
+            "complete",
+            "length",
+            "refusal",
+            "error",
+            "unrecognized"
+          ],
+          "title": "State",
+          "type": "string"
+        },
+        "usage": {
+          "$ref": "#/$defs/Usage"
+        }
+      },
+      "required": [
+        "contract",
+        "http_status",
+        "state",
+        "response_id",
+        "returned_model",
+        "finish_reason",
+        "raw_final",
+        "usage",
+        "counted_input_tokens",
+        "error_chain"
+      ],
+      "title": "RetainedResponse",
+      "type": "object"
+    },
+    "TerminalEvidence": {
+      "additionalProperties": false,
+      "properties": {
+        "active_seconds": {
+          "minimum": 0,
+          "title": "Active Seconds",
+          "type": "number"
+        },
+        "attempt_id": {
+          "maxLength": 200,
+          "minLength": 1,
+          "pattern": "\\S",
+          "title": "Attempt Id",
+          "type": "string"
+        },
+        "contract": {
+          "const": "assessment-terminal-evidence-design-1",
+          "title": "Contract",
+          "type": "string"
+        },
+        "exchanges": {
+          "items": {
+            "$ref": "#/$defs/Exchange"
+          },
+          "maxItems": 2,
+          "title": "Exchanges",
+          "type": "array"
+        },
+        "origin": {
+          "const": "authored_fixture",
+          "title": "Origin",
+          "type": "string"
+        },
+        "request_payload_canonical_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Request Payload Canonical Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "contract",
+        "origin",
+        "request_payload_canonical_sha256",
+        "attempt_id",
+        "exchanges",
+        "active_seconds"
+      ],
+      "title": "TerminalEvidence",
+      "type": "object"
+    },
+    "Usage": {
+      "additionalProperties": false,
+      "properties": {
+        "cached_input_tokens": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Cached Input Tokens"
+        },
+        "input_tokens": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Input Tokens"
+        },
+        "output_tokens": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Output Tokens"
+        },
+        "reasoning_tokens": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Reasoning Tokens"
+        }
+      },
+      "required": [
+        "input_tokens",
+        "output_tokens",
+        "reasoning_tokens",
+        "cached_input_tokens"
+      ],
+      "title": "Usage",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "actual_billed_cost": {
+      "title": "Actual Billed Cost",
+      "type": "null"
+    },
+    "bound_result": {
+      "anyOf": [
+        {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Bound Result"
+    },
+    "contract": {
+      "const": "assessment-terminal-receipt-design-1",
+      "title": "Contract",
+      "type": "string"
+    },
+    "count_attempts_consumed": {
+      "enum": [
+        0,
+        1
+      ],
+      "title": "Count Attempts Consumed",
+      "type": "integer"
+    },
+    "craft": {
+      "const": "unassessed",
+      "title": "Craft",
+      "type": "string"
+    },
+    "delivery_authentication": {
+      "const": "authored_fixture_only",
+      "title": "Delivery Authentication",
+      "type": "string"
+    },
+    "edit_necessity": {
+      "const": "unassessed",
+      "title": "Edit Necessity",
+      "type": "string"
+    },
+    "editorial_effect": {
+      "const": "unassessed",
+      "title": "Editorial Effect",
+      "type": "string"
+    },
+    "evidence": {
+      "$ref": "#/$defs/TerminalEvidence"
+    },
+    "evidence_adequacy": {
+      "const": "unassessed",
+      "title": "Evidence Adequacy",
+      "type": "string"
+    },
+    "factual_support": {
+      "const": "unassessed",
+      "title": "Factual Support",
+      "type": "string"
+    },
+    "failure_code": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Failure Code"
+    },
+    "generation_attempts_consumed": {
+      "enum": [
+        0,
+        1
+      ],
+      "title": "Generation Attempts Consumed",
+      "type": "integer"
+    },
+    "generation_usage": {
+      "$ref": "#/$defs/Usage"
+    },
+    "model_evidence": {
+      "const": false,
+      "title": "Model Evidence",
+      "type": "boolean"
+    },
+    "native_receipt": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/AssessmentReceipt"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "next_dispatch_allowed": {
+      "const": false,
+      "title": "Next Dispatch Allowed",
+      "type": "boolean"
+    },
+    "raw_final_utf8_sha256": {
+      "anyOf": [
+        {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Raw Final Utf8 Sha256"
+    },
+    "state": {
+      "enum": [
+        "bound_unassessed",
+        "failed",
+        "generation_not_started"
+      ],
+      "title": "State",
+      "type": "string"
+    },
+    "terminal_evidence_canonical_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Terminal Evidence Canonical Sha256",
+      "type": "string"
+    },
+    "usage_state": {
+      "enum": [
+        "known",
+        "partial",
+        "unknown",
+        "not_dispatched"
+      ],
+      "title": "Usage State",
+      "type": "string"
+    },
+    "writer_dispatch_authorized": {
+      "const": false,
+      "title": "Writer Dispatch Authorized",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "contract",
+    "evidence",
+    "terminal_evidence_canonical_sha256",
+    "state",
+    "failure_code",
+    "generation_attempts_consumed",
+    "count_attempts_consumed",
+    "generation_usage",
+    "usage_state",
+    "raw_final_utf8_sha256",
+    "native_receipt",
+    "bound_result",
+    "next_dispatch_allowed",
+    "model_evidence",
+    "delivery_authentication",
+    "actual_billed_cost",
+    "factual_support",
+    "evidence_adequacy",
+    "editorial_effect",
+    "edit_necessity",
+    "craft",
+    "writer_dispatch_authorized"
+  ],
+  "title": "TerminalReceipt",
+  "type": "object"
+}

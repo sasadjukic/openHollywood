@@ -1,0 +1,110 @@
+{
+  "$comment": "Runtime fixture-only contract. Source, actual-byte capture and completion are verified by the application; shape or caller hashes do not authenticate a model delivery.",
+  "$defs": {
+    "FixtureReply": {
+      "additionalProperties": false,
+      "properties": {
+        "attempt_id": {
+          "maxLength": 200,
+          "minLength": 1,
+          "pattern": "\\S",
+          "title": "Attempt Id",
+          "type": "string"
+        },
+        "behavior": {
+          "enum": [
+            "response",
+            "transport_error",
+            "cancelled",
+            "interrupt"
+          ],
+          "title": "Behavior",
+          "type": "string"
+        },
+        "http_status": {
+          "anyOf": [
+            {
+              "maximum": 599,
+              "minimum": 100,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Http Status"
+        },
+        "response_body_utf8": {
+          "maxLength": 1048576,
+          "title": "Response Body Utf8",
+          "type": "string"
+        },
+        "stage": {
+          "enum": [
+            "input_count",
+            "generation"
+          ],
+          "title": "Stage",
+          "type": "string"
+        }
+      },
+      "required": [
+        "attempt_id",
+        "stage",
+        "behavior",
+        "http_status",
+        "response_body_utf8"
+      ],
+      "title": "FixtureReply",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "authored_by": {
+      "maxLength": 1200,
+      "minLength": 1,
+      "pattern": "\\S",
+      "title": "Authored By",
+      "type": "string"
+    },
+    "cancel_before_dispatch": {
+      "title": "Cancel Before Dispatch",
+      "type": "boolean"
+    },
+    "contract": {
+      "const": "assessment-transport-fixtures-1",
+      "title": "Contract",
+      "type": "string"
+    },
+    "origin": {
+      "const": "authored_fixture",
+      "title": "Origin",
+      "type": "string"
+    },
+    "replies": {
+      "items": {
+        "$ref": "#/$defs/FixtureReply"
+      },
+      "maxItems": 24,
+      "minItems": 1,
+      "title": "Replies",
+      "type": "array"
+    },
+    "request_set_canonical_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Request Set Canonical Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "contract",
+    "origin",
+    "authored_by",
+    "request_set_canonical_sha256",
+    "cancel_before_dispatch",
+    "replies"
+  ],
+  "title": "TransportFixtures",
+  "type": "object"
+}

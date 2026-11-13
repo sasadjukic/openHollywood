@@ -1,0 +1,231 @@
+{
+  "$comment": "Runtime fixture-only contract. Source, actual-byte capture and completion are verified by the application; shape or caller hashes do not authenticate a model delivery.",
+  "$defs": {
+    "ErrorLink": {
+      "additionalProperties": false,
+      "properties": {
+        "category": {
+          "maxLength": 200,
+          "minLength": 1,
+          "pattern": "\\S",
+          "title": "Category",
+          "type": "string"
+        },
+        "code": {
+          "anyOf": [
+            {
+              "maxLength": 200,
+              "minLength": 1,
+              "pattern": "\\S",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Code"
+        },
+        "layer": {
+          "enum": [
+            "client",
+            "daemon",
+            "gateway",
+            "provider"
+          ],
+          "title": "Layer",
+          "type": "string"
+        },
+        "safe_message": {
+          "maxLength": 1200,
+          "title": "Safe Message",
+          "type": "string"
+        }
+      },
+      "required": [
+        "layer",
+        "category",
+        "code",
+        "safe_message"
+      ],
+      "title": "ErrorLink",
+      "type": "object"
+    },
+    "Usage": {
+      "additionalProperties": false,
+      "properties": {
+        "cached_input_tokens": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Cached Input Tokens"
+        },
+        "input_tokens": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Input Tokens"
+        },
+        "output_tokens": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Output Tokens"
+        },
+        "reasoning_tokens": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Reasoning Tokens"
+        }
+      },
+      "required": [
+        "input_tokens",
+        "output_tokens",
+        "reasoning_tokens",
+        "cached_input_tokens"
+      ],
+      "title": "Usage",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "contract": {
+      "const": "assessment-fixture-safe-response-1",
+      "title": "Contract",
+      "type": "string"
+    },
+    "counted_input_tokens": {
+      "anyOf": [
+        {
+          "minimum": 0,
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Counted Input Tokens"
+    },
+    "error_chain": {
+      "items": {
+        "$ref": "#/$defs/ErrorLink"
+      },
+      "maxItems": 8,
+      "title": "Error Chain",
+      "type": "array"
+    },
+    "finish_reason": {
+      "anyOf": [
+        {
+          "maxLength": 200,
+          "minLength": 1,
+          "pattern": "\\S",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Finish Reason"
+    },
+    "http_status": {
+      "maximum": 599,
+      "minimum": 100,
+      "title": "Http Status",
+      "type": "integer"
+    },
+    "raw_final": {
+      "anyOf": [
+        {
+          "maxLength": 64000,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Raw Final"
+    },
+    "response_id": {
+      "anyOf": [
+        {
+          "maxLength": 200,
+          "minLength": 1,
+          "pattern": "\\S",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Response Id"
+    },
+    "returned_model": {
+      "anyOf": [
+        {
+          "maxLength": 200,
+          "minLength": 1,
+          "pattern": "\\S",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Returned Model"
+    },
+    "state": {
+      "enum": [
+        "complete",
+        "length",
+        "refusal",
+        "error",
+        "unrecognized"
+      ],
+      "title": "State",
+      "type": "string"
+    },
+    "usage": {
+      "$ref": "#/$defs/Usage"
+    }
+  },
+  "required": [
+    "contract",
+    "http_status",
+    "state",
+    "response_id",
+    "returned_model",
+    "finish_reason",
+    "raw_final",
+    "usage",
+    "counted_input_tokens",
+    "error_chain"
+  ],
+  "title": "RetainedResponse",
+  "type": "object"
+}

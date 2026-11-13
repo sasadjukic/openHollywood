@@ -1,0 +1,297 @@
+{
+  "$comment": "Local design fixture shape only. Hash consistency is not authentication. No application parser accepts this contract; terminal receipts must be derived.",
+  "$defs": {
+    "Endpoint": {
+      "additionalProperties": false,
+      "properties": {
+        "body_bytes_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Body Bytes Sha256",
+          "type": "string"
+        },
+        "body_canonical_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Body Canonical Sha256",
+          "type": "string"
+        },
+        "body_utf8": {
+          "maxLength": 16777216,
+          "minLength": 1,
+          "title": "Body Utf8",
+          "type": "string"
+        },
+        "destination": {
+          "const": "https://assessment-fixture.invalid",
+          "title": "Destination",
+          "type": "string"
+        },
+        "method": {
+          "const": "POST",
+          "title": "Method",
+          "type": "string"
+        },
+        "path": {
+          "enum": [
+            "/fixture/count",
+            "/fixture/generate"
+          ],
+          "title": "Path",
+          "type": "string"
+        },
+        "stage": {
+          "enum": [
+            "input_count",
+            "generation"
+          ],
+          "title": "Stage",
+          "type": "string"
+        }
+      },
+      "required": [
+        "stage",
+        "method",
+        "destination",
+        "path",
+        "body_utf8",
+        "body_bytes_sha256",
+        "body_canonical_sha256"
+      ],
+      "title": "Endpoint",
+      "type": "object"
+    },
+    "JsonValue": {},
+    "RequestPayload": {
+      "additionalProperties": false,
+      "properties": {
+        "active_unit_ids": {
+          "items": {
+            "maxLength": 200,
+            "minLength": 1,
+            "pattern": "\\S",
+            "type": "string"
+          },
+          "maxItems": 12,
+          "minItems": 1,
+          "title": "Active Unit Ids",
+          "type": "array"
+        },
+        "attempt_id": {
+          "maxLength": 200,
+          "minLength": 1,
+          "pattern": "\\S",
+          "title": "Attempt Id",
+          "type": "string"
+        },
+        "batch_id": {
+          "maxLength": 200,
+          "minLength": 1,
+          "pattern": "\\S",
+          "title": "Batch Id",
+          "type": "string"
+        },
+        "budget_slot": {
+          "maximum": 12,
+          "minimum": 1,
+          "title": "Budget Slot",
+          "type": "integer"
+        },
+        "contract": {
+          "const": "assessment-request-payload-design-1",
+          "title": "Contract",
+          "type": "string"
+        },
+        "endpoints": {
+          "items": {
+            "$ref": "#/$defs/Endpoint"
+          },
+          "maxItems": 2,
+          "minItems": 1,
+          "title": "Endpoints",
+          "type": "array"
+        },
+        "generation_allowance": {
+          "const": 1,
+          "title": "Generation Allowance",
+          "type": "integer"
+        },
+        "implementation_canonical_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Implementation Canonical Sha256",
+          "type": "string"
+        },
+        "live_authorized": {
+          "const": false,
+          "title": "Live Authorized",
+          "type": "boolean"
+        },
+        "model": {
+          "const": "design-only-no-model",
+          "title": "Model",
+          "type": "string"
+        },
+        "origin": {
+          "const": "authored_fixture",
+          "title": "Origin",
+          "type": "string"
+        },
+        "presentation_bytes_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Presentation Bytes Sha256",
+          "type": "string"
+        },
+        "presentation_contract": {
+          "const": "full-context-fixture-presentation-1",
+          "title": "Presentation Contract",
+          "type": "string"
+        },
+        "presentation_utf8": {
+          "maxLength": 16777216,
+          "minLength": 1,
+          "title": "Presentation Utf8",
+          "type": "string"
+        },
+        "provider": {
+          "const": "fixture",
+          "title": "Provider",
+          "type": "string"
+        },
+        "provider_adapter_contract": {
+          "const": "fixture-wire-1",
+          "title": "Provider Adapter Contract",
+          "type": "string"
+        },
+        "response_schema_canonical_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Response Schema Canonical Sha256",
+          "type": "string"
+        },
+        "retry_allowance": {
+          "const": 0,
+          "title": "Retry Allowance",
+          "type": "integer"
+        },
+        "settings": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Settings",
+          "type": "object"
+        },
+        "source": {
+          "$ref": "#/$defs/SourcePin"
+        },
+        "source_receipt_canonical_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Source Receipt Canonical Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "contract",
+        "origin",
+        "source",
+        "source_receipt_canonical_sha256",
+        "batch_id",
+        "active_unit_ids",
+        "presentation_contract",
+        "presentation_utf8",
+        "presentation_bytes_sha256",
+        "response_schema_canonical_sha256",
+        "provider_adapter_contract",
+        "implementation_canonical_sha256",
+        "provider",
+        "model",
+        "settings",
+        "endpoints",
+        "attempt_id",
+        "budget_slot",
+        "generation_allowance",
+        "retry_allowance",
+        "live_authorized"
+      ],
+      "title": "RequestPayload",
+      "type": "object"
+    },
+    "SourcePin": {
+      "additionalProperties": false,
+      "properties": {
+        "briefs_canonical_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Briefs Canonical Sha256",
+          "type": "string"
+        },
+        "declarations_canonical_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Declarations Canonical Sha256",
+          "type": "string"
+        },
+        "intake_manifest_bytes_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Intake Manifest Bytes Sha256",
+          "type": "string"
+        },
+        "intake_result_bytes_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Intake Result Bytes Sha256",
+          "type": "string"
+        },
+        "review_id": {
+          "maxLength": 200,
+          "minLength": 1,
+          "title": "Review Id",
+          "type": "string"
+        },
+        "source_canonical_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Source Canonical Sha256",
+          "type": "string"
+        },
+        "source_origin": {
+          "const": "diagnostic_probe",
+          "title": "Source Origin",
+          "type": "string"
+        },
+        "work_canonical_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Work Canonical Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "source_origin",
+        "review_id",
+        "intake_manifest_bytes_sha256",
+        "intake_result_bytes_sha256",
+        "source_canonical_sha256",
+        "work_canonical_sha256",
+        "declarations_canonical_sha256",
+        "briefs_canonical_sha256"
+      ],
+      "title": "SourcePin",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "contract": {
+      "const": "assessment-request-manifest-design-1",
+      "title": "Contract",
+      "type": "string"
+    },
+    "payload": {
+      "$ref": "#/$defs/RequestPayload"
+    },
+    "payload_canonical_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Payload Canonical Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "contract",
+    "payload",
+    "payload_canonical_sha256"
+  ],
+  "title": "RequestManifest",
+  "type": "object"
+}

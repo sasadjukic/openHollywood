@@ -9,6 +9,7 @@ from typing import Any
 
 import httpx
 import pytest
+from open_hollywood_engine.evaluations import assessment_result as result_module
 from open_hollywood_engine.evaluations.assessment_result import (
     AssessmentScope,
     EvidenceLocation,
@@ -32,11 +33,80 @@ from open_hollywood_engine.evaluations.assessment_work import (
 from open_hollywood_engine.evaluations.review_evidence import (
     EvidenceError,
     SavedMessage,
+    strict_object,
     text_hash,
 )
 from pydantic import ValidationError
 
 ERRORS = (EvidenceError, ValidationError, json.JSONDecodeError)
+
+
+def many_field_work(work: AssessmentWork, *, duplicate_key: bool = False) -> AssessmentWork:
+    source = document("many-fields", "source", {"first": "one", "second": "two", "third": "three"})
+    if duplicate_key:
+        raw = '{"first":"one","first":"one","second":"two","third":"three"}'
+        source = source.model_copy(update={"content_json": raw, "content_sha256": text_hash(raw)})
+    entries = tuple(
+        location(source, f"M{i}", "/" + key, 0, len(value), None)
+        for i, (key, value) in enumerate(
+            {"first": "one", "second": "two", "third": "three"}.items()
+        )
+    )
+    registry = document(
+        "index", "registry", EvidenceRegistry(entries=entries).model_dump(mode="json")
+    )
+    documents = tuple(d for d in work.context.documents if d.kind != "registry") + (
+        source,
+        registry,
+    )
+    return partition_work(work.context.model_copy(update={"documents": documents}), 2)
+
+
+def test_many_fields_parse_source_once_per_validation_without_cross_call_cache(
+    work: AssessmentWork,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    changed = many_field_work(work)
+    source = next(d for d in changed.context.documents if d.identity == "many-fields")
+    original = strict_object
+    parsed: list[str] = []
+
+    def counted(raw: str) -> Any:
+        if raw == source.content_json:
+            parsed.append(raw)
+        return original(raw)
+
+    monkeypatch.setattr(result_module, "strict_object", counted)
+    for expected in (1, 2):
+        scope_for_batch(changed, changed.batches[0].batch_id, "a" * 64)
+        assert len(parsed) == expected
+
+
+def test_many_field_reuse_does_not_hide_duplicate_keys_or_changed_source(
+    work: AssessmentWork,
+) -> None:
+    with pytest.raises(ERRORS):
+        duplicate = many_field_work(work, duplicate_key=True)
+        scope_for_batch(duplicate, duplicate.batches[0].batch_id, "a" * 64)
+    checked = many_field_work(work)
+    scope_for_batch(checked, checked.batches[0].batch_id, "a" * 64)
+    source = document(
+        "many-fields", "source", {"first": "changed", "second": "two", "third": "three"}
+    )
+    registry = json.loads(
+        next(d.content_json for d in checked.context.documents if d.kind == "registry")
+    )
+    for entry in registry["entries"]:
+        entry["document_sha256"] = source.content_sha256
+    new_registry = document("index", "registry", registry)
+    documents = tuple(
+        d
+        for d in checked.context.documents
+        if d.kind != "registry" and d.identity != source.identity
+    ) + (source, new_registry)
+    changed = partition_work(checked.context.model_copy(update={"documents": documents}), 2)
+    with pytest.raises(ValueError, match="evidence_field_mismatch"):
+        scope_for_batch(changed, changed.batches[0].batch_id, "a" * 64)
 
 
 @pytest.fixture(autouse=True)

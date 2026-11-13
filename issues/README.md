@@ -1750,3 +1750,31 @@ positive selection does not qualify broader delivery support or story quality.
 No live plan is frozen. All fourteen issue bodies/posted URLs unchanged;
 CW-007/CW-013 remain open, CW-014 unqualified. Live calls **PAUSED**;
 full workflow canary **ON HOLD**.
+
+Local request/terminal contract design **2026-11-13**: the
+[design report](../docs/handoffs/assessment-request-terminal-design-2026-11-13.md)
+and proposed ADR 0050 separate authenticated intake, exact request/body identities,
+terminal evidence, native completion and semantic qualification. Four full-context
+intake replays plus 22 authored terminal scenarios pass, with 37 mutation refusals
+and separate two-batch completion checks. Three strict fixture-only schemas are
+verified; **369 existing tests**, Ruff/format and strict mypy on 252 files pass.
+Failed delivery and unknown usage remain explicit; no caller can promote an
+authored response to model evidence. No runtime adapter or provider call is added.
+Next is narrow tracked preparation/terminal auditing with injected transport and
+durable intent, before any real provider qualification or live plan. CW-007/CW-013
+remain open; CW-014 unqualified. All fourteen issue bodies and posted URLs stay
+unchanged. Prompts unchanged; live calls **PAUSED**; canary **ON HOLD**.
+
+Tracked fixture preparation and terminal auditing **2026-11-13**:
+the [implementation report](../docs/handoffs/assessment-terminal-integration-2026-11-13.md)
+records supported local prepare/capture/audit commands, actual-body checks,
+flushed intent, no retries, safe failed-terminal evidence and honest unknown usage.
+All origins remain authored fixtures. **602 tests** (80 new), Ruff/format/strict
+mypy pass; four actual intake works retain six authored results, all 51 fields,
+four holds and 41 unselected fields. Repeated captures are refused; preparation
+and audit reuse are byte/mtime exact. A measured registry parsing refinement retains
+all checks while avoiding repeated decoding of the same source within validation.
+Earlier evidence and all issue bodies/posted URLs are preserved. Next is local
+qualification of one real provider wire-format mapping before a separately approved
+live smoke test. This closes none of CW-007/CW-013/CW-014 or the other issues.
+Production prompts unchanged; live calls **PAUSED**; canary **ON HOLD**.
