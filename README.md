@@ -1397,8 +1397,19 @@ not enable OpenAI in the synthetic fixture commands below. The separate
 integrates exact OpenAI-format requests with source authentication and a durable
 injected-fixture journal through `scripts/assessment_openai_delivery.py`. Its
 `prepare` command also requires explicit `--settings`; `capture-fixture` and `audit`
-retain authored origin and zero live calls. A real transport and an approved,
-count-gated smoke plan remain separate next steps.
+retain authored origin and zero live calls. The separate
+[four-work smoke plan](docs/handoffs/assessment-openai-four-work-smoke-plan-2026-11-13.md)
+qualifies real transport locally and freezes four counts/four generation attempts,
+with no retries. `scripts/assessment_openai_smoke.py verify` and `audit` are read-only;
+explicit live execution requires the approved plan hash and its fixed journal.
+The approved [smoke execution](docs/handoffs/assessment-openai-four-work-smoke-results-2026-11-13.md)
+stopped at the first count: 350,749 input tokens exceeded the frozen 272,000 cap.
+One count, zero generation attempts and zero retries were used. The subsequent
+[local payload audit](docs/handoffs/assessment-payload-resource-audit-2026-11-13.md)
+verified reversible source/registry factoring and local provenance retention.
+Next is a separately versioned diagnostic presentation, qualified locally before
+another freeze. Further live calls remain paused; the closed plan cannot resume.
+Existing fixture commands below stay fixture-only.
 
 ```powershell
 uv run --extra api python scripts/assessment_delivery.py prepare `

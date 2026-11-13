@@ -50,3 +50,4 @@ tradeoffs. Status values are `Proposed`, `Accepted`, `Superseded`, or `Rejected`
 | [0049](0049-source-bound-assessment-completion-publication.md) | Source-bound completion envelope and read-only publisher | Accepted |
 | [0050](0050-intake-bound-assessment-request-terminal-design.md) | Intake-bound assessment request manifest and terminal evidence | Accepted; fixture-only preparation/capture/audit |
 | [0051](0051-intake-bound-openai-assessment-rehearsal.md) | Intake-bound OpenAI manifests and durable journal | Accepted; local injected-fixture rehearsal |
+| [0052](0052-frozen-four-work-assessment-smoke.md) | Frozen four-work assessment smoke transport | Accepted; local qualification, live approval pending |

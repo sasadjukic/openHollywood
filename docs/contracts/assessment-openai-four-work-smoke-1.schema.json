@@ -1,0 +1,145 @@
+{
+  "$defs": {
+    "Work": {
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "enum": [
+            "N06",
+            "N07",
+            "N10",
+            "N11"
+          ],
+          "title": "Name",
+          "type": "string"
+        },
+        "intake": {
+          "title": "Intake",
+          "type": "string"
+        },
+        "preparation": {
+          "title": "Preparation",
+          "type": "string"
+        },
+        "request_set_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Request Set Sha256",
+          "type": "string"
+        },
+        "preparation_manifest_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Preparation Manifest Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "intake",
+        "preparation",
+        "request_set_sha256",
+        "preparation_manifest_sha256"
+      ],
+      "title": "Work",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "contract": {
+      "const": "assessment-openai-four-work-smoke-1",
+      "title": "Contract",
+      "type": "string"
+    },
+    "works": {
+      "items": {
+        "$ref": "#/$defs/Work"
+      },
+      "maxItems": 4,
+      "minItems": 4,
+      "title": "Works",
+      "type": "array"
+    },
+    "live_journal": {
+      "title": "Live Journal",
+      "type": "string"
+    },
+    "implementation_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Implementation Sha256",
+      "type": "string"
+    },
+    "count_limit": {
+      "const": 4,
+      "title": "Count Limit",
+      "type": "integer"
+    },
+    "generation_limit": {
+      "const": 4,
+      "title": "Generation Limit",
+      "type": "integer"
+    },
+    "retry_limit": {
+      "const": 0,
+      "title": "Retry Limit",
+      "type": "integer"
+    },
+    "max_generation_cost_usd": {
+      "const": "4.00",
+      "title": "Max Generation Cost Usd",
+      "type": "string"
+    },
+    "count_timeout_seconds": {
+      "const": 120,
+      "title": "Count Timeout Seconds",
+      "type": "integer"
+    },
+    "generation_timeout_seconds": {
+      "const": 600,
+      "title": "Generation Timeout Seconds",
+      "type": "integer"
+    },
+    "run_wall_seconds": {
+      "const": 3600,
+      "title": "Run Wall Seconds",
+      "type": "integer"
+    },
+    "scoring": {
+      "title": "Scoring",
+      "type": "string"
+    },
+    "stops": {
+      "title": "Stops",
+      "type": "string"
+    },
+    "approval_required": {
+      "const": true,
+      "title": "Approval Required",
+      "type": "boolean"
+    },
+    "writer_dispatch_authorized": {
+      "const": false,
+      "title": "Writer Dispatch Authorized",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "contract",
+    "works",
+    "live_journal",
+    "implementation_sha256",
+    "count_limit",
+    "generation_limit",
+    "retry_limit",
+    "max_generation_cost_usd",
+    "count_timeout_seconds",
+    "generation_timeout_seconds",
+    "run_wall_seconds",
+    "scoring",
+    "stops",
+    "approval_required",
+    "writer_dispatch_authorized"
+  ],
+  "title": "Plan",
+  "type": "object",
+  "$comment": "Shape only. Source authentication, exact request regeneration, approval, fixed one-shot journal and native binding are runtime checks. Not a provider attestation."
+}

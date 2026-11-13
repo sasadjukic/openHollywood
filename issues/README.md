@@ -1812,3 +1812,53 @@ input-count gate, zero retries and locally qualified real transport/observed ori
 No live plan is frozen, no issue is closed and no writer permission is granted.
 CW-007/CW-013 remain open; CW-014 unqualified. Production prompts unchanged;
 live calls **PAUSED**; full workflow canary **ON HOLD**.
+
+Four-work OpenAI smoke preparation **2026-11-13**:
+the [frozen plan](../docs/handoffs/assessment-openai-four-work-smoke-plan-2026-11-13.md)
+retains all four original works, six claims and eight byte-identical endpoint bodies.
+It freezes four counts/four generation attempts, zero retries, Sol/high, a 272,000-input
+cap, 32,000 output tokens and $1 conservative generation estimate per work ($4 total).
+All four counts must fit before any generation; failures stop the remaining run.
+Real transport is qualified through injected fixtures and a fixed one-shot journal;
+no real model or input-count endpoint has been called. Approval is still required.
+
+**420 combined tests and 38 final smoke tests pass** (overlapping suites), plus
+Ruff/format/strict mypy. Four actual works pass the final eight-callback injected
+rehearsal with unchanged authored finals. Count-only transport evidence is distinguished
+from observed model output. Earlier evidence, fourteen issue bodies and posted URLs
+remain intact. Account access, input fit, semantics and story quality remain unproven;
+this preparation closes no issue and grants no writer permission. CW-007/CW-013 stay
+open; CW-014 unqualified. Production prompts unchanged; live calls **PAUSED**;
+full workflow canary **ON HOLD**.
+
+Four-work OpenAI smoke execution **2026-11-13**:
+the [results](../docs/handoffs/assessment-openai-four-work-smoke-results-2026-11-13.md)
+record one approved execution stopped at N06's input-count gate. HTTP 200 returned
+**350,749 tokens**, exceeding the frozen **272,000** cap. **One count, zero generation
+attempts, zero retries**; the remaining seven slots were not dispatched and all six
+claims remain unassessed. This is a successful count exchange and application
+resource stop, not evidence of a provider outage or a model reasoning failure.
+Actual billed cost remains unknown; no new semantic or story-quality result.
+
+The terminal audit, exact reuse, inspection assertions and local quality checks
+pass. All earlier evidence, fourteen issue bodies and posted URLs remain intact.
+Next is a bounded local payload/resource composition audit before any revised
+freeze; no trimming, budget raise or resumption is authorized. CW-007/CW-013 stay
+open; CW-014 unqualified. Production prompts unchanged; further live calls **PAUSED**;
+full workflow canary **ON HOLD**.
+
+Four-work payload/resource audit **2026-11-13**:
+the [local report](../docs/handoffs/assessment-payload-resource-audit-2026-11-13.md)
+finds that operator provenance and the expanded citation registry account for
+85.4–90.9% of decoded user-message bytes. Local studies reconstruct all four packets
+and **3,658 source-bound locations** exactly. Keeping provenance locally and using
+compact locators yields 208,265–220,934-byte views, with every original source,
+message, claim, declaration, brief and disposition retained in the bound bundle.
+These are byte savings and preservation proofs, not model/token/quality results.
+
+**30 local tests**, Ruff/format, strict mypy and four-work source verification pass.
+All earlier evidence, issue bodies and posted URLs remain intact. Next is a
+separately versioned read-only diagnostic presentation, locally qualified before
+another approved count-gated smoke. No inference, prompt change, issue closure or
+writer permission. CW-007/CW-013 remain open; CW-014 unqualified. Live calls **PAUSED**;
+full workflow canary **ON HOLD**.

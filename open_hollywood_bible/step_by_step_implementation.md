@@ -12347,7 +12347,7 @@ No live plan or budget frozen.
   and **741 baseline files** outside five declared existing-file edits. Preserve
   all fourteen issue bodies/posted URLs and prior uncommitted work. Record exact
   source snapshots and a private acceptance seal; no old delivery is relabeled.
-- [ ] Prepare a count-gated smoke plan for separate approval, provisionally four
+- [x] Prepare a count-gated smoke plan for separate approval, provisionally four
   generation attempts plus four input counts and zero retries. First review exact
   presentation/resource fit and qualify the real transport/observed-origin boundary
   locally. Freeze reviewed metadata, source pins, cost/time/token ceilings and stops;
@@ -12359,6 +12359,145 @@ requests, user database access or human checkpoint added. Authored completion do
 not qualify factual support, evidence adequacy, editorial effect, necessary revision
 or story quality, and grants no writer permission. CW-007/CW-013 stay open; CW-014
 unqualified. **Step 19 IN PROGRESS; Step 20 NOT STARTED; production prompts unchanged;
+live calls PAUSED; full workflow canary ON HOLD.**
+
+### Four-work OpenAI assessment smoke preparation 2026-11-13
+
+Plan: [payload, exact freeze, scoring, stops and commands](../docs/handoffs/assessment-openai-four-work-smoke-plan-2026-11-13.md).
+Decision: [ADR 0052](../docs/adr/0052-frozen-four-work-assessment-smoke.md).
+
+Status: plan frozen and local verification **COMPLETE**. Subsequently approved and
+executed once; **HALTED at the first count**. See the results entry below. N06 count
+access succeeded, but its input exceeded the reservation; generation remains untested.
+
+- [x] Freeze N06/N07/N10/N11 in original order: six active claims, complete work,
+  declarations, briefs, all 51 fields, four holds and 41 unselected fields. Verify
+  byte-identical diagnostic presentation, schemas and all eight endpoint bodies
+  against the previous rehearsal. No prompt, scope, source order or gold change.
+- [x] Freeze `gpt-6.1-sol` / `high`, four input counts and four generation attempts,
+  zero retries. Count all four before generation; any failed/unknown/over-budget
+  count stops the remainder. Reserve 272,000 input/32,000 output tokens and $1.00
+  conservative generation estimate per work ($4.00 total). Review public official
+  metadata; retain the local conservative input cap and explicit unknown actual cost.
+  This replaces the old 24,000-token fixture reservation before live approval.
+- [x] Add separate approved-plan-hash/fixed-journal dispatch and read-only audit;
+  qualify actual HTTP client behavior using injected transport. Disable redirects,
+  environment proxies and retries; retain TLS verification. Journal/fsync intent
+  before each attempt; freeze 120s counts, 600s generations and a 3,600s dispatch
+  window. Stop on uncertain delivery, missing usage, invalid binding or source drift.
+- [x] Keep old fixture contracts and captures unchanged. New fixture qualification
+  cannot use the fixed live location or gain a model-origin label. Distinguish a
+  transport response from observed model output, especially count-only failures.
+  Every audit includes all eight slots and native whole-work completion; semantic
+  support/evidence adequacy and writer permission remain unqualified/false.
+- [x] Pass **420 combined relevant tests** and **38 final smoke tests** (overlapping
+  suites), Ruff/format/strict mypy on **268 files** (267 repository + private helper).
+  Verify both runtime schemas. Replay all four actual works through the final
+  asynchronous client with **eight injected callbacks and six unchanged authored
+  finals**. Preserve full intake, scope and original identities; all eight slots
+  audited. Real HTTP transport/external sockets/SQLite blocked in this rehearsal.
+- [x] Preserve **1,217 earlier sealed members**, **636 selected archive source pins**,
+  **755 baseline files** outside four declared documentation edits, all fourteen
+  issue bodies and posted URLs. Retain preliminary local freeze/replay separately
+  after correcting count-only transport versus model-output observation. Accepted
+  artifacts are under `verified/`; freeze the eight-slot/six-claim inspection form.
+  At preparation, live journal absent; **zero counts and zero generations used**.
+- [x] Obtain approval for the exact plan and full prose/context at both OpenAI
+  story-bearing endpoints before execution. Run once, inspect every fixed slot and
+  returned claim, report delivery/usage/semantic limits, update the tracker. No
+  catalog/preflight model call, repair, extra count, fallback or canary authorized.
+
+Plan bytes SHA-256:
+`97f479ce20069c57649bf981a92c3b2724a9cd9a9ba811b2e9b419f0b7ae9eed`.
+Private root: `data/diagnostics/assessment-openai-smoke-2026-11-13/`.
+Preparation used no live calls; subsequent execution is recorded below. No user
+database access, new workflow checkpoint or issue closure.
+CW-007/CW-013 remain open; CW-014 unqualified. **Step 19 IN PROGRESS; Step 20 NOT STARTED;
+production prompts unchanged; live calls PAUSED; full workflow canary ON HOLD.**
+
+### Four-work OpenAI assessment smoke execution 2026-11-13
+
+Report: [terminal results, inspection, accounting and next step](../docs/handoffs/assessment-openai-four-work-smoke-results-2026-11-13.md).
+
+Status: approved one-shot execution, terminal audit and documentation **COMPLETE**.
+Run **HALTED at the first input-count gate**; generation delivery **NOT QUALIFIED**.
+
+- [x] Authenticate the exact approved plan, all four current sources, 101 sealed
+  preparation members and 11 implementation/documentation snapshots before dispatch.
+  Retain unchanged endpoint bodies, presentation, scope, schema, settings and sources.
+- [x] Execute once with full prose/context authorized at both OpenAI endpoints.
+  N06 count returned HTTP 200 and **350,749 tokens**, exceeding the frozen **272,000**
+  input cap by **78,749 (28.95%)**. Honor the global stop: **one count, zero generation
+  attempts, zero retries**. Three further counts and all four generations unused.
+- [x] Inspect all eight fixed slots and record all six judgments as unassessed.
+  Retain one intent/outcome/stop, exact body linkage and safe terminal evidence.
+  Count latency 2.325s; no generation latency/output/usage measurement. Actual
+  billed cost unknown; count tokens are not generation usage. No native completion.
+- [x] Publish and exactly reuse the supported read-only audit; verify bytes/mtimes.
+  Pass private inspection assertions, Ruff/format and strict mypy on 268 files.
+  Preserve 1,318 earlier sealed members, 636 archive source pins, 763 baseline files
+  outside three declared documentation updates, all issue bodies/URLs and the live
+  journal. Runtime implementation and production prompts unchanged; no fresh unit
+  test run claimed beyond the prior preparation's qualified suites.
+- [x] Audit payload/resource composition locally for these four requests before
+  more inference. Separate model-visible evidence/scope from operator bookkeeping,
+  measure repeated representations and prove any proposed lossless source/reference
+  mapping. Do not silently trim context, raise the cap or resume the closed plan.
+
+Private results: `data/diagnostics/assessment-openai-smoke-results-2026-11-13/`.
+This is count/resource evidence, not a provider outage or a semantic model failure.
+Generation transport, factual/evidence quality, writer behavior and story quality
+remain unqualified. No user database write, writer permission or issue closure.
+CW-007/CW-013 remain open; CW-014 unqualified. **Step 19 IN PROGRESS; Step 20 NOT STARTED;
+production prompts unchanged; further live calls PAUSED; full workflow canary ON HOLD.**
+
+### Four-work assessment payload/resource audit 2026-11-13
+
+Report: [composition, reversible studies, resource limits and next step](../docs/handoffs/assessment-payload-resource-audit-2026-11-13.md).
+
+Status: bounded local audit and preservation study **COMPLETE**.
+New presentation integration **NOT IMPLEMENTED**; generation delivery unqualified.
+No live plan frozen and no calls made.
+
+- [x] Authenticate and measure the four unchanged smoke requests. Separate decoded
+  user-message bytes, embedded document contributions, wire escaping, schema and
+  retained local files. Operator provenance plus the expanded registry account
+  for **85.4–90.9%** of user-message bytes. Original-user/visible-request JSON values
+  match; outer whitespace alone saves less than 0.6%. Preserve all original evidence.
+- [x] Audit **3,658 complete-field citation bindings** across 904/904/907/943 entries.
+  Preserve every reference ID, source identity/version, exact text/pointer/hash and
+  offsets. Hundreds of old schema/catalog fields remain registered; no evidence
+  filtering or change to the per-claim output schema/cardinality.
+- [x] Verify two non-dispatchable local representations per work. Parsed documents
+  plus compact locators reconstruct the original packets exactly; a second variant
+  retains the full operator archive locally. Its compact views are **208,265–220,934
+  bytes**, an **80.45–87.73% byte reduction**. Preserve six claims, all 51 fields,
+  four holds, 41 unselected fields, declarations, briefs and original messages.
+  Native work/scope validation passes after reconstruction. Model equivalence and
+  actual token fit remain unassessed; no native identity is assigned to a study view.
+- [x] Pass **30 local tests**, Ruff/format and strict mypy on **269 files** (267
+  repository plus two private helpers). Refuse altered source/version/citations,
+  missing provenance, scope/brief/message drift, partial/paragraph layouts and
+  unqualified serialization. Verify Unicode and repeated text at distinct locations.
+  Block network/SQLite in tests; supported four-work smoke verification uses zero calls.
+- [x] Preserve **1,346 earlier sealed members**, **636 selected source pins**, original
+  journal, **764 baseline files** outside three declared documentation edits, all
+  fourteen issue bodies and posted URLs. Existing code/tests/prompts and frozen
+  requests unchanged. Record exact measurements, local resource profile and audit seal.
+- [ ] Implement and locally qualify a separately versioned source-bound diagnostic
+  presentation in the read-only component. Retain complete source/review/message
+  visibility and all scope/dispositions; keep operator archives locally and render
+  readable source locators. Explicitly extend the prior presentation contract.
+- [ ] Only after local qualification, prepare a new count-gated smoke for approval:
+  provisionally four counts/four generations, no retries, Sol/high, unchanged
+  272,000-input/32,000-output ceilings and strict stops. Actual counts must establish
+  fit. No reuse/resume of the old closed plan or token/cost claims from byte ratios.
+
+Private root: `data/diagnostics/assessment-payload-audit-2026-11-13/`.
+Study results establish local reconstruction and source binding, not model usability,
+semantic correctness, necessary editing or story quality. Preserve context for later
+human feel/flow/character review. CW-007/CW-013 stay open; CW-014 unqualified.
+**Step 19 IN PROGRESS; Step 20 NOT STARTED; production prompts unchanged;
 live calls PAUSED; full workflow canary ON HOLD.**
 
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
