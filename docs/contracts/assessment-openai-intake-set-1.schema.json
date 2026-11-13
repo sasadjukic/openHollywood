@@ -1,0 +1,592 @@
+{
+  "$comment": "Local OpenAI wire rehearsal only. Source authentication, exact request regeneration, durable intent and native completion are application checks. No live authorization or model-delivery provenance follows from schema validity.",
+  "$defs": {
+    "AssessmentPresentation": {
+      "additionalProperties": false,
+      "properties": {
+        "active_unit_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Active Unit Ids",
+          "type": "array"
+        },
+        "batch_id": {
+          "title": "Batch Id",
+          "type": "string"
+        },
+        "contract": {
+          "const": "assessment-intake-presentation-1",
+          "title": "Contract",
+          "type": "string"
+        },
+        "messages": {
+          "maxItems": 2,
+          "minItems": 2,
+          "prefixItems": [
+            {
+              "$ref": "#/$defs/SavedMessage"
+            },
+            {
+              "$ref": "#/$defs/SavedMessage"
+            }
+          ],
+          "title": "Messages",
+          "type": "array"
+        },
+        "messages_canonical_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Messages Canonical Sha256",
+          "type": "string"
+        },
+        "production_prompt_changed": {
+          "const": false,
+          "title": "Production Prompt Changed",
+          "type": "boolean"
+        },
+        "response_schema": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Response Schema",
+          "type": "object"
+        },
+        "schema_canonical_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Schema Canonical Sha256",
+          "type": "string"
+        },
+        "source": {
+          "$ref": "#/$defs/SourcePin"
+        }
+      },
+      "required": [
+        "contract",
+        "source",
+        "batch_id",
+        "active_unit_ids",
+        "messages",
+        "messages_canonical_sha256",
+        "response_schema",
+        "schema_canonical_sha256",
+        "production_prompt_changed"
+      ],
+      "title": "AssessmentPresentation",
+      "type": "object"
+    },
+    "JsonValue": {},
+    "OpenAIModelSpec": {
+      "additionalProperties": false,
+      "description": "Explicit opt-in; a catalog ID alone proves neither features nor prices.",
+      "properties": {
+        "cached_input_usd_per_million": {
+          "pattern": "^\\d+(\\.\\d+)?$",
+          "title": "Cached Input Usd Per Million",
+          "type": "string"
+        },
+        "context_window": {
+          "exclusiveMinimum": 0,
+          "title": "Context Window",
+          "type": "integer"
+        },
+        "default_reasoning_effort": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ReasoningEffort"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "input_charge_multiplier": {
+          "default": "1",
+          "pattern": "^[1-9]\\d*(\\.\\d+)?$",
+          "title": "Input Charge Multiplier",
+          "type": "string"
+        },
+        "input_usd_per_million": {
+          "pattern": "^\\d+(\\.\\d+)?$",
+          "title": "Input Usd Per Million",
+          "type": "string"
+        },
+        "max_input_tokens": {
+          "exclusiveMinimum": 0,
+          "maximum": 272000,
+          "title": "Max Input Tokens",
+          "type": "integer"
+        },
+        "max_output_tokens": {
+          "exclusiveMinimum": 0,
+          "title": "Max Output Tokens",
+          "type": "integer"
+        },
+        "model_identifier": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]{0,199}$",
+          "title": "Model Identifier",
+          "type": "string"
+        },
+        "output_usd_per_million": {
+          "pattern": "^\\d+(\\.\\d+)?$",
+          "title": "Output Usd Per Million",
+          "type": "string"
+        },
+        "pricing_version": {
+          "minLength": 1,
+          "title": "Pricing Version",
+          "type": "string"
+        },
+        "reasoning_efforts": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/ReasoningEffort"
+          },
+          "title": "Reasoning Efforts",
+          "type": "array"
+        },
+        "response_model_identifiers": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Response Model Identifiers",
+          "type": "array"
+        },
+        "supports_structured_output": {
+          "title": "Supports Structured Output",
+          "type": "boolean"
+        },
+        "supports_text": {
+          "const": true,
+          "default": true,
+          "title": "Supports Text",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "model_identifier",
+        "context_window",
+        "max_output_tokens",
+        "max_input_tokens",
+        "supports_structured_output",
+        "input_usd_per_million",
+        "cached_input_usd_per_million",
+        "output_usd_per_million",
+        "pricing_version"
+      ],
+      "title": "OpenAIModelSpec",
+      "type": "object"
+    },
+    "ReasoningEffort": {
+      "enum": [
+        "none",
+        "minimal",
+        "low",
+        "medium",
+        "high",
+        "xhigh",
+        "max"
+      ],
+      "type": "string"
+    },
+    "RequestManifest": {
+      "additionalProperties": false,
+      "properties": {
+        "contract": {
+          "const": "assessment-openai-intake-manifest-1",
+          "title": "Contract",
+          "type": "string"
+        },
+        "payload": {
+          "$ref": "#/$defs/RequestPayload"
+        },
+        "payload_canonical_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Payload Canonical Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "contract",
+        "payload",
+        "payload_canonical_sha256"
+      ],
+      "title": "RequestManifest",
+      "type": "object"
+    },
+    "RequestPayload": {
+      "additionalProperties": false,
+      "properties": {
+        "attempt_id": {
+          "maxLength": 200,
+          "minLength": 1,
+          "pattern": "\\S",
+          "title": "Attempt Id",
+          "type": "string"
+        },
+        "budget_slot": {
+          "maximum": 12,
+          "minimum": 1,
+          "title": "Budget Slot",
+          "type": "integer"
+        },
+        "contract": {
+          "const": "assessment-openai-intake-request-1",
+          "title": "Contract",
+          "type": "string"
+        },
+        "effective": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Effective",
+          "type": "object"
+        },
+        "endpoints": {
+          "maxItems": 2,
+          "minItems": 2,
+          "prefixItems": [
+            {
+              "$ref": "#/$defs/WireEndpoint"
+            },
+            {
+              "$ref": "#/$defs/WireEndpoint"
+            }
+          ],
+          "title": "Endpoints",
+          "type": "array"
+        },
+        "implementation_canonical_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Implementation Canonical Sha256",
+          "type": "string"
+        },
+        "live_authorized": {
+          "const": false,
+          "title": "Live Authorized",
+          "type": "boolean"
+        },
+        "presentation": {
+          "$ref": "#/$defs/AssessmentPresentation"
+        },
+        "retry_allowance": {
+          "const": 0,
+          "title": "Retry Allowance",
+          "type": "integer"
+        },
+        "settings": {
+          "$ref": "#/$defs/Settings"
+        },
+        "source": {
+          "$ref": "#/$defs/SourcePin"
+        },
+        "source_receipt_canonical_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Source Receipt Canonical Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "contract",
+        "source",
+        "source_receipt_canonical_sha256",
+        "presentation",
+        "settings",
+        "endpoints",
+        "effective",
+        "implementation_canonical_sha256",
+        "attempt_id",
+        "budget_slot",
+        "retry_allowance",
+        "live_authorized"
+      ],
+      "title": "RequestPayload",
+      "type": "object"
+    },
+    "RequestSetPayload": {
+      "additionalProperties": false,
+      "properties": {
+        "contract": {
+          "const": "assessment-openai-intake-set-payload-1",
+          "title": "Contract",
+          "type": "string"
+        },
+        "count_attempt_limit": {
+          "maximum": 12,
+          "minimum": 1,
+          "title": "Count Attempt Limit",
+          "type": "integer"
+        },
+        "generation_attempt_limit": {
+          "maximum": 12,
+          "minimum": 1,
+          "title": "Generation Attempt Limit",
+          "type": "integer"
+        },
+        "live_authorized": {
+          "const": false,
+          "title": "Live Authorized",
+          "type": "boolean"
+        },
+        "requests": {
+          "items": {
+            "$ref": "#/$defs/RequestManifest"
+          },
+          "maxItems": 12,
+          "minItems": 1,
+          "title": "Requests",
+          "type": "array"
+        },
+        "retry_limit": {
+          "const": 0,
+          "title": "Retry Limit",
+          "type": "integer"
+        },
+        "run_id": {
+          "maxLength": 200,
+          "minLength": 1,
+          "pattern": "\\S",
+          "title": "Run Id",
+          "type": "string"
+        },
+        "settings": {
+          "$ref": "#/$defs/Settings"
+        },
+        "work_canonical_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Work Canonical Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "contract",
+        "run_id",
+        "work_canonical_sha256",
+        "settings",
+        "requests",
+        "count_attempt_limit",
+        "generation_attempt_limit",
+        "retry_limit",
+        "live_authorized"
+      ],
+      "title": "RequestSetPayload",
+      "type": "object"
+    },
+    "SavedMessage": {
+      "additionalProperties": false,
+      "properties": {
+        "content": {
+          "title": "Content",
+          "type": "string"
+        },
+        "role": {
+          "enum": [
+            "system",
+            "user"
+          ],
+          "title": "Role",
+          "type": "string"
+        }
+      },
+      "required": [
+        "role",
+        "content"
+      ],
+      "title": "SavedMessage",
+      "type": "object"
+    },
+    "Settings": {
+      "additionalProperties": false,
+      "properties": {
+        "contract": {
+          "const": "assessment-openai-rehearsal-settings-1",
+          "title": "Contract",
+          "type": "string"
+        },
+        "live_authorized": {
+          "const": false,
+          "title": "Live Authorized",
+          "type": "boolean"
+        },
+        "max_cost_usd": {
+          "pattern": "^\\d+(\\.\\d+)?$",
+          "title": "Max Cost Usd",
+          "type": "string"
+        },
+        "max_input_tokens": {
+          "exclusiveMinimum": 0,
+          "title": "Max Input Tokens",
+          "type": "integer"
+        },
+        "max_output_tokens": {
+          "exclusiveMinimum": 0,
+          "title": "Max Output Tokens",
+          "type": "integer"
+        },
+        "max_transport_seconds": {
+          "exclusiveMinimum": 0,
+          "title": "Max Transport Seconds",
+          "type": "number"
+        },
+        "model_spec": {
+          "$ref": "#/$defs/OpenAIModelSpec"
+        },
+        "reasoning": {
+          "const": "high",
+          "title": "Reasoning",
+          "type": "string"
+        }
+      },
+      "required": [
+        "contract",
+        "model_spec",
+        "reasoning",
+        "max_input_tokens",
+        "max_output_tokens",
+        "max_cost_usd",
+        "max_transport_seconds",
+        "live_authorized"
+      ],
+      "title": "Settings",
+      "type": "object"
+    },
+    "SourcePin": {
+      "additionalProperties": false,
+      "properties": {
+        "briefs_canonical_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Briefs Canonical Sha256",
+          "type": "string"
+        },
+        "declarations_canonical_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Declarations Canonical Sha256",
+          "type": "string"
+        },
+        "intake_manifest_bytes_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Intake Manifest Bytes Sha256",
+          "type": "string"
+        },
+        "intake_result_bytes_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Intake Result Bytes Sha256",
+          "type": "string"
+        },
+        "review_id": {
+          "maxLength": 200,
+          "minLength": 1,
+          "title": "Review Id",
+          "type": "string"
+        },
+        "source_canonical_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Source Canonical Sha256",
+          "type": "string"
+        },
+        "source_origin": {
+          "const": "diagnostic_probe",
+          "title": "Source Origin",
+          "type": "string"
+        },
+        "work_canonical_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Work Canonical Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "source_origin",
+        "review_id",
+        "intake_manifest_bytes_sha256",
+        "intake_result_bytes_sha256",
+        "source_canonical_sha256",
+        "work_canonical_sha256",
+        "declarations_canonical_sha256",
+        "briefs_canonical_sha256"
+      ],
+      "title": "SourcePin",
+      "type": "object"
+    },
+    "WireEndpoint": {
+      "additionalProperties": false,
+      "properties": {
+        "body_bytes_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Body Bytes Sha256",
+          "type": "string"
+        },
+        "body_canonical_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Body Canonical Sha256",
+          "type": "string"
+        },
+        "body_utf8": {
+          "title": "Body Utf8",
+          "type": "string"
+        },
+        "destination": {
+          "const": "https://api.openai.com",
+          "title": "Destination",
+          "type": "string"
+        },
+        "method": {
+          "const": "POST",
+          "title": "Method",
+          "type": "string"
+        },
+        "path": {
+          "enum": [
+            "/v1/responses",
+            "/v1/responses/input_tokens"
+          ],
+          "title": "Path",
+          "type": "string"
+        },
+        "stage": {
+          "enum": [
+            "input_count",
+            "generation"
+          ],
+          "title": "Stage",
+          "type": "string"
+        }
+      },
+      "required": [
+        "stage",
+        "method",
+        "destination",
+        "path",
+        "body_utf8",
+        "body_bytes_sha256",
+        "body_canonical_sha256"
+      ],
+      "title": "WireEndpoint",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "contract": {
+      "const": "assessment-openai-intake-set-1",
+      "title": "Contract",
+      "type": "string"
+    },
+    "payload": {
+      "$ref": "#/$defs/RequestSetPayload"
+    },
+    "payload_canonical_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Payload Canonical Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "contract",
+    "payload",
+    "payload_canonical_sha256"
+  ],
+  "title": "RequestSet",
+  "type": "object"
+}

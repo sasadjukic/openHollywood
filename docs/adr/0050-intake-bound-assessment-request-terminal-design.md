@@ -109,5 +109,15 @@ gate or new authenticated-delivery branch in this implementation.
 
 See the [design report](../handoffs/assessment-request-terminal-design-2026-11-13.md)
 and [implementation and verification report](../handoffs/assessment-terminal-integration-2026-11-13.md).
+
+The [OpenAI mapping qualification](../handoffs/assessment-openai-mapping-2026-11-13.md)
+now verifies the shared request serializer and a separate assessment response
+mapper against six original-work saved deliveries and authored failures. The
+mapping preserves scope and separate byte/canonical hashes; missing usage and IDs
+remain missing. Its in-memory injected replay has no provider client and does not
+authenticate a new delivery. Production response parsing remains unchanged.
+Integrating this mapping into an intake-bound provider manifest and durable journal
+is still required before freezing live inference; fixture contracts remain fixture-only.
+
 Step 19 IN PROGRESS; Step 20 NOT STARTED; prompts unchanged; live calls PAUSED;
 canary ON HOLD.

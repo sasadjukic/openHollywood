@@ -1,0 +1,173 @@
+{
+  "$comment": "Local OpenAI wire rehearsal only. Source authentication, exact request regeneration, durable intent and native completion are application checks. No live authorization or model-delivery provenance follows from schema validity.",
+  "$defs": {
+    "OpenAIModelSpec": {
+      "additionalProperties": false,
+      "description": "Explicit opt-in; a catalog ID alone proves neither features nor prices.",
+      "properties": {
+        "cached_input_usd_per_million": {
+          "pattern": "^\\d+(\\.\\d+)?$",
+          "title": "Cached Input Usd Per Million",
+          "type": "string"
+        },
+        "context_window": {
+          "exclusiveMinimum": 0,
+          "title": "Context Window",
+          "type": "integer"
+        },
+        "default_reasoning_effort": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ReasoningEffort"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "input_charge_multiplier": {
+          "default": "1",
+          "pattern": "^[1-9]\\d*(\\.\\d+)?$",
+          "title": "Input Charge Multiplier",
+          "type": "string"
+        },
+        "input_usd_per_million": {
+          "pattern": "^\\d+(\\.\\d+)?$",
+          "title": "Input Usd Per Million",
+          "type": "string"
+        },
+        "max_input_tokens": {
+          "exclusiveMinimum": 0,
+          "maximum": 272000,
+          "title": "Max Input Tokens",
+          "type": "integer"
+        },
+        "max_output_tokens": {
+          "exclusiveMinimum": 0,
+          "title": "Max Output Tokens",
+          "type": "integer"
+        },
+        "model_identifier": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]{0,199}$",
+          "title": "Model Identifier",
+          "type": "string"
+        },
+        "output_usd_per_million": {
+          "pattern": "^\\d+(\\.\\d+)?$",
+          "title": "Output Usd Per Million",
+          "type": "string"
+        },
+        "pricing_version": {
+          "minLength": 1,
+          "title": "Pricing Version",
+          "type": "string"
+        },
+        "reasoning_efforts": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/ReasoningEffort"
+          },
+          "title": "Reasoning Efforts",
+          "type": "array"
+        },
+        "response_model_identifiers": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Response Model Identifiers",
+          "type": "array"
+        },
+        "supports_structured_output": {
+          "title": "Supports Structured Output",
+          "type": "boolean"
+        },
+        "supports_text": {
+          "const": true,
+          "default": true,
+          "title": "Supports Text",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "model_identifier",
+        "context_window",
+        "max_output_tokens",
+        "max_input_tokens",
+        "supports_structured_output",
+        "input_usd_per_million",
+        "cached_input_usd_per_million",
+        "output_usd_per_million",
+        "pricing_version"
+      ],
+      "title": "OpenAIModelSpec",
+      "type": "object"
+    },
+    "ReasoningEffort": {
+      "enum": [
+        "none",
+        "minimal",
+        "low",
+        "medium",
+        "high",
+        "xhigh",
+        "max"
+      ],
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "contract": {
+      "const": "assessment-openai-rehearsal-settings-1",
+      "title": "Contract",
+      "type": "string"
+    },
+    "live_authorized": {
+      "const": false,
+      "title": "Live Authorized",
+      "type": "boolean"
+    },
+    "max_cost_usd": {
+      "pattern": "^\\d+(\\.\\d+)?$",
+      "title": "Max Cost Usd",
+      "type": "string"
+    },
+    "max_input_tokens": {
+      "exclusiveMinimum": 0,
+      "title": "Max Input Tokens",
+      "type": "integer"
+    },
+    "max_output_tokens": {
+      "exclusiveMinimum": 0,
+      "title": "Max Output Tokens",
+      "type": "integer"
+    },
+    "max_transport_seconds": {
+      "exclusiveMinimum": 0,
+      "title": "Max Transport Seconds",
+      "type": "number"
+    },
+    "model_spec": {
+      "$ref": "#/$defs/OpenAIModelSpec"
+    },
+    "reasoning": {
+      "const": "high",
+      "title": "Reasoning",
+      "type": "string"
+    }
+  },
+  "required": [
+    "contract",
+    "model_spec",
+    "reasoning",
+    "max_input_tokens",
+    "max_output_tokens",
+    "max_cost_usd",
+    "max_transport_seconds",
+    "live_authorized"
+  ],
+  "title": "Settings",
+  "type": "object"
+}

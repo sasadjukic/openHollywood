@@ -192,90 +192,7 @@ class OpenAIGateway:
         request: ModelRequest,
         spec: OpenAIModelSpec,
     ) -> tuple[dict[str, Any], dict[str, JsonValue]]:
-        settings = request.settings
-        if settings.stop:
-            raise ModelGatewayError(
-                ModelGatewayErrorCode.UNSUPPORTED_CAPABILITY,
-                "OpenAI Responses does not support stop sequences",
-                retryable=False,
-            )
-        effort = spec.default_reasoning_effort
-        if isinstance(settings.thinking, str):
-            if settings.thinking not in spec.reasoning_efforts:
-                raise ModelGatewayError(
-                    ModelGatewayErrorCode.UNSUPPORTED_CAPABILITY,
-                    "The requested reasoning effort is unsupported for this model",
-                    retryable=False,
-                )
-            effort = settings.thinking
-        elif settings.thinking is True:
-            if "medium" not in spec.reasoning_efforts:
-                raise ModelGatewayError(
-                    ModelGatewayErrorCode.UNSUPPORTED_CAPABILITY,
-                    "This model does not support reasoning",
-                    retryable=False,
-                )
-            effort = "medium"
-        body: dict[str, Any] = {
-            "model": request.model_identifier,
-            "input": [
-                {"role": message.role.value, "content": message.content}
-                for message in request.messages
-            ],
-            "store": False,
-            "background": False,
-            "stream": False,
-            "service_tier": "default",
-            "truncation": "disabled",
-            "max_output_tokens": request.budget.max_output_tokens,
-        }
-        if effort is not None:
-            body["reasoning"] = {"effort": effort}
-        omitted: list[JsonValue] = []
-        if settings.seed is not None:
-            omitted.append("seed")  # Responses has no deterministic seed parameter.
-        for name, value in (("temperature", settings.temperature), ("top_p", settings.top_p)):
-            if value is not None:
-                if effort in (None, "none"):
-                    if name == "temperature" and value > 2:
-                        raise ModelGatewayError(
-                            ModelGatewayErrorCode.UNSUPPORTED_CAPABILITY,
-                            "OpenAI temperature must be between zero and two",
-                            retryable=False,
-                        )
-                    body[name] = value
-                else:
-                    omitted.append(name)
-        if request.response_schema is not None:
-            if not spec.supports_structured_output:
-                raise ModelGatewayError(
-                    ModelGatewayErrorCode.UNSUPPORTED_CAPABILITY,
-                    "This OpenAI model does not support strict structured output",
-                    retryable=False,
-                )
-            body["text"] = {
-                "format": {
-                    "type": "json_schema",
-                    "name": "open_hollywood_output",
-                    "strict": True,
-                    "schema": strict_response_schema(request.response_schema),
-                }
-            }
-        metadata: dict[str, JsonValue] = {
-            "adapter_version": "openai-responses-1",
-            "effective_settings": {
-                key: value for key, value in body.items() if key not in ("input", "model", "text")
-            },
-            "omitted_portable_settings": omitted,
-            "schema_enforced": request.response_schema is not None,
-            "pricing": spec.model_dump(mode="json"),
-            "cost_estimate_kind": "published_rates_conservative_cache_write_bound",
-        }
-        if "text" in body:
-            metadata["schema_sha256"] = hashlib.sha256(
-                json.dumps(body["text"], sort_keys=True).encode()
-            ).hexdigest()
-        return body, metadata
+        return render_responses_body(request, spec)
 
     def _parse(
         self,
@@ -486,3 +403,92 @@ def _secret_error() -> ModelGatewayError:
         "OpenAI payload rejected by the secret policy",
         retryable=False,
     )
+
+
+def render_responses_body(
+    request: ModelRequest, spec: OpenAIModelSpec
+) -> tuple[dict[str, Any], dict[str, JsonValue]]:
+    """Pure shared serializer; no client, credentials, catalog lookup or network."""
+    settings = request.settings
+    if settings.stop:
+        raise ModelGatewayError(
+            ModelGatewayErrorCode.UNSUPPORTED_CAPABILITY,
+            "OpenAI Responses does not support stop sequences",
+            retryable=False,
+        )
+    effort = spec.default_reasoning_effort
+    if isinstance(settings.thinking, str):
+        if settings.thinking not in spec.reasoning_efforts:
+            raise ModelGatewayError(
+                ModelGatewayErrorCode.UNSUPPORTED_CAPABILITY,
+                "The requested reasoning effort is unsupported for this model",
+                retryable=False,
+            )
+        effort = settings.thinking
+    elif settings.thinking is True:
+        if "medium" not in spec.reasoning_efforts:
+            raise ModelGatewayError(
+                ModelGatewayErrorCode.UNSUPPORTED_CAPABILITY,
+                "This model does not support reasoning",
+                retryable=False,
+            )
+        effort = "medium"
+    body: dict[str, Any] = {
+        "model": request.model_identifier,
+        "input": [
+            {"role": message.role.value, "content": message.content} for message in request.messages
+        ],
+        "store": False,
+        "background": False,
+        "stream": False,
+        "service_tier": "default",
+        "truncation": "disabled",
+        "max_output_tokens": request.budget.max_output_tokens,
+    }
+    if effort is not None:
+        body["reasoning"] = {"effort": effort}
+    omitted: list[JsonValue] = []
+    if settings.seed is not None:
+        omitted.append("seed")  # Responses has no deterministic seed parameter.
+    for name, value in (("temperature", settings.temperature), ("top_p", settings.top_p)):
+        if value is not None:
+            if effort in (None, "none"):
+                if name == "temperature" and value > 2:
+                    raise ModelGatewayError(
+                        ModelGatewayErrorCode.UNSUPPORTED_CAPABILITY,
+                        "OpenAI temperature must be between zero and two",
+                        retryable=False,
+                    )
+                body[name] = value
+            else:
+                omitted.append(name)
+    if request.response_schema is not None:
+        if not spec.supports_structured_output:
+            raise ModelGatewayError(
+                ModelGatewayErrorCode.UNSUPPORTED_CAPABILITY,
+                "This OpenAI model does not support strict structured output",
+                retryable=False,
+            )
+        body["text"] = {
+            "format": {
+                "type": "json_schema",
+                "name": "open_hollywood_output",
+                "strict": True,
+                "schema": strict_response_schema(request.response_schema),
+            }
+        }
+    metadata: dict[str, JsonValue] = {
+        "adapter_version": "openai-responses-1",
+        "effective_settings": {
+            key: value for key, value in body.items() if key not in ("input", "model", "text")
+        },
+        "omitted_portable_settings": omitted,
+        "schema_enforced": request.response_schema is not None,
+        "pricing": spec.model_dump(mode="json"),
+        "cost_estimate_kind": "published_rates_conservative_cache_write_bound",
+    }
+    if "text" in body:
+        metadata["schema_sha256"] = hashlib.sha256(
+            json.dumps(body["text"], sort_keys=True).encode()
+        ).hexdigest()
+    return body, metadata

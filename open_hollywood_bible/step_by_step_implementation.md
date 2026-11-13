@@ -12210,8 +12210,9 @@ live calls PAUSED; full workflow canary ON HOLD.**
 Report: [implementation, verification and next step](../docs/handoffs/assessment-terminal-integration-2026-11-13.md).
 Decision: [accepted ADR 0050](../docs/adr/0050-intake-bound-assessment-request-terminal-design.md).
 
-Status: narrow local implementation **COMPLETE**. Real provider adapter and
-authenticated model-delivery branch **NOT QUALIFIED**. No live plan/budget frozen.
+Status: narrow local implementation **COMPLETE**. OpenAI wire mapping is now locally
+qualified in the next entry; intake-bound provider dispatch/authenticated delivery
+remain **NOT QUALIFIED**. No live plan/budget frozen.
 
 - [x] Add the pure `assessment_delivery` component, application service and operator
   CLI: `prepare`, `capture-fixture`, `audit`. Six runtime schemas are separate from
@@ -12247,9 +12248,9 @@ authenticated model-delivery branch **NOT QUALIFIED**. No live plan/budget froze
 - [x] Preserve **900 earlier sealed members**, **1,166 original source pins** and
   **723 baseline files** outside the seven documented existing-file edits. Retain
   superseded/partial pre-optimization verification separately from final acceptance.
-- [ ] Qualify one real provider renderer/response mapping locally against saved
-  original-work request/terminal examples and authored failure fixtures. Verify exact
-  generation/count bodies, safe metadata, model identity, stops and honest usage.
+- [x] Qualify OpenAI request/response mapping locally against saved original-work
+  controls and authored failure fixtures; see the entry below. Production/provider
+  dispatch integration remains a distinct pending step.
 - [ ] Only after local provider qualification, prepare a small intake-bound live
   smoke test for separate approval. No current fixture receipt authenticates a real
   model delivery or authorizes writer edits; story-quality qualification remains open.
@@ -12259,6 +12260,105 @@ accepted four-work bundles are under `verified/`. Native source exports, authore
 publisher, production prompts/profiles/graph/gates, workflow checkpoints and all
 fourteen issue bodies/posted URLs remain unchanged. CW-007/CW-013 remain open;
 CW-014 unqualified. **Step 19 IN PROGRESS; Step 20 NOT STARTED;
+live calls PAUSED; full workflow canary ON HOLD.**
+
+### OpenAI assessment wire mapping qualification 2026-11-13
+
+Report: [saved-capture qualification and next step](../docs/handoffs/assessment-openai-mapping-2026-11-13.md).
+
+Status: saved-capture, authored-fixture qualification and verification **COMPLETE**.
+Intake-bound OpenAI rehearsal integration is recorded in the next entry;
+new authenticated delivery remains unqualified. No live plan/budget frozen.
+
+- [x] Extract the existing OpenAI serializer into a shared pure function without
+  changing its executable body or production output. Keep the gateway delegation
+  and production response parser unchanged; no client or credential needed to render.
+- [x] Add a separate offline assessment wire/response mapper. Bind exact original
+  scope/messages/schema/settings, separate native/count/generation identities,
+  compare outgoing bytes/method/URL/headers, and enforce count reservations.
+- [x] Authenticate and replay the same six saved B deliveries under original work:
+  **12/12 logical endpoint bodies**, **6/6 exact finals/usage/bindings**, **36 slots**,
+  and **636 source members** preserved. No historical request-byte reconstruction,
+  response-ID invention, real failed-observation claim or current-intake attachment.
+- [x] Verify **91 authored tests** for failure states, ambiguity, model aliases,
+  usage bounds, unknown/zero counts, native invalid-final refusal, secrets, mismatched
+  bodies, budget stops, interruption/cancellation and one-shot fixture execution.
+- [x] Pass the **730-test combined suite** (641 existing/89 new) and all **91 final
+  mapper tests** after adding two malformed-input cases: **732 distinct tests**.
+  Ruff/format/strict mypy pass on **259 files**. Recheck six actual deliveries with
+  final code. Preserve **1,060 earlier sealed members**, **636 selected source
+  members** and **738 baseline files** outside five declared edits. Existing async
+  tests use isolated fixtures outside the sandbox; no user database or live calls.
+- [x] Integrate the qualified mapping into a separately versioned intake-bound
+  provider manifest/durable journal. Verify four current works with a batch-appropriate
+  diagnostic presentation and full retained source/brief context; never relabel
+  fixture origins or blindly reuse the historical six-claim instruction.
+- [ ] After local integration, freeze a small smoke plan for approval: provisionally
+  four generation attempts and four input counts, zero retries, explicit accounting
+  stops and reviewed cost/time ceilings. This recommendation is not a live freeze.
+
+Private root: `data/diagnostics/assessment-openai-mapping-2026-11-13/`;
+accepted records are under `accepted/deliveries/`. In-memory replay is not durable
+capture or provider authentication. Native binding still leaves whole-claim truth,
+evidence adequacy, editorial effect and necessary revision unassessed. No writer
+permission, user database access or new human checkpoint. CW-007/CW-013 remain open;
+CW-014 unqualified. **Step 19 IN PROGRESS; Step 20 NOT STARTED;
+production prompts unchanged; live calls PAUSED; canary ON HOLD.**
+
+### Intake-bound OpenAI manifest and journal integration 2026-11-13
+
+Report: [implementation, four-work verification and next step](../docs/handoffs/assessment-openai-integration-2026-11-13.md).
+Decision: [accepted ADR 0051](../docs/adr/0051-intake-bound-openai-assessment-rehearsal.md).
+
+Status: local implementation and verification **COMPLETE**.
+Real provider delivery remains **NOT QUALIFIED**.
+No live plan or budget frozen.
+
+- [x] Add an explicit batch-appropriate diagnostic presentation with the complete
+  original work/messages/documents/registry, scope, briefs and all dispositions.
+  Keep original native work/claim/batch identity; distinguish original visibility
+  from the new presentation and operator provenance from story authority. This is
+  a new diagnostic instruction, not a production change or unchanged historical B.
+- [x] Integrate the qualified mapper into separate versioned source-bound manifests
+  and `assessment_openai_delivery.py` prepare/capture-fixture/audit commands. Commit
+  exact actual endpoint bodies and settings, source/implementation pins, unique
+  attempt slots, complete original batch coverage, one count plus generation per
+  batch, zero retries and no live authorization. Keep the original fixture path.
+- [x] Flush chained intent before each mock callback, recheck sources and outgoing
+  bytes, retain safe terminal evidence, and derive native receipts/completion from
+  the journal. Refuse resumed capture, inconsistent journals, caller origin promotion
+  and successful-subset publication. Missing stop blocks completion eligibility.
+  Unknown input/output/reasoning/cached usage blocks subsequent batches; last-batch
+  binding can coexist with an accounting hold. Actual billed cost stays unknown.
+- [x] Replay N06/N07/N10/N11 with six byte-identical authored finals and retain all
+  **51 fields, four holds and 41 unselected fields**. Four mock count and four mock
+  generation callbacks; **zero live calls**. All four repeated captures refused;
+  source, preparation, journal and audit bytes/mtimes preserved during exact reuse.
+- [x] Record full generation bodies of **1,314,610 / 1,353,088 / 1,467,491 / 2,198,269
+  bytes**. Actual input tokens/context fit remain unknown; authored count 100 is
+  a control-flow fixture, not evidence that the 24,000-token reservation fits.
+- [x] Pass **794 relevant tests** (732 existing/62 new; 56 existing mutation warnings),
+  Ruff, formatting and strict mypy on **265 Python files** (264 repository + one
+  private helper). Verify runtime schema agreement, failure/accounting stops,
+  interrupted/failed multi-batch behavior, actual-body checks, immutable output and
+  protected destinations. Existing async/SQLite tests use isolated fixtures outside
+  the sandbox; new tests and actual-work replay block network/client/database access.
+- [x] Preserve **1,097 earlier sealed members**, **636 selected archive source pins**
+  and **741 baseline files** outside five declared existing-file edits. Preserve
+  all fourteen issue bodies/posted URLs and prior uncommitted work. Record exact
+  source snapshots and a private acceptance seal; no old delivery is relabeled.
+- [ ] Prepare a count-gated smoke plan for separate approval, provisionally four
+  generation attempts plus four input counts and zero retries. First review exact
+  presentation/resource fit and qualify the real transport/observed-origin boundary
+  locally. Freeze reviewed metadata, source pins, cost/time/token ceilings and stops;
+  failed/over-budget counts cannot authorize generation, trimming or budget increases.
+
+Private root: `data/diagnostics/assessment-openai-integration-2026-11-13/`;
+accepted four-work bundles under `verified/`. No credentials, metadata/count/model
+requests, user database access or human checkpoint added. Authored completion does
+not qualify factual support, evidence adequacy, editorial effect, necessary revision
+or story quality, and grants no writer permission. CW-007/CW-013 stay open; CW-014
+unqualified. **Step 19 IN PROGRESS; Step 20 NOT STARTED; production prompts unchanged;
 live calls PAUSED; full workflow canary ON HOLD.**
 
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.

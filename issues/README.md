@@ -1697,7 +1697,6 @@ All fourteen issue bodies and posted URLs unchanged. CW-007/CW-013 remain open;
 CW-014 unqualified. Production prompts unchanged; live calls **PAUSED**;
 canary **ON HOLD**.
 
-
 ### Read-only authored completion publisher — 2026-11-12
 
 The [implementation report](../docs/handoffs/assessment-completion-publisher-2026-11-12.md)
@@ -1778,3 +1777,38 @@ Earlier evidence and all issue bodies/posted URLs are preserved. Next is local
 qualification of one real provider wire-format mapping before a separately approved
 live smoke test. This closes none of CW-007/CW-013/CW-014 or the other issues.
 Production prompts unchanged; live calls **PAUSED**; canary **ON HOLD**.
+
+OpenAI request/response mapping qualification **2026-11-13**:
+the [report](../docs/handoffs/assessment-openai-mapping-2026-11-13.md) records exact
+logical reproduction of twelve endpoint bodies from six saved original-work B
+deliveries, unchanged finals/usage and 36 native bindings. The new separate offline
+mapper preserves failure states and unknown usage; it grants no delivery authenticity
+or writer permission. The production request serializer is shared without behavior
+change, and production response parsing stays unchanged. **732 distinct tests pass**
+across the 730-test combined suite and final 91-test mapper suite; Ruff/format/strict
+mypy also pass. All 1,060 earlier sealed members and 636 selected source members
+remain intact. Next: source-bound provider manifest/journal integration locally,
+then a separately frozen and approved small smoke plan. No old delivery is attached
+to current intake; no new model inference, user database access or semantic rescore.
+All fourteen issue bodies and posted URLs are unchanged. CW-007/CW-013 stay open;
+CW-014 unqualified. Production prompts unchanged; live calls **PAUSED**;
+canary **ON HOLD**.
+
+Intake-bound OpenAI manifest/journal integration **2026-11-13**:
+the [report](../docs/handoffs/assessment-openai-integration-2026-11-13.md) records a
+separate tracked preparation/capture/audit path using real OpenAI wire formats and
+injected fixtures. Four current works retain six unchanged authored finals, all
+51 fields, four holds and 41 unselected fields. All four repeat captures are refused;
+preparation/audit reuse preserves bytes and mtimes. The new diagnostic presentation
+retains original native identities and full context; it is not a production prompt
+change or an unchanged historical B input. No model-origin delivery is admitted.
+
+**794 relevant tests pass** (62 new), plus Ruff/format/strict mypy. All 1,097 earlier
+sealed members, 636 selected archive source pins, fourteen issue bodies and posted
+URLs remain intact. Full generation requests range from 1,314,610 to 2,198,269 bytes;
+actual token counts/context fit are unknown. Authored fixture counts are not resource
+measurements. Next: prepare a separately approved four-work smoke plan with a strict
+input-count gate, zero retries and locally qualified real transport/observed origin.
+No live plan is frozen, no issue is closed and no writer permission is granted.
+CW-007/CW-013 remain open; CW-014 unqualified. Production prompts unchanged;
+live calls **PAUSED**; full workflow canary **ON HOLD**.

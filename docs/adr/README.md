@@ -49,3 +49,4 @@ tradeoffs. Status values are `Proposed`, `Accepted`, `Superseded`, or `Rejected`
 | [0048](0048-oct17-probe-intake-contracts.md) | October 17 probe contracts and cross-archive intake lineage | Accepted |
 | [0049](0049-source-bound-assessment-completion-publication.md) | Source-bound completion envelope and read-only publisher | Accepted |
 | [0050](0050-intake-bound-assessment-request-terminal-design.md) | Intake-bound assessment request manifest and terminal evidence | Accepted; fixture-only preparation/capture/audit |
+| [0051](0051-intake-bound-openai-assessment-rehearsal.md) | Intake-bound OpenAI manifests and durable journal | Accepted; local injected-fixture rehearsal |

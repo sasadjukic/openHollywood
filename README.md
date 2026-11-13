@@ -1388,6 +1388,18 @@ remain unchanged, live calls paused and the canary on hold.
 
 ### Fixture request preparation and terminal audit
 
+The [OpenAI mapping qualification](docs/handoffs/assessment-openai-mapping-2026-11-13.md)
+adds a network-free request/response mapper and injected replay tests. It reuses
+the production request serializer without changing its output, reproduces six
+original saved deliveries, and keeps failures and unknown usage explicit. It does
+not enable OpenAI in the synthetic fixture commands below. The separate
+[intake-bound OpenAI rehearsal](docs/handoffs/assessment-openai-integration-2026-11-13.md)
+integrates exact OpenAI-format requests with source authentication and a durable
+injected-fixture journal through `scripts/assessment_openai_delivery.py`. Its
+`prepare` command also requires explicit `--settings`; `capture-fixture` and `audit`
+retain authored origin and zero live calls. A real transport and an approved,
+count-gated smoke plan remain separate next steps.
+
 ```powershell
 uv run --extra api python scripts/assessment_delivery.py prepare `
   --intake PATH_TO_INTAKE/review-01.json --run-id local-check-001 `
