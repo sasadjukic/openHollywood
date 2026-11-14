@@ -12718,7 +12718,7 @@ Status: bounded local preservation/audit **COMPLETE**; zero new provider calls.
   documentation checks pass. Preserve **1,725 earlier sealed members**, **636 archive
   pins**, **794 baseline files** outside three documentation updates, both closed
   smoke journals and all fourteen issue bodies/URLs. No runtime or tracked-test change.
-- [ ] Implement a narrow observed-completion admission/publication branch in the
+- [x] Implement a narrow observed-completion admission/publication branch in the
   tracked read-only assessment component. Reuse registered source authentication,
   the supported smoke audit and native renderers; retain full intake, observed
   terminal evidence, honest accounting and whole-work completion under an explicit
@@ -12729,6 +12729,47 @@ Status: bounded local preservation/audit **COMPLETE**; zero new provider calls.
 Private root: `data/diagnostics/assessment-observed-handoff-2026-11-14/`.
 No next inference budget or plan is frozen. Fresh-family, natural-negative,
 repeatability, editorial judgment, editing necessity and story-quality gaps remain.
+CW-007/CW-013 remain open; CW-014 unqualified. **Step 19 IN PROGRESS; Step 20 NOT
+STARTED; production prompts unchanged; live calls PAUSED; full workflow canary ON HOLD.**
+
+### Registered observed-completion publisher 2026-11-14
+
+Report: [implementation, qualification and next step](../docs/handoffs/assessment-observed-completion-2026-11-14.md).
+Decision: [ADR 0056](../docs/adr/0056-observed-assessment-completion-publication.md).
+
+Status: bounded local implementation/verification **COMPLETE**; zero new provider calls.
+
+- [x] Add a separate observed branch and operator CLI over the registered compact
+  smoke. Require fixed source registration plus supported closed-journal audit
+  replay; accept no caller receipt/origin/trust override or subset selection.
+  Preserve authored publication, B export and every frozen transport implementation.
+- [x] Recompute terminal, native binding and whole-original-work completion for
+  all four works. Check known input/output/reasoning/cached-input usage, elapsed
+  evidence, reservation violations and accounting holds independently of native
+  completion and `completion_eligible`. Retain failure evidence in the source audit.
+- [x] Export full original intake/scope/context and terminal envelopes separately
+  from native evidence views. Preserve exact requests/local provenance/source
+  receipts; leave intake result/receipt placeholders null. Explicitly distinguish
+  registered probe source from observed assessment origin; exclude reducer fixture
+  labels. Keep actual billing unknown and all semantic/writer approvals unset.
+- [x] Pass **495 applicable tests** (38 new/457 existing; 22 pre-existing mutation
+  fixture warnings), Ruff/format/strict mypy on **285 files** and documentation checks.
+  Publish all four actual deliveries/six active claims in a 27-member bundle and
+  verify exact reuse without changing output/source bytes or mtimes. Preserve four
+  held/41 unselected fields, full context, all usage and the original pending intake.
+- [x] Preserve **1,825 earlier sealed members**, **636 archive pins**, **795 baseline
+  files** outside three documentation updates, both closed journals and all fourteen
+  issue bodies/posted URLs. Retain new implementation/documentation snapshots and
+  an acceptance seal. No production database/profile/graph/prompt or external issue change.
+- [ ] Do a bounded local admission/design pass for up to nine whole factual claims
+  across three fresh families, with supported/contradicted/unavailable controls and
+  complete sources and explicit obligation and authority scope. If they qualify,
+  prepare an end-to-end assessment-to-publication
+  plan and any new registration for approval. No new live budget is frozen here.
+
+Private root: `data/diagnostics/assessment-observed-completion-2026-11-14/`.
+This integrates observed delivery into read-only publication; it does not qualify
+editorial judgment, revision necessity, writer preservation or story quality.
 CW-007/CW-013 remain open; CW-014 unqualified. **Step 19 IN PROGRESS; Step 20 NOT
 STARTED; production prompts unchanged; live calls PAUSED; full workflow canary ON HOLD.**
 

@@ -1466,10 +1466,36 @@ works, not story quality or writer permission. The subsequent
 [local regression and export audit](docs/handoffs/assessment-observed-handoff-audit-2026-11-14.md)
 preserves all four deliveries and passes 97 scenario checks. Native binding/rendering
 replays exactly; the full smoke audit preserves observed origin, terminal accounting
-and intake dispositions that a bare receipt/view cannot carry. The general publisher
-remains authored-only. Next is a narrow observed-completion admission/publication
-branch using these saved records and the existing audit, with no new inference.
+and intake dispositions that a bare receipt/view cannot carry. A separate
+[observed-completion publisher](docs/handoffs/assessment-observed-completion-2026-11-14.md)
+now admits this registered four-work run through the existing audit. It recomputes
+whole-work binding/completion, checks accounting separately, and exports full intake
+and terminal envelopes with native evidence views. Authored publication and B export
+remain unchanged. All semantics stay unassessed and writer permission stays false.
 Further calls are paused; canary remains on hold.
+
+Publish the four saved observed completions locally (no provider or count calls):
+
+```powershell
+uv run --extra api python scripts/assessment_observed_completion.py `
+  --source compact-smoke-2026-11-14 `
+  --output data/exports/observed-completion-001
+```
+
+The source identifier selects fixed registered plan/audit digests and their original
+journal, intakes, presentations and exact requests. No caller receipt, origin/trust
+override or successful subset is accepted. Unknown cached usage and other accounting
+holds refuse completion publication even when native binding is complete. The full
+source audit remains the failure-evidence export. Publication creates 27 members
+exclusively with the manifest last; exact reuse does not rewrite them. Its per-work
+`completion.json` envelopes preserve held/unselected fields and terminal provenance
+that native `view.md` projections alone do not carry. The original intake's pending
+result/receipt placeholders stay null. See [ADR 0056](docs/adr/0056-observed-assessment-completion-publication.md).
+
+Observed origin records application-owned local transport evidence, not a provider
+signature or semantic qualification. Actual bills and original raw HTTP bytes are
+unavailable. Local publication makes zero calls; the original four count/four
+generation observations remain visible in the copied source audit.
 
 ```powershell
 uv run --extra api python scripts/assessment_openai_compact_smoke.py verify `

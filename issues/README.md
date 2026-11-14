@@ -1942,3 +1942,20 @@ publication branch reusing the existing audit, with these same saved captures an
 no further inference. CW-007/CW-013 remain open; CW-014 remains unqualified.
 All fourteen issue bodies and posted URLs are preserved; no external issue edited.
 Production prompts unchanged; live calls **PAUSED**; canary **ON HOLD**.
+
+Registered observed-completion publisher **2026-11-14**:
+the [implementation and verification report](../docs/handoffs/assessment-observed-completion-2026-11-14.md)
+adds a separate read-only branch for the four registered saved deliveries. It
+replays the existing audit, recomputes whole-work completion/binding, checks all
+usage and accounting holds separately, and publishes full intake/terminal envelopes
+alongside native evidence views. All four works/six active claims publish and
+exactly reuse; four holds and 41 unselected fields remain visible. No model calls.
+
+**495 applicable tests pass** (38 new/457 existing), plus Ruff/format/strict mypy.
+Authored and B export paths remain unchanged and verified. This is delivery
+and provenance integration, not factual/editorial qualification or writer permission.
+Next is bounded local admission/design of fresh-family supported/contradicted/
+unavailable factual controls before proposing a new end-to-end live plan.
+CW-007/CW-013 stay open; CW-014 unqualified. All fourteen issue bodies and posted
+URLs remain intact; no external issue edited. Production prompts unchanged;
+live calls **PAUSED**; full workflow canary **ON HOLD**.
