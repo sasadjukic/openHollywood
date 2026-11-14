@@ -12484,7 +12484,7 @@ No live plan frozen and no calls made.
   journal, **764 baseline files** outside three declared documentation edits, all
   fourteen issue bodies and posted URLs. Existing code/tests/prompts and frozen
   requests unchanged. Record exact measurements, local resource profile and audit seal.
-- [ ] Implement and locally qualify a separately versioned source-bound diagnostic
+- [x] Implement and locally qualify a separately versioned source-bound diagnostic
   presentation in the read-only component. Retain complete source/review/message
   visibility and all scope/dispositions; keep operator archives locally and render
   readable source locators. Explicitly extend the prior presentation contract.
@@ -12499,6 +12499,238 @@ semantic correctness, necessary editing or story quality. Preserve context for l
 human feel/flow/character review. CW-007/CW-013 stay open; CW-014 unqualified.
 **Step 19 IN PROGRESS; Step 20 NOT STARTED; production prompts unchanged;
 live calls PAUSED; full workflow canary ON HOLD.**
+
+### Version-two compact diagnostic presentation 2026-11-14
+
+Report: [implementation, source preservation, four-work qualification and next step](../docs/handoffs/assessment-compact-presentation-2026-11-14.md).
+Decision: [accepted ADR 0053](../docs/adr/0053-versioned-compact-diagnostic-presentation.md).
+
+Status: tracked read-only implementation and local verification **COMPLETE**.
+Version-two provider mapping was subsequently qualified locally below; live
+generation remains **NOT QUALIFIED**.
+
+- [x] Add separate provider-neutral version-two presentation/bundle contracts,
+  registered-source exporter and `assessment_compact_presentation.py prepare/verify`.
+  Keep the original renderer, provider gateway/mapper, old manifests and frozen smoke
+  unchanged. No API/database route, dependency, workflow checkpoint or writer permission.
+- [x] Preserve complete visible sources/reviews, original messages, source/version
+  identities, scope, briefs, six targets, all 51 fields, four holds and 41 unselected
+  fields. Keep only the recognized operator-provenance body in an exact bound local
+  file; do not hide other source/scope documents or infer unavailable history.
+- [x] Render all 3,658 evidence IDs as readable source-document/JSON-Pointer rows.
+  Derive exact quotes/hashes/full-field offsets locally; preserve duplicate wording
+  at separate locations. Refuse paragraph/partial-field layouts and noncanonical
+  source serialization. Reconstruct the original native work and version-one packet
+  exactly; require regenerated authenticated context, not caller hash consistency.
+- [x] Export, verify and exactly reuse N06/N07/N10/N11 through the supported CLI with
+  real registered source authentication and network/SQLite blocked. Rebind the same
+  six authored finals and complete all four native works without semantic approval.
+  User-message bytes: **222,480 / 226,111 / 230,447 / 235,773**; new diagnostic system
+  instruction: **2,595 bytes**. Token fit and model behavior unmeasured. N11's historical
+  allegation/repair evidence remains in visible-request fields; no authority removed.
+- [x] Pass **488 relevant tests** (47 new/441 existing; 56 existing serializer warnings),
+  Ruff/format and strict mypy on **273 files** (272 repository plus private helper).
+  Both new runtime schemas match. Cover tampering, scope/schema drift, source
+  rechecks, secret refusal, protected paths, partial outputs and immutable reuse.
+- [x] Preserve **1,372 earlier sealed members**, **636 selected archive pins**, original
+  smoke journal, **764 baseline files** outside four declared documentation edits,
+  all fourteen issue bodies/URLs. Record actual exports, authored qualifications,
+  source snapshots and private acceptance seal. No live calls or old delivery relabeling.
+- [x] Qualify a separate version-two provider mapping/manifest with injected transport
+  and exact count/generation bytes for these four works. Keep native identity and
+  local provenance distinct from presentation identity; preserve durable accounting
+  and stops. Do not widen the version-one mapper to arbitrary replacement prompts.
+- [x] Then prepare a new count-gated smoke for approval: provisionally four counts,
+  four generations, zero retries, Sol/high and unchanged 272,000-input/32,000-output
+  ceilings unless separately reviewed. All counts must fit before any generation.
+  The old closed smoke and its unused slots remain closed. New version-two freeze
+  completed below; its live approval remains outstanding.
+
+Private root: `data/diagnostics/assessment-compact-presentation-2026-11-14/`.
+Local binding is not factual support, evidence adequacy, model usability, editorial
+judgment, edit necessity or story-quality qualification. CW-007/CW-013 stay open;
+CW-014 unqualified. **Step 19 IN PROGRESS; Step 20 NOT STARTED; production prompts
+unchanged; live calls PAUSED; full workflow canary ON HOLD.**
+
+### Compact version-two OpenAI mapping and manifest 2026-11-14
+
+Report: [qualification, source binding, fixture accounting and next step](../docs/handoffs/assessment-openai-compact-qualification-2026-11-14.md).
+Decision: [accepted ADR 0054](../docs/adr/0054-compact-openai-mapping-and-manifest.md).
+
+Status: separate version-two mapping/manifest local qualification **COMPLETE**;
+no live authorization or new smoke freeze.
+
+- [x] Add separate version-two mapping admission, request manifests, fixture journals,
+  terminal reduction and CLI. Regenerate compact messages from the original native
+  context; authenticate the exact published compact export and its local provenance.
+  Keep the shared protocol serializer and version-one implementation unchanged.
+- [x] Bind compact-export, local-provenance, native source/work, response-schema,
+  settings and implementation identities. Keep local provenance outside both
+  endpoint bodies. Require durable intent, exact outgoing bytes, nullable terminal
+  usage and conservative budget holds. No retries, arbitrary message replacement,
+  model-origin promotion, live client or writer dispatch.
+- [x] Authenticate N06/N07/N10/N11 through the final CLI with network/SQLite blocked.
+  Inspect all eight injected endpoint slots; reuse the same four authored batch
+  responses covering six assessments. Complete native binding for all four works
+  and preserve exact intake, compact-export, preparation, journal and export bytes/mtimes.
+  Wire generation sizes: **274,692 / 309,446 / 314,196 / 290,226 bytes**. No token
+  measurements, provider delivery, semantic gold or story-quality gain established.
+- [x] Pass **729 relevant tests** (71 new/658 existing; 56 existing serializer
+  warnings), Ruff/format and strict mypy on **279 files** including the private
+  helper. Four new schemas match runtime. Preserve **1,426 earlier sealed members**,
+  **636 archive pins**, **773 unchanged baseline files**, the closed live journal,
+  all fourteen issue bodies/URLs; record final sources and private acceptance seal.
+- [x] Prepare a new four-work smoke for approval, including local qualification of
+  a separate version-two real-transport wrapper: four counts before any generation,
+  four generation attempts, zero retries, provisionally Sol/high and unchanged
+  272,000-input/32,000-output ceilings. Freeze exact endpoint bodies, resource budgets,
+  metadata and stop rules before approval. The old smoke remains closed.
+
+Private root: `data/diagnostics/assessment-openai-compact-2026-11-14/`;
+final-code outputs under `verified/`. Earlier local rehearsal remains separately
+retained and obsolete after implementation-pin strengthening. No provider calls.
+Native binding is not semantic or story-quality qualification. CW-007/CW-013 remain
+open; CW-014 unqualified. **Step 19 IN PROGRESS; Step 20 NOT STARTED; production
+prompts unchanged; live calls PAUSED; full workflow canary ON HOLD.**
+
+### Compact version-two four-work smoke preparation 2026-11-14
+
+Plan: [exact payload, budget, scoring, stops and approval boundary](../docs/handoffs/assessment-openai-compact-smoke-plan-2026-11-14.md).
+Decision: [accepted ADR 0055](../docs/adr/0055-compact-four-work-assessment-smoke.md).
+
+Status: local qualification/freeze **COMPLETE**; approved execution **COMPLETE**
+([results](../docs/handoffs/assessment-openai-compact-smoke-results-2026-11-14.md)).
+
+- [x] Add separate version-two transport/CLI, plan and event contracts. Authenticate
+  the original intake and verified compact export, retain local provenance bindings,
+  and preserve version-one and earlier version-two implementation/evidence hashes.
+- [x] Qualify all-counts-before-generation, actual bytes/headers, durable intent,
+  TLS/zero retries/no proxies or redirects, cancellation/deadlines, unknown usage,
+  budget holds, source/presentation drift, immutable terminal export and version
+  separation with **48 injected transport tests**. No real provider calls.
+- [x] Prepare N06/N07/N10/N11 with unchanged six claims, messages, response schema
+  and all eight qualified version-two endpoint bodies. Review Sol/high metadata
+  against official documentation; keep 272,000 input/32,000 output and $1 conservative
+  generation estimate per work. No model-access or token-count preflight.
+- [x] Freeze plan **`fa814d8c09b897ad8c6c9b902ef99a9eec7b24a49a8923ec4f2643253d8181f5`**
+  with four count slots before four generation slots, zero retries, 120/600-second
+  endpoint deadlines and a 3,600-second run window. Exact freeze reuse and read-only
+  CLI verification pass. Keep the new fixed live journal absent.
+- [x] Rehearse all eight slots with registered source authentication and injected
+  transport, then audit and exactly reuse the export. All four native works complete;
+  the same four authored batch responses cover six claims. No real count, generation,
+  billing, semantic-gold or story-quality result is inferred.
+- [x] Pass **407 relevant tests** (48 new/359 existing), Ruff/format and strict mypy
+  on **282 files** including the private helper. Two runtime schemas match. Preserve
+  **1,583 earlier sealed members**, **636 archive pins**, **785 unchanged baseline
+  files**, the original live journal and all fourteen issue bodies/URLs. Record
+  empty inspection template, final source snapshots and acceptance seal.
+- [x] Obtain approval of the exact version-two plan and both full prose/context
+  endpoints, then execute once: four counts in order before any generation, four
+  generation attempts, zero retries/resume/substitutions. Keep the closed original
+  smoke and all its unused slots closed. Inspect every fixed slot and returned claim.
+
+Private root: `data/diagnostics/assessment-openai-compact-smoke-2026-11-14/`.
+This is delivery qualification, not semantic gold or story-quality evidence.
+CW-007/CW-013 remain open; CW-014 unqualified. **Step 19 IN PROGRESS; Step 20 NOT
+STARTED; production prompts unchanged; live calls PAUSED; full workflow canary ON HOLD.**
+
+### Compact version-two four-work smoke execution 2026-11-14
+
+Report: [fixed slots, all six claim inspections, accounting and next step](../docs/handoffs/assessment-openai-compact-smoke-results-2026-11-14.md).
+
+Status: approved one-shot execution and inspection **COMPLETE**; four observed
+works delivered and bound. No production or story-quality qualification.
+
+- [x] Verify the approved plan hash, 85 sealed preparation members, 11 current
+  implementation/documentation snapshots, 51 frozen files, registered sources and
+  empty live journal. Keep all eight endpoint bodies and resource settings unchanged.
+- [x] Send all four counts before any generation, then four generation attempts,
+  with full frozen prose/context at both OpenAI endpoints. **4/4 counts, 4/4
+  generations, zero retries/resume/substitutions.** All eight responses HTTP 200;
+  every generation returns Sol/high's requested model and completes without issues.
+- [x] Inspect counts **62,243 / 66,620 / 66,729 / 64,624**, all admitted. N06 is
+  **82.25% below** its original 350,749-token presentation; other original counts
+  remain unmeasured. Do not infer a controlled generation or model-quality gain.
+- [x] Audit all eight fixed slots, four whole-work completions and six native
+  assessments. Separately inspect every claim, cited field/version and material
+  clause: four supported judgments and two uncertainties are justified by the
+  unchanged declared sources. Preserve future-opening unavailability and historical
+  allegation scope. No new gold, human preference result or writer permission.
+- [x] Record **260,216 generation input / 3,416 output / 2,045 reasoning subset /
+  zero cached tokens**, zero unknown usage or accounting holds, and a **$0.6847**
+  frozen conservative estimate. Actual billed cost remains unknown. Every work
+  stays below its reservation; run dispatch window **258.717 seconds**.
+- [x] Export and exactly reuse the supported read-only terminal audit. Preserve
+  all 19 journal files, model finals, source bindings and observed origin. Independent
+  inspection assertions, Ruff/format/strict mypy on 282 files and documentation
+  checks pass. The earlier 407-test qualification is retained, not claimed as rerun.
+- [x] Preserve **1,668 earlier sealed members**, **636 archive pins**, **793 baseline
+  files** outside the three documentation updates, the closed original smoke and
+  all fourteen issue bodies/posted URLs. No runtime or test implementation changed.
+- [x] Preserve these four observed deliveries as local regressions and audit their
+  handoff to the read-only assessment/export component. Establish which downstream
+  contracts already accept the complete native receipts before proposing an adapter;
+  retain origin, source/request binding, six active IDs, holds/unselected scope and
+  accounting. Then assess fresh-family/negative/uncertain controls before any new
+  live proposal. No next budget is frozen or approved.
+
+Private results: `data/diagnostics/assessment-openai-compact-smoke-results-2026-11-14/`.
+The same-family smoke qualifies this bounded delivery path, not repeatability,
+ordinary-review precision, editorial judgment, necessary edits, writer preservation
+or story quality. CW-007/CW-013 remain open; CW-014 unqualified. **Step 19 IN PROGRESS;
+Step 20 NOT STARTED; production prompts unchanged; further live calls PAUSED;
+full workflow canary ON HOLD.** No user database writes or external issue changes.
+
+### Observed completion regressions and downstream audit 2026-11-14
+
+Report: [preserved captures, compatibility, accounting boundaries and next step](../docs/handoffs/assessment-observed-handoff-audit-2026-11-14.md).
+
+Status: bounded local preservation/audit **COMPLETE**; zero new provider calls.
+
+- [x] Freeze N06/N07/N10/N11 with the original six active claims and exact
+  work/request/final fingerprints. Preserve all four observed deliveries, 19 journal
+  files, full request preparations and prior inspection without relabeling them as
+  authored responses. Retain six active/51 total fields, four holds, 41 unselected
+  fields and all 3,658 locations. Prior semantic inspection is not new gold.
+- [x] Reauthenticate the original fixed journal through the supported smoke audit,
+  reproduce the original export byte for byte and verify exact repeat reuse. Replay
+  native binding/completion and full result/work-brief rendering for all four works.
+  Keep original intake pending and all semantic approvals/writer permission unset.
+- [x] Pass **97 local scenario checks**: eight bound/unassessed, eight bound with
+  accounting holds, 61 refusals, four failed terminals without credit, four incomplete
+  and four unresolved bindings, plus eight projection/origin findings. Authored
+  corruptions are not model observations. Block HTTP/socket/SQLite and dispatch.
+- [x] Audit downstream boundaries: the authored publisher rejects observed terminal
+  input, the fixture-journal contract rejects observed headers, and the registered
+  B exporter does not admit N identifiers or the smoke archive. Native views omit
+  transport origin, cached usage, accounting holds and complete intake dispositions.
+  The full smoke audit retains these fields and remains the working operator export.
+- [x] Preserve separate accounting semantics: unknown cached usage or known excessive
+  input can retain complete native binding while the outer terminal holds release.
+  The shared reducer's fixture labels must stay excluded from observed publication;
+  the smoke wrapper supplies the authenticated journal origin. No actual smoke
+  accounting failure or mislabeling is found.
+  The smoke's `completion_eligible` flag is mechanical eligibility, not accounting
+  clearance; a downstream consumer must check both independently.
+- [x] Pass **457 applicable existing tests** (22 existing mutation-fixture warnings);
+  Ruff/format/strict mypy on 282 files and
+  documentation checks pass. Preserve **1,725 earlier sealed members**, **636 archive
+  pins**, **794 baseline files** outside three documentation updates, both closed
+  smoke journals and all fourteen issue bodies/URLs. No runtime or tracked-test change.
+- [ ] Implement a narrow observed-completion admission/publication branch in the
+  tracked read-only assessment component. Reuse registered source authentication,
+  the supported smoke audit and native renderers; retain full intake, observed
+  terminal evidence, honest accounting and whole-work completion under an explicit
+  observed discriminator. Qualify these four successes and local failure/origin/
+  accounting controls, immutable publication and exact reuse. Keep authored and B
+  branches unchanged. No new transport, model calls or production route is needed.
+
+Private root: `data/diagnostics/assessment-observed-handoff-2026-11-14/`.
+No next inference budget or plan is frozen. Fresh-family, natural-negative,
+repeatability, editorial judgment, editing necessity and story-quality gaps remain.
+CW-007/CW-013 remain open; CW-014 unqualified. **Step 19 IN PROGRESS; Step 20 NOT
+STARTED; production prompts unchanged; live calls PAUSED; full workflow canary ON HOLD.**
 
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 

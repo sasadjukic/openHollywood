@@ -1862,3 +1862,83 @@ separately versioned read-only diagnostic presentation, locally qualified before
 another approved count-gated smoke. No inference, prompt change, issue closure or
 writer permission. CW-007/CW-013 remain open; CW-014 unqualified. Live calls **PAUSED**;
 full workflow canary **ON HOLD**.
+
+Version-two diagnostic presentation **2026-11-14**:
+the [implementation report](../docs/handoffs/assessment-compact-presentation-2026-11-14.md)
+records a separately versioned provider-neutral renderer and registered-source
+read-only exporter. Four actual works retain all source texts, messages, six claims,
+51 fields, four holds and 41 unselected fields. All **3,658 evidence bindings**
+reconstruct exactly; unchanged authored finals bind and complete all four works.
+N11's historical allegation/repair evidence remains visible. Local operator
+provenance stays exact and bound, with explicit model unavailability.
+
+User-message sizes are **222,480–235,773 bytes**, not measured tokens. **488 relevant
+tests pass** (47 new), plus Ruff/format/strict mypy and exact export reuse. The old
+renderer, requests, journal, issue bodies and posted URLs remain unchanged.
+Next is a separately qualified version-two provider mapping/manifest before another
+smoke freeze and approval. No live inference, semantic rescore, production prompt
+change, writer permission or issue closure. CW-007/CW-013 remain open; CW-014
+unqualified. Live calls **PAUSED**; full workflow canary **ON HOLD**.
+
+Compact version-two OpenAI mapping/manifest **2026-11-14**:
+the [local qualification report](../docs/handoffs/assessment-openai-compact-qualification-2026-11-14.md)
+records a separate source-authenticated request and fixture-journal path. All four
+works and all eight injected endpoint slots pass; unchanged authored responses
+cover six claims with complete native binding. Local provenance remains bound and
+outside both endpoint bodies. No token-fit, model-quality or semantic gain is claimed.
+
+**729 relevant tests pass** (71 new), plus Ruff/format/strict mypy, runtime schemas
+and exact source/export reuse. Earlier evidence, issue bodies and posted URLs remain
+intact. Next is local transport qualification and a new four-count/four-generation,
+zero-retry smoke freeze for approval. The old smoke stays closed. CW-007/CW-013
+remain open; CW-014 unqualified. Production prompts unchanged; live calls **PAUSED**;
+full workflow canary **ON HOLD**.
+
+Compact version-two four-work smoke preparation **2026-11-14**:
+the [frozen plan](../docs/handoffs/assessment-openai-compact-smoke-plan-2026-11-14.md)
+qualifies a separate transport path and reserves four counts before four generation
+attempts, zero retries. Sol/high, six original claims, compact messages/schema and
+all eight endpoint bodies remain unchanged from the qualified version-two control.
+All four works and eight injected slots pass native completion and exact audit reuse.
+
+**407 relevant tests pass** (48 new), plus Ruff/format/strict mypy and runtime schemas.
+The fixed live journal is absent; actual token fit and model behavior remain unknown.
+Earlier evidence, issue bodies and posted URLs are intact. The new plan awaits
+approval for full prose/context at both OpenAI endpoints; the original smoke stays
+closed. CW-007/CW-013 remain open; CW-014 unqualified. Production prompts unchanged;
+live calls **PAUSED**; full workflow canary **ON HOLD**.
+
+Compact version-two four-work smoke execution **2026-11-14**:
+the [results and full inspection](../docs/handoffs/assessment-openai-compact-smoke-results-2026-11-14.md)
+record **four counts before four generation attempts, zero retries**, all HTTP 200.
+Counts of **62,243–66,729** fit the unchanged reservation. All four native works
+complete and all six claim judgments survive separate source inspection: four
+supported, two appropriately uncertain about an unavailable next-scene opening.
+N11 retains the distinction between a recorded allegation and historical event
+truth. These findings support bounded delivery and factual assessment, not closure
+of CW-007/CW-013 or story-quality qualification under CW-014.
+
+Generation usage totals **260,216 input / 3,416 output**, including **2,045 reasoning**,
+with zero unknown usage or accounting holds. The frozen conservative estimate is
+**$0.6847**; actual billing remains unknown. Terminal audit/export reuse and local
+inspection checks pass. No runtime/prompts changed; earlier evidence, all fourteen
+issue bodies and posted URLs remain intact. Next is local regression preservation
+and an audit of observed receipts into the read-only export component, before any
+fresh-family live proposal. No external issue was edited. Further live calls
+**PAUSED**; full workflow canary **ON HOLD**.
+
+Observed completion regressions and downstream audit **2026-11-14**:
+the [local report](../docs/handoffs/assessment-observed-handoff-audit-2026-11-14.md)
+preserves all four observed deliveries and verifies exact replay of six claims,
+full native views and the supported smoke export. **97 local scenario checks pass**,
+including cross-work/hash/scope refusals, failed delivery without credit and
+accounting holds that remain separate from complete binding. Authored false-reason
+controls still leave semantics unassessed; they are not new model failures.
+
+The full smoke audit retains observed origin, all usage and intake dispositions.
+Bare native views do not carry that complete envelope, and the general completion
+publisher remains authored-only. Next is a narrow observed-completion admission/
+publication branch reusing the existing audit, with these same saved captures and
+no further inference. CW-007/CW-013 remain open; CW-014 remains unqualified.
+All fourteen issue bodies and posted URLs are preserved; no external issue edited.
+Production prompts unchanged; live calls **PAUSED**; canary **ON HOLD**.

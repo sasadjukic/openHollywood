@@ -51,3 +51,6 @@ tradeoffs. Status values are `Proposed`, `Accepted`, `Superseded`, or `Rejected`
 | [0050](0050-intake-bound-assessment-request-terminal-design.md) | Intake-bound assessment request manifest and terminal evidence | Accepted; fixture-only preparation/capture/audit |
 | [0051](0051-intake-bound-openai-assessment-rehearsal.md) | Intake-bound OpenAI manifests and durable journal | Accepted; local injected-fixture rehearsal |
 | [0052](0052-frozen-four-work-assessment-smoke.md) | Frozen four-work assessment smoke transport | Accepted; local qualification, live approval pending |
+| [0053](0053-versioned-compact-diagnostic-presentation.md) | Versioned compact diagnostic assessment presentation | Accepted; read-only local preparation and verification |
+| [0054](0054-compact-openai-mapping-and-manifest.md) | Separate compact OpenAI mapping and manifest | Accepted; local injected-fixture qualification only |
+| [0055](0055-compact-four-work-assessment-smoke.md) | Compact version-two four-work assessment smoke | Accepted; local qualification and freeze, live approval pending |

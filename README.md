@@ -1407,9 +1407,101 @@ stopped at the first count: 350,749 input tokens exceeded the frozen 272,000 cap
 One count, zero generation attempts and zero retries were used. The subsequent
 [local payload audit](docs/handoffs/assessment-payload-resource-audit-2026-11-13.md)
 verified reversible source/registry factoring and local provenance retention.
-Next is a separately versioned diagnostic presentation, qualified locally before
-another freeze. Further live calls remain paused; the closed plan cannot resume.
+The [version-two diagnostic presentation](docs/handoffs/assessment-compact-presentation-2026-11-14.md)
+now has a separate local export path. It retains full visible source texts and all
+original claims/scope, with compact source locators and separately bound local
+operator provenance. Existing OpenAI mapping and frozen version-one requests remain
+unchanged. Further live calls remain paused; the closed plan cannot resume.
 Existing fixture commands below stay fixture-only.
+
+The [separate version-two OpenAI qualification](docs/handoffs/assessment-openai-compact-qualification-2026-11-14.md)
+adds exact count/generation mapping, source-bound manifests and an injected-fixture
+journal for the compact presentation. It retains the original work and response
+schema. The exact local provenance file is bound to preparation and export, but
+is absent from both endpoint bodies. No live runner or authorization is added.
+
+```powershell
+uv run --extra api python scripts/assessment_openai_compact_delivery.py prepare `
+  --intake PATH_TO_INTAKE_BUNDLE/review-01.json `
+  --presentation data/exports/compact-presentation-001 `
+  --settings PATH_TO_EXPLICIT_REHEARSAL_SETTINGS.json `
+  --run-id compact-local-001 --output data/exports/compact-requests-001
+
+uv run --extra api python scripts/assessment_openai_compact_delivery.py capture-fixture `
+  --intake PATH_TO_INTAKE_BUNDLE/review-01.json `
+  --presentation data/exports/compact-presentation-001 `
+  --preparation data/exports/compact-requests-001 `
+  --fixtures PATH_TO_EXPLICIT_AUTHORED_FIXTURES.json `
+  --output data/exports/compact-fixture-journal-001
+
+uv run --extra api python scripts/assessment_openai_compact_delivery.py audit `
+  --intake PATH_TO_INTAKE_BUNDLE/review-01.json `
+  --presentation data/exports/compact-presentation-001 `
+  --preparation data/exports/compact-requests-001 `
+  --journal data/exports/compact-fixture-journal-001 `
+  --output data/exports/compact-terminal-audit-001
+```
+
+The settings use the existing `assessment-openai-rehearsal-settings-1` contract;
+the request set and journal have distinct version-two contracts. Populate the
+exported fixture template explicitly; its empty responses are not runnable model
+results. Exact preparation/audit repeats preserve bytes and mtimes. A journal is
+one-shot, including an interrupted journal; audit it without retrying or repairing
+it. Counts, usage and finals in this path remain authored fixtures, not billing or
+model-quality evidence. Prepare a separately approved smoke before live use.
+
+The [version-two four-work smoke plan](docs/handoffs/assessment-openai-compact-smoke-plan-2026-11-14.md)
+uses a separate runner, exact compact-export bindings and a new one-shot journal.
+It reserves four input counts before four generation attempts, with no retries.
+The old smoke stays closed. Production prompts and the qualified version-two
+messages/schema remain unchanged. The approved
+[version-two execution](docs/handoffs/assessment-openai-compact-smoke-results-2026-11-14.md)
+completed all four counts before four generations, with zero retries. Counts of
+62,243–66,729 fit the reservation; all four works bind and complete. Inspection of
+all six claims supports four returned supported judgments and two uncertainties
+about unavailable future opening states. Known generation usage is 260,216 input
+and 3,416 output tokens, including 2,045 reasoning tokens; the frozen conservative
+estimate is $0.6847, with actual billing unknown. This qualifies delivery for these
+works, not story quality or writer permission. The subsequent
+[local regression and export audit](docs/handoffs/assessment-observed-handoff-audit-2026-11-14.md)
+preserves all four deliveries and passes 97 scenario checks. Native binding/rendering
+replays exactly; the full smoke audit preserves observed origin, terminal accounting
+and intake dispositions that a bare receipt/view cannot carry. The general publisher
+remains authored-only. Next is a narrow observed-completion admission/publication
+branch using these saved records and the existing audit, with no new inference.
+Further calls are paused; canary remains on hold.
+
+```powershell
+uv run --extra api python scripts/assessment_openai_compact_smoke.py verify `
+  --plan data/diagnostics/assessment-openai-compact-smoke-2026-11-14/plan.json
+```
+
+`verify` and `audit` are read-only and never dispatch provider requests. Explicit
+`run` requires the exact approved plan hash, confirmation of full prose/context at
+both OpenAI endpoints and the fixed empty live-journal path. An existing or
+interrupted journal cannot be resumed. Local injected transport qualification has
+a separate journal and remains authored evidence.
+
+Prepare or verify a version-two diagnostic presentation from a registered probe
+intake (both commands are local; neither invokes a provider):
+
+```powershell
+uv run --extra api python scripts/assessment_compact_presentation.py prepare `
+  --intake PATH_TO_INTAKE_BUNDLE/review-01.json `
+  --output data/exports/compact-presentation-001
+
+uv run --extra api python scripts/assessment_compact_presentation.py verify `
+  --intake PATH_TO_INTAKE_BUNDLE/review-01.json `
+  --output data/exports/compact-presentation-001
+```
+
+The immutable export contains `intake.json`, `source-receipt.json`,
+`local-provenance.json`, `presentation-NN.json`, `view.md` and `manifest.json`.
+The local provenance file is required for reconstruction and is not model-visible.
+The presentation is not a native work or an executable provider request. This path
+does not accept arbitrary provenance removal or paragraph/partial-field citations.
+Prepare into a new directory outside source archives; exact repeats reuse every
+byte without rewriting. Verify does not create, repair or resume an export.
 
 ```powershell
 uv run --extra api python scripts/assessment_delivery.py prepare `
