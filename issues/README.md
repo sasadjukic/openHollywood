@@ -1959,3 +1959,50 @@ unavailable factual controls before proposing a new end-to-end live plan.
 CW-007/CW-013 stay open; CW-014 unqualified. All fourteen issue bodies and posted
 URLs remain intact; no external issue edited. Production prompts unchanged;
 live calls **PAUSED**; full workflow canary **ON HOLD**.
+
+Fresh whole-claim admission **2026-11-15**:
+the [local admission report](../docs/handoffs/assessment-fresh-claim-admission-2026-11-15.md)
+admits nine whole factual claims across three fresh authored families, with three
+supported, three contradicted and three unavailable controls. Complete source
+context, sixteen material-component obligations, eighteen witness locations and
+three unselected editorial summaries are retained. Gold stays outside native input;
+authentic quotations are distinguished from complete evidence. No model calls.
+
+**286 tests pass** (41 new private/245 existing), plus Ruff/format/strict mypy.
+This qualifies authored control construction, not naturally occurring critic-error
+precision or story quality. The saved-review intake and fixed observed publisher
+correctly do not accept authored source origin. Next is a bounded local authored-source
+integration qualification before any end-to-end live freeze. CW-007/CW-013 remain
+open; CW-014 unqualified. All fourteen issue bodies/posted URLs remain intact;
+no external issue edited. Production prompts unchanged; live calls **PAUSED**;
+full workflow canary **ON HOLD**.
+
+Explicit authored-source integration **2026-11-15**:
+the [local qualification report](../docs/handoffs/assessment-authored-source-integration-2026-11-15.md)
+records a separate tracked source/presentation/fixture-completion path for all three
+admitted families. Nine whole claims bind; all sources, original authority and three
+unselected summaries remain intact. Source origin and fixture delivery origin stay
+separate. Gold remains outside assessment input. Existing saved/observed paths are
+unchanged; no model calls or semantic/writer approval.
+
+**371 tests pass** (54 new/317 existing), plus Ruff/format/strict mypy. Six bundles
+exactly reuse; previous captures, seals, issue bodies and posted URLs are preserved.
+Next is local source-aware OpenAI mapping/journal qualification, then a provisional
+three-count/three-generation smoke freeze if ready, before approval. No live budget
+is frozen. CW-007/CW-013 remain open; CW-014 unqualified. Production prompts unchanged;
+live calls **PAUSED**; full workflow canary **ON HOLD**. No external issue edited.
+
+Authored-source OpenAI mapping/journal **2026-11-15**:
+the [local qualification report](../docs/handoffs/assessment-authored-openai-qualification-2026-11-15.md)
+qualifies exact mapping and a durable injected-fixture journal over all three
+admitted packets. Three counts precede generation; all six fixed slots are
+preserved. Success binds nine whole claims; HTTP 500 and interrupted-generation
+controls retain error/unknown usage and deny completion. Full sources, original
+scope/authority and all editorial holds remain intact. No live model evidence.
+
+**388 tests pass** (47 new/341 existing), plus Ruff/format/strict mypy on 295 files.
+Results are recorded in the report and sealed acceptance evidence. Existing frozen paths,
+all fourteen issue bodies and posted URLs remain unchanged. Next is local real-
+transport/observed-audit qualification and a three-work smoke freeze for approval.
+No live budget is frozen. CW-007/CW-013 remain open; CW-014 unqualified. Production
+prompts unchanged; live calls **PAUSED**; full workflow canary **ON HOLD**.

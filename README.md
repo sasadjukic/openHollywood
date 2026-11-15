@@ -1497,6 +1497,46 @@ signature or semantic qualification. Actual bills and original raw HTTP bytes ar
 unavailable. Local publication makes zero calls; the original four count/four
 generation observations remain visible in the copied source audit.
 
+The subsequent [fresh factual-claim admission](docs/handoffs/assessment-fresh-claim-admission-2026-11-15.md)
+qualifies nine authored controls across three new scene families: three supported,
+three contradicted and three with unavailable evidence. Complete sources, whole
+claims, scope, gold and adequate-evidence criteria are retained locally; three
+editorial summaries remain unselected. **286 tests pass**, plus lint, formatting
+and strict type checks. These are authored controls, not new model observations.
+Their native work remains `synthetic_fixture`; the saved-review intake and fixed
+observed registration do not admit this source type. Next is local qualification of
+an explicit authored-source integration before an end-to-end inference freeze.
+Production prompts remain unchanged; live calls are paused and the canary is on hold.
+
+The [explicit authored-source integration](docs/handoffs/assessment-authored-source-integration-2026-11-15.md)
+now qualifies a separate registered source/presentation and fixture-completion path
+for those three packets. All nine whole claims bind; full sources and unselected
+summaries remain intact. **371 tests pass**, plus lint, formatting and strict types.
+Source origin remains `authored_diagnostic`; fixture delivery remains `authored_fixture`.
+The existing saved-review and observed-delivery paths are unchanged. Gold never
+enters assessment input, and this local rehearsal grants no semantic or writer approval.
+
+Use `scripts/assessment_authored_source.py prepare` or `publish-fixture` with
+`--source fresh-claims-2026-11-15 --family F01` (also F02/F03) and a new `--output`.
+Publication additionally requires `--submission` pointing to an explicitly authored
+fixture outside the source archive. Exact reuse verifies without rewriting.
+See [ADR 0057](docs/adr/0057-explicit-authored-assessment-sources.md) for the contract.
+Next is local source-aware transport/journal qualification, followed by a separately
+approved three-work smoke plan if ready. No live plan or budget is frozen.
+
+The [authored-source OpenAI qualification](docs/handoffs/assessment-authored-openai-qualification-2026-11-15.md)
+adds a separate exact mapping and durable injected-fixture journal for F01/F02/F03.
+All three counts precede generation; every slot is audited, including pending and
+undispatched slots. Complete, HTTP 500 and interrupted-generation rehearsals retain
+full context, error evidence and nullable usage. All nine claims bind in the success
+fixture; this is not model-performance evidence. **388 tests pass** (47 new/341
+existing), plus lint, formatting and strict types. The CLI
+`scripts/assessment_openai_authored_delivery.py` supports only local `prepare`,
+`capture-fixture` and `audit`. See [ADR 0058](docs/adr/0058-authored-source-openai-fixture-journal.md).
+Next is local qualification of the real-transport/observed-audit wrapper and a
+three-count/three-generation smoke freeze for approval. Production prompts unchanged;
+live calls paused; canary on hold.
+
 ```powershell
 uv run --extra api python scripts/assessment_openai_compact_smoke.py verify `
   --plan data/diagnostics/assessment-openai-compact-smoke-2026-11-14/plan.json

@@ -12761,17 +12761,149 @@ Status: bounded local implementation/verification **COMPLETE**; zero new provide
   files** outside three documentation updates, both closed journals and all fourteen
   issue bodies/posted URLs. Retain new implementation/documentation snapshots and
   an acceptance seal. No production database/profile/graph/prompt or external issue change.
-- [ ] Do a bounded local admission/design pass for up to nine whole factual claims
+- [x] Do a bounded local admission/design pass for up to nine whole factual claims
   across three fresh families, with supported/contradicted/unavailable controls and
-  complete sources and explicit obligation and authority scope. If they qualify,
-  prepare an end-to-end assessment-to-publication
-  plan and any new registration for approval. No new live budget is frozen here.
+  complete sources and explicit obligation and authority scope. Completed in the
+  [November 15 admission](../docs/handoffs/assessment-fresh-claim-admission-2026-11-15.md).
+- [x] Qualify the explicit authored-source integration before preparing an end-to-end
+  assessment-to-publication plan and new registration for approval. No new live budget
+  is frozen; authored content must not be relabeled as a saved model review. Local
+  source qualification completed in the [November 15 integration](../docs/handoffs/assessment-authored-source-integration-2026-11-15.md); live mapping/freeze remains a next step.
 
 Private root: `data/diagnostics/assessment-observed-completion-2026-11-14/`.
 This integrates observed delivery into read-only publication; it does not qualify
 editorial judgment, revision necessity, writer preservation or story quality.
 CW-007/CW-013 remain open; CW-014 unqualified. **Step 19 IN PROGRESS; Step 20 NOT
 STARTED; production prompts unchanged; live calls PAUSED; full workflow canary ON HOLD.**
+
+### Fresh whole-factual-claim admission 2026-11-15
+
+Report: [nine admitted claims, gold, verification and integration readiness](../docs/handoffs/assessment-fresh-claim-admission-2026-11-15.md).
+
+Status: bounded local admission **COMPLETE**; no provider requests or live budget frozen.
+
+- [x] Author three fresh fictional scene families and admit nine whole factual
+  claims: three supported, three explicitly contradicted and three with unavailable
+  material. Preserve complete current scenes and the relevant complete older scene,
+  version-specific assignments, a defined procedure, historical allegation/quote
+  and explicit missing-document records. Keep all bodies and gold in local data.
+- [x] Retain all twelve review fields: nine active whole claims and three unselected
+  editorial summaries. Supply sixteen material-component obligations, eighteen
+  exact witness locations and adequate-evidence examples. Missing bodies are not
+  contradiction; later rules are not earlier authority; authentic copying is not
+  complete semantic evidence. Gold remains assistant-authored, not independent human gold.
+- [x] Pass native scope/brief/authority checks for three three-unit batches, fourteen
+  full-field evidence locations and two historical bindings. Keep gold out of native
+  input under sentinel mutations; preserve full sources and whole fields in rendering.
+  Verify deterministic byte/mtime reuse of the 31-member local admission bundle.
+- [x] Pass **286 tests** (41 new private/245 existing; 56 existing mutation-fixture
+  warnings), Ruff/format/strict mypy on **287 files**, and documentation checks.
+  Preserve earlier evidence and production code; no schema, dependency, route,
+  provider metadata, daemon, application database or external issue change.
+- [x] Preserve **1,888 earlier sealed members**, the **64-member prior authored-control
+  seal**, **636 archive pins**, **800 baseline files** outside three documentation
+  updates, both closed smoke journals and all fourteen issue bodies/posted URLs.
+  Retain current source/documentation snapshots and an acceptance seal.
+- [x] Record the integration limit: native work correctly uses `synthetic_fixture`;
+  current `IntakeSource` requires saved/model-review origin, and the observed
+  publisher admits only its registered November 14 source. Do not manufacture raw
+  model origin, saved-review lineage, endpoint hashes or observed receipts.
+- [x] Do a bounded local integration-design/qualification pass for explicit authored
+  source admission using these three packets. Preserve source origin separately from
+  any future observed assessment delivery and qualify the narrow adapter. Completed
+  below; separate transport qualification and exact requests/scoring/budget/stops
+  for approval remain pending.
+
+Private root: `data/diagnostics/assessment-fresh-claim-admission-2026-11-15/`.
+Controlled source/scope generalization remains distinct from natural critic-error
+precision, editorial judgment, repair necessity, writer preservation and story quality.
+CW-007/CW-013 remain open; CW-014 unqualified. **Step 19 IN PROGRESS; Step 20 NOT
+STARTED; production prompts unchanged; live calls PAUSED; full workflow canary ON HOLD.**
+
+### Explicit authored-source integration 2026-11-15
+
+Report: [local implementation, packet inspection and next boundary](../docs/handoffs/assessment-authored-source-integration-2026-11-15.md).
+Decision: [ADR 0057](../docs/adr/0057-explicit-authored-assessment-sources.md).
+
+Status: bounded local source/presentation/fixture-completion qualification **COMPLETE**;
+no live requests or budget frozen.
+
+- [x] Add a separate tracked domain, registered source adapter and operator CLI.
+  Authenticate the exact 31-member admission bundle and construction-file digests
+  without executing archive code. Keep authored source and fixture delivery origin
+  distinct; do not widen saved-review intake or observed source registration.
+- [x] Preserve six exact source inputs per family, full work, nine whole factual
+  claims, sixteen obligations, two historical bindings and three unselected summaries.
+  Use the existing diagnostic instruction unchanged; exclude operator gold from
+  inputs. Keep native synthetic provenance and original local scope/authority intact.
+- [x] Rehearse preparation and fixture completion on all three actual packets. Bind
+  all nine claims using the native binder/completion/authority renderer; export 12
+  preparation and 13 publication members per family and verify byte/mtime reuse.
+  Separate derived fixture identities and authority from original source identities.
+  Retain null usage with explicit no-inference provenance and all semantic/writer holds.
+- [x] Pass **371 tests** (54 new/317 existing; 56 existing mutation-fixture warnings),
+  Ruff/format/strict mypy on **291 files**, and documentation checks. Exercise malformed
+  input, origin forgery, source/submission drift, full context, gold exclusion,
+  protected paths, bounded/secret-safe publication, partial failure and reuse.
+- [x] Preserve **1,959 earlier sealed members**, the separate **64-member authored-control
+  seal**, **636 archive pins**, **801 baseline files** outside three documentation updates,
+  both closed smoke journals and all fourteen issue bodies/posted URLs. Retain current
+  source/documentation snapshots, inspection records, output pins and acceptance seal.
+- [x] Qualify separate source-aware OpenAI mapping and terminal audit/durable journal
+  locally with injected responses. Keep frozen saved sources/runs intact. Completed
+  in the [November 15 mapping qualification](../docs/handoffs/assessment-authored-openai-qualification-2026-11-15.md).
+  Observed-delivery wrapper qualification and a live smoke freeze remain pending below.
+
+Private root: `data/diagnostics/assessment-authored-source-integration-2026-11-15/`.
+Authored fixtures establish local integration, not model accuracy, natural critic
+precision, editorial judgment, revision necessity, preservation or story quality.
+CW-007/CW-013 remain open; CW-014 unqualified. **Step 19 IN PROGRESS; Step 20 NOT
+STARTED; production prompts unchanged; live calls PAUSED; full workflow canary ON HOLD.**
+
+### Authored-source OpenAI mapping and journal 2026-11-15
+
+Report: [mapping, journal and three-packet qualification](../docs/handoffs/assessment-authored-openai-qualification-2026-11-15.md).
+Decision: [ADR 0058](../docs/adr/0058-authored-source-openai-fixture-journal.md).
+
+Status: bounded local mapping/journal qualification **COMPLETE**; zero new live
+requests and no live budget frozen.
+
+- [x] Add separate source-aware mapping/manifest and fixture journal/audit contracts,
+  service and local CLI. Regenerate the exact registered presentations; reuse the
+  unchanged serializer, response mapper, protocol records and native binder/completion.
+  Preserve authored source origin separately from injected delivery origin.
+- [x] Bind all three sources/receipts, whole work, exact endpoint bytes/schema,
+  settings and implementation. Require three counts before three generations and
+  zero retries. Flush intent before callback and recheck sources/fixtures after
+  intent; preserve pending consumed slots, hash chain, unknown usage and failures.
+- [x] Require closed complete delivery for every work plus separate accounting
+  clearance for completion eligibility. Preserve full sources, nine active claims,
+  three unselected summaries and original scope/authority. Render derived authority
+  separately. Retain null billing and all semantic/editorial/writer holds.
+- [x] Rehearse all actual packets with complete, HTTP 500 and interrupted-generation
+  fixtures. Success binds all nine claims; failures cannot promote a partial run.
+  Preserve all six slots, four usage counters and native evidence views. Verify
+  byte/mtime reuse of the ten-member preparation and three fourteen-member audits.
+- [x] Pass **388 tests** (47 new/341 existing; no warnings in final suites), plus
+  Ruff/format/strict mypy on **295 files** and schema/documentation checks. Cover
+  every interrupted slot and terminal/resource failures, including complete native
+  binding with a final-slot accounting hold that still denies completion eligibility.
+- [x] Preserve **2,094 earlier sealed members**, the separate **64-member authored-control
+  seal**, **636 archive pins**, **808 baseline files** outside three documentation
+  updates, both original smoke journals and all fourteen issue bodies/posted URLs.
+  Preserve both authored archives' **208** non-cache files/mtimes and **93** new
+  preparation/journal/audit members. Retain source snapshots and an acceptance seal.
+- [ ] Qualify the real-transport wrapper and explicit observed-delivery audit locally,
+  then freeze a provisional three-count/three-generation smoke with exact requests,
+  reviewed settings, resource limits, gold/evidence scoring and stops for approval.
+  Authored fixture journals cannot be promoted to observed delivery. No inference yet.
+
+Private root: `data/diagnostics/assessment-authored-openai-qualification-2026-11-15/`.
+Fixture counts/usage are invented protocol data, not model measurements or billing.
+This qualification does not establish natural critic precision, editorial judgment,
+revision necessity, writer preservation or story quality. CW-007/CW-013 stay open;
+CW-014 unqualified. **Step 19 IN PROGRESS; Step 20 NOT STARTED; production prompts
+unchanged; live calls PAUSED; full workflow canary ON HOLD.**
 
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 
