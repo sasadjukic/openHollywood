@@ -1533,9 +1533,32 @@ fixture; this is not model-performance evidence. **388 tests pass** (47 new/341
 existing), plus lint, formatting and strict types. The CLI
 `scripts/assessment_openai_authored_delivery.py` supports only local `prepare`,
 `capture-fixture` and `audit`. See [ADR 0058](docs/adr/0058-authored-source-openai-fixture-journal.md).
-Next is local qualification of the real-transport/observed-audit wrapper and a
-three-count/three-generation smoke freeze for approval. Production prompts unchanged;
-live calls paused; canary on hold.
+The [authored three-work smoke plan](docs/handoffs/assessment-authored-three-work-smoke-plan-2026-11-15.md)
+now qualifies that wrapper and its separate observed-delivery audit locally. It freezes
+three input counts before three generations, no retries, over nine whole claims in
+three fresh families. Sol/high; $1 conservative estimate per generation, $3 total.
+Full context goes to both endpoints; gold stays operator-only. The separate CLI
+`scripts/assessment_openai_authored_smoke.py` supports `verify`, `audit` and an
+explicitly approved one-shot `run`. **52 new wrapper tests passed**, plus full-packet
+injected rehearsals and existing regressions; see
+[ADR 0059](docs/adr/0059-authored-three-work-observed-smoke.md). All-work delivery and
+accounting clearance are required; native semantic/writer holds remain.
+
+The [approved three-work smoke results](docs/handoffs/assessment-authored-three-work-smoke-results-2026-11-15.md)
+record three counts followed by three generations, zero retries, all HTTP 200.
+All nine whole-claim labels match frozen gold, with adequate evidence for all sixteen
+material components on separate inspection. Generation usage: 35,134 input / 1,983
+output tokens, including 801 reasoning tokens; conservative estimate **$0.107665**
+within the $3 allowance, actual billing unknown. The read-only audit retains authored
+source origin separately from observed delivery. The
+[local regression and publication audit](docs/handoffs/assessment-authored-observed-handoff-2026-11-15.md)
+preserves all three deliveries and verifies **78 local scenarios / 254 existing tests**.
+The current smoke audit exports the observations correctly; the existing fixture
+publisher and registered probe publisher correctly refuse this different source/delivery
+combination. Next is a narrow registered read-only completion publisher for observed
+deliveries over authored sources, reusing the audit and native components. No new
+transport or inference is needed. Production prompts unchanged; live calls paused;
+canary on hold. Semantic/editorial/writer approval and story quality remain separate.
 
 ```powershell
 uv run --extra api python scripts/assessment_openai_compact_smoke.py verify `

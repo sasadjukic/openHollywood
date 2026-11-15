@@ -12893,9 +12893,10 @@ requests and no live budget frozen.
   updates, both original smoke journals and all fourteen issue bodies/posted URLs.
   Preserve both authored archives' **208** non-cache files/mtimes and **93** new
   preparation/journal/audit members. Retain source snapshots and an acceptance seal.
-- [ ] Qualify the real-transport wrapper and explicit observed-delivery audit locally,
-  then freeze a provisional three-count/three-generation smoke with exact requests,
-  reviewed settings, resource limits, gold/evidence scoring and stops for approval.
+- [x] Qualify the real-transport wrapper and explicit observed-delivery audit locally,
+  then freeze the three-count/three-generation smoke with exact requests, reviewed
+  settings, resource limits, gold/evidence scoring and stops for approval. See the
+  [frozen smoke plan](../docs/handoffs/assessment-authored-three-work-smoke-plan-2026-11-15.md).
   Authored fixture journals cannot be promoted to observed delivery. No inference yet.
 
 Private root: `data/diagnostics/assessment-authored-openai-qualification-2026-11-15/`.
@@ -12904,6 +12905,135 @@ This qualification does not establish natural critic precision, editorial judgme
 revision necessity, writer preservation or story quality. CW-007/CW-013 stay open;
 CW-014 unqualified. **Step 19 IN PROGRESS; Step 20 NOT STARTED; production prompts
 unchanged; live calls PAUSED; full workflow canary ON HOLD.**
+
+### Authored three-work smoke freeze 2026-11-15
+
+Report: [frozen plan and local verification](../docs/handoffs/assessment-authored-three-work-smoke-plan-2026-11-15.md).
+Decision: [ADR 0059](../docs/adr/0059-authored-three-work-observed-smoke.md).
+
+Status: local qualification and smoke preparation **COMPLETE**; live execution
+**AWAITING APPROVAL**. Zero provider API calls; fixed live journal absent.
+
+- [x] Add separate tracked real-client wrapper, durable journal and read-only observed
+  audit over the existing authored mapping. Preserve full sources, original scope,
+  authority, all nine whole claims and three unselected editorial summaries.
+- [x] Qualify exact outgoing bytes, in-memory credential isolation, TLS/no proxies,
+  no redirects/retries, flushed intent, post-intent validation, async deadlines,
+  cancellation, unknown usage, accounting holds and all-work completion eligibility.
+  Keep fixture/observed delivery origins separate from authored source origin.
+- [x] Freeze all six exact endpoint bodies, full-context selections, unchanged gold,
+  adequate-evidence rules, metadata, implementation and stops. F01/F02/F03 counts
+  precede any generations, then the same generation order, three of each/no retries.
+  Sol/high, 272k input/32k output, $1 conservative estimate each/$3 total; 120s count,
+  600s generation and 2700s dispatch window. Require exact plan/payload approval.
+- [x] Pass **52 new wrapper tests** and full-packet complete/missing-final-usage/
+  interrupted-final rehearsals. Complete success binds nine claims; final accounting
+  failure denies eligibility even after all nine bind. Preserve every fixed slot.
+  Audits reuse exactly; original source packet bytes/mtimes are unchanged.
+- [x] Pass **318 tests** (52 new/266 existing; no warnings), plus Ruff/format/strict
+  mypy on **298 files**. Verify schemas, links, frozen plan and preservation. Detailed
+  results are recorded in the report and sealed private acceptance evidence.
+- [x] Preserve **2,260 prior sealed members**, separate **64-member authored controls**,
+  **636 archive pins**, **818 baseline files** outside three documentation updates,
+  both original smoke journals, **375** source-archive files/mtimes and **104** new
+  preparation/journal/audit members. All fourteen issue bodies/URLs stay unchanged.
+- [x] After exact plan approval covering full prose/context at both OpenAI endpoints,
+  verify again and execute once: three counts before three generations, no retries.
+  Inspect every fixed slot and delivered claim, document results and update tracker.
+  Completed in the [three-work smoke results](../docs/handoffs/assessment-authored-three-work-smoke-results-2026-11-15.md);
+  the journal is closed complete and cannot be resumed.
+
+Private root: `data/diagnostics/assessment-authored-three-work-smoke-2026-11-15/`.
+Plan SHA-256: `f474bfc29bee448116993fc6845faccbee3cf60b48e1b1cbf8afc5ac3e93b779`.
+Local fixture success is not model accuracy, independent human gold, natural critic
+precision, editorial effect, revision necessity, writer preservation or story quality.
+CW-007/CW-013 remain open; CW-014 unqualified. **Step 19 IN PROGRESS; Step 20 NOT
+STARTED; production prompts unchanged; live calls PAUSED; full workflow canary ON HOLD.**
+
+### Authored three-work smoke results 2026-11-15
+
+Report: [execution, terminal audit and whole-claim inspection](../docs/handoffs/assessment-authored-three-work-smoke-results-2026-11-15.md).
+
+Status: approved bounded execution and inspection **COMPLETE**. Three input counts,
+then three generation attempts, zero retries; all six fixed slots HTTP 200.
+
+- [x] Verify the exact approved plan, **185** frozen seal members and **51** current
+  snapshots before dispatch. Preserve the pre-existing preparation edits/untracked
+  files. Send the frozen full prose/context once at both stated OpenAI endpoints.
+- [x] Retain the closed fifteen-file journal, byte-identical capture, all nine bound
+  assessments and supported seventeen-member read-only audit. Exact audit reuse
+  preserves bytes/mtimes. Source origin stays authored; delivery origin is observed.
+- [x] Inspect every returned whole claim against full sources and unchanged gold:
+  **9/9 labels correct**, adequate evidence for **9/9 claims / 16/16 components**,
+  all eighteen gold witness locations within cited fields; no material unsupported
+  explanation identified. Preserve true clauses in unsupported composites and
+  unavailable-source uncertainty. Three editorial summaries remain unselected.
+- [x] Record usage: **35,134 input / 1,983 output**, including **801 reasoning**,
+  cached input zero. Conservative generation estimate **$0.107665** within $3;
+  actual billing unknown. Dispatch window **48.426 seconds**; no accounting holds,
+  unknown generation counters, budget violations or additional provider requests.
+- [x] Verify order, exact bodies, source/version/field binding, native coverage,
+  usage arithmetic and read-only reuse locally. Ruff/format/strict mypy pass on
+  **298 files**. The prior **318** preparation tests remain qualification evidence;
+  runtime/test/schema code is unchanged, so those suites were not rerun.
+- [x] Preserve **2,445** prior sealed members, separate **64** authored controls,
+  **636** archive pins, **825/828** baseline files outside three documentation updates,
+  both earlier closed journals and all **375** authored-archive files/mtimes.
+  All fourteen issue bodies/posted URLs are unchanged. Seal this run's results.
+- [x] Preserve the three observed deliveries as local regressions and audit their
+  downstream read-only completion/publication path. Completed in the
+  [local handoff audit](../docs/handoffs/assessment-authored-observed-handoff-2026-11-15.md).
+  A narrow observed-authored completion publisher is justified; no new inference.
+  Source binding, all-work coverage, semantic/editorial holds and false writer
+  permission remain intact.
+
+Private results: `data/diagnostics/assessment-authored-three-work-smoke-results-2026-11-15/`.
+This single authored-control run is not a comparator, repeatability estimate,
+ordinary-critic precision score, independent human review or story-quality result.
+CW-007/CW-013 stay open; CW-014 unqualified. **Step 19 IN PROGRESS; Step 20 NOT
+STARTED; production prompts unchanged; live calls PAUSED; full workflow canary ON HOLD.**
+
+### Authored-source observed regressions and publication audit 2026-11-15
+
+Report: [local regressions, downstream boundaries and next integration](../docs/handoffs/assessment-authored-observed-handoff-2026-11-15.md).
+
+Status: bounded local preservation and audit **COMPLETE**; zero new provider calls.
+
+- [x] Preserve three full observed regression records, **50** exact capture files and
+  **22** original input/receipt files. Retain all nine active claims, three unselected
+  summaries, source scopes, authority, complete context, raw finals and citations.
+  Keep authored source origin separate from observed delivery and prior inspection.
+- [x] Reproduce native binding/completion and all three renderers for each work.
+  Reproduce the original supported seventeen-member smoke export and exact reuse,
+  with original sources and all output bytes/mtimes preserved.
+- [x] Pass **78 local scenarios**: exact observed replays, cross-work/request/scope
+  mismatches, missing/duplicate/extra claims, invalid refs, authored false reasons
+  and insufficient locator, unknown cache, excessive usage, truncated output,
+  pending/unclosed journals and incompatible publication origins/contracts.
+- [x] Confirm the authored smoke's existing all-work eligibility gate blocks every
+  work for final accounting failure or incomplete closure, even when all nine claims
+  bind. Native completion alone does not carry cached usage, accounting or provenance.
+  Complete injected copies remain explicitly non-observed despite delivery eligibility.
+- [x] Verify **254 existing tests** and Ruff/format/strict mypy on **298 files**;
+  retain **34** serializer warnings from unchanged deliberate authority mutations.
+  No application/domain/schema or tracked-test code changed. Local links and diff pass.
+- [x] Preserve **2,556** prior sealed members, separate **64** authored controls,
+  **636** archive pins, **826/829** baseline files outside three documentation edits,
+  all three closed smoke journals and **688** original source/preparation/result
+  files/mtimes. All fourteen issue bodies and posted URLs remain unchanged.
+- [ ] Implement and qualify a narrow registered observed-authored completion publisher
+  over these three saved deliveries. Reuse the supported audit, native binder,
+  completion, authority renderer and guarded manifest-last publication. Carry the
+  complete original source plus observed terminal, all four usage counters and
+  distinct local/observed request identities. Require all-work accounting/closure,
+  unassessed semantics/editorial/craft and false writer permission. Keep both current
+  publishers unchanged; no new transport, prompts or inference required.
+
+Private root: `data/diagnostics/assessment-authored-observed-handoff-2026-11-15/`.
+The existing smoke audit remains the usable operator export. These software
+counterfactuals are not new model failures, independent human ratings or story-quality
+findings. CW-007/CW-013 stay open; CW-014 unqualified. **Step 19 IN PROGRESS; Step 20
+NOT STARTED; production prompts unchanged; live calls PAUSED; full workflow canary ON HOLD.**
 
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 

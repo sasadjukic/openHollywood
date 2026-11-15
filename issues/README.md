@@ -2006,3 +2006,50 @@ all fourteen issue bodies and posted URLs remain unchanged. Next is local real-
 transport/observed-audit qualification and a three-work smoke freeze for approval.
 No live budget is frozen. CW-007/CW-013 remain open; CW-014 unqualified. Production
 prompts unchanged; live calls **PAUSED**; full workflow canary **ON HOLD**.
+
+Authored three-work smoke preparation **2026-11-15**:
+the [frozen plan](../docs/handoffs/assessment-authored-three-work-smoke-plan-2026-11-15.md)
+qualifies the real-client wrapper and observed-delivery audit with injected responses.
+**52 new wrapper tests pass**; complete, missing-final-usage and interrupted-final
+rehearsals retain all six slots and all source context. No successful subset can
+qualify the smoke. Source origin remains authored, separate from delivery origin.
+
+Three counts before three generations, no retries, Sol/high, nine whole claims;
+$3 conservative generation estimate ceiling. The exact requests, separate gold,
+metadata and code are frozen for approval. No live calls yet; the prospective journal
+is absent. Previous captures, all fourteen issue bodies and posted URLs remain
+unchanged. CW-007/CW-013 remain open; CW-014 unqualified. Production prompts unchanged;
+live calls **PAUSED** pending approval; full workflow canary **ON HOLD**.
+
+Authored three-work smoke results **2026-11-15**:
+the [execution report](../docs/handoffs/assessment-authored-three-work-smoke-results-2026-11-15.md)
+records three counts before three generations, no retries, all HTTP 200 and complete
+native binding. All **9/9** whole-claim labels match frozen gold; source inspection
+finds adequate evidence for **16/16** material components and no material unsupported
+explanation. Historical assignment authority, attribution versus event truth,
+conditional action and unavailable-source controls pass in this bounded run.
+
+Generation usage is 35,134 input / 1,983 output tokens (801 reasoning), conservative
+estimate **$0.107665** within $3; actual billing unknown. Sources remain authored;
+delivery is observed. The next recommendation is local regression preservation and
+an audit of downstream read-only completion/publication, retaining those distinct
+origins. No new inference is needed for that check. This does not qualify ordinary
+critic reliability, edit necessity, writer preservation or story quality.
+CW-007/CW-013 remain open; CW-014 unqualified. All fourteen issue bodies/URLs remain
+unchanged. Production prompts unchanged; live calls **PAUSED**; canary **ON HOLD**.
+
+Authored-source observed handoff audit **2026-11-15**:
+the [local regression report](../docs/handoffs/assessment-authored-observed-handoff-2026-11-15.md)
+preserves the three observed deliveries, all nine original claims and three unselected
+summaries. **78 local scenarios and 254 existing tests pass**, plus Python quality
+checks. Native binding, request identity, authority rendering, accounting and full-run
+closure are distinct; deliberate false reasons/insufficient locators remain semantically
+unassessed. No new model calls or semantic gold.
+
+The current supported smoke audit is sufficient for inspection. A narrow registered
+observed-authored completion publisher is justified for the tracked publication path;
+existing authored-fixture and registered-probe publishers correctly refuse this new
+combination. Qualify it locally using these captures without broadening trust or
+creating another transport. CW-007/CW-013 remain open; CW-014 unqualified. All fourteen
+issue bodies/posted URLs remain intact. Production prompts unchanged; live calls
+**PAUSED**; full workflow canary **ON HOLD**.
