@@ -2068,3 +2068,19 @@ controls and the existing probe completions, with failed/missing/unknown-usage
 fixtures. This does not close CW-007/CW-013 or qualify CW-014. All fourteen issue bodies
 and posted URLs are unchanged. Production prompts unchanged; live calls **PAUSED**;
 full workflow canary **ON HOLD**.
+
+Seven-work local consumer rehearsal **2026-11-19**:
+the [consumer design report](../docs/handoffs/assessment-consumer-rehearsal-2026-11-19.md)
+retains all 63 recorded fields across three authored controls and four probe
+completions: 15 selected claims, four holds and 44 unselected fields. Model labels
+remain attributed, with complete source links and separate evidence/accounting/
+semantic/editorial status. Missing delivery is distinct from a delivered uncertain
+judgment. Literal field coverage is not evidence sufficiency or story quality.
+**200 local checks and 162 native tests pass**, plus Python quality checks.
+
+None of these diagnostic works has a qualified canonical production review/artifact
+association. Next is a tracked read-only consumer exporter over the fixed registered
+publications; production attachment requires separate identity qualification.
+No issue is closed by this rehearsal: CW-007/CW-013 remain open; CW-014 unqualified.
+All fourteen issue bodies/posted URLs stay intact. No live calls; production prompts
+unchanged; full workflow canary **ON HOLD**.

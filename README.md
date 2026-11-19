@@ -1571,9 +1571,14 @@ uv run --extra api python scripts/assessment_authored_observed_completion.py `
 Only this fixed registration is accepted; no caller receipts, origin overrides or
 subsets. Exact repeats reuse bytes and mtimes; partial/conflicting exports remain
 untouched. See [ADR 0060](docs/adr/0060-registered-authored-observed-completion.md).
-Next is a bounded local rehearsal of how artifact review would consume these and
-the existing probe completions. Production prompts unchanged; live calls paused;
-canary on hold. Semantic/editorial/writer approval and story quality remain separate.
+The [seven-work consumer rehearsal](docs/handoffs/assessment-consumer-rehearsal-2026-11-19.md)
+retains 63 recorded fields: 15 assessed claims, four existing holds and 44 unselected
+fields. Model judgments, evidence obligations, accounting and semantic/editorial
+status remain separate. None of the seven works has a qualified canonical production
+review/artifact association; the local view preserves that absence.
+Next is a small tracked read-only consumer exporter for these fixed registrations,
+with exact source links and the rehearsed refusal cases. Production prompts unchanged;
+live calls paused; canary on hold. No writer permission or additional human checkpoint.
 
 ```powershell
 uv run --extra api python scripts/assessment_openai_compact_smoke.py verify `

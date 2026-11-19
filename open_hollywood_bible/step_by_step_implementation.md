@@ -13066,8 +13066,9 @@ provider calls.
   **43** export files/mtimes and **827/830** baseline files outside three intended docs.
   All fourteen issue bodies/URLs remain unchanged. Local links and diff pass; seal
   the qualification and source/documentation snapshots.
-- [ ] Do a bounded local consumer-integration design/rehearsal over up to seven works:
-  these three authored controls and the four registered probe completions. Define the
+- [x] Do a bounded local consumer-integration design/rehearsal over up to seven works:
+  these three authored controls and the four registered probe completions. Completed
+  in the [seven-work consumer rehearsal](../docs/handoffs/assessment-consumer-rehearsal-2026-11-19.md). Define the
   optional read-only status beside original critic claims, preserving provenance,
   accounting, whole-claim/evidence obligations and semantic/editorial holds. Exercise
   missing/failed/unknown-usage controls before considering a production consumer.
@@ -13077,6 +13078,47 @@ Private root: `data/diagnostics/assessment-authored-observed-completion-2026-11-
 accepted export: `verified-publication/`. The retained `published/` development export
 is not the accepted result. Publication qualifies local source/delivery plumbing,
 not ordinary-critic reliability, revision necessity, preservation or story quality.
+CW-007/CW-013 remain open; CW-014 unqualified. **Step 19 IN PROGRESS; Step 20 NOT
+STARTED; production prompts unchanged; live calls PAUSED; full workflow canary ON HOLD.**
+
+### Seven-work read-only consumer rehearsal 2026-11-19
+
+Report: [consumer contract, saved-data rehearsal and production association audit](../docs/handoffs/assessment-consumer-rehearsal-2026-11-19.md).
+
+Status: bounded local design/rehearsal **COMPLETE**; zero provider calls. No tracked
+runtime, schema, dependency, UI or test implementation changed.
+
+- [x] Reauthenticate both registered publishers with exact reuse and preserve all
+  **70** export members. Rehearse F01/F02/F03 and N06/N07/N10/N11; retain **63** recorded
+  fields, **15** selected whole claims, **4** existing holds and **44** unselected fields.
+- [x] Define a minimal read-only consumer projection. Separate original criticism,
+  model-reported judgment, declared authority/obligations, literal citation bindings,
+  delivery/accounting and unassessed semantic/editorial/craft status. Keep writer
+  permission false and whole-review verdict absent; namespace repeated field IDs.
+- [x] Inspect all **15** judgments, **30** material components, **47** citation occurrences
+  and **21** context/result links. Preserve full source envelopes and request identities.
+  Complete-field citation spans do not establish source coverage or adequate evidence.
+- [x] Confirm every native canonical review ID is null; no qualified production
+  artifact-version association exists in these exports. Audit the existing inspector
+  and API contracts without opening a user database or manufacturing an attachment.
+- [x] Pass **200 local software checks**, including 168 held fault cases, 14 bound but
+  semantically unassessed controls and seven definite-without-evidence refusals.
+  Separately verify a held catalog and exact reuse of the **18-file** view bundle.
+- [x] Pass **162 existing native tests** (34 retained malformed-fixture warnings),
+  Ruff/format/strict mypy on **303 files**, link checks and diff checks. Preserve
+  **3,117** earlier sealed members, separate **64** controls, **636** archive pins,
+  **1,279** source files/mtimes, three closed journals and **832/835** baseline files
+  outside three documentation edits. All fourteen issue bodies/URLs remain intact.
+- [ ] Implement the small tracked read-only consumer exporter over these two fixed
+  publication registrations, using the rehearsed contract and refusal cases. Retain
+  complete source links, all-work inventory and explicit missing production association.
+  Qualify an exact review/artifact-version association separately before any later
+  production inspector attachment. No new transport or inference is required.
+
+Private root: `data/diagnostics/assessment-consumer-rehearsal-2026-11-19/`;
+start at `views/README.md`. Private prototypes are not production admission APIs.
+This optional operator view introduces no mandatory human checkpoint and qualifies
+no critic precision, edit necessity, preservation or story-quality outcome.
 CW-007/CW-013 remain open; CW-014 unqualified. **Step 19 IN PROGRESS; Step 20 NOT
 STARTED; production prompts unchanged; live calls PAUSED; full workflow canary ON HOLD.**
 
