@@ -13268,10 +13268,11 @@ attachment, migration, workflow, prompt or provider changes; no inference.
   source files/mtimes, three journals, **88** consumer files, **23** association exports
   and **851/854** baseline files outside intended docs. Keep fourteen issue bodies/URLs
   unchanged and verify document links/diff cleanliness.
-- [ ] Implement a narrow read-only provenance view in the existing artifact inspector.
+- [x] Implement a narrow read-only provenance view in the existing artifact inspector.
   Bind display to the exact selected version; test version switching, stale responses
   and unavailable/unregistered/ambiguous states. Keep identity separate from unsupported
   assessment contract, missing captured delivery and unassessed story quality.
+  See the [implemented view](../docs/handoffs/assessment-provenance-inspector-2026-11-19.md).
 
 Private root: `data/diagnostics/assessment-workspace-lookup-2026-11-19/`.
 Use `request.json`, `lookup-result.json` and `verification.json`. The file registration
@@ -13279,6 +13280,42 @@ is local and requires requalification after replacement/restore; no portable wor
 identity was introduced. CW-007/CW-013 remain open; CW-014 unqualified.
 **Step 19 IN PROGRESS; Step 20 NOT STARTED; production prompts unchanged; live calls
 PAUSED; full workflow canary ON HOLD.**
+
+### Read-only artifact provenance inspector 2026-11-19
+
+Report: [exact-version API and inspector integration](../docs/handoffs/assessment-provenance-inspector-2026-11-19.md).
+
+Status: bounded local implementation and verification **COMPLETE**. No assessment
+attachment, migration, production prompt, provider or workflow changes; no inference.
+
+- [x] Add a compact GET projection over the qualified local lookup. Bind its source
+  to the app-owned workspace database and require all five exact selection fields.
+  Sanitize failures and expose no raw source prose, prompts or filesystem identity.
+- [x] Generate API contracts and integrate the existing inspector for critiques and
+  scene drafts. Retain original relationships for older selections; refuse stale or
+  mismatched results and hide cached identity during rechecks/errors.
+- [x] Show explicit unavailable reasons, separate unsupported/missing assessment and
+  unassessed quality. Keep writer/assessment permission false and diagnostic works
+  unassociated. Add no editor or mandatory human checkpoint.
+- [x] Pass **214 Python tests**, **34 frontend tests** and **36 saved-source checks**:
+  twelve exact selections, twelve identical repeats and twelve wrong-hash refusals.
+  Pass desktop/mobile browser checks, Ruff/format/mypy, frontend format/lint/type/tests
+  and production builds. Correct the selector's accessible name and mobile transparency.
+- [x] Preserve database/sidecar bytes and main/WAL mtimes; record SHM mtime refresh.
+  Verify **3,568** earlier sealed members, **64** authored controls, **636** archive pins,
+  **1,735** source files/mtimes, three journals, **88** consumer files, **23** association
+  exports and **847/860** byte-identical baseline files outside intended changes. Keep fourteen issue
+  bodies/URLs unchanged; check documentation links and diff cleanliness.
+- [ ] Qualify supported production-review admission and exact completion binding
+  locally with a disposable authored current-contract source and missing/wrong-version
+  controls. Retain historical v33 sources as unsupported; determine adapter needs before
+  any separately frozen live smoke or assessment attachment.
+
+Private root: `data/diagnostics/assessment-provenance-inspector-2026-11-19/`.
+The local source registration remains archive-dependent and needs requalification after
+replacement/restore. Identity is not a semantic, editorial or craft verdict.
+CW-007/CW-013 remain open; CW-014 unqualified. **Step 19 IN PROGRESS; Step 20 NOT STARTED;
+production prompts unchanged; live calls PAUSED; full workflow canary ON HOLD.**
 
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 

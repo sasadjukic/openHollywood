@@ -54,3 +54,4 @@ tradeoffs. Status values are `Proposed`, `Accepted`, `Superseded`, or `Rejected`
 | [0053](0053-versioned-compact-diagnostic-presentation.md) | Versioned compact diagnostic assessment presentation | Accepted; read-only local preparation and verification |
 | [0054](0054-compact-openai-mapping-and-manifest.md) | Separate compact OpenAI mapping and manifest | Accepted; local injected-fixture qualification only |
 | [0055](0055-compact-four-work-assessment-smoke.md) | Compact version-two four-work assessment smoke | Accepted; local qualification and freeze, live approval pending |
+| [0064](0064-read-only-artifact-provenance-inspector.md) | Exact-version read-only artifact provenance inspector | Accepted; bounded local integration |

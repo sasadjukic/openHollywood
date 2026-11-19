@@ -2139,3 +2139,17 @@ coordination. Next add a read-only provenance view to the artifact inspector, ke
 identity separate from assessment and quality. No issue closes: CW-007/CW-013 open,
 CW-014 unqualified. Fourteen issue bodies/URLs unchanged; prompts unchanged, live calls
 **PAUSED**, canary **ON HOLD**.
+
+Read-only artifact provenance inspector **2026-11-19**:
+the [implementation report](../docs/handoffs/assessment-provenance-inspector-2026-11-19.md)
+records exact-version API/UI binding, explicit unavailable states and separate
+unsupported/missing assessment status. All twelve saved selections pass, including
+four older selections; no diagnostic completion is attached. Stale responses and
+cached success after errors cannot populate another selection.
+
+**214 Python tests, 34 frontend tests and 36 saved-source checks pass**, together with
+desktop/mobile browser checks, Python quality checks and frontend production builds.
+Next qualify supported production-review admission and exact completion binding locally.
+Identity is not accuracy, necessary editing or story quality. CW-007/CW-013 stay open;
+CW-014 remains unqualified. Fourteen issue bodies/posted URLs remain intact. Prompts
+unchanged; live calls **PAUSED**; full workflow canary **ON HOLD**.

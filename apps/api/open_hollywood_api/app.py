@@ -15,6 +15,7 @@ from open_hollywood_api.persistence.database import (
     create_sqlite_engine,
     database_path_from_environment,
 )
+from open_hollywood_api.routes.artifact_provenance import router as artifact_provenance_router
 from open_hollywood_api.routes.blueprint_decisions import router as blueprint_decisions_router
 from open_hollywood_api.routes.exports import router as exports_router
 from open_hollywood_api.routes.health import router as health_router
@@ -22,6 +23,7 @@ from open_hollywood_api.routes.model_profiles import router as model_profiles_ro
 from open_hollywood_api.routes.run_controls import router as run_controls_router
 from open_hollywood_api.routes.workflow_events import router as workflow_events_router
 from open_hollywood_api.routes.workspace import router as workspace_router
+from open_hollywood_api.services.artifact_provenance import ArtifactProvenanceService
 from open_hollywood_api.services.blueprint_workflow import BlueprintWorkflowService
 from open_hollywood_api.services.exports import ProjectExportStore
 from open_hollywood_api.services.model_profiles import (
@@ -48,18 +50,24 @@ async def lifespan(application: FastAPI) -> AsyncIterator[None]:
     owns_project_export_store = application.state.project_export_store is None
     owns_model_profile_store = application.state.model_profile_store is None
     owns_model_catalog_service = application.state.model_catalog_service is None
+    owns_provenance_service = (
+        owns_workspace_store and application.state.artifact_provenance_service is None
+    )
     if (
         owns_event_store
         or owns_workspace_store
         or owns_project_export_store
         or owns_model_profile_store
     ):
-        owned_engine = create_sqlite_engine(database_path_from_environment())
+        database_path = database_path_from_environment().absolute()
+        owned_engine = create_sqlite_engine(database_path)
         session_factory = create_session_factory(owned_engine)
         if owns_event_store:
             application.state.workflow_event_store = WorkflowEventStore(session_factory)
         if owns_workspace_store:
             application.state.workspace_store = WorkspaceStore(session_factory)
+        if owns_provenance_service:
+            application.state.artifact_provenance_service = ArtifactProvenanceService(database_path)
         if owns_project_export_store:
             application.state.project_export_store = ProjectExportStore(session_factory)
         if owns_model_profile_store:
@@ -112,6 +120,8 @@ async def lifespan(application: FastAPI) -> AsyncIterator[None]:
             application.state.model_catalog_service = None
         if owned_engine is not None:
             owned_engine.dispose()
+            if owns_provenance_service:
+                application.state.artifact_provenance_service = None
             if owns_event_store:
                 application.state.workflow_event_store = None
             if owns_workspace_store:
@@ -130,6 +140,7 @@ def create_app(
     model_profile_store: ModelProfileStore | None = None,
     model_catalog_service: ModelCatalogService | None = None,
     workflow_command_service: WorkflowCommandService | None = None,
+    artifact_provenance_service: ArtifactProvenanceService | None = None,
 ) -> FastAPI:
     """Build the API application without starting process-level side effects."""
     application = FastAPI(
@@ -142,6 +153,7 @@ def create_app(
     application.state.blueprint_workflow_service = blueprint_workflow_service
     application.state.workflow_command_service = workflow_command_service
     application.state.workspace_store = workspace_store
+    application.state.artifact_provenance_service = artifact_provenance_service
     application.state.project_export_store = project_export_store
     application.state.model_profile_store = model_profile_store
     application.state.model_catalog_service = model_catalog_service
@@ -156,6 +168,7 @@ def create_app(
     application.include_router(workflow_events_router, prefix="/api/v1")
     application.include_router(blueprint_decisions_router, prefix="/api/v1")
     application.include_router(workspace_router, prefix="/api/v1")
+    application.include_router(artifact_provenance_router, prefix="/api/v1")
     application.include_router(exports_router, prefix="/api/v1")
     application.include_router(model_profiles_router, prefix="/api/v1")
     application.include_router(run_controls_router, prefix="/api/v1")

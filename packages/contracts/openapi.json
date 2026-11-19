@@ -26,6 +26,78 @@
         "title": "ArtifactKind",
         "type": "string"
       },
+      "ArtifactProvenance": {
+        "additionalProperties": false,
+        "properties": {
+          "assessment_attachment_eligible": {
+            "const": false,
+            "default": false,
+            "title": "Assessment Attachment Eligible",
+            "type": "boolean"
+          },
+          "contract": {
+            "const": "artifact-provenance-view-1",
+            "default": "artifact-provenance-view-1",
+            "title": "Contract",
+            "type": "string"
+          },
+          "live_calls": {
+            "const": 0,
+            "default": 0,
+            "title": "Live Calls",
+            "type": "integer"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "const": "exact_registered_identity",
+                "type": "string"
+              },
+              {
+                "enum": [
+                  "unregistered_workspace",
+                  "source_unavailable",
+                  "source_changed",
+                  "no_registered_association",
+                  "selection_mismatch",
+                  "ambiguous_association",
+                  "current_source_missing",
+                  "current_source_mismatch"
+                ],
+                "type": "string"
+              }
+            ],
+            "title": "Reason"
+          },
+          "relationship": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ProvenanceRelationship"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "selection": {
+            "$ref": "#/components/schemas/ArtifactSelection"
+          },
+          "status": {
+            "enum": ["identity_verified", "unavailable"],
+            "title": "Status",
+            "type": "string"
+          },
+          "writer_dispatch_authorized": {
+            "const": false,
+            "default": false,
+            "title": "Writer Dispatch Authorized",
+            "type": "boolean"
+          }
+        },
+        "required": ["selection", "status", "reason"],
+        "title": "ArtifactProvenance",
+        "type": "object"
+      },
       "ArtifactReferenceEnvelope": {
         "description": "Immutable artifact-version pointer safe for UI consumption.",
         "properties": {
@@ -53,6 +125,45 @@
           "schema_version"
         ],
         "title": "ArtifactReferenceEnvelope",
+        "type": "object"
+      },
+      "ArtifactSelection": {
+        "additionalProperties": false,
+        "properties": {
+          "artifact_id": {
+            "pattern": "^[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$",
+            "title": "Artifact Id",
+            "type": "string"
+          },
+          "content_sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Content Sha256",
+            "type": "string"
+          },
+          "project_id": {
+            "pattern": "^[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$",
+            "title": "Project Id",
+            "type": "string"
+          },
+          "role": {
+            "enum": ["original_review", "reviewed_draft"],
+            "title": "Role",
+            "type": "string"
+          },
+          "version_id": {
+            "pattern": "^[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$",
+            "title": "Version Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "role",
+          "project_id",
+          "artifact_id",
+          "version_id",
+          "content_sha256"
+        ],
+        "title": "ArtifactSelection",
         "type": "object"
       },
       "ArtifactVersionDetail": {
@@ -847,6 +958,125 @@
         },
         "required": ["project", "conversations", "workflow_runs", "artifacts"],
         "title": "ProjectWorkspace",
+        "type": "object"
+      },
+      "ProvenanceRelationship": {
+        "additionalProperties": false,
+        "properties": {
+          "assessment_source": {
+            "const": "unsupported_contract",
+            "default": "unsupported_contract",
+            "title": "Assessment Source",
+            "type": "string"
+          },
+          "captured_assessment_delivery": {
+            "const": "missing",
+            "default": "missing",
+            "title": "Captured Assessment Delivery",
+            "type": "string"
+          },
+          "craft": {
+            "const": "unassessed",
+            "default": "unassessed",
+            "title": "Craft",
+            "type": "string"
+          },
+          "draft_artifact_id": {
+            "pattern": "^[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$",
+            "title": "Draft Artifact Id",
+            "type": "string"
+          },
+          "draft_content_sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Draft Content Sha256",
+            "type": "string"
+          },
+          "draft_is_latest_at_lookup": {
+            "title": "Draft Is Latest At Lookup",
+            "type": "boolean"
+          },
+          "draft_version_id": {
+            "pattern": "^[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$",
+            "title": "Draft Version Id",
+            "type": "string"
+          },
+          "edit_necessity": {
+            "const": "unassessed",
+            "default": "unassessed",
+            "title": "Edit Necessity",
+            "type": "string"
+          },
+          "editorial_effect": {
+            "const": "unassessed",
+            "default": "unassessed",
+            "title": "Editorial Effect",
+            "type": "string"
+          },
+          "evidence_adequacy": {
+            "const": "unassessed",
+            "default": "unassessed",
+            "title": "Evidence Adequacy",
+            "type": "string"
+          },
+          "review_artifact_id": {
+            "pattern": "^[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$",
+            "title": "Review Artifact Id",
+            "type": "string"
+          },
+          "review_content_sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Review Content Sha256",
+            "type": "string"
+          },
+          "review_invocation_id": {
+            "pattern": "^[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$",
+            "title": "Review Invocation Id",
+            "type": "string"
+          },
+          "review_is_latest_at_lookup": {
+            "title": "Review Is Latest At Lookup",
+            "type": "boolean"
+          },
+          "review_version_id": {
+            "pattern": "^[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$",
+            "title": "Review Version Id",
+            "type": "string"
+          },
+          "selected_is_latest_at_lookup": {
+            "title": "Selected Is Latest At Lookup",
+            "type": "boolean"
+          },
+          "semantic_support": {
+            "const": "unassessed",
+            "default": "unassessed",
+            "title": "Semantic Support",
+            "type": "string"
+          },
+          "source_registration": {
+            "title": "Source Registration",
+            "type": "string"
+          },
+          "workflow_run_id": {
+            "pattern": "^[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$",
+            "title": "Workflow Run Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "review_artifact_id",
+          "review_version_id",
+          "review_content_sha256",
+          "draft_artifact_id",
+          "draft_version_id",
+          "draft_content_sha256",
+          "review_invocation_id",
+          "workflow_run_id",
+          "source_registration",
+          "selected_is_latest_at_lookup",
+          "review_is_latest_at_lookup",
+          "draft_is_latest_at_lookup"
+        ],
+        "title": "ProvenanceRelationship",
         "type": "object"
       },
       "RunBudgetPatch": {
@@ -1811,6 +2041,87 @@
           }
         },
         "summary": "Load immutable artifact content and provenance",
+        "tags": ["workspace"]
+      }
+    },
+    "/api/v1/artifact-versions/{artifact_version_id}/provenance": {
+      "get": {
+        "operationId": "getArtifactProvenance",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "artifact_version_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Artifact Version Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "project_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Project Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "artifact_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Artifact Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "content_sha256",
+            "required": true,
+            "schema": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Content Sha256",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "role",
+            "required": true,
+            "schema": {
+              "enum": ["original_review", "reviewed_draft"],
+              "title": "Role",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArtifactProvenance"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Inspect the exact selected version's registered review relationship",
         "tags": ["workspace"]
       }
     },

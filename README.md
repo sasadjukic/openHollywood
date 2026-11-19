@@ -1628,8 +1628,13 @@ ambiguous selections are refused. See [ADR 0063](docs/adr/0063-registered-read-o
 
 This is a bounded local registration, not a portable workspace identity. Replaced or
 restored databases need explicit requalification. Assessment eligibility remains false.
-Next add a read-only provenance view to the existing artifact inspector, with explicit
-version binding and unavailable states. No inspector attachment yet.
+The [artifact provenance view](docs/handoffs/assessment-provenance-inspector-2026-11-19.md)
+now shows the exact review/draft relationship for selected critiques and scene drafts,
+including older versions. It hides stale results and provides explicit unavailable
+states. Unsupported contract and missing assessment remain separate from verified
+identity; no assessment completion is attached. Source details are optional read-only
+text. See [ADR 0064](docs/adr/0064-read-only-artifact-provenance-inspector.md).
+Next qualify supported production-review admission and exact completion binding locally.
 Production prompts unchanged; live calls paused; canary on hold. No writer permission
 or additional human checkpoint.
 

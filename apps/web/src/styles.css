@@ -1429,6 +1429,83 @@ textarea:focus-visible {
   border-top: 8px solid var(--bg);
 }
 
+.review-provenance {
+  padding: 24px 22px;
+  border-top: 8px solid var(--bg);
+  font-size: 0.8rem;
+  line-height: 1.55;
+  color: var(--muted);
+}
+
+.review-provenance h3,
+.review-provenance h4 {
+  margin: 0;
+  color: var(--text);
+  font-size: 0.82rem;
+  font-weight: 500;
+}
+
+.review-provenance .provenance-status {
+  margin: 16px 0 8px;
+  color: var(--blue);
+}
+
+.provenance-history,
+.provenance-assessment {
+  padding: 12px;
+  border-left: 2px solid var(--lavender);
+  background: rgb(174 162 219 / 5%);
+}
+
+.review-relationship {
+  margin: 16px 0;
+}
+
+.review-relationship div + div {
+  margin-top: 12px;
+}
+
+.review-relationship dt {
+  color: var(--muted-dim);
+  font-size: 0.7rem;
+}
+
+.review-relationship dd {
+  margin: 4px 0 0;
+  overflow-wrap: anywhere;
+}
+
+.review-relationship code {
+  font-size: 0.7rem;
+}
+
+.review-provenance details {
+  margin-top: 18px;
+}
+
+.review-provenance summary {
+  cursor: pointer;
+}
+
+.provenance-recheck {
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--muted);
+  background: transparent;
+  cursor: pointer;
+}
+
+.provenance-recheck:focus-visible,
+.review-provenance summary:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 3px;
+}
+
+.inspector-version-mismatch {
+  padding: 22px;
+}
+
 .version-context .eyebrow {
   margin: 0;
   color: var(--lavender);
@@ -1637,6 +1714,7 @@ textarea:focus-visible {
     right: 0;
     bottom: 0;
     width: min(430px, 92vw);
+    background: var(--panel-deep);
     border-left: 1px solid var(--border-strong);
     box-shadow: -26px 0 70px rgb(0 0 0 / 35%);
     transform: translateX(102%);

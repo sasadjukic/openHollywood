@@ -719,6 +719,7 @@ export function App() {
         </main>
 
         <ArtifactInspector
+          projectId={selectedProjectId}
           artifact={selectedArtifact}
           detail={artifactDetailQuery.data}
           isLoading={artifactDetailQuery.isPending}

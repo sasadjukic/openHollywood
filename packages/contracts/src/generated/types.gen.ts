@@ -30,6 +30,47 @@ export type ArtifactKind =
   | "scene_draft";
 
 /**
+ * ArtifactProvenance
+ */
+export type ArtifactProvenance = {
+  /**
+   * Assessment Attachment Eligible
+   */
+  assessment_attachment_eligible?: false;
+  /**
+   * Contract
+   */
+  contract?: "artifact-provenance-view-1";
+  /**
+   * Live Calls
+   */
+  live_calls?: 0;
+  /**
+   * Reason
+   */
+  reason:
+    | "exact_registered_identity"
+    | "unregistered_workspace"
+    | "source_unavailable"
+    | "source_changed"
+    | "no_registered_association"
+    | "selection_mismatch"
+    | "ambiguous_association"
+    | "current_source_missing"
+    | "current_source_mismatch";
+  relationship?: ProvenanceRelationship | null;
+  selection: ArtifactSelection;
+  /**
+   * Status
+   */
+  status: "identity_verified" | "unavailable";
+  /**
+   * Writer Dispatch Authorized
+   */
+  writer_dispatch_authorized?: false;
+};
+
+/**
  * ArtifactReferenceEnvelope
  *
  * Immutable artifact-version pointer safe for UI consumption.
@@ -48,6 +89,32 @@ export type ArtifactReferenceEnvelope = {
    * Schema Version
    */
   schema_version: string;
+};
+
+/**
+ * ArtifactSelection
+ */
+export type ArtifactSelection = {
+  /**
+   * Artifact Id
+   */
+  artifact_id: string;
+  /**
+   * Content Sha256
+   */
+  content_sha256: string;
+  /**
+   * Project Id
+   */
+  project_id: string;
+  /**
+   * Role
+   */
+  role: "original_review" | "reviewed_draft";
+  /**
+   * Version Id
+   */
+  version_id: string;
 };
 
 /**
@@ -541,6 +608,88 @@ export type ProjectWorkspace = {
    * Workflow Runs
    */
   workflow_runs: Array<WorkspaceRun>;
+};
+
+/**
+ * ProvenanceRelationship
+ */
+export type ProvenanceRelationship = {
+  /**
+   * Assessment Source
+   */
+  assessment_source?: "unsupported_contract";
+  /**
+   * Captured Assessment Delivery
+   */
+  captured_assessment_delivery?: "missing";
+  /**
+   * Craft
+   */
+  craft?: "unassessed";
+  /**
+   * Draft Artifact Id
+   */
+  draft_artifact_id: string;
+  /**
+   * Draft Content Sha256
+   */
+  draft_content_sha256: string;
+  /**
+   * Draft Is Latest At Lookup
+   */
+  draft_is_latest_at_lookup: boolean;
+  /**
+   * Draft Version Id
+   */
+  draft_version_id: string;
+  /**
+   * Edit Necessity
+   */
+  edit_necessity?: "unassessed";
+  /**
+   * Editorial Effect
+   */
+  editorial_effect?: "unassessed";
+  /**
+   * Evidence Adequacy
+   */
+  evidence_adequacy?: "unassessed";
+  /**
+   * Review Artifact Id
+   */
+  review_artifact_id: string;
+  /**
+   * Review Content Sha256
+   */
+  review_content_sha256: string;
+  /**
+   * Review Invocation Id
+   */
+  review_invocation_id: string;
+  /**
+   * Review Is Latest At Lookup
+   */
+  review_is_latest_at_lookup: boolean;
+  /**
+   * Review Version Id
+   */
+  review_version_id: string;
+  /**
+   * Selected Is Latest At Lookup
+   */
+  selected_is_latest_at_lookup: boolean;
+  /**
+   * Semantic Support
+   */
+  semantic_support?: "unassessed";
+  /**
+   * Source Registration
+   */
+  source_registration: string;
+  /**
+   * Workflow Run Id
+   */
+  workflow_run_id: string;
 };
 
 /**
@@ -1104,6 +1253,55 @@ export type GetArtifactVersionResponses = {
 
 export type GetArtifactVersionResponse =
   GetArtifactVersionResponses[keyof GetArtifactVersionResponses];
+
+export type GetArtifactProvenanceData = {
+  body?: never;
+  path: {
+    /**
+     * Artifact Version Id
+     */
+    artifact_version_id: string;
+  };
+  query: {
+    /**
+     * Project Id
+     */
+    project_id: string;
+    /**
+     * Artifact Id
+     */
+    artifact_id: string;
+    /**
+     * Content Sha256
+     */
+    content_sha256: string;
+    /**
+     * Role
+     */
+    role: "original_review" | "reviewed_draft";
+  };
+  url: "/api/v1/artifact-versions/{artifact_version_id}/provenance";
+};
+
+export type GetArtifactProvenanceErrors = {
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type GetArtifactProvenanceError =
+  GetArtifactProvenanceErrors[keyof GetArtifactProvenanceErrors];
+
+export type GetArtifactProvenanceResponses = {
+  /**
+   * Successful Response
+   */
+  200: ArtifactProvenance;
+};
+
+export type GetArtifactProvenanceResponse =
+  GetArtifactProvenanceResponses[keyof GetArtifactProvenanceResponses];
 
 export type GetHealthData = {
   body?: never;

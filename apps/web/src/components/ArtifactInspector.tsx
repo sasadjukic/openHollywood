@@ -3,6 +3,8 @@ import type {
   WorkspaceArtifact,
 } from "@open-hollywood/contracts";
 
+import { ArtifactProvenance } from "./ArtifactProvenance";
+
 interface ArtifactInspectorProps {
   artifact: WorkspaceArtifact | null;
   detail: ArtifactVersionDetail | undefined;
@@ -11,6 +13,7 @@ interface ArtifactInspectorProps {
   onClose: () => void;
   onSelectVersion: (versionId: string) => void;
   selectedVersionId: string | null;
+  projectId: string | null;
 }
 
 export function ArtifactInspector({
@@ -21,7 +24,13 @@ export function ArtifactInspector({
   onClose,
   onSelectVersion,
   selectedVersionId,
+  projectId,
 }: ArtifactInspectorProps) {
+  const boundDetail =
+    detail?.selected_version.id === selectedVersionId &&
+    detail.artifact.id === artifact?.id
+      ? detail
+      : undefined;
   return (
     <aside
       className={`artifact-inspector ${isOpen ? "artifact-inspector--open" : ""}`}
@@ -60,6 +69,7 @@ export function ArtifactInspector({
             <label>
               <span>Version</span>
               <select
+                aria-label="Artifact version"
                 value={selectedVersionId ?? ""}
                 onChange={(event) => {
                   onSelectVersion(event.target.value);
@@ -79,13 +89,28 @@ export function ArtifactInspector({
 
           <div className="inspector-scroll">
             {isLoading && <ArtifactSkeleton />}
-            {!isLoading && detail && (
+            {!isLoading && detail && !boundDetail && (
+              <p className="inspector-version-mismatch" role="status">
+                The loaded artifact does not match the selected version.
+              </p>
+            )}
+            {!isLoading && boundDetail && (
               <>
                 <ArtifactContent
                   artifactType={artifact.artifact_type}
-                  content={detail.content}
+                  content={boundDetail.content}
                 />
-                <VersionContext detail={detail} />
+                {projectId &&
+                  ["critique", "scene_draft"].includes(
+                    boundDetail.artifact.artifact_type,
+                  ) && (
+                    <ArtifactProvenance
+                      projectId={projectId}
+                      detail={boundDetail}
+                      key={`${projectId}:${boundDetail.artifact.id}:${boundDetail.selected_version.id}:${boundDetail.content_sha256}`}
+                    />
+                  )}
+                <VersionContext detail={boundDetail} />
               </>
             )}
           </div>

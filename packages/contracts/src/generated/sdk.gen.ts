@@ -28,6 +28,9 @@ import type {
   DownloadProjectExportData,
   DownloadProjectExportErrors,
   DownloadProjectExportResponses,
+  GetArtifactProvenanceData,
+  GetArtifactProvenanceErrors,
+  GetArtifactProvenanceResponses,
   GetArtifactVersionData,
   GetArtifactVersionErrors,
   GetArtifactVersionResponses,
@@ -92,6 +95,25 @@ export const getArtifactVersion = <ThrowOnError extends boolean = false>(
     GetArtifactVersionErrors,
     ThrowOnError
   >({ url: "/api/v1/artifact-versions/{artifact_version_id}", ...options });
+
+/**
+ * Inspect the exact selected version's registered review relationship
+ */
+export const getArtifactProvenance = <ThrowOnError extends boolean = false>(
+  options: Options<GetArtifactProvenanceData, ThrowOnError>,
+): RequestResult<
+  GetArtifactProvenanceResponses,
+  GetArtifactProvenanceErrors,
+  ThrowOnError
+> =>
+  (options.client ?? client).get<
+    GetArtifactProvenanceResponses,
+    GetArtifactProvenanceErrors,
+    ThrowOnError
+  >({
+    url: "/api/v1/artifact-versions/{artifact_version_id}/provenance",
+    ...options,
+  });
 
 /**
  * Report API availability

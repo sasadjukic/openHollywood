@@ -5,6 +5,7 @@ import {
   createStoryProject,
   deleteStoryProject,
   getArtifactVersion,
+  getArtifactProvenance,
   getHealth,
   getProjectWorkspace,
   listModelCatalog,
@@ -14,6 +15,8 @@ import {
   listWorkflowRunEvents,
   submitBlueprintDecision,
   type ArtifactVersionDetail,
+  type ArtifactProvenance,
+  type ArtifactSelection,
   type BlueprintDecisionAction,
   type BlueprintDecisionResponse,
   type ConfigureModelProfileRequest,
@@ -109,6 +112,24 @@ export async function fetchArtifactVersion(
     path: { artifact_version_id: versionId },
   });
   return requireData(result, "This artifact version could not be loaded.");
+}
+
+export async function fetchArtifactProvenance(
+  selection: ArtifactSelection,
+  signal: AbortSignal,
+): Promise<ArtifactProvenance> {
+  const result = await getArtifactProvenance({
+    path: { artifact_version_id: selection.version_id },
+    query: {
+      project_id: selection.project_id,
+      artifact_id: selection.artifact_id,
+      content_sha256: selection.content_sha256,
+      role: selection.role,
+    },
+    signal,
+    cache: "no-store",
+  });
+  return requireData(result, "Review provenance could not be checked.");
 }
 
 export async function fetchWorkflowEvents(
