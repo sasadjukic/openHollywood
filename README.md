@@ -1654,6 +1654,20 @@ produce incomplete audits. Only the bound `complete` fixture qualifies for publi
 The operator export records source integrity and delivery coverage. Story quality remains
 unassessed. [ADR 0065](docs/adr/0065-read-only-saved-review-completion-adapter.md)
 
+To inspect the OpenAI count and generation bodies for that same saved review, run
+the [injected-response qualification](docs/handoffs/assessment-saved-review-openai-2026-11-19.md).
+Capture takes a fresh journal directory. Audit or publish reads the existing journal.
+
+```powershell
+$fixtureJournal = 'data/diagnostics/saved-review-openai-fixture-journal'
+uv run --extra api python scripts/saved_review_openai_fixture.py capture --scenario complete --journal $fixtureJournal
+uv run --extra api python scripts/saved_review_openai_fixture.py publish --scenario complete --journal $fixtureJournal --output data/diagnostics/saved-review-openai-fixture-publication
+```
+
+Use `--selection` with the same exact artifact identity for capture and export.
+The default selects the original critique. The `missing-terminal` and `count-rejected`
+scenarios support read-only `audit` export. Every exchange uses an in-memory transport.
+
 ```powershell
 uv run --extra api python scripts/assessment_openai_compact_smoke.py verify `
   --plan data/diagnostics/assessment-openai-compact-smoke-2026-11-14/plan.json

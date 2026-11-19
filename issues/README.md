@@ -2175,3 +2175,8 @@ Missing delivery, an unclosed attempt and a wrong version each prevent publicati
 This advances local traceability for CW-007 and CW-013. Both remain open, and CW-014
 remains unqualified. The next local check is the saved-review provider manifest and
 terminal journal with injected responses.
+
+The [saved-review OpenAI qualification](../docs/handoffs/assessment-saved-review-openai-2026-11-19.md)
+verified full claim and story context at both simulated endpoints. Wrong-version
+requests and missing terminal evidence prevented publication. A substantive saved claim
+with independent gold is still needed to evaluate reviewer accuracy. Issue status is unchanged.

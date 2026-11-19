@@ -13375,13 +13375,36 @@ and [ADR 0065](../docs/adr/0065-read-only-saved-review-completion-adapter.md).
 - [x] Pass all **2,593 Python tests**, including the 113 focused tests, plus repository
   Python lint, formatting and strict type checks. Verify the 33 qualification members,
   production database and sidecars, 3,620 earlier sealed members and 1,788 source-file pins.
-- [ ] Qualify a saved-review compact request manifest and terminal journal using
+- [x] Qualify a saved-review compact request manifest and terminal journal using
   injected count and generation exchanges on this one fixture. Check full claim/context
-  retention and refuse missing-terminal and wrong-version publication. Admit a
-  substantive claim with defensible gold before any live reviewer-quality experiment.
+  retention and refuse missing-terminal and wrong-version publication.
+  See the [local OpenAI qualification](../docs/handoffs/assessment-saved-review-openai-2026-11-19.md).
 
 **Step 19 IN PROGRESS. Step 20 NOT STARTED.** CW-007 and CW-013 remain open.
 CW-014 remains unqualified. Live calls are paused and the full workflow canary is on hold.
+
+### Saved-review OpenAI request and terminal journal 2026-11-19
+
+Bounded local qualification **COMPLETE**.
+[Qualification report](../docs/handoffs/assessment-saved-review-openai-2026-11-19.md)
+and [ADR 0066](../docs/adr/0066-saved-review-openai-fixture-journal.md).
+
+- [x] Bind each endpoint to the exact selected artifact, critique, reviewed draft and
+  saved-review source receipt. Verify both original messages, complete story and review,
+  Q010, all 14 dispositions and 483 evidence references in actual mock request bytes.
+- [x] Reproduce the bound Q010 result for both selections. Refuse wrong-version count
+  and generation before their respective dispatches. Keep rejected counts, open
+  intents, missing closures and foreign terminal records ineligible for publication.
+- [x] Verify the registered archive replay and byte-identical publication reuse.
+  Preserve both prior seals, their 109 members and the production database and sidecars.
+- [x] Pass all **2,600 Python tests**, including seven new fixture regressions. Pass
+  repository Ruff, formatting and strict mypy checks across **326 Python files**.
+- [ ] Audit up to six previously unadmitted supported saved reviews for one substantive
+  factual claim with exact versions, adequate source evidence and independently specified
+  gold. Record a source gap if none qualifies, before proposing live inference.
+
+Step 19 **IN PROGRESS**. Step 20 **NOT STARTED**. CW-007 and CW-013 remain open and
+CW-014 remains unqualified. Zero live calls. Production prompts unchanged. Canary on hold.
 
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 
