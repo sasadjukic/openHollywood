@@ -13346,15 +13346,42 @@ unimplemented for this branch.
   members, **64** authored controls, **636** archive pins, **1,788** source files/mtimes,
   three journals, **88** consumer files, **23** association exports and **864/867**
   baseline files outside intended docs. Keep fourteen issue bodies/URLs intact.
-- [ ] Implement a separately versioned read-only saved-review completion source adapter
+- [x] Implement a separately versioned read-only saved-review completion source adapter
   with explicit source receipts and unchanged whole-work binding. Qualify preparation,
   terminal audit and publication with fixtures before any real mapping, live smoke or
   inspector assessment attachment. Preserve existing probe/authored contracts.
+  See the [implemented adapter](../docs/handoffs/assessment-saved-review-adapter-2026-11-19.md).
 
 Private root: `data/diagnostics/assessment-production-intake-qualification-2026-11-19/`.
 Fixture authentication is local integrity, not observed model delivery or semantic gold.
 CW-007/CW-013 remain open; CW-014 unqualified. **Step 19 IN PROGRESS; Step 20 NOT STARTED;
 production prompts unchanged; live calls PAUSED; full workflow canary ON HOLD.**
+
+### Read-only saved-review completion adapter 2026-11-19
+
+Bounded fixture implementation **COMPLETE**.
+[Verification report](../docs/handoffs/assessment-saved-review-adapter-2026-11-19.md)
+and [ADR 0065](../docs/adr/0065-read-only-saved-review-completion-adapter.md).
+
+- [x] Register the existing sealed v61 workspace fixture. Replay supported intake
+  on an isolated copy and issue a versioned source receipt for the exact original
+  review, reviewed draft, declarations, briefs, whole work and offline request.
+- [x] Prepare, audit and publish through the operator CLI. Reproduce the qualified
+  Q010 result for both artifact selections. Preserve authored origin, unknown usage
+  and unassessed factual and editorial quality.
+- [x] Distinguish absent delivery and intent without terminal. Refuse incomplete,
+  invalid, wrong-version and changed-source publication. Verify six immutable exports
+  and identical reuse against the private registration.
+- [x] Pass all **2,593 Python tests**, including the 113 focused tests, plus repository
+  Python lint, formatting and strict type checks. Verify the 33 qualification members,
+  production database and sidecars, 3,620 earlier sealed members and 1,788 source-file pins.
+- [ ] Qualify a saved-review compact request manifest and terminal journal using
+  injected count and generation exchanges on this one fixture. Check full claim/context
+  retention and refuse missing-terminal and wrong-version publication. Admit a
+  substantive claim with defensible gold before any live reviewer-quality experiment.
+
+**Step 19 IN PROGRESS. Step 20 NOT STARTED.** CW-007 and CW-013 remain open.
+CW-014 remains unqualified. Live calls are paused and the full workflow canary is on hold.
 
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 

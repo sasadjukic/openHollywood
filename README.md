@@ -1634,13 +1634,25 @@ including older versions. It hides stale results and provides explicit unavailab
 states. Unsupported contract and missing assessment remain separate from verified
 identity; no assessment completion is attached. Source details are optional read-only
 text. See [ADR 0064](docs/adr/0064-read-only-artifact-provenance-inspector.md).
-The [supported-source qualification](docs/handoffs/assessment-production-intake-qualification-2026-11-19.md)
-now verifies saved v61 intake and native completion binding with authored local fixtures,
-including missing delivery and wrong-version refusals. The runtime completion publisher
-still rejects saved-review origins; a separately versioned source adapter is the next
-local step. This qualification supplies no real model delivery or production attachment.
-Production prompts unchanged; live calls paused; canary on hold. No writer permission
-or additional human checkpoint.
+The [saved-review completion adapter](docs/handoffs/assessment-saved-review-adapter-2026-11-19.md)
+replays the closed v61 workspace from the [local fixture qualification](docs/handoffs/assessment-production-intake-qualification-2026-11-19.md).
+Use `prepare` to export its exact intake, source receipt and offline request, `audit` to
+inspect its authored terminal evidence, and `publish` to export a bound fixture completion.
+All three commands take a registered source name and an output directory.
+
+```powershell
+$reviewFixture = 'saved-v61-authored-2026-11-19'
+uv run --extra api python scripts/saved_review_completion.py prepare --source $reviewFixture --output data/diagnostics/saved-review-inputs
+uv run --extra api python scripts/saved_review_completion.py audit --source $reviewFixture --journal intent-only --output data/diagnostics/saved-review-intent
+uv run --extra api python scripts/saved_review_completion.py publish --source $reviewFixture --journal complete --output data/diagnostics/saved-review-completion
+```
+
+The registration requires the private qualification archive. The default selection is the
+original critique. Pass `--selection` with its full review or draft identity as JSON
+to select an exact version explicitly. The `absent` and `intent-only` journal controls
+produce incomplete audits. Only the bound `complete` fixture qualifies for publication.
+The operator export records source integrity and delivery coverage. Story quality remains
+unassessed. [ADR 0065](docs/adr/0065-read-only-saved-review-completion-adapter.md)
 
 ```powershell
 uv run --extra api python scripts/assessment_openai_compact_smoke.py verify `

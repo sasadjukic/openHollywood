@@ -2168,3 +2168,10 @@ no production assessment is attached. Historical v33 sources stay unsupported an
 diagnostic consumer works stay unassociated. No issue closes: CW-007/CW-013 remain
 open; CW-014 unqualified. Issue bodies/posted URLs and production prompts unchanged;
 live calls **PAUSED**; full workflow canary **ON HOLD**.
+
+The [saved-review completion adapter](../docs/handoffs/assessment-saved-review-adapter-2026-11-19.md)
+now publishes the registered authored fixture for either exact artifact selection.
+Missing delivery, an unclosed attempt and a wrong version each prevent publication.
+This advances local traceability for CW-007 and CW-013. Both remain open, and CW-014
+remains unqualified. The next local check is the saved-review provider manifest and
+terminal journal with injected responses.
