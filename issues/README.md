@@ -2053,3 +2053,18 @@ combination. Qualify it locally using these captures without broadening trust or
 creating another transport. CW-007/CW-013 remain open; CW-014 unqualified. All fourteen
 issue bodies/posted URLs remain intact. Production prompts unchanged; live calls
 **PAUSED**; full workflow canary **ON HOLD**.
+
+Registered authored-source observed publisher **2026-11-15**:
+the [implementation report](../docs/handoffs/assessment-authored-observed-completion-2026-11-15.md)
+records the separate fixed-registration path and the 43-member export of all three
+saved deliveries. Full authored source context, nine active claims, three unselected
+summaries, exact requests and observed accounting remain intact. All-work closure
+and accounting are required; semantic/editorial/craft status remains unassessed,
+actual billing unknown and writer permission false. **38 new cases and 425 existing
+tests pass**, with Ruff/format/strict mypy checks. No new inference occurred.
+
+The next proposed boundary is a local read-only consumer rehearsal across these
+controls and the existing probe completions, with failed/missing/unknown-usage
+fixtures. This does not close CW-007/CW-013 or qualify CW-014. All fourteen issue bodies
+and posted URLs are unchanged. Production prompts unchanged; live calls **PAUSED**;
+full workflow canary **ON HOLD**.

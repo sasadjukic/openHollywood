@@ -1555,9 +1555,24 @@ source origin separately from observed delivery. The
 preserves all three deliveries and verifies **78 local scenarios / 254 existing tests**.
 The current smoke audit exports the observations correctly; the existing fixture
 publisher and registered probe publisher correctly refuse this different source/delivery
-combination. Next is a narrow registered read-only completion publisher for observed
-deliveries over authored sources, reusing the audit and native components. No new
-transport or inference is needed. Production prompts unchanged; live calls paused;
+combination. The separate
+[registered observed-authored publisher](docs/handoffs/assessment-authored-observed-completion-2026-11-15.md)
+now exports all three saved deliveries as 43 files, preserving full original sources,
+exact requests, four usage counters and separate request-bound authority. It requires
+complete observed delivery/accounting for all three works and leaves semantic,
+editorial and craft status unassessed with writer permission false.
+
+```powershell
+uv run --extra api python scripts/assessment_authored_observed_completion.py `
+  --source authored-smoke-2026-11-15 `
+  --output data/exports/authored-observed-completion-001
+```
+
+Only this fixed registration is accepted; no caller receipts, origin overrides or
+subsets. Exact repeats reuse bytes and mtimes; partial/conflicting exports remain
+untouched. See [ADR 0060](docs/adr/0060-registered-authored-observed-completion.md).
+Next is a bounded local rehearsal of how artifact review would consume these and
+the existing probe completions. Production prompts unchanged; live calls paused;
 canary on hold. Semantic/editorial/writer approval and story quality remain separate.
 
 ```powershell

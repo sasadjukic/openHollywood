@@ -13021,8 +13021,9 @@ Status: bounded local preservation and audit **COMPLETE**; zero new provider cal
   **636** archive pins, **826/829** baseline files outside three documentation edits,
   all three closed smoke journals and **688** original source/preparation/result
   files/mtimes. All fourteen issue bodies and posted URLs remain unchanged.
-- [ ] Implement and qualify a narrow registered observed-authored completion publisher
-  over these three saved deliveries. Reuse the supported audit, native binder,
+- [x] Implement and qualify a narrow registered observed-authored completion publisher
+  over these three saved deliveries. Completed in the
+  [registered publisher qualification](../docs/handoffs/assessment-authored-observed-completion-2026-11-15.md). Reuse the supported audit, native binder,
   completion, authority renderer and guarded manifest-last publication. Carry the
   complete original source plus observed terminal, all four usage counters and
   distinct local/observed request identities. Require all-work accounting/closure,
@@ -13034,6 +13035,50 @@ The existing smoke audit remains the usable operator export. These software
 counterfactuals are not new model failures, independent human ratings or story-quality
 findings. CW-007/CW-013 stay open; CW-014 unqualified. **Step 19 IN PROGRESS; Step 20
 NOT STARTED; production prompts unchanged; live calls PAUSED; full workflow canary ON HOLD.**
+
+### Registered authored-source observed completion publisher 2026-11-15
+
+Report: [implementation, local qualification and next consumer boundary](../docs/handoffs/assessment-authored-observed-completion-2026-11-15.md).
+Decision: [ADR 0060](../docs/adr/0060-registered-authored-observed-completion.md).
+
+Status: bounded local implementation and verification **COMPLETE**. Zero new
+provider calls.
+
+- [x] Add the separate application publisher and CLI for only the registered
+  `authored-smoke-2026-11-15` plan/audit. No caller receipt, origin/trust override,
+  arbitrary source path or work subset. Keep existing publishers and frozen code intact.
+- [x] Reauthenticate the original seventeen-member audit; rederive all six endpoint
+  outcomes and three whole-work completions. Require observed delivery, complete
+  closure, all four usage counters known and no accounting hold/overrun for every work.
+- [x] Export all three saved deliveries as **43 files**, retaining nine whole claims,
+  three unselected summaries, full sources, six original inputs per family, exact
+  requests/presentations and separate request-bound authority. Retain original local
+  scope and source receipts; no fabricated saved-review intake or semantic approval.
+- [x] Inspect all nine judgments and citations; match the three native authority views
+  to the original audit. Verify exact repeated publication and operator CLI reuse,
+  preserving file bytes/mtimes. Actual billing stays unknown; writer permission false.
+- [x] Pass all **38 new regression cases** and Ruff/format/strict mypy on **301 files**.
+  The initial suite passed 37 after local corrections; the corrected secret-sentinel
+  case passed separately. Retain initial logs and the unqualified draft export.
+- [x] Pass **425 existing tests** (34 retained warnings from deliberate malformed
+  authority fixtures). Verify **2,934** earlier sealed members, separate **64** authored
+  controls, **636** archive pins, **1,068** source files/mtimes, all three closed journals,
+  **43** export files/mtimes and **827/830** baseline files outside three intended docs.
+  All fourteen issue bodies/URLs remain unchanged. Local links and diff pass; seal
+  the qualification and source/documentation snapshots.
+- [ ] Do a bounded local consumer-integration design/rehearsal over up to seven works:
+  these three authored controls and the four registered probe completions. Define the
+  optional read-only status beside original critic claims, preserving provenance,
+  accounting, whole-claim/evidence obligations and semantic/editorial holds. Exercise
+  missing/failed/unknown-usage controls before considering a production consumer.
+  No new transport, inference or workflow approval checkpoint is required.
+
+Private root: `data/diagnostics/assessment-authored-observed-completion-2026-11-15/`;
+accepted export: `verified-publication/`. The retained `published/` development export
+is not the accepted result. Publication qualifies local source/delivery plumbing,
+not ordinary-critic reliability, revision necessity, preservation or story quality.
+CW-007/CW-013 remain open; CW-014 unqualified. **Step 19 IN PROGRESS; Step 20 NOT
+STARTED; production prompts unchanged; live calls PAUSED; full workflow canary ON HOLD.**
 
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 
