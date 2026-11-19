@@ -1634,7 +1634,11 @@ including older versions. It hides stale results and provides explicit unavailab
 states. Unsupported contract and missing assessment remain separate from verified
 identity; no assessment completion is attached. Source details are optional read-only
 text. See [ADR 0064](docs/adr/0064-read-only-artifact-provenance-inspector.md).
-Next qualify supported production-review admission and exact completion binding locally.
+The [supported-source qualification](docs/handoffs/assessment-production-intake-qualification-2026-11-19.md)
+now verifies saved v61 intake and native completion binding with authored local fixtures,
+including missing delivery and wrong-version refusals. The runtime completion publisher
+still rejects saved-review origins; a separately versioned source adapter is the next
+local step. This qualification supplies no real model delivery or production attachment.
 Production prompts unchanged; live calls paused; canary on hold. No writer permission
 or additional human checkpoint.
 
