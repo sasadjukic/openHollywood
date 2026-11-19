@@ -2097,3 +2097,16 @@ Ruff/format/strict mypy pass. Next is a bounded local immutable review/artifact-
 association audit before production-inspector attachment. This does not close
 CW-007/CW-013 or qualify CW-014. All fourteen issue bodies and posted URLs remain intact.
 Production prompts unchanged; live calls **PAUSED**; full workflow canary **ON HOLD**.
+
+Exact production review/artifact association audit **2026-11-19**:
+[Six historical production reviews](../docs/handoffs/assessment-production-association-2026-11-19.md)
+have verified critique/target UUIDs, canonical hashes, creator/input links, request
+identity and parent lineage. Two old reviews remain bound to their original drafts.
+All six return `unsupported_contract` through the current intake; no native assessment
+or production attachment was fabricated. All seven diagnostic consumer works remain
+unassociated. **195 local controls and 156 existing tests pass.**
+
+Next is a separate read-only association record/validator and operator export, with
+assessment eligibility held. No issue closes: CW-007/CW-013 open, CW-014 unqualified.
+Fourteen issue bodies/posted URLs unchanged. Prompts unchanged; live calls **PAUSED**;
+full workflow canary **ON HOLD**.

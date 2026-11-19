@@ -13153,16 +13153,56 @@ inference calls; no database access. Existing frozen engine and publisher code u
   pins, **1,476** source files/mtimes, three closed journals, **88** new output members
   and **833/836** baseline files outside intended docs. Keep fourteen issue bodies and
   posted URLs unchanged; verify **726** documentation links and diff cleanliness.
-- [ ] Do a bounded local production-association audit/design over up to six compatible
-  saved reviews. Qualify exact immutable review/artifact-version IDs and content hashes;
-  check missing, mismatched, stale and ambiguous associations. Keep these seven diagnostic
-  exports unassociated. No production inspector attachment or more inference yet.
+- [x] Complete the [bounded production-association audit](../docs/handoffs/assessment-production-association-2026-11-19.md).
+  Verify exact IDs/hashes/lineage for six older production reviews. Current-contract
+  eligibility remains zero; do not retag them or attach the seven diagnostic exports.
+  Check missing, mismatched, stale and ambiguous association controls locally.
 
 Private root: `data/diagnostics/assessment-consumer-export-2026-11-19/`;
 start at `authored/README.md` and `probe/README.md`. The exporter is an optional local
 operator view, not a new mandatory human checkpoint. It does not qualify critic accuracy,
 writer preservation or story quality. CW-007/CW-013 remain open; CW-014 unqualified.
 **Step 19 IN PROGRESS; Step 20 NOT STARTED; production prompts unchanged; live calls
+PAUSED; full workflow canary ON HOLD.**
+
+### Exact production review/artifact association audit 2026-11-19
+
+Report: [six-review identity audit and separate eligibility boundary](../docs/handoffs/assessment-production-association-2026-11-19.md).
+
+Status: bounded local audit/design **COMPLETE**. No tracked runtime, test, prompt,
+provider, workflow, schema, API or UI changes; no inference.
+
+- [x] Inventory the configured database's **147** ordinary-critic metadata rows and
+  freeze six successful v33/graph-9 reviews across three projects. Include two actual
+  revision pairs. No v61/schema-7 candidates; do not repeat the old 54-database scan
+  or treat incompatible production rows as admitted assessment examples.
+- [x] Verify all **6** exact review-invocation/critique-version/draft-version associations:
+  project/run, canonical hashes, creator/input links, **41** input-version occurrences,
+  one corresponding Scene Plan, saved request identity and critique/draft parent lineage.
+- [x] Verify **327** ordered catalog occurrences against canonical target prose, preserving
+  separate canonical/visible-view hashes. Three repeated excerpt entries in each of
+  R03/R04 require occurrence-aware binding; literal coverage is not semantic adequacy.
+- [x] Preserve R03/R05's historical draft versions despite newer heads. Existing intake
+  returns **unsupported_contract for all six**. No raw delivery or native assignment
+  checks are synthesized. Keep the seven diagnostic consumer associations null.
+- [x] Pass **195 local checks**: 6 replays, 108 authored refusals, 74 artifact-selection
+  controls and 7 diagnostic no-association controls. Pass **156 existing tests** for
+  review evidence, intake, consumer boundaries, immutable persistence and workspace.
+- [x] Pass Ruff/format/strict mypy on **309 files**. Preserve database/WAL/SHM bytes and
+  mtimes, **3,438** earlier sealed members, separate **64** controls, **636** archive pins,
+  **1,602** source files/mtimes, three closed journals, **88** consumer members and
+  **842/845** baseline files outside intended docs. Verify **727** document links;
+  keep all fourteen issue bodies and posted URLs intact.
+- [ ] Implement a narrow read-only production-association record, validator and operator
+  export over these saved identity snapshots. Keep identity proof separate from
+  supported-contract/native-completion eligibility; retain explicit unsupported/missing
+  assessment states. No inspector attachment, old-contract expansion or live calls yet.
+
+Private root: `data/diagnostics/assessment-production-association-2026-11-19/`.
+Use the six R snapshots/association records and `audit.json`/`verification.json`.
+This audit qualifies persisted identity only, not critic accuracy, evidence adequacy,
+edit necessity, preservation or story quality. CW-007/CW-013 remain open; CW-014
+unqualified. **Step 19 IN PROGRESS; Step 20 NOT STARTED; prompts unchanged; live calls
 PAUSED; full workflow canary ON HOLD.**
 
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.

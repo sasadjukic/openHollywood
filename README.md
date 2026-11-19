@@ -1597,9 +1597,16 @@ work or changed sources refuse the complete export. Exact repeats reuse bytes/mt
 partial/conflicting output is never repaired. See
 [ADR 0061](docs/adr/0061-registered-read-only-assessment-consumer.md).
 
-Next is a separate local immutable review/artifact-version association audit before
-production-inspector attachment. Production prompts unchanged; live calls paused;
-canary on hold. No writer permission or additional human checkpoint.
+The [production-association audit](docs/handoffs/assessment-production-association-2026-11-19.md)
+verifies exact review/draft links for six historical production reviews, including
+two older revision pairs. All six remain unsupported by the current v61 intake;
+identity verification does not supply an assessment completion. The seven diagnostic
+consumer works remain unassociated.
+
+Next is a narrow read-only association record/validator and operator export, keeping
+source identity separate from assessment eligibility. No inspector attachment yet.
+Production prompts unchanged; live calls paused; canary on hold. No writer permission
+or additional human checkpoint.
 
 ```powershell
 uv run --extra api python scripts/assessment_openai_compact_smoke.py verify `
