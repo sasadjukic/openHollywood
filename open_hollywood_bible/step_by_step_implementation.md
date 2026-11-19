@@ -13230,16 +13230,55 @@ lookup, transport, schema migration, workflow, prompt, API route or UI change.
   closed journals, **88** consumer files, **23** new files and **843/846** baseline
   files outside intended docs. Keep fourteen issue bodies/URLs unchanged; check links
   and diff cleanliness. Do not edit or reseal earlier diagnostic evidence.
-- [ ] Qualify a narrow read-only workspace lookup for explicit immutable selections
+- [x] Qualify a narrow read-only workspace lookup for explicit immutable selections
   before inspector integration. Authenticate the workspace/source and revalidate
   relevant rows; refuse missing, foreign, mismatched and ambiguous associations.
   Do not infer eligibility or attach the diagnostic completions.
+  See the [lookup qualification](../docs/handoffs/assessment-workspace-lookup-2026-11-19.md).
 
 Private root: `data/diagnostics/assessment-association-export-2026-11-19/`;
 start at `verified-publication/README.md`. This verifies historical source identity,
 not current database state, critic accuracy, evidence adequacy, preservation or craft.
 CW-007/CW-013 remain open; CW-014 unqualified. **Step 19 IN PROGRESS; Step 20 NOT STARTED;
 production prompts unchanged; live calls PAUSED; full workflow canary ON HOLD.**
+
+### Exact-version read-only workspace lookup 2026-11-19
+
+Report: [registered source and current-row qualification](../docs/handoffs/assessment-workspace-lookup-2026-11-19.md).
+
+Status: bounded local qualification **COMPLETE**. No HTTP route, UI, assessment
+attachment, migration, workflow, prompt or provider changes; no inference.
+
+- [x] Register the configured local source by path/device/file identity and the existing
+  authenticated archive. Reject copied, replaced, missing or unregistered sources;
+  retain the historical database digest as capture evidence, not permanent identity.
+- [x] Revalidate **12 exact selections** across the six saved reviews, including current
+  creator/input/request/content/lineage closure and the application's exact-version
+  detail read on one read-only transaction. Retain separate historical/current heads.
+- [x] Preserve unsupported contract and missing captured assessment states. Keep all
+  seven diagnostic consumer works unassociated and writer/assessment permission false.
+- [x] Verify committed WAL visibility, refused concurrent changes, read-only SQL,
+  unrelated commits/new heads between lookups, resource bounds and explicit unavailable
+  states. Never follow the active head for an old selection.
+- [x] Pass **43 new tests**, **235 existing tests** (**278 distinct**) and **69**
+  saved-workspace controls; pass Ruff/format/strict mypy on **317** Python files.
+- [x] Preserve database and both sidecar bytes and main/WAL mtimes. Record the observed
+  SHM timestamp refresh from SQLite read coordination separately. Verify **3,540**
+  earlier sealed members, **64** authored controls, **636** archive pins, **1,706**
+  source files/mtimes, three journals, **88** consumer files, **23** association exports
+  and **851/854** baseline files outside intended docs. Keep fourteen issue bodies/URLs
+  unchanged and verify document links/diff cleanliness.
+- [ ] Implement a narrow read-only provenance view in the existing artifact inspector.
+  Bind display to the exact selected version; test version switching, stale responses
+  and unavailable/unregistered/ambiguous states. Keep identity separate from unsupported
+  assessment contract, missing captured delivery and unassessed story quality.
+
+Private root: `data/diagnostics/assessment-workspace-lookup-2026-11-19/`.
+Use `request.json`, `lookup-result.json` and `verification.json`. The file registration
+is local and requires requalification after replacement/restore; no portable workspace
+identity was introduced. CW-007/CW-013 remain open; CW-014 unqualified.
+**Step 19 IN PROGRESS; Step 20 NOT STARTED; production prompts unchanged; live calls
+PAUSED; full workflow canary ON HOLD.**
 
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 

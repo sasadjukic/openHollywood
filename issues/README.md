@@ -2124,3 +2124,18 @@ source revalidation before inspector integration. Identity does not establish
 semantic support, edit necessity, preservation or craft. CW-007/CW-013 remain open;
 CW-014 unqualified. Fourteen issue bodies and posted URLs unchanged. No live calls;
 production prompts unchanged; full workflow canary **ON HOLD**.
+
+Exact-version workspace lookup qualification **2026-11-19**:
+the [qualification report](../docs/handoffs/assessment-workspace-lookup-2026-11-19.md)
+records twelve verified critique/draft selections across the six registered production
+associations, with unchanged unsupported/missing assessment state. Current source rows
+and the application detail read agree. Historical selections remain fixed when newer
+heads exist; copied/replaced sources and changed provenance are refused. The local
+registration is not a portable workspace-instance ID.
+
+**43 new tests, 235 existing tests and 69 saved-workspace controls pass.** Database and
+sidecar bytes are unchanged; only the SHM timestamp changed during SQLite read-lock
+coordination. Next add a read-only provenance view to the artifact inspector, keeping
+identity separate from assessment and quality. No issue closes: CW-007/CW-013 open,
+CW-014 unqualified. Fourteen issue bodies/URLs unchanged; prompts unchanged, live calls
+**PAUSED**, canary **ON HOLD**.

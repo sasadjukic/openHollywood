@@ -1619,8 +1619,17 @@ are copied byte-exact; the remaining files supply records, literal views and the
 manifest. Exact reuse preserves bytes/mtimes; partial/conflicting output is refused.
 The exporter never opens the current database or attaches diagnostic assessments.
 See [ADR 0062](docs/adr/0062-read-only-production-review-associations.md).
-Next qualify a source-bound, read-only workspace lookup for explicit versions before
-inspector integration. No inspector attachment yet.
+The [workspace lookup qualification](docs/handoffs/assessment-workspace-lookup-2026-11-19.md)
+now verifies all twelve exact review/draft selections through the existing application
+read model and a shared read-only transaction. Local file registration and current-row
+checks are separate from the historical database digest; unrelated commits and valid
+new heads do not replace the selected version. Copied sources, changed provenance and
+ambiguous selections are refused. See [ADR 0063](docs/adr/0063-registered-read-only-workspace-association-lookup.md).
+
+This is a bounded local registration, not a portable workspace identity. Replaced or
+restored databases need explicit requalification. Assessment eligibility remains false.
+Next add a read-only provenance view to the existing artifact inspector, with explicit
+version binding and unavailable states. No inspector attachment yet.
 Production prompts unchanged; live calls paused; canary on hold. No writer permission
 or additional human checkpoint.
 
