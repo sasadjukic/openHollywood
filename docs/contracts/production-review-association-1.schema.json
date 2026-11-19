@@ -1,0 +1,436 @@
+{
+  "$comment": "Historical source identity only. Source authentication and eligibility require registered application checks; parsing this schema is not authority or assessment admission.",
+  "$defs": {
+    "AssociationBinding": {
+      "additionalProperties": false,
+      "properties": {
+        "critique_artifact_id": {
+          "pattern": "^[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$",
+          "title": "Critique Artifact Id",
+          "type": "string"
+        },
+        "critique_content_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Critique Content Sha256",
+          "type": "string"
+        },
+        "critique_version_id": {
+          "pattern": "^[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$",
+          "title": "Critique Version Id",
+          "type": "string"
+        },
+        "database_snapshot_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Database Snapshot Sha256",
+          "type": "string"
+        },
+        "plan_content_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Plan Content Sha256",
+          "type": "string"
+        },
+        "plan_version_id": {
+          "pattern": "^[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$",
+          "title": "Plan Version Id",
+          "type": "string"
+        },
+        "project_id": {
+          "pattern": "^[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$",
+          "title": "Project Id",
+          "type": "string"
+        },
+        "prompt_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Prompt Sha256",
+          "type": "string"
+        },
+        "review_invocation_id": {
+          "pattern": "^[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$",
+          "title": "Review Invocation Id",
+          "type": "string"
+        },
+        "target_artifact_id": {
+          "pattern": "^[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$",
+          "title": "Target Artifact Id",
+          "type": "string"
+        },
+        "target_content_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Target Content Sha256",
+          "type": "string"
+        },
+        "target_version_id": {
+          "pattern": "^[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$",
+          "title": "Target Version Id",
+          "type": "string"
+        },
+        "visible_target_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Visible Target Sha256",
+          "type": "string"
+        },
+        "workflow_run_id": {
+          "pattern": "^[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$",
+          "title": "Workflow Run Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "database_snapshot_sha256",
+        "project_id",
+        "workflow_run_id",
+        "review_invocation_id",
+        "critique_artifact_id",
+        "critique_version_id",
+        "critique_content_sha256",
+        "target_artifact_id",
+        "target_version_id",
+        "target_content_sha256",
+        "plan_version_id",
+        "plan_content_sha256",
+        "prompt_sha256",
+        "visible_target_sha256"
+      ],
+      "title": "AssociationBinding",
+      "type": "object"
+    },
+    "AssociationEvidence": {
+      "additionalProperties": false,
+      "description": "Structural evidence only; a parsed object does not authenticate its source.",
+      "properties": {
+        "binding": {
+          "$ref": "#/$defs/AssociationBinding"
+        },
+        "binding_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Binding Sha256",
+          "type": "string"
+        },
+        "catalog_non_whitespace_prose_coverage": {
+          "const": true,
+          "default": true,
+          "title": "Catalog Non Whitespace Prose Coverage",
+          "type": "boolean"
+        },
+        "catalog_occurrences": {
+          "items": {
+            "$ref": "#/$defs/CatalogOccurrence"
+          },
+          "maxItems": 10000,
+          "minItems": 1,
+          "title": "Catalog Occurrences",
+          "type": "array"
+        },
+        "draft_lineage": {
+          "$ref": "#/$defs/LineageFacts"
+        },
+        "eligibility": {
+          "$ref": "#/$defs/Eligibility",
+          "default": {
+            "assessment_attachment_eligible": false,
+            "native_assessment_delivery": "missing",
+            "prompt_version": "33",
+            "required_prompt_version": "61",
+            "required_run_prompt_marker_present": false,
+            "required_scene_boundary_audit_present": false,
+            "source_contract": "unsupported_contract"
+          }
+        },
+        "input_versions_verified": {
+          "maximum": 128,
+          "minimum": 1,
+          "title": "Input Versions Verified",
+          "type": "integer"
+        },
+        "inter_excerpt_whitespace_is_separate": {
+          "const": true,
+          "default": true,
+          "title": "Inter Excerpt Whitespace Is Separate",
+          "type": "boolean"
+        },
+        "repeated_excerpt_texts": {
+          "minimum": 0,
+          "title": "Repeated Excerpt Texts",
+          "type": "integer"
+        },
+        "review_lineage": {
+          "$ref": "#/$defs/LineageFacts"
+        },
+        "visible_target_is_full_canonical_json": {
+          "const": false,
+          "default": false,
+          "title": "Visible Target Is Full Canonical Json",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "binding",
+        "binding_sha256",
+        "review_lineage",
+        "draft_lineage",
+        "input_versions_verified",
+        "catalog_occurrences",
+        "repeated_excerpt_texts"
+      ],
+      "title": "AssociationEvidence",
+      "type": "object"
+    },
+    "CatalogOccurrence": {
+      "additionalProperties": false,
+      "properties": {
+        "end": {
+          "minimum": 1,
+          "title": "End",
+          "type": "integer"
+        },
+        "quote_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Quote Sha256",
+          "type": "string"
+        },
+        "ref": {
+          "maxLength": 1000,
+          "minLength": 1,
+          "title": "Ref",
+          "type": "string"
+        },
+        "start": {
+          "minimum": 0,
+          "title": "Start",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "ref",
+        "start",
+        "end",
+        "quote_sha256"
+      ],
+      "title": "CatalogOccurrence",
+      "type": "object"
+    },
+    "Eligibility": {
+      "additionalProperties": false,
+      "properties": {
+        "assessment_attachment_eligible": {
+          "const": false,
+          "default": false,
+          "title": "Assessment Attachment Eligible",
+          "type": "boolean"
+        },
+        "native_assessment_delivery": {
+          "const": "missing",
+          "default": "missing",
+          "title": "Native Assessment Delivery",
+          "type": "string"
+        },
+        "prompt_version": {
+          "const": "33",
+          "default": "33",
+          "title": "Prompt Version",
+          "type": "string"
+        },
+        "required_prompt_version": {
+          "const": "61",
+          "default": "61",
+          "title": "Required Prompt Version",
+          "type": "string"
+        },
+        "required_run_prompt_marker_present": {
+          "const": false,
+          "default": false,
+          "title": "Required Run Prompt Marker Present",
+          "type": "boolean"
+        },
+        "required_scene_boundary_audit_present": {
+          "const": false,
+          "default": false,
+          "title": "Required Scene Boundary Audit Present",
+          "type": "boolean"
+        },
+        "source_contract": {
+          "const": "unsupported_contract",
+          "default": "unsupported_contract",
+          "title": "Source Contract",
+          "type": "string"
+        }
+      },
+      "title": "Eligibility",
+      "type": "object"
+    },
+    "LineageFacts": {
+      "additionalProperties": false,
+      "properties": {
+        "latest_version_id_at_capture": {
+          "pattern": "^[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$",
+          "title": "Latest Version Id At Capture",
+          "type": "string"
+        },
+        "selected_is_latest_at_capture": {
+          "title": "Selected Is Latest At Capture",
+          "type": "boolean"
+        },
+        "selected_parent_version_id": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Selected Parent Version Id"
+        },
+        "version_count": {
+          "maximum": 64,
+          "minimum": 1,
+          "title": "Version Count",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "latest_version_id_at_capture",
+        "selected_is_latest_at_capture",
+        "version_count",
+        "selected_parent_version_id"
+      ],
+      "title": "LineageFacts",
+      "type": "object"
+    },
+    "SourceAuthentication": {
+      "additionalProperties": false,
+      "properties": {
+        "archive_seal_bytes_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Archive Seal Bytes Sha256",
+          "type": "string"
+        },
+        "basis": {
+          "const": "registered_audit_snapshot",
+          "default": "registered_audit_snapshot",
+          "title": "Basis",
+          "type": "string"
+        },
+        "current_database_revalidated": {
+          "const": false,
+          "default": false,
+          "title": "Current Database Revalidated",
+          "type": "boolean"
+        },
+        "provider_signed": {
+          "const": false,
+          "default": false,
+          "title": "Provider Signed",
+          "type": "boolean"
+        },
+        "registration": {
+          "title": "Registration",
+          "type": "string"
+        },
+        "snapshot_bytes_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Snapshot Bytes Sha256",
+          "type": "string"
+        },
+        "snapshot_member": {
+          "pattern": "^R0[1-6]\\.snapshot\\.json$",
+          "title": "Snapshot Member",
+          "type": "string"
+        }
+      },
+      "required": [
+        "registration",
+        "archive_seal_bytes_sha256",
+        "snapshot_member",
+        "snapshot_bytes_sha256"
+      ],
+      "title": "SourceAuthentication",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "actual_billed_cost": {
+      "default": null,
+      "title": "Actual Billed Cost",
+      "type": "null"
+    },
+    "contract": {
+      "const": "production-review-association-1",
+      "default": "production-review-association-1",
+      "title": "Contract",
+      "type": "string"
+    },
+    "craft": {
+      "const": "unassessed",
+      "default": "unassessed",
+      "title": "Craft",
+      "type": "string"
+    },
+    "edit_necessity": {
+      "const": "unassessed",
+      "default": "unassessed",
+      "title": "Edit Necessity",
+      "type": "string"
+    },
+    "editorial_effect": {
+      "const": "unassessed",
+      "default": "unassessed",
+      "title": "Editorial Effect",
+      "type": "string"
+    },
+    "evidence": {
+      "$ref": "#/$defs/AssociationEvidence"
+    },
+    "evidence_adequacy": {
+      "const": "unassessed",
+      "default": "unassessed",
+      "title": "Evidence Adequacy",
+      "type": "string"
+    },
+    "identity_status": {
+      "const": "verified_in_registered_snapshot",
+      "default": "verified_in_registered_snapshot",
+      "title": "Identity Status",
+      "type": "string"
+    },
+    "live_calls": {
+      "const": 0,
+      "default": 0,
+      "title": "Live Calls",
+      "type": "integer"
+    },
+    "notice": {
+      "default": "READ-ONLY REGISTERED SOURCE ASSOCIATION. Identity at the captured database snapshot, not a current database lookup or provider attestation. Historical v33 review; current assessment contract unsupported and native assessment delivery absent. No assessment attachment, semantic qualification or writer permission.",
+      "title": "Notice",
+      "type": "string"
+    },
+    "semantic_support": {
+      "const": "unassessed",
+      "default": "unassessed",
+      "title": "Semantic Support",
+      "type": "string"
+    },
+    "source": {
+      "$ref": "#/$defs/SourceAuthentication"
+    },
+    "whole_review_verdict": {
+      "default": null,
+      "title": "Whole Review Verdict",
+      "type": "null"
+    },
+    "writer_dispatch_authorized": {
+      "const": false,
+      "default": false,
+      "title": "Writer Dispatch Authorized",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "source",
+    "evidence"
+  ],
+  "title": "AssociationRecord",
+  "type": "object"
+}

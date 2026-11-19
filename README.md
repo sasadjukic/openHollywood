@@ -1603,8 +1603,24 @@ two older revision pairs. All six remain unsupported by the current v61 intake;
 identity verification does not supply an assessment completion. The seven diagnostic
 consumer works remain unassociated.
 
-Next is a narrow read-only association record/validator and operator export, keeping
-source identity separate from assessment eligibility. No inspector attachment yet.
+The [tracked association exporter](docs/handoffs/assessment-association-export-2026-11-19.md)
+now verifies the sealed six-review archive, recomputes exact identity bindings and
+exports a 23-file local bundle. Historical heads are explicitly as of capture;
+unsupported contract and missing assessment remain separate from verified identity.
+
+```powershell
+uv run --extra api python scripts/production_association.py `
+  --source production-association-2026-11-19 `
+  --output data/diagnostics/production-association-operator
+```
+
+The complete registered archive must remain available. Nine original evidence files
+are copied byte-exact; the remaining files supply records, literal views and the final
+manifest. Exact reuse preserves bytes/mtimes; partial/conflicting output is refused.
+The exporter never opens the current database or attaches diagnostic assessments.
+See [ADR 0062](docs/adr/0062-read-only-production-review-associations.md).
+Next qualify a source-bound, read-only workspace lookup for explicit versions before
+inspector integration. No inspector attachment yet.
 Production prompts unchanged; live calls paused; canary on hold. No writer permission
 or additional human checkpoint.
 

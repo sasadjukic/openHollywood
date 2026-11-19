@@ -13193,10 +13193,11 @@ provider, workflow, schema, API or UI changes; no inference.
   **1,602** source files/mtimes, three closed journals, **88** consumer members and
   **842/845** baseline files outside intended docs. Verify **727** document links;
   keep all fourteen issue bodies and posted URLs intact.
-- [ ] Implement a narrow read-only production-association record, validator and operator
+- [x] Implement a narrow read-only production-association record, validator and operator
   export over these saved identity snapshots. Keep identity proof separate from
   supported-contract/native-completion eligibility; retain explicit unsupported/missing
   assessment states. No inspector attachment, old-contract expansion or live calls yet.
+  See the [tracked implementation](../docs/handoffs/assessment-association-export-2026-11-19.md).
 
 Private root: `data/diagnostics/assessment-production-association-2026-11-19/`.
 Use the six R snapshots/association records and `audit.json`/`verification.json`.
@@ -13204,6 +13205,41 @@ This audit qualifies persisted identity only, not critic accuracy, evidence adeq
 edit necessity, preservation or story quality. CW-007/CW-013 remain open; CW-014
 unqualified. **Step 19 IN PROGRESS; Step 20 NOT STARTED; prompts unchanged; live calls
 PAUSED; full workflow canary ON HOLD.**
+
+### Tracked historical production-association export 2026-11-19
+
+Report: [read-only record, validator and exporter](../docs/handoffs/assessment-association-export-2026-11-19.md).
+
+Status: bounded local implementation and verification **COMPLETE**. No current database
+lookup, transport, schema migration, workflow, prompt, API route or UI change.
+
+- [x] Add typed `production-review-association-1` records and a structural validator,
+  keeping source authentication, exact identity and assessment eligibility separate.
+  Preserve all six v33 source contracts as unsupported and native delivery as missing.
+- [x] Register and authenticate all **51** original archive members; independently
+  reproduce six bindings, **41** input-version occurrences and **327** catalog occurrences.
+  Keep R03/R05's old versions and explicitly label lineage heads as of capture.
+- [x] Add the fixed-source operator CLI and **23-file** export with nine byte-exact
+  source evidence files. Verify full membership, protected destinations, source/code
+  rechecks, secret guards, manifest-last completion and exact byte/mtime reuse.
+- [x] Pass **82 new tests**, **144 existing tests** (**226 distinct**) and **195**
+  saved-capture checks. Verify schema parity; pass Ruff/format/strict mypy on **313**
+  files. Keep all seven diagnostic consumer production associations null.
+- [x] Verify database/WAL/SHM bytes/mtimes, **3,488** earlier sealed members, separate
+  **64** authored controls, **636** archive pins, **1,653** source files/mtimes, three
+  closed journals, **88** consumer files, **23** new files and **843/846** baseline
+  files outside intended docs. Keep fourteen issue bodies/URLs unchanged; check links
+  and diff cleanliness. Do not edit or reseal earlier diagnostic evidence.
+- [ ] Qualify a narrow read-only workspace lookup for explicit immutable selections
+  before inspector integration. Authenticate the workspace/source and revalidate
+  relevant rows; refuse missing, foreign, mismatched and ambiguous associations.
+  Do not infer eligibility or attach the diagnostic completions.
+
+Private root: `data/diagnostics/assessment-association-export-2026-11-19/`;
+start at `verified-publication/README.md`. This verifies historical source identity,
+not current database state, critic accuracy, evidence adequacy, preservation or craft.
+CW-007/CW-013 remain open; CW-014 unqualified. **Step 19 IN PROGRESS; Step 20 NOT STARTED;
+production prompts unchanged; live calls PAUSED; full workflow canary ON HOLD.**
 
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 

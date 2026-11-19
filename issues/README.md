@@ -2110,3 +2110,17 @@ Next is a separate read-only association record/validator and operator export, w
 assessment eligibility held. No issue closes: CW-007/CW-013 open, CW-014 unqualified.
 Fourteen issue bodies/posted URLs unchanged. Prompts unchanged; live calls **PAUSED**;
 full workflow canary **ON HOLD**.
+
+Tracked historical association exporter **2026-11-19**:
+the [implementation report](../docs/handoffs/assessment-association-export-2026-11-19.md)
+records six exact source associations, a separate unsupported/missing assessment
+state, and the 23-file read-only export. All 51 original archive members are verified;
+nine required evidence files are copied byte-exact. Historical heads stay bound to
+the captured versions, and the seven diagnostic consumer works remain unassociated.
+**82 new tests, 144 existing tests and 195 saved-capture controls pass.**
+
+Next qualify a read-only workspace lookup with explicit immutable selections and
+source revalidation before inspector integration. Identity does not establish
+semantic support, edit necessity, preservation or craft. CW-007/CW-013 remain open;
+CW-014 unqualified. Fourteen issue bodies and posted URLs unchanged. No live calls;
+production prompts unchanged; full workflow canary **ON HOLD**.
