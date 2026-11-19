@@ -2084,3 +2084,16 @@ publications; production attachment requires separate identity qualification.
 No issue is closed by this rehearsal: CW-007/CW-013 remain open; CW-014 unqualified.
 All fourteen issue bodies/posted URLs stay intact. No live calls; production prompts
 unchanged; full workflow canary **ON HOLD**.
+
+Tracked read-only consumer exporter **2026-11-19**:
+the [implementation report](../docs/handoffs/assessment-consumer-export-2026-11-19.md)
+records both fixed registrations, 70 byte-exact original members and 88 final export
+members. All 63 fields remain visible: 15 selected whole claims, four holds and 44
+unselected fields. Model judgments, scope, literal citations and unknown semantic/
+editorial qualification stay separate; canonical production association remains absent.
+
+**54 new tests, 245 existing native tests and 84 saved-envelope refusal controls pass**;
+Ruff/format/strict mypy pass. Next is a bounded local immutable review/artifact-version
+association audit before production-inspector attachment. This does not close
+CW-007/CW-013 or qualify CW-014. All fourteen issue bodies and posted URLs remain intact.
+Production prompts unchanged; live calls **PAUSED**; full workflow canary **ON HOLD**.

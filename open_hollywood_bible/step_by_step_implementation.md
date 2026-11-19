@@ -13109,11 +13109,10 @@ runtime, schema, dependency, UI or test implementation changed.
   **3,117** earlier sealed members, separate **64** controls, **636** archive pins,
   **1,279** source files/mtimes, three closed journals and **832/835** baseline files
   outside three documentation edits. All fourteen issue bodies/URLs remain intact.
-- [ ] Implement the small tracked read-only consumer exporter over these two fixed
-  publication registrations, using the rehearsed contract and refusal cases. Retain
-  complete source links, all-work inventory and explicit missing production association.
-  Qualify an exact review/artifact-version association separately before any later
-  production inspector attachment. No new transport or inference is required.
+- [x] Implement the small tracked read-only consumer exporter over these two fixed
+  publication registrations; completed in the [tracked consumer export](../docs/handoffs/assessment-consumer-export-2026-11-19.md).
+  Retain complete source links, all-work inventory and explicit missing production
+  association. Production inspector attachment remains a separate qualification.
 
 Private root: `data/diagnostics/assessment-consumer-rehearsal-2026-11-19/`;
 start at `views/README.md`. Private prototypes are not production admission APIs.
@@ -13121,6 +13120,50 @@ This optional operator view introduces no mandatory human checkpoint and qualifi
 no critic precision, edit necessity, preservation or story-quality outcome.
 CW-007/CW-013 remain open; CW-014 unqualified. **Step 19 IN PROGRESS; Step 20 NOT
 STARTED; production prompts unchanged; live calls PAUSED; full workflow canary ON HOLD.**
+
+### Tracked read-only consumer exporter 2026-11-19
+
+Report: [registered exporter, verification and next association boundary](../docs/handoffs/assessment-consumer-export-2026-11-19.md).
+Decision: [ADR 0061](../docs/adr/0061-registered-read-only-assessment-consumer.md).
+
+Status: bounded local implementation **COMPLETE**. No provider, metadata, count or
+inference calls; no database access. Existing frozen engine and publisher code unchanged.
+
+- [x] Add an application service, typed consumer projection/literal renderer and operator
+  CLI for exactly `authored-smoke-2026-11-15` and `compact-smoke-2026-11-14`. Accept
+  registration and destination only; no caller receipts, trust overrides or subsets.
+- [x] Pin original manifests, member/work inventories and upstream source members.
+  Require supported publisher exact reuse, full journal/endpoint/whole-work delivery,
+  native raw-result binding and known accounting. Refuse the whole export if any work
+  is missing, changed, failed or accounting-held. Preserve partial/conflicting output.
+- [x] Export all seven saved works; retain **70** byte-exact original members and create
+  **51** authored/**37** probe consumer members. Verify exact reuse with unchanged mtimes.
+  Keep native relative links, with original manifests retained as `source-manifest.json`.
+- [x] Verify **63** original fields: **15** selected claims, **4** holds and **44** unselected.
+  Compare every field, identity, judgment, selection finding, scope, brief, authority,
+  citation and usage record with the accepted rehearsal. Retain **30** material
+  components, **47** citation occurrences and **21** generated context/result links.
+- [x] Preserve attributed model judgments and literal span coverage separately from
+  unassessed semantic/evidence/editorial/craft status. No global review verdict,
+  invented billing, fabricated probe authority, production association or writer permission.
+- [x] Pass **54 new tests**, **245 existing native tests** (**299 distinct**), and **84**
+  altered saved-envelope refusal controls. Ruff/format/strict mypy pass on **308 files**,
+  including two private verification helpers. Retain expected malformed-fixture warnings.
+- [x] Verify **3,313** earlier sealed members, separate **64** controls, **636** archive
+  pins, **1,476** source files/mtimes, three closed journals, **88** new output members
+  and **833/836** baseline files outside intended docs. Keep fourteen issue bodies and
+  posted URLs unchanged; verify **726** documentation links and diff cleanliness.
+- [ ] Do a bounded local production-association audit/design over up to six compatible
+  saved reviews. Qualify exact immutable review/artifact-version IDs and content hashes;
+  check missing, mismatched, stale and ambiguous associations. Keep these seven diagnostic
+  exports unassociated. No production inspector attachment or more inference yet.
+
+Private root: `data/diagnostics/assessment-consumer-export-2026-11-19/`;
+start at `authored/README.md` and `probe/README.md`. The exporter is an optional local
+operator view, not a new mandatory human checkpoint. It does not qualify critic accuracy,
+writer preservation or story quality. CW-007/CW-013 remain open; CW-014 unqualified.
+**Step 19 IN PROGRESS; Step 20 NOT STARTED; production prompts unchanged; live calls
+PAUSED; full workflow canary ON HOLD.**
 
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 

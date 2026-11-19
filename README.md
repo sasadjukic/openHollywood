@@ -1576,9 +1576,30 @@ retains 63 recorded fields: 15 assessed claims, four existing holds and 44 unsel
 fields. Model judgments, evidence obligations, accounting and semantic/editorial
 status remain separate. None of the seven works has a qualified canonical production
 review/artifact association; the local view preserves that absence.
-Next is a small tracked read-only consumer exporter for these fixed registrations,
-with exact source links and the rehearsed refusal cases. Production prompts unchanged;
-live calls paused; canary on hold. No writer permission or additional human checkpoint.
+The [tracked consumer exporter](docs/handoffs/assessment-consumer-export-2026-11-19.md)
+authenticates either fixed publication, retains all original members and adds literal
+JSON/Markdown views. Select one complete registration and a new destination:
+
+```powershell
+uv run --extra api python scripts/assessment_consumer.py `
+  --source authored-smoke-2026-11-15 `
+  --output data/diagnostics/consumer-authored-operator
+
+uv run --extra api python scripts/assessment_consumer.py `
+  --source compact-smoke-2026-11-14 `
+  --output data/diagnostics/consumer-probe-operator
+```
+
+Both commands are local and read-only with respect to their sources. The 51-file authored
+and 37-file probe exports retain held/unselected fields, complete context, separate
+model judgments and unassessed semantic/editorial status. Unknown usage, failed/missing
+work or changed sources refuse the complete export. Exact repeats reuse bytes/mtimes;
+partial/conflicting output is never repaired. See
+[ADR 0061](docs/adr/0061-registered-read-only-assessment-consumer.md).
+
+Next is a separate local immutable review/artifact-version association audit before
+production-inspector attachment. Production prompts unchanged; live calls paused;
+canary on hold. No writer permission or additional human checkpoint.
 
 ```powershell
 uv run --extra api python scripts/assessment_openai_compact_smoke.py verify `
