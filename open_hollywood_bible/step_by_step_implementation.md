@@ -13399,12 +13399,50 @@ and [ADR 0066](../docs/adr/0066-saved-review-openai-fixture-journal.md).
   Preserve both prior seals, their 109 members and the production database and sidecars.
 - [x] Pass all **2,600 Python tests**, including seven new fixture regressions. Pass
   repository Ruff, formatting and strict mypy checks across **326 Python files**.
-- [ ] Audit up to six previously unadmitted supported saved reviews for one substantive
+- [x] Audit up to six previously unadmitted supported saved reviews for one substantive
   factual claim with exact versions, adequate source evidence and independently specified
   gold. Record a source gap if none qualifies, before proposing live inference.
+  See the [completed source-gap audit](../docs/handoffs/saved-review-v61-admission-2026-11-20.md).
 
 Step 19 **IN PROGRESS**. Step 20 **NOT STARTED**. CW-007 and CW-013 remain open and
 CW-014 remains unqualified. Zero live calls. Production prompts unchanged. Canary on hold.
+
+### Saved v61 factual-claim admission audit 2026-11-20
+
+Bounded archive audit **COMPLETE**. A subsequent isolated provider capture supplied
+one genuine review with an admitted claim.
+[Audit report](../docs/handoffs/saved-review-v61-admission-2026-11-20.md)
+
+- [x] Inventory the configured workspace and 53 benchmark/campaign databases. Verify
+  1,712 ordinary-critic rows and 1,254 distinct invocation IDs. Highest prompt version
+  33, zero prompt-v61 rows and zero schema-7 rows. Exclude the admitted Q010 fixture.
+- [x] Record an empty selection. Detailed reviews opened **0/6**, assessor outputs
+  viewed **0**, gold records **0**, claim replays **0**. Verify source pins and match
+  all 54 prior metadata inventories. Four focused read-only regressions passed.
+- [x] Check other accessible workspace backup locations and design an isolated
+  ordinary-critic capture. No additional qualifying source found. [Backup search,
+  exact scene inputs and capture design](../docs/handoffs/saved-review-isolated-capture-design-2026-11-20.md).
+- [x] Rehearse the ordinary v61 critic on a disposable copy of one saved scene with
+  mock transport. One new critic invocation and one critique passed native schema-7
+  export and saved-review intake. No downstream dispatch. Eight export regressions passed.
+- [x] Freeze the [one-call Gemma approval plan](../docs/handoffs/ordinary-v61-single-capture-plan-2026-11-20.md)
+  and single-use harness. Verify the exact 65,218-byte ordinary request and 12
+  full-case mock scenarios. Forced exits before and after mock receipt produced zero
+  additional POSTs on restart. Two concurrent launches produced one POST in total.
+  All 2,605 Python tests, Ruff lint and formatting, and strict mypy passed.
+- [x] Run the approved ordinary Gemma capture. One generation returned HTTP 200
+  and a compatible v61 review. The slot is spent. Zero counts, retries, fallbacks
+  or downstream calls. [Results and evidence](../docs/handoffs/ordinary-v61-single-capture-results-2026-11-20.md).
+- [x] Admit whole factual outcome claim Q008. Freeze independent `supported` gold
+  against the exact plan and draft ending before replay. Verify one pending unit
+  and byte-identical intake reuse. No assessor result exists for the claim.
+- [ ] Qualify this capture’s own downstream saved-review registration locally for
+  the exact critique and draft selections, including gold exclusion, wrong-version
+  and incomplete-delivery controls. Then assess readiness for a separately approved
+  one-claim assessor smoke.
+
+Step 19 **IN PROGRESS**. Step 20 **NOT STARTED**. Production prompts unchanged.
+Live calls paused and full workflow canary on hold.
 
 20. [ ] **Tune prompts and graph routing** based on blind human preference—not isolated attractive examples.
 

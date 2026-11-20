@@ -2180,3 +2180,8 @@ The [saved-review OpenAI qualification](../docs/handoffs/assessment-saved-review
 verified full claim and story context at both simulated endpoints. Wrong-version
 requests and missing terminal evidence prevented publication. A substantive saved claim
 with independent gold is still needed to evaluate reviewer accuracy. Issue status is unchanged.
+
+The [November 20 admission audit](../docs/handoffs/saved-review-v61-admission-2026-11-20.md)
+found zero prompt-v61 critic invocations across 54 workspace and benchmark databases.
+CW-007 and CW-013 remain open. A genuine supported saved review is needed before
+claim gold and a local accuracy replay can be recorded.
