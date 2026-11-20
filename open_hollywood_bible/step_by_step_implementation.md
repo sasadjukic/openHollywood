@@ -13460,6 +13460,16 @@ one genuine review with an admitted claim.
   and draft-ending evidence (`E0883` with the final
   sentence located). Both slots are spent. The separate achieved-state field
   and story quality remain unassessed.
+- [x] Preserve the [observed Q008 delivery and audit both exact selections](../docs/handoffs/q008-observed-completion-audit-2026-11-20.md).
+  Pin 29 private regression members, including the terminal journal and separate
+  operator score. Both lookups reproduced one completed claim and identical evidence
+  under the original critique request. The draft-specific manifest rejected that receipt.
+  The 27 local boundary checks confirmed fixture publication and the lack of a registered
+  publisher for this observed saved review. All 304 focused tests, Ruff lint and
+  formatting, and strict mypy passed. Zero live calls.
+- [ ] Implement a read-only observed saved-review publisher for Q008. Verify creation
+  and exact reuse through either version with one delivery identity, one usage record,
+  and explicit refusals for substituted, incomplete or conflicting evidence.
 
 Step 19 **IN PROGRESS**. Step 20 **NOT STARTED**. Production prompts unchanged.
 Live calls paused and full workflow canary on hold.
