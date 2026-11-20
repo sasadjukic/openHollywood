@@ -25,3 +25,9 @@ that final. Token counters supplied by the fixture are synthetic. Live transport
 observed-model evidence and production assessment attachment are outside this contract.
 
 [Verification and controls](../handoffs/assessment-saved-review-openai-2026-11-19.md)
+
+On 2026-11-20 a second registration admitted the isolated Gemma v61 source for Q008.
+Its source receipt binds the critic HTTP response and terminal to the saved creator
+and exact versions. The downstream response and usage are injected locally. Each
+registration keeps its own source and input-size limits.
+[Q008 qualification](../handoffs/assessment-saved-review-q008-qualification-2026-11-20.md)

@@ -23,8 +23,10 @@ from open_hollywood_engine.evaluations.review_evidence import (
     Identifier,
     JsonObject,
     Record,
+    object_value,
     require,
     strict_object,
+    string_value,
     text_hash,
 )
 from pydantic import Field
@@ -45,6 +47,7 @@ class _Registration:
     archive: Path
     member_root: str
     seal_sha256: str
+    database_limit: int = storage.MAX_FILE_BYTES
 
 
 REGISTERED = _Registration(
@@ -53,6 +56,14 @@ REGISTERED = _Registration(
     / "data/diagnostics/assessment-production-intake-qualification-2026-11-19",
     "pytest-verified/test_supported_intake_and_fixt0",
     "8ea766f1bccb5b02d5c794ba68d4a3c693dcc0302bb8f4d7c715a12a357fc7a8",
+)
+CAPTURED_Q008 = _Registration(
+    "saved-v61-q008-2026-11-20",
+    Path(__file__).resolve().parents[4]
+    / "data/diagnostics/q008-downstream-2026-11-20/registration",
+    "source",
+    "ea59f333b71458477f3a6bf5e33a1f2906595caa721835ed4e59872cc683ae6d",
+    database_limit=24_571_904,
 )
 
 
@@ -76,14 +87,12 @@ class SavedReviewPin(Record):
     fixture_manifest_sha256: Digest
 
 
-class _FixtureManifest(Record):
-    contract: Literal["production-assessment-source-fixture-1"]
+class _SourceManifest(Record):
     attempt_id: str = Field(min_length=1, max_length=200)
     batch_id: str
     collection_sha256: Digest
     intake_files: dict[str, Digest]
     notice: str
-    origin: Literal["authored_source_and_delivery_rehearsal"]
     source_origin: Literal["saved_review"]
     report_origin: Literal["saved_normalized_and_audit"]
     review_invocation_id: Identifier
@@ -93,6 +102,16 @@ class _FixtureManifest(Record):
     live_calls: Literal[0]
     model_evidence: Literal[False]
     provider_request: Literal[False]
+
+
+class _FixtureManifest(_SourceManifest):
+    contract: Literal["production-assessment-source-fixture-1"]
+    origin: Literal["authored_source_and_delivery_rehearsal"]
+
+
+class _CaptureManifest(_SourceManifest):
+    contract: Literal["captured-ordinary-assessment-source-1"]
+    origin: Literal["isolated_provider_capture"]
 
 
 class _Terminal(Record):
@@ -120,8 +139,8 @@ class _Archive:
         require(digest is not None, "saved_review_unregistered_member")
         if database:
             with path.open("rb") as stream:
-                data = stream.read(storage.MAX_FILE_BYTES + 1)
-            require(len(data) <= storage.MAX_FILE_BYTES, "saved_review_database_bound")
+                data = stream.read(self.registration.database_limit + 1)
+            require(len(data) <= self.registration.database_limit, "saved_review_database_bound")
         else:
             data = storage._read(path)
         require(storage._sha(data) == digest, "saved_review_changed_member")
@@ -132,8 +151,8 @@ class _Archive:
         require({p.name for p in path.iterdir()} == names, "saved_review_member_inventory")
 
 
-def _open(name: str) -> _Archive:
-    reg = REGISTERED
+def _open(name: str, *, allow_capture: bool = False) -> _Archive:
+    reg = CAPTURED_Q008 if allow_capture and name == CAPTURED_Q008.name else REGISTERED
     require(name == reg.name, "unknown_saved_review_registration")
     seal = storage._read(reg.archive / "acceptance-seal.json")
     require(storage._sha(seal) == reg.seal_sha256, "saved_review_seal_changed")
@@ -146,7 +165,7 @@ def _open(name: str) -> _Archive:
 @dataclass(frozen=True)
 class _Prepared:
     intake: IntakeResult
-    manifest: _FixtureManifest
+    manifest: _FixtureManifest | _CaptureManifest
     pin: SavedReviewPin
     selected: ArtifactSelection
     files: dict[str, bytes]
@@ -172,7 +191,7 @@ def _verify_selection(connection: sqlite3.Connection, selected: ArtifactSelectio
     )
 
 
-def _intake_members(archive: _Archive, manifest: _FixtureManifest) -> dict[str, bytes]:
+def _intake_members(archive: _Archive, manifest: _SourceManifest) -> dict[str, bytes]:
     folder = "source-fixture/intake"
     names = {
         "index.json",
@@ -200,12 +219,42 @@ def _intake_members(archive: _Archive, manifest: _FixtureManifest) -> dict[str, 
     return members
 
 
+def _capture_receipt(archive: _Archive, snapshot: JsonObject, pin: SavedReviewPin) -> JsonObject:
+    archive.inventory("capture", {"http.json", "terminal.json"})
+    raw_terminal = archive.read("capture/terminal.json")
+    terminal = strict_object(raw_terminal.decode())
+    http = archive.read("capture/http.json")
+    receipt = strict_object(http.decode())
+    reply = object_value(receipt["response"])
+    message = object_value(reply["message"])
+    creator = object_value(snapshot["invocation"])
+    require(
+        terminal.get("origin") == "isolated_provider_capture"
+        and terminal.get("status") == "captured"
+        and terminal.get("dispatch_state") == "dispatched"
+        and terminal.get("database_sha256") == pin.database_capture_sha256
+        and terminal.get("critique_version") == pin.review.version_id
+        and terminal.get("invocation_id") == creator["invocation_id"] == pin.invocation_id
+        and terminal.get("run_id") == creator["workflow_run_id"]
+        and terminal.get("http_sha256") == storage._sha(http)
+        and terminal.get("http_status") == receipt.get("http_status") == 200
+        and reply.get("done") is True
+        and reply.get("done_reason") == "stop"
+        and text_hash(string_value(message["content"])) == creator["response_sha256"],
+        "saved_review_capture_receipt_binding",
+    )
+    return {
+        "critic_terminal_sha256": storage._sha(raw_terminal),
+        "critic_http_receipt_sha256": storage._sha(http),
+    }
+
+
 def _prepare(archive: _Archive, selection: ArtifactSelection | None) -> _Prepared:
     archive.inventory("source-fixture", {"intake", "request.json", "source-manifest.json"})
     original_manifest = archive.read("source-fixture/source-manifest.json")
-    manifest = _FixtureManifest.model_validate_json(
-        encoded(strict_object(original_manifest.decode()))
-    )
+    captured = archive.registration == CAPTURED_Q008
+    manifest_type = _CaptureManifest if captured else _FixtureManifest
+    manifest = manifest_type.model_validate_json(encoded(strict_object(original_manifest.decode())))
     review, draft = manifest.selection
     selected = (
         review
@@ -283,7 +332,9 @@ def _prepare(archive: _Archive, selection: ArtifactSelection | None) -> _Prepare
         and request
         == encoded(
             {
-                "contract": "authored-local-assessment-input-1",
+                "contract": "captured-local-assessment-input-1"
+                if captured
+                else "authored-local-assessment-input-1",
                 "notice": manifest.notice,
                 "provider_request": False,
                 "model_input": False,
@@ -317,14 +368,17 @@ def _prepare(archive: _Archive, selection: ArtifactSelection | None) -> _Prepare
         "contract": "saved-review-source-receipt-1",
         "source": pin.model_dump(mode="json"),
         "selected": selected.model_dump(mode="json"),
-        "source_data_origin": "authored_workspace_fixture",
-        "raw_critic_response_available": False,
+        "source_data_origin": manifest.origin if captured else "authored_workspace_fixture",
+        "raw_critic_response_available": captured,
         "request_kind": "offline_fixture",
         "model_evidence": False,
         "production_attachment_eligible": False,
         "writer_dispatch_authorized": False,
         "live_calls": 0,
     }
+    if captured:
+        require(work.batches[0].unit_ids == ("Q008",), "saved_review_capture_scope")
+        receipt.update(_capture_receipt(archive, snapshot, pin))
     return _Prepared(
         intake,
         manifest,

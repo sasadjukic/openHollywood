@@ -13436,10 +13436,17 @@ one genuine review with an admitted claim.
 - [x] Admit whole factual outcome claim Q008. Freeze independent `supported` gold
   against the exact plan and draft ending before replay. Verify one pending unit
   and byte-identical intake reuse. No assessor result exists for the claim.
-- [ ] Qualify this capture’s own downstream saved-review registration locally for
-  the exact critique and draft selections, including gold exclusion, wrong-version
-  and incomplete-delivery controls. Then assess readiness for a separately approved
-  one-claim assessor smoke.
+- [x] Qualify the captured Q008 source through both exact artifact selections.
+  Four endpoint bodies carried the whole claim and resolved all 883 evidence
+  locations with scoring gold excluded. Both closed fixture journals published
+  and reused. Wrong versions, cross-selection journals, interrupted or truncated
+  deliveries and a missing Q008 result all blocked publication. All 2,606 Python
+  tests, Ruff and strict mypy passed. Zero live calls.
+  [Qualification, controls and readiness](../docs/handoffs/assessment-saved-review-q008-qualification-2026-11-20.md)
+- [ ] Prepare the single-use Sol-high smoke for Q008 using the critique selection.
+  Freeze one count, at most one generation, zero retries and both body hashes.
+  Qualify the observed-delivery journal and submit the plan for separate live
+  approval. Score the whole-claim label and each of the two evidence obligations.
 
 Step 19 **IN PROGRESS**. Step 20 **NOT STARTED**. Production prompts unchanged.
 Live calls paused and full workflow canary on hold.

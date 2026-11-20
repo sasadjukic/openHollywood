@@ -1668,6 +1668,10 @@ Use `--selection` with the same exact artifact identity for capture and export.
 The default selects the original critique. The `missing-terminal` and `count-rejected`
 scenarios support read-only `audit` export. Every exchange uses an in-memory transport.
 
+For the captured Gemma review, pass `--source saved-v61-q008-2026-11-20` and use
+the critique or draft selection from its private registration workspace. Both
+selections exercise the same factual claim. [Q008 qualification and replay instructions](docs/handoffs/assessment-saved-review-q008-qualification-2026-11-20.md)
+
 ```powershell
 uv run --extra api python scripts/assessment_openai_compact_smoke.py verify `
   --plan data/diagnostics/assessment-openai-compact-smoke-2026-11-14/plan.json

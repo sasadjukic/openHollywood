@@ -20,7 +20,7 @@ from open_hollywood_engine.evaluations.assessment_compact_presentation import (
 )
 from open_hollywood_engine.evaluations.assessment_completion import encoded
 from open_hollywood_engine.evaluations.assessment_result import _field
-from open_hollywood_engine.evaluations.review_evidence import text_hash
+from open_hollywood_engine.evaluations.review_evidence import JsonObject, text_hash
 from open_hollywood_engine.models.assessment_openai import WireEndpoint
 
 from scripts.saved_review_openai_fixture import main
@@ -33,6 +33,63 @@ from tests.api.test_saved_review_completion import source as source
 from tests.production_assessment_fixtures import FixtureRegistration, response_for, sha
 
 pytestmark = pytest.mark.anyio
+
+
+async def test_capture_receipt_binds_raw_reply_and_creator(
+    archive: Path, source: FixtureRegistration
+) -> None:
+    registered = saved_review_completion._open("unit")
+    prepared_source = saved_review_completion._prepare(registered, source.selections[0])
+    pin = prepared_source.pin
+    folder = registered.root / "capture"
+    folder.mkdir()
+    content = "Synthetic critic message for receipt binding."
+    http = encoded(
+        {
+            "http_status": 200,
+            "response": {"done": True, "done_reason": "stop", "message": {"content": content}},
+        }
+    )
+    run_id = str(uuid4())
+    terminal = encoded(
+        {
+            "origin": "isolated_provider_capture",
+            "status": "captured",
+            "dispatch_state": "dispatched",
+            "database_sha256": pin.database_capture_sha256,
+            "critique_version": pin.review.version_id,
+            "invocation_id": pin.invocation_id,
+            "run_id": run_id,
+            "http_status": 200,
+            "http_sha256": sha(http),
+        }
+    )
+    for name, body in (("terminal.json", terminal), ("http.json", http)):
+        (folder / name).write_bytes(body)
+    capture_archive = saved_review_completion._Archive(
+        registered.registration,
+        {
+            **registered.hashes,
+            "work/capture/terminal.json": sha(terminal),
+            "work/capture/http.json": sha(http),
+        },
+    )
+    creator: JsonObject = {
+        "invocation_id": pin.invocation_id,
+        "workflow_run_id": run_id,
+        "response_sha256": text_hash(content),
+    }
+    assert saved_review_completion._capture_receipt(
+        capture_archive, {"invocation": creator}, pin
+    ) == {"critic_http_receipt_sha256": sha(http), "critic_terminal_sha256": sha(terminal)}
+    for change in (
+        {"invocation_id": str(uuid4())},
+        {"response_sha256": text_hash("another reply")},
+    ):
+        with pytest.raises(ValueError, match="capture_receipt_binding"):
+            saved_review_completion._capture_receipt(
+                capture_archive, {"invocation": {**creator, **change}}, pin
+            )
 
 
 def assert_visible_context(body: dict[str, Any], source: FixtureRegistration, side: int) -> None:

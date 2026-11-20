@@ -1,4 +1,4 @@
-"""Local OpenAI wire and journal qualification for one registered saved-review fixture."""
+"""Local OpenAI wire and fixture journals for fixed saved-review registrations."""
 
 from __future__ import annotations
 
@@ -117,7 +117,7 @@ class _Plan:
 
 
 def _prepare(registration: str, selection: ArtifactSelection | None) -> _Plan:
-    archive = saved._open(registration)
+    archive = saved._open(registration, allow_capture=True)
     source = saved._prepare(archive, selection)
     work = source.intake.pending_work
     assert work is not None
@@ -125,6 +125,7 @@ def _prepare(registration: str, selection: ArtifactSelection | None) -> _Plan:
     scope = scope_for_batch(work, source.manifest.batch_id, source.pin.request_sha256)
     packet = _packet(source, work, scope)
     versions = (UUID(source.pin.review.version_id), UUID(source.pin.draft.version_id))
+    input_limit = 96_000 if isinstance(source.manifest, saved._CaptureManifest) else 24_000
     request = ModelRequest(
         provider="openai",
         deployment=ModelDeployment.CLOUD,
@@ -137,7 +138,7 @@ def _prepare(registration: str, selection: ArtifactSelection | None) -> _Plan:
             ModelMessage(MessageRole.USER, compact(packet)),
         ),
         settings=ModelSettings(thinking="high"),
-        budget=ModelCallBudget(24_000, 32_000, Decimal("0.60")),
+        budget=ModelCallBudget(input_limit, 32_000, Decimal("0.60")),
         response_schema=assessment_response_schema(work, scope),
     )
     wire = _prepare_wire(work, scope, request, spec, guard=active_secret_guard())
@@ -165,20 +166,39 @@ def _prepare(registration: str, selection: ArtifactSelection | None) -> _Plan:
 
 
 def _reply(plan: _Plan, endpoint: WireEndpoint, scenario: Scenario) -> bytes:
+    captured = isinstance(plan.source.manifest, saved._CaptureManifest)
+    fixture_input_tokens = 60_000 if captured else 100
     if endpoint.stage == "input_count":
         return encoded(
             {
                 "object": "response.input_tokens",
                 "input_tokens": plan.wire.max_input_tokens + 1
                 if scenario == "count-rejected"
-                else 100,
+                else fixture_input_tokens,
             }
         )
-    # The old terminal is a synthetic reply supplier only. Request preparation, count and
-    # interrupted generation use the registered source without consulting an answer.
-    evidence, eligible = saved._audit(plan.archive, plan.source, "complete")
-    require(eligible, "saved_wire_response_fixture")
-    final = string_value(strict_object(evidence["terminal.json"].decode())["raw_final"])
+    if captured:
+        # This fixture exercises binding only. It is independent of operator gold.
+        declarations = plan.source.intake.declarations
+        assert declarations is not None
+        (claim,) = declarations.declarations
+        final = compact(
+            {
+                "assessments": {
+                    "Q008": {
+                        "support": "uncertain",
+                        "evidence": [
+                            ref for scope in claim.source_scopes for ref in scope.evidence_refs
+                        ],
+                        "reason": "Injected Q008 transport fixture; no assessor judgment.",
+                    }
+                }
+            }
+        )
+    else:
+        evidence, eligible = saved._audit(plan.archive, plan.source, "complete")
+        require(eligible, "saved_wire_response_fixture")
+        final = string_value(strict_object(evidence["terminal.json"].decode())["raw_final"])
     return encoded(
         {
             "id": "resp_saved_review_fixture",
@@ -193,9 +213,9 @@ def _reply(plan: _Plan, endpoint: WireEndpoint, scenario: Scenario) -> bytes:
                 }
             ],
             "usage": {
-                "input_tokens": 100,
+                "input_tokens": fixture_input_tokens,
                 "output_tokens": 20,
-                "total_tokens": 120,
+                "total_tokens": fixture_input_tokens + 20,
                 "input_tokens_details": {"cached_tokens": 0},
                 "output_tokens_details": {"reasoning_tokens": 5},
             },
@@ -274,7 +294,7 @@ def capture(
     """Write intent before touching the mock. An open intent consumes its one fixture slot."""
     plan = _prepare(registration, selection)
     files = _header(plan, scenario, str(uuid4()))
-    journal = storage._destination(journal, (saved.REGISTERED.archive,))
+    journal = storage._destination(journal, (saved.REGISTERED.archive, saved.CAPTURED_Q008.archive))
     journal.mkdir(parents=True, exist_ok=False)
     for name, data in files.items():
         io._durable_write(journal / name, data)
@@ -462,4 +482,9 @@ def export(
     def recheck() -> None:
         require(collect() == files, "saved_wire_export_drift")
 
-    return storage._publish(destination, files, (saved.REGISTERED.archive, journal), recheck)
+    return storage._publish(
+        destination,
+        files,
+        (saved.REGISTERED.archive, saved.CAPTURED_Q008.archive, journal),
+        recheck,
+    )
