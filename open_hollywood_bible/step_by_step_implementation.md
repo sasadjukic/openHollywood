@@ -13435,7 +13435,7 @@ one genuine review with an admitted claim.
   or downstream calls. [Results and evidence](../docs/handoffs/ordinary-v61-single-capture-results-2026-11-20.md).
 - [x] Admit whole factual outcome claim Q008. Freeze independent `supported` gold
   against the exact plan and draft ending before replay. Verify one pending unit
-  and byte-identical intake reuse. No assessor result exists for the claim.
+  and byte-identical intake reuse. The claim had no assessor result at admission.
 - [x] Qualify the captured Q008 source through both exact artifact selections.
   Four endpoint bodies carried the whole claim and resolved all 883 evidence
   locations with scoring gold excluded. Both closed fixture journals published
@@ -13443,10 +13443,23 @@ one genuine review with an admitted claim.
   deliveries and a missing Q008 result all blocked publication. All 2,606 Python
   tests, Ruff and strict mypy passed. Zero live calls.
   [Qualification, controls and readiness](../docs/handoffs/assessment-saved-review-q008-qualification-2026-11-20.md)
-- [ ] Prepare the single-use Sol-high smoke for Q008 using the critique selection.
-  Freeze one count, at most one generation, zero retries and both body hashes.
-  Qualify the observed-delivery journal and submit the plan for separate live
-  approval. Score the whole-claim label and each of the two evidence obligations.
+- [x] Freeze the [one-claim Sol-high approval plan](../docs/handoffs/q008-sol-high-smoke-plan-2026-11-20.md)
+  for the original critique selection. Both endpoint bodies match the qualified
+  Q008 inputs. One count, at most one generation and zero retries. Freeze the
+  whole-claim label, plan and draft-ending evidence scores and the terminal stops.
+- [x] Verify the pre-issued journal with 18 full-case mock rehearsals. Hard exits
+  before and after each POST produced zero sends on restart. Concurrent launches
+  shared one count and one generation. An isolated live-entry rehearsal rejected
+  changed gold and request bytes before credential access. At freeze the real
+  ledger was ready, with zero count or generation attempts. All 2,606 existing
+  tests and the seven new journal regressions passed. Ruff, formatting and strict mypy passed.
+- [x] Run the approved [Q008 Sol-high smoke](../docs/handoffs/q008-sol-high-smoke-results-2026-11-20.md).
+  One admitted count (58,894 input tokens), one complete generation (345 output
+  tokens, including 165 reasoning), zero retries. Both slots returned HTTP 200.
+  The observed delivery passed on the whole-claim label, plan evidence (`E0233`)
+  and draft-ending evidence (`E0883` with the final
+  sentence located). Both slots are spent. The separate achieved-state field
+  and story quality remain unassessed.
 
 Step 19 **IN PROGRESS**. Step 20 **NOT STARTED**. Production prompts unchanged.
 Live calls paused and full workflow canary on hold.
