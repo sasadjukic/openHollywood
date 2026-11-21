@@ -3,11 +3,14 @@ import type {
   ArtifactVersionDetail,
 } from "@open-hollywood/contracts";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { client } from "@open-hollywood/contracts/client";
 import { act, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 
 import {
+  apiReplay,
+  damageApiFixture,
   inspectorCases,
   savedReplay,
   withPublicationCopy,
@@ -46,7 +49,7 @@ function read(selection: ArtifactSelection) {
   throw new Error("Unknown fixture selection");
 }
 
-function mount(lookup: Q008Lookup, initial: ArtifactVersionDetail) {
+function mount(lookup: Q008Lookup | undefined, initial: ArtifactVersionDetail) {
   const client = new QueryClient();
   function Panel(props: ReviewPanelProps) {
     return <Q008Assessment {...props} lookup={lookup} />;
@@ -100,6 +103,54 @@ function expectCleared() {
 }
 
 describe("Q008 in an isolated artifact inspector", () => {
+  if (apiReplay) {
+    it("rejects the identical-ID workspace over HTTP", async () => {
+      const previous = client.getConfig().baseUrl;
+      try {
+        client.setConfig({ baseUrl: process.env.OH_Q008_COPY_URL });
+        const open = mount(undefined, details.review);
+        for (const detail of [details.review, details.draft]) {
+          open(detail);
+          await panel().findByText(
+            "Assessment unavailable in this workspace.",
+            {},
+            { timeout: 15000 },
+          );
+          expectCleared();
+        }
+      } finally {
+        client.setConfig({ baseUrl: previous });
+      }
+    }, 40000);
+    it("refreshes a damaged publication over HTTP through the generated client", async () => {
+      const open = mount(undefined, details.review);
+      for (const detail of [details.review, details.draft]) {
+        open(detail);
+        await panel().findByText(
+          "58,894 input · 345 output",
+          {},
+          { timeout: 60000 },
+        );
+        expect(panel().getByText(assessment.claim)).toBeVisible();
+        expect(panel().getAllByText(receipt.delivery_id)).toHaveLength(1);
+        expect(
+          panel().getByText(details.review.selected_version.id),
+        ).toBeInTheDocument();
+      }
+      await damageApiFixture();
+      await userEvent.click(
+        panel().getByRole("button", { name: "Refresh assessment" }),
+      );
+      await panel().findByText(/Checking this version/);
+      expectCleared();
+      await panel().findByText(
+        /publication could not be verified/,
+        {},
+        { timeout: 60000 },
+      );
+      expectCleared();
+    }, 195000);
+  }
   if (savedReplay) {
     it("reads the saved delivery on each open and detects damage made while it is displayed", async () => {
       await withPublicationCopy(async (lookup, damage) => {

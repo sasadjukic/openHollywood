@@ -1,5 +1,9 @@
-import type { ArtifactSelection } from "@open-hollywood/contracts";
+import type {
+  ArtifactSelection,
+  Q008InspectorView,
+} from "@open-hollywood/contracts";
 import { useQuery } from "@tanstack/react-query";
+import { fetchQ008Assessment } from "../api";
 
 import {
   sameSelection,
@@ -7,53 +11,25 @@ import {
   type ReviewPanelProps,
 } from "./artifactSelection";
 
-interface Usage {
-  input_tokens: number;
-  output_tokens: number;
-  reasoning_tokens: number;
-  cached_input_tokens: number;
-}
-
-// The isolated reader supplies the validated lookup inventory. Only display fields are consumed.
-export interface Q008Inventory {
-  contract: string;
-  lookups: {
-    selection: ArtifactSelection;
-    status: string;
-    reason: string | null;
-    delivery_id: string | null;
-    claim_id: string | null;
-  }[];
-  assessments: {
-    delivery_id: string;
-    claim_id: string;
-    claim: string;
-    model: string;
-    model_assessment: { support: string; evidence: string[]; reason: string };
-    operator_score: { passed_judgments: number; possible_judgments: number };
-    application_status: {
-      semantic_support: string;
-      evidence_adequacy: string;
-      edit_necessity: string;
-      craft: string;
-      production_attachment_eligible?: boolean;
-      writer_dispatch_authorized?: boolean;
-    };
-  }[];
-  accounting_records: {
-    delivery_id: string;
-    request_selection: ArtifactSelection;
-    preflight_input_count: number;
-    generation_usage: Usage;
-    actual_billed_cost: null;
-  }[];
-  generation_totals: Usage | null;
-}
+export type Q008Inventory = Q008InspectorView;
 
 export type Q008Lookup = (
   selection: ArtifactSelection,
   signal: AbortSignal,
 ) => Promise<Q008Inventory>;
+
+function hasDisplayOnlyStatus(status: Record<string, unknown>) {
+  return (
+    status.production_attachment_eligible === false &&
+    status.writer_dispatch_authorized === false &&
+    [
+      status.semantic_support,
+      status.evidence_adequacy,
+      status.edit_necessity,
+      status.craft,
+    ].every((value) => value === "unassessed")
+  );
+}
 
 function assessmentFor(
   view: Q008Inventory | undefined,
@@ -64,18 +40,18 @@ function assessmentFor(
   const record = view?.accounting_records[0];
   const totals = view?.generation_totals;
   if (
-    view?.contract !== "q008-consumer-lookup-1" ||
+    view?.contract !== "q008-inspector-view-1" ||
     view.lookups.length !== 1 ||
     !row ||
     !sameSelection(row.selection, selection) ||
     row.status !== "available" ||
     !row.delivery_id ||
-    row.claim_id !== "Q008" ||
     !assessment ||
     !record ||
     view.assessments.length !== 1 ||
     view.accounting_records.length !== 1 ||
-    assessment.claim_id !== row.claim_id ||
+    ![row.claim_id, assessment.claim_id].every((id) => id === "Q008") ||
+    !hasDisplayOnlyStatus(assessment.application_status) ||
     assessment.delivery_id !== row.delivery_id ||
     record.delivery_id !== row.delivery_id ||
     record.request_selection.role !== "original_review" ||
@@ -88,18 +64,6 @@ function assessmentFor(
     record.generation_usage.cached_input_tokens !== totals.cached_input_tokens
   )
     return null;
-  const status = assessment.application_status;
-  if (
-    status.production_attachment_eligible !== false ||
-    status.writer_dispatch_authorized !== false ||
-    [
-      status.semantic_support,
-      status.evidence_adequacy,
-      status.edit_necessity,
-      status.craft,
-    ].some((s) => s !== "unassessed")
-  )
-    return null;
   return { assessment, record };
 }
 
@@ -108,8 +72,8 @@ const number = new Intl.NumberFormat("en-US");
 export function Q008Assessment({
   projectId,
   detail,
-  lookup,
-}: ReviewPanelProps & { lookup: Q008Lookup }) {
+  lookup = fetchQ008Assessment,
+}: ReviewPanelProps & { lookup?: Q008Lookup }) {
   const selection = selectionForReview({ projectId, detail });
   const query = useQuery({
     queryKey: ["q008-assessment", selection],
@@ -127,10 +91,12 @@ export function Q008Assessment({
       : null;
   const usage = result?.record.generation_usage;
   const row = query.data?.lookups[0];
-  const missing =
+  const reason =
+    !query.isError &&
     row?.status === "unavailable" &&
-    sameSelection(row.selection, selection) &&
-    row.reason === "exact_selection_unavailable";
+    sameSelection(row.selection, selection)
+      ? row.reason
+      : null;
   return (
     <section className="review-provenance" aria-label="Q008 assessment">
       <div className="section-heading">
@@ -196,9 +162,13 @@ export function Q008Assessment({
         </>
       ) : (
         <p role="status">
-          {missing && !query.isError
-            ? "Assessment unavailable for this version."
-            : "Assessment unavailable. The publication could not be verified."}
+          {reason === "unregistered_workspace"
+            ? "Assessment unavailable in this workspace."
+            : reason === "workspace_unavailable"
+              ? "The registered workspace could not be verified."
+              : reason === "exact_selection_unavailable"
+                ? "Assessment unavailable for this version."
+                : "Assessment unavailable. The publication could not be verified."}
         </p>
       )}
       {!checking && (

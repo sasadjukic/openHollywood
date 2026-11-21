@@ -73,7 +73,7 @@ function portableCases(): InspectorCases {
   };
   function available(selected: ArtifactSelection): Q008Inventory {
     return {
-      contract: "q008-consumer-lookup-1",
+      contract: "q008-inspector-view-1",
       lookups: [
         {
           selection: selected,
@@ -119,10 +119,10 @@ function portableCases(): InspectorCases {
   }
   function unavailable(
     selected: ArtifactSelection,
-    reason: string,
+    reason: Q008Inventory["lookups"][number]["reason"],
   ): Q008Inventory {
     return {
-      contract: "q008-consumer-lookup-1",
+      contract: "q008-inspector-view-1",
       lookups: [
         {
           selection: selected,
@@ -153,14 +153,61 @@ function portableCases(): InspectorCases {
 }
 
 export function inspectorCases(): InspectorCases {
-  if (!savedReplay) return portableCases();
+  if (!savedReplay && !apiReplay) return portableCases();
   const path = resolve(
     process.cwd(),
     "../../data/diagnostics/q008-inspector-2026-11-21/inspector-replay.json",
   );
-  return JSON.parse(readFileSync(path, "utf8")) as InspectorCases;
+  // The frozen pre-HTTP fixture contains the native consumer contract.
+  type NativeView = Omit<Q008Inventory, "contract"> & { contract: string };
+  const cases = JSON.parse(readFileSync(path, "utf8")) as Omit<
+    InspectorCases,
+    "views"
+  > & { views: Record<Version | "damaged", NativeView> };
+  function display(view: NativeView): Q008Inventory {
+    if (view.contract !== "q008-consumer-lookup-1")
+      throw new Error("Unexpected replay contract");
+    return { ...view, contract: "q008-inspector-view-1" };
+  }
+  return {
+    ...cases,
+    views: {
+      review: display(cases.views.review),
+      draft: display(cases.views.draft),
+      adjacent: display(cases.views.adjacent),
+      damaged: display(cases.views.damaged),
+    },
+  };
 }
 export const savedReplay = process.env.OH_Q008_INSPECTOR_REPLAY === "1";
+export const apiReplay = process.env.OH_Q008_API_REPLAY === "1";
+
+export async function damageApiFixture() {
+  const name = process.env.OH_Q008_API_SCRATCH ?? "";
+  if (!apiReplay || !/^replay-[a-zA-Z0-9_-]+$/.test(name))
+    throw new Error("Missing private API fixture");
+  await changeCopiedUsage(
+    resolve(
+      process.cwd(),
+      "../../data/diagnostics/q008-api-2026-11-21",
+      name,
+      "publication",
+    ),
+  );
+}
+
+async function changeCopiedUsage(copy: string) {
+  const path = join(copy, "delivery.json");
+  const before = await readFile(path, "utf8");
+  const changed = before.replace(
+    /("input_tokens"\s*:\s*)58894\b/,
+    (_, prefix: string) => prefix + "58895",
+  );
+  const after = JSON.parse(changed) as { usage: { input_tokens: number } };
+  if (changed === before || after.usage.input_tokens !== 58895)
+    throw new Error("Failed to alter the copied usage");
+  await writeFile(path, changed, "utf8");
+}
 
 // The path override exists only in the test subprocess, for its disposable copy.
 const readCopy = `
@@ -168,10 +215,11 @@ import sys
 from pathlib import Path
 from unittest.mock import patch
 from scripts import lookup_q008_completion as consumer
+from open_hollywood_api.services.q008_inspector import _project, _registered_pair
 from open_hollywood_api.services.production_association_records import ArtifactSelection
 with patch.object(consumer, "PUBLICATION", Path(sys.argv[1])):
     selection = ArtifactSelection.model_validate_json(sys.argv[2])
-    print(consumer.lookup((selection,)).model_dump_json())
+    print(_project(consumer.lookup((selection,)), selection, _registered_pair()[0]).model_dump_json())
 `;
 
 export async function withPublicationCopy(
@@ -203,20 +251,7 @@ export async function withPublicationCopy(
         );
         return JSON.parse(stdout) as Q008Inventory;
       },
-      async () => {
-        const path = join(copy, "delivery.json");
-        const before = await readFile(path, "utf8");
-        const changed = before.replace(
-          /("input_tokens"\s*:\s*)58894\b/,
-          (_, prefix: string) => prefix + "58895",
-        );
-        const after = JSON.parse(changed) as {
-          usage: { input_tokens: number };
-        };
-        if (changed === before || after.usage.input_tokens !== 58895)
-          throw new Error("Failed to alter the copied usage");
-        await writeFile(path, changed, "utf8");
-      },
+      () => changeCopiedUsage(copy),
     );
   } finally {
     await rm(scratch, { recursive: true, force: true });

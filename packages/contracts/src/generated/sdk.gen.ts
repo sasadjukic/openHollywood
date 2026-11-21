@@ -39,6 +39,9 @@ import type {
   GetProjectWorkspaceData,
   GetProjectWorkspaceErrors,
   GetProjectWorkspaceResponses,
+  GetQ008AssessmentData,
+  GetQ008AssessmentErrors,
+  GetQ008AssessmentResponses,
   ListModelCatalogData,
   ListModelCatalogResponses,
   ListModelProfilesData,
@@ -112,6 +115,25 @@ export const getArtifactProvenance = <ThrowOnError extends boolean = false>(
     ThrowOnError
   >({
     url: "/api/v1/artifact-versions/{artifact_version_id}/provenance",
+    ...options,
+  });
+
+/**
+ * Read the saved Q008 assessment for an exact workspace version
+ */
+export const getQ008Assessment = <ThrowOnError extends boolean = false>(
+  options: Options<GetQ008AssessmentData, ThrowOnError>,
+): RequestResult<
+  GetQ008AssessmentResponses,
+  GetQ008AssessmentErrors,
+  ThrowOnError
+> =>
+  (options.client ?? client).get<
+    GetQ008AssessmentResponses,
+    GetQ008AssessmentErrors,
+    ThrowOnError
+  >({
+    url: "/api/v1/artifact-versions/{artifact_version_id}/q008-assessment",
     ...options,
   });
 

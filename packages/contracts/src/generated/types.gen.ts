@@ -383,6 +383,26 @@ export type HttpValidationError = {
 };
 
 /**
+ * ModelAssessment
+ *
+ * Fallible model-authored values, explicitly separate from application authority.
+ */
+export type ModelAssessment = {
+  /**
+   * Evidence
+   */
+  evidence: Array<string>;
+  /**
+   * Reason
+   */
+  reason: string;
+  /**
+   * Support
+   */
+  support: "supported" | "unsupported" | "uncertain";
+};
+
+/**
  * ModelCatalog
  *
  * Combined discovered models and provider-source status.
@@ -693,6 +713,151 @@ export type ProvenanceRelationship = {
 };
 
 /**
+ * Q008AccountingView
+ */
+export type Q008AccountingView = {
+  /**
+   * Actual Billed Cost
+   */
+  actual_billed_cost: null;
+  /**
+   * Delivery Id
+   */
+  delivery_id: string;
+  generation_usage: Usage;
+  /**
+   * Preflight Input Count
+   */
+  preflight_input_count: number;
+  request_selection: ArtifactSelection;
+};
+
+/**
+ * Q008ApplicationStatus
+ */
+export type Q008ApplicationStatus = {
+  /**
+   * Craft
+   */
+  craft: "unassessed";
+  /**
+   * Edit Necessity
+   */
+  edit_necessity: "unassessed";
+  /**
+   * Evidence Adequacy
+   */
+  evidence_adequacy: "unassessed";
+  /**
+   * Production Attachment Eligible
+   */
+  production_attachment_eligible: false;
+  /**
+   * Semantic Support
+   */
+  semantic_support: "unassessed";
+  /**
+   * Writer Dispatch Authorized
+   */
+  writer_dispatch_authorized: false;
+};
+
+/**
+ * Q008AssessmentView
+ */
+export type Q008AssessmentView = {
+  application_status: Q008ApplicationStatus;
+  /**
+   * Claim
+   */
+  claim: string;
+  /**
+   * Claim Id
+   */
+  claim_id: "Q008";
+  /**
+   * Delivery Id
+   */
+  delivery_id: string;
+  /**
+   * Model
+   */
+  model: string;
+  model_assessment: ModelAssessment;
+  operator_score: Q008OperatorScore;
+};
+
+/**
+ * Q008InspectorView
+ */
+export type Q008InspectorView = {
+  /**
+   * Accounting Records
+   */
+  accounting_records: Array<Q008AccountingView>;
+  /**
+   * Assessments
+   */
+  assessments: Array<Q008AssessmentView>;
+  /**
+   * Contract
+   */
+  contract: "q008-inspector-view-1";
+  generation_totals: Usage | null;
+  /**
+   * Lookups
+   */
+  lookups: Array<Q008LookupRow>;
+};
+
+/**
+ * Q008LookupRow
+ */
+export type Q008LookupRow = {
+  /**
+   * Claim Id
+   */
+  claim_id: "Q008" | null;
+  /**
+   * Delivery Id
+   */
+  delivery_id: string | null;
+  /**
+   * Reason
+   */
+  reason:
+    | "unregistered_workspace"
+    | "workspace_unavailable"
+    | "exact_selection_unavailable"
+    | "publication_missing"
+    | "publication_incomplete"
+    | "publication_manifest_changed"
+    | "publication_unexpected_member"
+    | "publication_member_changed"
+    | "publication_unavailable"
+    | null;
+  selection: ArtifactSelection;
+  /**
+   * Status
+   */
+  status: "available" | "unavailable";
+};
+
+/**
+ * Q008OperatorScore
+ */
+export type Q008OperatorScore = {
+  /**
+   * Passed Judgments
+   */
+  passed_judgments: number;
+  /**
+   * Possible Judgments
+   */
+  possible_judgments: number;
+};
+
+/**
  * RunBudgetPatch
  *
  * Strict partial update for aggregate run ceilings and call reservations.
@@ -920,6 +1085,28 @@ export type ServiceStatus = {
    */
   service: string;
   state: ServiceState;
+};
+
+/**
+ * Usage
+ */
+export type Usage = {
+  /**
+   * Cached Input Tokens
+   */
+  cached_input_tokens: number;
+  /**
+   * Input Tokens
+   */
+  input_tokens: number;
+  /**
+   * Output Tokens
+   */
+  output_tokens: number;
+  /**
+   * Reasoning Tokens
+   */
+  reasoning_tokens: number;
 };
 
 /**
@@ -1302,6 +1489,55 @@ export type GetArtifactProvenanceResponses = {
 
 export type GetArtifactProvenanceResponse =
   GetArtifactProvenanceResponses[keyof GetArtifactProvenanceResponses];
+
+export type GetQ008AssessmentData = {
+  body?: never;
+  path: {
+    /**
+     * Artifact Version Id
+     */
+    artifact_version_id: string;
+  };
+  query: {
+    /**
+     * Project Id
+     */
+    project_id: string;
+    /**
+     * Artifact Id
+     */
+    artifact_id: string;
+    /**
+     * Content Sha256
+     */
+    content_sha256: string;
+    /**
+     * Role
+     */
+    role: "original_review" | "reviewed_draft";
+  };
+  url: "/api/v1/artifact-versions/{artifact_version_id}/q008-assessment";
+};
+
+export type GetQ008AssessmentErrors = {
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type GetQ008AssessmentError =
+  GetQ008AssessmentErrors[keyof GetQ008AssessmentErrors];
+
+export type GetQ008AssessmentResponses = {
+  /**
+   * Successful Response
+   */
+  200: Q008InspectorView;
+};
+
+export type GetQ008AssessmentResponse =
+  GetQ008AssessmentResponses[keyof GetQ008AssessmentResponses];
 
 export type GetHealthData = {
   body?: never;

@@ -13498,9 +13498,18 @@ one genuine review with an admitted claim.
   the prior assessment and usage during and after verification. All ten
   saved-capture inspector checks, 43 web tests, 2,635 Python tests and the
   production build passed. Zero live calls.
-- [ ] Qualify an application-owned read-only Q008 API adapter. Verify the
-  configured workspace, exact version, unregistered and copied-workspace
-  refusals, and a fresh read after damage through the API and inspector.
+- [x] Qualify the [read-only Q008 API adapter](../docs/handoffs/q008-read-only-api-qualification-2026-11-21.md).
+  The registered critique v2 and draft v1 returned one shared assessment and
+  generation receipt. A byte-identical database copy returned unavailable for
+  both selections. Altering the copied publication cleared the open inspector
+  during refresh and returned no assessment or usage through either API lookup.
+  The sealed database and 15 original publication files were preserved. All 11
+  HTTP inspector checks, 43 web tests, 2,642 Python tests and the production
+  build passed. Zero live calls.
+- [ ] Qualify an explicit operator action for opening the saved assessment from
+  ordinary artifact and version navigation in a real browser. Check both exact
+  versions, the adjacent version, an unregistered workspace, damaged refresh and
+  the return to ordinary provenance using a read-only workspace view.
 
 Step 19 **IN PROGRESS**. Step 20 **NOT STARTED**. Production prompts unchanged.
 Live calls paused and full workflow canary on hold.

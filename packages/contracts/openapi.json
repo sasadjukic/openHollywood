@@ -600,6 +600,36 @@
         "title": "HTTPValidationError",
         "type": "object"
       },
+      "ModelAssessment": {
+        "additionalProperties": false,
+        "description": "Fallible model-authored values, explicitly separate from application authority.",
+        "properties": {
+          "evidence": {
+            "items": {
+              "maxLength": 200,
+              "minLength": 1,
+              "type": "string"
+            },
+            "maxItems": 8,
+            "title": "Evidence",
+            "type": "array"
+          },
+          "reason": {
+            "maxLength": 1200,
+            "minLength": 1,
+            "title": "Reason",
+            "type": "string"
+          },
+          "support": {
+            "enum": ["supported", "unsupported", "uncertain"],
+            "title": "Support",
+            "type": "string"
+          }
+        },
+        "required": ["support", "evidence", "reason"],
+        "title": "ModelAssessment",
+        "type": "object"
+      },
       "ModelCatalog": {
         "description": "Combined discovered models and provider-source status.",
         "properties": {
@@ -1079,6 +1109,261 @@
         "title": "ProvenanceRelationship",
         "type": "object"
       },
+      "Q008AccountingView": {
+        "additionalProperties": false,
+        "properties": {
+          "actual_billed_cost": {
+            "title": "Actual Billed Cost",
+            "type": "null"
+          },
+          "delivery_id": {
+            "title": "Delivery Id",
+            "type": "string"
+          },
+          "generation_usage": {
+            "$ref": "#/components/schemas/Usage"
+          },
+          "preflight_input_count": {
+            "minimum": 0.0,
+            "title": "Preflight Input Count",
+            "type": "integer"
+          },
+          "request_selection": {
+            "$ref": "#/components/schemas/ArtifactSelection"
+          }
+        },
+        "required": [
+          "delivery_id",
+          "request_selection",
+          "preflight_input_count",
+          "generation_usage",
+          "actual_billed_cost"
+        ],
+        "title": "Q008AccountingView",
+        "type": "object"
+      },
+      "Q008ApplicationStatus": {
+        "additionalProperties": false,
+        "properties": {
+          "craft": {
+            "const": "unassessed",
+            "title": "Craft",
+            "type": "string"
+          },
+          "edit_necessity": {
+            "const": "unassessed",
+            "title": "Edit Necessity",
+            "type": "string"
+          },
+          "evidence_adequacy": {
+            "const": "unassessed",
+            "title": "Evidence Adequacy",
+            "type": "string"
+          },
+          "production_attachment_eligible": {
+            "const": false,
+            "title": "Production Attachment Eligible",
+            "type": "boolean"
+          },
+          "semantic_support": {
+            "const": "unassessed",
+            "title": "Semantic Support",
+            "type": "string"
+          },
+          "writer_dispatch_authorized": {
+            "const": false,
+            "title": "Writer Dispatch Authorized",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "semantic_support",
+          "evidence_adequacy",
+          "edit_necessity",
+          "craft",
+          "production_attachment_eligible",
+          "writer_dispatch_authorized"
+        ],
+        "title": "Q008ApplicationStatus",
+        "type": "object"
+      },
+      "Q008AssessmentView": {
+        "additionalProperties": false,
+        "properties": {
+          "application_status": {
+            "$ref": "#/components/schemas/Q008ApplicationStatus"
+          },
+          "claim": {
+            "title": "Claim",
+            "type": "string"
+          },
+          "claim_id": {
+            "const": "Q008",
+            "title": "Claim Id",
+            "type": "string"
+          },
+          "delivery_id": {
+            "title": "Delivery Id",
+            "type": "string"
+          },
+          "model": {
+            "title": "Model",
+            "type": "string"
+          },
+          "model_assessment": {
+            "$ref": "#/components/schemas/ModelAssessment"
+          },
+          "operator_score": {
+            "$ref": "#/components/schemas/Q008OperatorScore"
+          }
+        },
+        "required": [
+          "delivery_id",
+          "claim_id",
+          "claim",
+          "model",
+          "model_assessment",
+          "operator_score",
+          "application_status"
+        ],
+        "title": "Q008AssessmentView",
+        "type": "object"
+      },
+      "Q008InspectorView": {
+        "additionalProperties": false,
+        "properties": {
+          "accounting_records": {
+            "items": {
+              "$ref": "#/components/schemas/Q008AccountingView"
+            },
+            "title": "Accounting Records",
+            "type": "array"
+          },
+          "assessments": {
+            "items": {
+              "$ref": "#/components/schemas/Q008AssessmentView"
+            },
+            "title": "Assessments",
+            "type": "array"
+          },
+          "contract": {
+            "const": "q008-inspector-view-1",
+            "title": "Contract",
+            "type": "string"
+          },
+          "generation_totals": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Usage"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "lookups": {
+            "items": {
+              "$ref": "#/components/schemas/Q008LookupRow"
+            },
+            "title": "Lookups",
+            "type": "array"
+          }
+        },
+        "required": [
+          "contract",
+          "lookups",
+          "assessments",
+          "accounting_records",
+          "generation_totals"
+        ],
+        "title": "Q008InspectorView",
+        "type": "object"
+      },
+      "Q008LookupRow": {
+        "additionalProperties": false,
+        "properties": {
+          "claim_id": {
+            "anyOf": [
+              {
+                "const": "Q008",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Claim Id"
+          },
+          "delivery_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Delivery Id"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "enum": [
+                  "unregistered_workspace",
+                  "workspace_unavailable",
+                  "exact_selection_unavailable",
+                  "publication_missing",
+                  "publication_incomplete",
+                  "publication_manifest_changed",
+                  "publication_unexpected_member",
+                  "publication_member_changed",
+                  "publication_unavailable"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "selection": {
+            "$ref": "#/components/schemas/ArtifactSelection"
+          },
+          "status": {
+            "enum": ["available", "unavailable"],
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "selection",
+          "status",
+          "reason",
+          "delivery_id",
+          "claim_id"
+        ],
+        "title": "Q008LookupRow",
+        "type": "object"
+      },
+      "Q008OperatorScore": {
+        "additionalProperties": false,
+        "properties": {
+          "passed_judgments": {
+            "minimum": 0.0,
+            "title": "Passed Judgments",
+            "type": "integer"
+          },
+          "possible_judgments": {
+            "minimum": 0.0,
+            "title": "Possible Judgments",
+            "type": "integer"
+          }
+        },
+        "required": ["possible_judgments", "passed_judgments"],
+        "title": "Q008OperatorScore",
+        "type": "object"
+      },
       "RunBudgetPatch": {
         "additionalProperties": false,
         "description": "Strict partial update for aggregate run ceilings and call reservations.",
@@ -1495,6 +1780,39 @@
         },
         "required": ["service", "state", "api_version"],
         "title": "ServiceStatus",
+        "type": "object"
+      },
+      "Usage": {
+        "additionalProperties": false,
+        "properties": {
+          "cached_input_tokens": {
+            "minimum": 0.0,
+            "title": "Cached Input Tokens",
+            "type": "integer"
+          },
+          "input_tokens": {
+            "minimum": 0.0,
+            "title": "Input Tokens",
+            "type": "integer"
+          },
+          "output_tokens": {
+            "minimum": 0.0,
+            "title": "Output Tokens",
+            "type": "integer"
+          },
+          "reasoning_tokens": {
+            "minimum": 0.0,
+            "title": "Reasoning Tokens",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "input_tokens",
+          "output_tokens",
+          "reasoning_tokens",
+          "cached_input_tokens"
+        ],
+        "title": "Usage",
         "type": "object"
       },
       "ValidationError": {
@@ -2122,6 +2440,87 @@
           }
         },
         "summary": "Inspect the exact selected version's registered review relationship",
+        "tags": ["workspace"]
+      }
+    },
+    "/api/v1/artifact-versions/{artifact_version_id}/q008-assessment": {
+      "get": {
+        "operationId": "getQ008Assessment",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "artifact_version_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Artifact Version Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "project_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Project Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "artifact_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Artifact Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "content_sha256",
+            "required": true,
+            "schema": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Content Sha256",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "role",
+            "required": true,
+            "schema": {
+              "enum": ["original_review", "reviewed_draft"],
+              "title": "Role",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Q008InspectorView"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Read the saved Q008 assessment for an exact workspace version",
         "tags": ["workspace"]
       }
     },
