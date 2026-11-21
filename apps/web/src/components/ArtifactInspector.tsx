@@ -2,9 +2,16 @@ import type {
   ArtifactVersionDetail,
   WorkspaceArtifact,
 } from "@open-hollywood/contracts";
-import type { ComponentType } from "react";
+import {
+  useId,
+  useLayoutEffect,
+  useRef,
+  useState,
+  type ComponentType,
+} from "react";
 
 import { ArtifactProvenance } from "./ArtifactProvenance";
+import { Q008Assessment } from "./Q008Assessment";
 import type { ReviewPanelProps } from "./artifactSelection";
 
 interface ArtifactInspectorProps {
@@ -19,7 +26,16 @@ interface ArtifactInspectorProps {
   ReviewPanel?: ComponentType<ReviewPanelProps>;
 }
 
-export function ArtifactInspector({
+export function ArtifactInspector(props: ArtifactInspectorProps) {
+  return (
+    <SelectedArtifactInspector
+      key={`${props.projectId ?? ""}:${props.artifact?.id ?? ""}`}
+      {...props}
+    />
+  );
+}
+
+function SelectedArtifactInspector({
   artifact,
   detail,
   isLoading,
@@ -28,13 +44,28 @@ export function ArtifactInspector({
   onSelectVersion,
   selectedVersionId,
   projectId,
-  ReviewPanel = ArtifactProvenance,
+  ReviewPanel,
 }: ArtifactInspectorProps) {
+  const [showAssessment, setShowAssessment] = useState(false);
+  const reviewId = useId();
+  const reviewRegion = useRef<HTMLDivElement>(null);
+  const focusOnToggle = useRef(false);
+  useLayoutEffect(() => {
+    if (focusOnToggle.current) {
+      reviewRegion.current?.focus();
+      focusOnToggle.current = false;
+    }
+  }, [showAssessment]);
+  const Panel =
+    ReviewPanel ?? (showAssessment ? Q008Assessment : ArtifactProvenance);
   const boundDetail =
     detail?.selected_version.id === selectedVersionId &&
     detail.artifact.id === artifact?.id
       ? detail
       : undefined;
+  const isReviewable =
+    artifact?.artifact_type === "critique" ||
+    artifact?.artifact_type === "scene_draft";
   return (
     <aside
       className={`artifact-inspector ${isOpen ? "artifact-inspector--open" : ""}`}
@@ -70,6 +101,22 @@ export function ArtifactInspector({
             >
               {artifact.status}
             </span>
+            {projectId && isReviewable && !ReviewPanel && (
+              <button
+                type="button"
+                className="provenance-recheck"
+                aria-controls={reviewId}
+                disabled={!boundDetail || isLoading}
+                onClick={() => {
+                  focusOnToggle.current = true;
+                  setShowAssessment(!showAssessment);
+                }}
+              >
+                {showAssessment
+                  ? "Return to provenance"
+                  : "View saved assessment"}
+              </button>
+            )}
             <label>
               <span>Version</span>
               <select
@@ -100,20 +147,21 @@ export function ArtifactInspector({
             )}
             {!isLoading && boundDetail && (
               <>
-                <ArtifactContent
-                  artifactType={artifact.artifact_type}
-                  content={boundDetail.content}
-                />
-                {projectId &&
-                  ["critique", "scene_draft"].includes(
-                    boundDetail.artifact.artifact_type,
-                  ) && (
-                    <ReviewPanel
+                {!showAssessment && (
+                  <ArtifactContent
+                    artifactType={artifact.artifact_type}
+                    content={boundDetail.content}
+                  />
+                )}
+                {projectId && isReviewable && (
+                  <div id={reviewId} ref={reviewRegion} tabIndex={-1}>
+                    <Panel
                       projectId={projectId}
                       detail={boundDetail}
                       key={`${projectId}:${boundDetail.artifact.id}:${boundDetail.selected_version.id}:${boundDetail.content_sha256}`}
                     />
-                  )}
+                  </div>
+                )}
                 <VersionContext detail={boundDetail} />
               </>
             )}

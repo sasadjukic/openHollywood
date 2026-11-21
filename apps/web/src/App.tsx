@@ -889,7 +889,7 @@ function ArtifactButton({
       <span>
         <strong>{artifact.title}</strong>
         <small>
-          {artifact.versions.length}{" "}
+          {humanize(artifact.artifact_type)} · {artifact.versions.length}{" "}
           {artifact.versions.length === 1 ? "version" : "versions"} ·{" "}
           {humanize(artifact.status)}
         </small>

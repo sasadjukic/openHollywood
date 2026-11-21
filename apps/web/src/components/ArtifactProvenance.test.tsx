@@ -8,11 +8,15 @@ import { act, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { fetchArtifactProvenance } from "../api";
+import { fetchArtifactProvenance, fetchQ008Assessment } from "../api";
 import { ArtifactInspector } from "./ArtifactInspector";
 
-vi.mock("../api", () => ({ fetchArtifactProvenance: vi.fn() }));
+vi.mock("../api", () => ({
+  fetchArtifactProvenance: vi.fn(),
+  fetchQ008Assessment: vi.fn(),
+}));
 const fetchProvenance = vi.mocked(fetchArtifactProvenance);
+const fetchAssessment = vi.mocked(fetchQ008Assessment);
 const project = "11111111-1111-1111-1111-111111111111";
 const logical = "22222222-2222-2222-2222-222222222222";
 const oldVersion = "33333333-3333-3333-3333-333333333333";
@@ -130,9 +134,55 @@ function deferred<T>() {
 
 beforeEach(() => {
   fetchProvenance.mockReset();
+  fetchAssessment.mockReset();
 });
 
 describe("exact-version provenance in the inspector", () => {
+  it("returns to fresh provenance while a saved assessment request is still pending", async () => {
+    const assessment =
+      deferred<Awaited<ReturnType<typeof fetchQ008Assessment>>>();
+    fetchAssessment.mockReturnValue(assessment.promise);
+    fetchProvenance.mockImplementation((selection) =>
+      Promise.resolve(view(selection)),
+    );
+    setup();
+    await screen.findByText("Version relationship verified");
+    expect(fetchAssessment).not.toHaveBeenCalled();
+    await userEvent.click(
+      screen.getByRole("button", { name: "View saved assessment" }),
+    );
+    await screen.findByText(/Checking this version’s assessment/);
+    const [selection, signal] = present(fetchAssessment.mock.calls[0]);
+    await userEvent.click(
+      screen.getByRole("button", { name: "Return to provenance" }),
+    );
+    await screen.findByText("Version relationship verified");
+    expect(signal.aborted).toBe(true);
+    expect(fetchProvenance).toHaveBeenCalledTimes(2);
+    await act(async () => {
+      assessment.resolve({
+        contract: "q008-inspector-view-1",
+        lookups: [
+          {
+            selection,
+            status: "unavailable",
+            reason: "unregistered_workspace",
+            delivery_id: null,
+            claim_id: null,
+          },
+        ],
+        assessments: [],
+        accounting_records: [],
+        generation_totals: null,
+      });
+      await assessment.promise;
+    });
+    expect(
+      screen.queryByRole("region", { name: "Q008 assessment" }),
+    ).not.toBeInTheDocument();
+    expect(screen.getByText("Version relationship verified")).toBeVisible();
+  });
+
   it("binds the reviewed-draft role to its own version and hash", async () => {
     fetchProvenance.mockImplementation((selection) => {
       const result = view(selection);

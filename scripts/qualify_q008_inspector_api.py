@@ -18,6 +18,7 @@ from xml.etree import ElementTree
 
 import httpx
 import uvicorn
+from fastapi import FastAPI
 from open_hollywood_api.app import LOCAL_WEB_ORIGINS, create_q008_readonly_app
 from open_hollywood_api.persistence.database import DATABASE_PATH_VARIABLE
 from open_hollywood_api.services import assessment_completion as storage
@@ -37,6 +38,12 @@ OUTPUT = ROOT / "data/diagnostics/q008-api-2026-11-21"
 def _serve(database: Path) -> Iterator[str]:
     with patch.dict(os.environ, {DATABASE_PATH_VARIABLE: str(database)}):
         app = create_q008_readonly_app(consumer.lookup)
+    with serve_local(app) as base:
+        yield base
+
+
+@contextmanager
+def serve_local(app: FastAPI) -> Iterator[str]:
     with socket.socket() as sock:
         sock.bind(("127.0.0.1", 0))
         port = sock.getsockname()[1]

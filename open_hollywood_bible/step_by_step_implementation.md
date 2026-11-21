@@ -13506,10 +13506,18 @@ one genuine review with an admitted claim.
   The sealed database and 15 original publication files were preserved. All 11
   HTTP inspector checks, 43 web tests, 2,642 Python tests and the production
   build passed. Zero live calls.
-- [ ] Qualify an explicit operator action for opening the saved assessment from
-  ordinary artifact and version navigation in a real browser. Check both exact
-  versions, the adjacent version, an unregistered workspace, damaged refresh and
-  the return to ordinary provenance using a read-only workspace view.
+- [x] Qualify [View saved assessment from artifact navigation in Chrome](../docs/handoffs/q008-browser-navigation-2026-11-21.md).
+  Critique v2 and draft v1 opened one saved Q008 assessment and generation
+  receipt. The identical-ID workspace copy, same-text successor and damaged
+  refresh each showed the expected unavailable state. Four returns to ordinary
+  provenance rechecked the current version and removed the saved receipt.
+  The sealed database and all 15 original publication files were preserved.
+  All 2,642 Python tests, 44 web tests and the production build passed.
+  Zero provider calls.
+- [ ] Provide a supported read-only operator launcher for the registered archive.
+  Exercise ordinary navigation on the actual saved versions and clean shutdown.
+  Add a real-browser control that restores a verified ordinary provenance
+  relationship after an unavailable assessment lookup.
 
 Step 19 **IN PROGRESS**. Step 20 **NOT STARTED**. Production prompts unchanged.
 Live calls paused and full workflow canary on hold.
