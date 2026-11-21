@@ -1,10 +1,11 @@
-"""Exercise the Q008 runner's journal and real HTTP boundary using a portable saved review."""
+"""Exercise both single-claim journals at the HTTP boundary using a portable saved review."""
 
 from __future__ import annotations
 
 import asyncio
 import json
 from pathlib import Path
+from types import ModuleType
 
 import httpx
 import pytest
@@ -14,7 +15,7 @@ from open_hollywood_engine.evaluations.assessment_completion import encoded
 from open_hollywood_engine.evaluations.review_evidence import EvidenceError
 
 from scripts import ordinary_v61_capture as ledger
-from scripts import q008_sol_smoke as smoke
+from scripts import q008_sol_smoke, q013_sol_smoke
 from tests.api.test_saved_review_completion import anyio_backend as anyio_backend
 from tests.api.test_saved_review_completion import archive as archive
 from tests.api.test_saved_review_completion import prepared as prepared
@@ -23,13 +24,20 @@ from tests.api.test_saved_review_completion import source as source
 pytestmark = pytest.mark.anyio
 
 
+@pytest.fixture(params=(q008_sol_smoke, q013_sol_smoke), ids=("q008", "q013"))
+def smoke(request: pytest.FixtureRequest) -> ModuleType:
+    runner = request.param
+    assert isinstance(runner, ModuleType)
+    return runner
+
+
 @pytest.fixture
 def issued(
-    archive: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    archive: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch, smoke: ModuleType
 ) -> tuple[Path, str, wire._Plan]:
     # The source fixture blocks sockets. Keep AsyncClient.send available for MockTransport.
     def deny_real_transport(*args: object, **kwargs: object) -> None:
-        pytest.fail("Q008 qualification attempted to construct a network transport")
+        pytest.fail("Qualification attempted to construct a network transport")
 
     monkeypatch.setattr(httpx, "AsyncHTTPTransport", deny_real_transport)
     gold = tmp_path / "scorer" / "gold.json"
@@ -61,7 +69,11 @@ def issued(
     ],
 )
 async def test_dispatch_order_terminal_and_no_restart(
-    issued: tuple[Path, str, wire._Plan], fault: str, expected: str, attempts: int
+    issued: tuple[Path, str, wire._Plan],
+    fault: str,
+    expected: str,
+    attempts: int,
+    smoke: ModuleType,
 ) -> None:
     folder, approval, p = issued
     seen: list[str] = []
@@ -107,7 +119,7 @@ async def test_dispatch_order_terminal_and_no_restart(
 
 
 async def test_cancelled_generation_and_preflight(
-    issued: tuple[Path, str, wire._Plan],
+    issued: tuple[Path, str, wire._Plan], smoke: ModuleType
 ) -> None:
     folder, approval, p = issued
     seen = []

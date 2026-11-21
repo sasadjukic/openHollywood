@@ -13550,9 +13550,30 @@ one genuine review with an admitted claim.
   assessor receipt for result binding and usage accounting, and its critic
   receipt for source binding. Only injected Q013 deliveries were exercised.
   All 2,644 Python tests, Ruff and strict mypy passed. Zero provider calls.
-- [ ] Prepare the one-claim Sol-high smoke for Q013 using critique v3. Freeze one
-  input count, at most one generation, zero retries, separate claim and evidence
-  scores, and restart stops. Submit for approval before contacting either endpoint.
+- [x] Freeze the [Q013 one-claim Sol-high smoke using critique v3](../docs/handoffs/q013-sol-high-smoke-plan-2026-11-21.md).
+  One count, at most one generation, zero retries. Claim correctness and draft
+  evidence coverage have independent pass/fail scores. Across 21 local journal
+  rehearsals all restarts sent zero additional requests. Two simultaneous
+  launches sent one count and one generation in total. At freeze the actual
+  journal was ready, both slots were undispatched, and zero provider calls were made.
+  All 2,651 Python tests, Ruff and strict mypy passed.
+- [x] Run the [approved Q013 Sol-high smoke and score both judgments](../docs/handoffs/q013-sol-high-smoke-results-2026-11-21.md).
+  One count and one generation returned HTTP 200, with zero retries. Count
+  and generation agreed on 62,835 input tokens. Generation used 427 output
+  tokens, including 255 reasoning tokens. Claim correctness passed. Draft
+  evidence coverage passed on all four obligations within Sol’s single
+  complete-draft citation. The journal is closed and spent.
+- [x] Preserve the [Q013 observed delivery and audit its read-only completion and publication paths](../docs/handoffs/q013-observed-completion-audit-2026-11-21.md).
+  Critique v3 and draft v1 reproduced one bound claim, one evidence render and
+  one generation usage record (62,835 input and 427 output tokens). The critique
+  owns the request. The draft-selected manifest rejected the same receipt.
+  The 29-file regression preserves the independent claim and evidence scores.
+  Existing operator publication and lookup refused Q013. All 340 focused
+  tests passed, along with 41 completion/publication checks and two archive
+  integrity checks. Zero provider calls.
+- [ ] Add Q013 as a second fixed read-only publisher registration. Verify
+  identical creation and reuse in both selection orders, single accounting,
+  source and journal rejection controls, and compatibility with Q008.
 
 Step 19 **IN PROGRESS**. Step 20 **NOT STARTED**. Production prompts unchanged.
 Live calls paused and full workflow canary on hold.
