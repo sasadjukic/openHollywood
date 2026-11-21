@@ -13490,9 +13490,17 @@ one genuine review with an admitted claim.
   The saved-capture replay matched the rehearsal and preserved all 58 original
   files. All 2,635 Python tests (including the 22 lookup and publisher
   regressions), 34 web tests and the production build passed. Zero live calls.
-- [ ] Qualify a read-only Q008 display in an isolated artifact inspector. Verify
-  exact-version workspace binding, shared accounting, switching to the adjacent
-  version during a pending lookup, and clearing the display on a damaged reread.
+- [x] Qualify the [read-only Q008 display in the isolated artifact inspector](../docs/handoffs/q008-artifact-inspector-qualification-2026-11-21.md).
+  The workspace resolved critique v2 and draft v1. Both showed one assessment
+  and one generation receipt (58,894 input and 345 output). Selecting the
+  same-text successor cleared the previous view even when its request completed
+  late. Refreshing after a one-token change to the copied publication cleared
+  the prior assessment and usage during and after verification. All ten
+  saved-capture inspector checks, 43 web tests, 2,635 Python tests and the
+  production build passed. Zero live calls.
+- [ ] Qualify an application-owned read-only Q008 API adapter. Verify the
+  configured workspace, exact version, unregistered and copied-workspace
+  refusals, and a fresh read after damage through the API and inspector.
 
 Step 19 **IN PROGRESS**. Step 20 **NOT STARTED**. Production prompts unchanged.
 Live calls paused and full workflow canary on hold.

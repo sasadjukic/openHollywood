@@ -1,11 +1,15 @@
 import type {
   ArtifactProvenance as ProvenanceView,
   ArtifactSelection,
-  ArtifactVersionDetail,
 } from "@open-hollywood/contracts";
 import { useQuery } from "@tanstack/react-query";
 
 import { fetchArtifactProvenance } from "../api";
+import {
+  sameSelection,
+  selectionForReview,
+  type ReviewPanelProps,
+} from "./artifactSelection";
 
 const unavailableMessages: Partial<Record<string, string>> = {
   exact_registered_identity: "The relationship could not be verified.",
@@ -24,19 +28,6 @@ const unavailableMessages: Partial<Record<string, string>> = {
   current_source_mismatch:
     "Current source records do not match the registered relationship.",
 } satisfies Record<ProvenanceView["reason"], string>;
-
-function sameSelection(
-  left: ArtifactSelection,
-  right: ArtifactSelection,
-): boolean {
-  return (
-    left.project_id === right.project_id &&
-    left.artifact_id === right.artifact_id &&
-    left.version_id === right.version_id &&
-    left.content_sha256 === right.content_sha256 &&
-    left.role === right.role
-  );
-}
 
 function boundRelationship(
   view: ProvenanceView,
@@ -69,23 +60,8 @@ function boundRelationship(
         relationship.draft_content_sha256 === selection.content_sha256;
 }
 
-export function ArtifactProvenance({
-  projectId,
-  detail,
-}: {
-  projectId: string;
-  detail: ArtifactVersionDetail;
-}) {
-  const selection: ArtifactSelection = {
-    project_id: projectId,
-    artifact_id: detail.artifact.id,
-    version_id: detail.selected_version.id,
-    content_sha256: detail.content_sha256,
-    role:
-      detail.artifact.artifact_type === "critique"
-        ? "original_review"
-        : "reviewed_draft",
-  };
+export function ArtifactProvenance({ projectId, detail }: ReviewPanelProps) {
+  const selection = selectionForReview({ projectId, detail });
   const query = useQuery({
     queryKey: [
       "artifact-provenance",

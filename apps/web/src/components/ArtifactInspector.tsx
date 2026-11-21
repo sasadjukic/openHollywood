@@ -2,8 +2,10 @@ import type {
   ArtifactVersionDetail,
   WorkspaceArtifact,
 } from "@open-hollywood/contracts";
+import type { ComponentType } from "react";
 
 import { ArtifactProvenance } from "./ArtifactProvenance";
+import type { ReviewPanelProps } from "./artifactSelection";
 
 interface ArtifactInspectorProps {
   artifact: WorkspaceArtifact | null;
@@ -14,6 +16,7 @@ interface ArtifactInspectorProps {
   onSelectVersion: (versionId: string) => void;
   selectedVersionId: string | null;
   projectId: string | null;
+  ReviewPanel?: ComponentType<ReviewPanelProps>;
 }
 
 export function ArtifactInspector({
@@ -25,6 +28,7 @@ export function ArtifactInspector({
   onSelectVersion,
   selectedVersionId,
   projectId,
+  ReviewPanel = ArtifactProvenance,
 }: ArtifactInspectorProps) {
   const boundDetail =
     detail?.selected_version.id === selectedVersionId &&
@@ -104,7 +108,7 @@ export function ArtifactInspector({
                   ["critique", "scene_draft"].includes(
                     boundDetail.artifact.artifact_type,
                   ) && (
-                    <ArtifactProvenance
+                    <ReviewPanel
                       projectId={projectId}
                       detail={boundDetail}
                       key={`${projectId}:${boundDetail.artifact.id}:${boundDetail.selected_version.id}:${boundDetail.content_sha256}`}
