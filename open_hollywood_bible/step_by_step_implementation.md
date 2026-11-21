@@ -13523,10 +13523,29 @@ one genuine review with an admitted claim.
   A separate foreground Ctrl+C check also exited cleanly. All 2,644 Python
   tests, 44 web tests, 11 HTTP inspector checks and the production build passed.
   Zero provider calls.
-- [ ] Check newly saved ordinary v61 reviews from a second scene family for one
-  substantive factual claim with complete evidence. Freeze its whole-claim gold
-  and exact source versions before viewing assessor output. If none qualify,
-  document the gap and propose an isolated capture for approval.
+- [x] Check newly saved ordinary v61 reviews for a factual claim from a second
+  scene family. [Admission audit and source gap](../docs/handoffs/second-family-saved-v61-admission-2026-11-21.md).
+  All 54 prior databases reproduced their critic inventories. The four v61
+  matches in the capture-related databases shared Q008's invocation, critique
+  and all four input versions. No second family qualified. Zero new claims,
+  gold records, assessor outputs opened, replays or live calls.
+- [x] Freeze the [second-family ordinary v61 critic capture](../docs/handoffs/second-family-ordinary-v61-capture-plan-2026-11-21.md).
+  OH-V01-002 scene 1, *The Impossible Card*, has four exact saved inputs
+  distinct from Q008. The 68,631-byte Gemma request carries the entire draft
+  across 43 excerpts. Twelve offline scenarios verified native capture, durable
+  restart and race stops, and refusal on drift. At freeze the new slot was ready
+  with zero live calls. Q008's original slot was spent. All 2,644 Python tests,
+  Ruff lint and formatting, and strict mypy passed.
+- [x] Run the [approved Gemma capture for The Impossible Card](../docs/handoffs/second-family-ordinary-v61-capture-results-2026-11-21.md).
+  One generation returned HTTP 200 with 19,388 input and 1,400 output tokens,
+  zero counts and zero retries. The native export and intake passed. Freeze
+  independent supported gold for Q013, the complete explanation of the card
+  date, current date and Elara's recognition of the ten-year interval. Q013 is
+  the sole pending unit. Assessor outputs opened and assessor calls both totaled
+  zero. All 46 focused regressions passed. The capture slot is spent.
+- [ ] Qualify the second-family source locally through its exact critique and draft
+  selections. Verify gold exclusion and rejection of a wrong version or Q008 receipt
+  before proposing any live assessment.
 
 Step 19 **IN PROGRESS**. Step 20 **NOT STARTED**. Production prompts unchanged.
 Live calls paused and full workflow canary on hold.
