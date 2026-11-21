@@ -1672,6 +1672,21 @@ For the captured Gemma review, pass `--source saved-v61-q008-2026-11-20` and use
 the critique or draft selection from its private registration workspace. Both
 selections exercise the same factual claim. [Q008 qualification and replay instructions](docs/handoffs/assessment-saved-review-q008-qualification-2026-11-20.md)
 
+To open the **observed Q008 delivery**, publish it to a local directory using either
+exact selection. These commands use the private Q008 registration and closed smoke
+journal. The second command reuses the first bundle with the same generation usage.
+
+```powershell
+$q008Selections = 'data/diagnostics/q008-downstream-2026-11-20'
+$q008Output = 'data/diagnostics/q008-published'
+uv run --extra api python -m scripts.publish_q008_completion --selection "$q008Selections/original_review.json" --output $q008Output
+uv run --extra api python -m scripts.publish_q008_completion --selection "$q008Selections/reviewed_draft.json" --output $q008Output
+```
+
+Open `delivery.json` for the original request identity and usage, `evidence.md`
+for the claim and cited passages, and `operator-score.json` for the separate
+adjudication. [Publisher qualification and limits](docs/handoffs/q008-observed-publication-2026-11-21.md)
+
 ```powershell
 uv run --extra api python scripts/assessment_openai_compact_smoke.py verify `
   --plan data/diagnostics/assessment-openai-compact-smoke-2026-11-14/plan.json

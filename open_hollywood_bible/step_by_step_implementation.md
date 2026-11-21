@@ -13467,9 +13467,18 @@ one genuine review with an admitted claim.
   The 27 local boundary checks confirmed fixture publication and the lack of a registered
   publisher for this observed saved review. All 304 focused tests, Ruff lint and
   formatting, and strict mypy passed. Zero live calls.
-- [ ] Implement a read-only observed saved-review publisher for Q008. Verify creation
-  and exact reuse through either version with one delivery identity, one usage record,
-  and explicit refusals for substituted, incomplete or conflicting evidence.
+- [x] Implement the [read-only Q008 publisher](../docs/handoffs/q008-observed-publication-2026-11-21.md).
+  The critique-first and draft-first runs created identical 15-file publications.
+  Reopening through the other exact version preserved every byte and modification
+  time. Each bundle records one observed request, one generation usage record and
+  the separately attributed operator score. All 11 publisher regressions passed,
+  including fixture, stale-version, wrong-request, accounting and closure refusals.
+  The full verification passed 2,624 Python tests, 34 web tests, lint, formatting,
+  type checks and the production build. Zero live calls.
+  [Decision](../docs/adr/0067-observed-saved-review-publication.md)
+- [ ] Rehearse a read-only consumer inventory for the pinned Q008 publication.
+  Verify one displayed assessment and one usage total across the two exact lookups,
+  and unavailable states for an adjacent version and damaged or incomplete evidence.
 
 Step 19 **IN PROGRESS**. Step 20 **NOT STARTED**. Production prompts unchanged.
 Live calls paused and full workflow canary on hold.

@@ -57,3 +57,4 @@ tradeoffs. Status values are `Proposed`, `Accepted`, `Superseded`, or `Rejected`
 | [0064](0064-read-only-artifact-provenance-inspector.md) | Exact-version read-only artifact provenance inspector | Accepted; bounded local integration |
 | [0065](0065-read-only-saved-review-completion-adapter.md) | Read-only saved-review completion adapter | Accepted for registered local fixtures |
 | [0066](0066-saved-review-openai-fixture-journal.md) | OpenAI request and fixture journal for a saved review | Accepted for registered local fixtures |
+| [0067](0067-observed-saved-review-publication.md) | One observed saved-review delivery across exact artifact selections | Accepted for the local Q008 publisher |
