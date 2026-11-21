@@ -13543,9 +13543,16 @@ one genuine review with an admitted claim.
   date, current date and Elara's recognition of the ten-year interval. Q013 is
   the sole pending unit. Assessor outputs opened and assessor calls both totaled
   zero. All 46 focused regressions passed. The capture slot is spent.
-- [ ] Qualify the second-family source locally through its exact critique and draft
-  selections. Verify gold exclusion and rejection of a wrong version or Q008 receipt
-  before proposing any live assessment.
+- [x] Qualify [Q013 through the exact critique v3 and draft v1 selections](../docs/handoffs/assessment-saved-review-q013-qualification-2026-11-21.md).
+  Both count and generation requests carried the whole claim and story context
+  with scorer gold excluded. All 920 evidence locations resolved. Both genuine
+  adjacent versions failed selection. Both paths rejected Q008’s observed
+  assessor receipt for result binding and usage accounting, and its critic
+  receipt for source binding. Only injected Q013 deliveries were exercised.
+  All 2,644 Python tests, Ruff and strict mypy passed. Zero provider calls.
+- [ ] Prepare the one-claim Sol-high smoke for Q013 using critique v3. Freeze one
+  input count, at most one generation, zero retries, separate claim and evidence
+  scores, and restart stops. Submit for approval before contacting either endpoint.
 
 Step 19 **IN PROGRESS**. Step 20 **NOT STARTED**. Production prompts unchanged.
 Live calls paused and full workflow canary on hold.
