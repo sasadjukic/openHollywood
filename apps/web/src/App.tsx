@@ -34,6 +34,7 @@ import {
 import { ArtifactInspector } from "./components/ArtifactInspector";
 import { ModelSettings } from "./components/ModelSettings";
 import { Timeline } from "./components/Timeline";
+import { readOnlyWorkspace } from "./workspaceMode";
 
 const serviceQueryKey = ["service-status"] as const;
 const projectsQueryKey = ["projects"] as const;
@@ -69,6 +70,7 @@ export function App() {
     queryFn: fetchProjects,
     queryKey: projectsQueryKey,
     refetchInterval: (query) =>
+      !readOnlyWorkspace &&
       query.state.data?.projects.some((project) =>
         ["pending", "running"].includes(project.latest_workflow_status ?? ""),
       )
@@ -105,7 +107,7 @@ export function App() {
     queryKey: ["workspace", selectedProjectId],
     refetchInterval: (query) => {
       const latestRun = query.state.data?.workflow_runs[0];
-      if (!latestRun) {
+      if (readOnlyWorkspace || !latestRun) {
         return false;
       }
       if (latestRun.status === "pending" || latestRun.status === "running") {
@@ -160,7 +162,10 @@ export function App() {
     workspace?.workflow_runs[0];
   const activeRunId = activeRun?.id ?? null;
   const exportsQuery = useQuery({
-    enabled: selectedProjectId !== null && workspace !== undefined,
+    enabled:
+      !readOnlyWorkspace &&
+      selectedProjectId !== null &&
+      workspace !== undefined,
     queryFn: () => {
       if (!selectedProjectId) {
         throw new Error("Select a project before loading its exports.");
@@ -192,9 +197,10 @@ export function App() {
     },
     queryKey: ["workflow-events", activeRunId],
     refetchInterval:
-      activeRun?.status === "pending" ||
-      activeRun?.status === "running" ||
-      activeRun?.status === "paused"
+      !readOnlyWorkspace &&
+      (activeRun?.status === "pending" ||
+        activeRun?.status === "running" ||
+        activeRun?.status === "paused")
         ? 3_000
         : false,
   });
@@ -431,23 +437,25 @@ export function App() {
               <span>Stories</span>
               <span>{projects.length}</span>
             </div>
-            <button
-              className={`new-story-button ${
-                selectedProjectId === null ? "new-story-button--active" : ""
-              }`}
-              type="button"
-              onClick={() => {
-                intakeRequestId.current = null;
-                setCreatingStory(true);
-                setRequestedRunId(null);
-                setRequestedArtifactId(null);
-                setRequestedVersionId(null);
-                setNavigationOpen(false);
-              }}
-            >
-              <span aria-hidden="true">+</span>
-              New story
-            </button>
+            {!readOnlyWorkspace && (
+              <button
+                className={`new-story-button ${
+                  selectedProjectId === null ? "new-story-button--active" : ""
+                }`}
+                type="button"
+                onClick={() => {
+                  intakeRequestId.current = null;
+                  setCreatingStory(true);
+                  setRequestedRunId(null);
+                  setRequestedArtifactId(null);
+                  setRequestedVersionId(null);
+                  setNavigationOpen(false);
+                }}
+              >
+                <span aria-hidden="true">+</span>
+                New story
+              </button>
+            )}
             <div className="project-list">
               {projects.map((project) => {
                 const mustStopBeforeDelete = ["pending", "running"].includes(
@@ -488,35 +496,40 @@ export function App() {
                         </small>
                       </span>
                     </button>
-                    <button
-                      aria-label={`Delete story ${project.name}`}
-                      className="project-delete"
-                      disabled={
-                        mustStopBeforeDelete || deleteProjectMutation.isPending
-                      }
-                      title={
-                        mustStopBeforeDelete
-                          ? "Stop this story's workflow before deleting it"
-                          : `Delete ${project.name}`
-                      }
-                      type="button"
-                      onClick={() => {
-                        const confirmed = window.confirm(
-                          `Delete “${project.name}”? This permanently removes its messages, workflow history, and artifacts from this device.`,
-                        );
-                        if (confirmed) {
-                          deleteProjectMutation.mutate(project.id);
+                    {!readOnlyWorkspace && (
+                      <button
+                        aria-label={`Delete story ${project.name}`}
+                        className="project-delete"
+                        disabled={
+                          mustStopBeforeDelete ||
+                          deleteProjectMutation.isPending
                         }
-                      }}
-                    >
-                      <span aria-hidden="true">×</span>
-                    </button>
+                        title={
+                          mustStopBeforeDelete
+                            ? "Stop this story's workflow before deleting it"
+                            : `Delete ${project.name}`
+                        }
+                        type="button"
+                        onClick={() => {
+                          const confirmed = window.confirm(
+                            `Delete “${project.name}”? This permanently removes its messages, workflow history, and artifacts from this device.`,
+                          );
+                          if (confirmed) {
+                            deleteProjectMutation.mutate(project.id);
+                          }
+                        }}
+                      >
+                        <span aria-hidden="true">×</span>
+                      </button>
+                    )}
                   </div>
                 );
               })}
               {projects.length === 0 && (
                 <p className="nav-empty">
-                  Your local story library is ready for its first premise.
+                  {readOnlyWorkspace
+                    ? "This archive contains no stories."
+                    : "Your local story library is ready for its first premise."}
                 </p>
               )}
             </div>
@@ -569,7 +582,7 @@ export function App() {
         </nav>
 
         <main className="story-workspace">
-          {selectedProjectId === null && (
+          {!readOnlyWorkspace && selectedProjectId === null && (
             <StoryIntake
               error={
                 createProjectMutation.error instanceof Error
@@ -618,16 +631,18 @@ export function App() {
                   <p>{workspace.project.description}</p>
                 </div>
                 <div className="story-actions">
-                  <ExportControls
-                    availableFormats={
-                      exportsQuery.data?.available_formats ?? []
-                    }
-                    isLoading={exportsQuery.isPending}
-                    projectId={workspace.project.id}
-                    unavailableReason={
-                      exportsQuery.data?.unavailable_reason ?? null
-                    }
-                  />
+                  {!readOnlyWorkspace && (
+                    <ExportControls
+                      availableFormats={
+                        exportsQuery.data?.available_formats ?? []
+                      }
+                      isLoading={exportsQuery.isPending}
+                      projectId={workspace.project.id}
+                      unavailableReason={
+                        exportsQuery.data?.unavailable_reason ?? null
+                      }
+                    />
+                  )}
                   <div className="run-summary">
                     {workspace.workflow_runs.length > 1 && activeRun && (
                       <RunAttemptSelector
@@ -652,7 +667,7 @@ export function App() {
                 </div>
               </header>
 
-              {activeRun && (
+              {!readOnlyWorkspace && activeRun && (
                 <RunControls
                   error={
                     runControlMutation.variables?.workflowRunId ===
@@ -695,7 +710,8 @@ export function App() {
                 />
               </section>
 
-              {activeRun?.status === "paused" &&
+              {!readOnlyWorkspace &&
+                activeRun?.status === "paused" &&
                 activeRun.active_interrupt_id && (
                   <DecisionComposer
                     error={
@@ -855,8 +871,10 @@ function Topbar({
               ? "Connecting"
               : "Offline"}
         </span>
-        <span className="version-label">v0.1</span>
-        {onOpenSettings && (
+        <span className="version-label">
+          {readOnlyWorkspace ? "Read-only archive" : "v0.1"}
+        </span>
+        {!readOnlyWorkspace && onOpenSettings && (
           <button
             className="settings-button"
             type="button"

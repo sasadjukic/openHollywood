@@ -37,8 +37,11 @@ import {
   type WorkflowEventPage,
 } from "@open-hollywood/contracts";
 import { client } from "@open-hollywood/contracts/client";
+import { readOnlyWorkspace } from "./workspaceMode";
 
-const apiBaseUrl = import.meta.env.VITE_API_URL ?? "http://127.0.0.1:8000";
+const apiBaseUrl = readOnlyWorkspace
+  ? window.location.origin
+  : (import.meta.env.VITE_API_URL ?? "http://127.0.0.1:8000");
 
 client.setConfig({ baseUrl: apiBaseUrl });
 

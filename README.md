@@ -1080,6 +1080,28 @@ docs/          Architecture decisions and technical documentation
 images/        Open Hollywood brand assets
 ```
 
+## Open the read-only archive viewer
+
+With the workspace dependencies installed, run `pnpm build` from the repository
+root once and after web client updates. Start the viewer from that directory.
+
+```powershell
+uv run --extra api python -m scripts.open_archive
+```
+
+Open the printed loopback URL in a browser. The default opens the registered
+Q008 archive. Under **Benchmark OH-V01-001 — cloud**, select **Critique — scene_1**
+v2 or **The Pristine Lure** (Scene Draft) v1, then **View saved assessment**.
+Both open the same saved delivery. Press **Enter** or **Ctrl+C** in the launcher
+terminal to close the server and remove its temporary navigation snapshot.
+
+Use `--workspace ordinary` for the registered ordinary workspace. Use `--port`
+to choose a specific loopback port. Both modes require their original local
+registrations. Navigation reflects the saved rows at launch. Assessment and
+provenance lookups recheck their sources on demand. The viewer starts
+independently of the workflow worker and Vite development server.
+[Operator guide and browser verification](docs/handoffs/read-only-archive-launcher-2026-11-21.md)
+
 ## Development
 
 Run every command in this section from the repository root. Install the pinned

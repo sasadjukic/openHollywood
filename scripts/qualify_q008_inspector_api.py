@@ -5,10 +5,7 @@ from __future__ import annotations
 import json
 import os
 import shutil
-import socket
 import subprocess
-import threading
-import time
 from collections.abc import Iterator
 from contextlib import contextmanager
 from pathlib import Path
@@ -17,10 +14,9 @@ from unittest.mock import patch
 from xml.etree import ElementTree
 
 import httpx
-import uvicorn
-from fastapi import FastAPI
 from open_hollywood_api.app import LOCAL_WEB_ORIGINS, create_q008_readonly_app
 from open_hollywood_api.persistence.database import DATABASE_PATH_VARIABLE
+from open_hollywood_api.readonly_workspace import serve_loopback
 from open_hollywood_api.services import assessment_completion as storage
 from open_hollywood_api.services import q008_inspector as api
 from open_hollywood_api.services.production_association_records import ArtifactSelection
@@ -38,28 +34,8 @@ OUTPUT = ROOT / "data/diagnostics/q008-api-2026-11-21"
 def _serve(database: Path) -> Iterator[str]:
     with patch.dict(os.environ, {DATABASE_PATH_VARIABLE: str(database)}):
         app = create_q008_readonly_app(consumer.lookup)
-    with serve_local(app) as base:
+    with serve_loopback(app) as base:
         yield base
-
-
-@contextmanager
-def serve_local(app: FastAPI) -> Iterator[str]:
-    with socket.socket() as sock:
-        sock.bind(("127.0.0.1", 0))
-        port = sock.getsockname()[1]
-        server = uvicorn.Server(uvicorn.Config(app, log_level="warning", access_log=False))
-        worker = threading.Thread(target=server.run, kwargs={"sockets": [sock]}, daemon=True)
-        worker.start()
-        try:
-            deadline = time.monotonic() + 20
-            while not server.started:
-                require(worker.is_alive() and time.monotonic() < deadline, "inspector_server_start")
-                time.sleep(0.02)
-            yield f"http://127.0.0.1:{port}"
-        finally:
-            server.should_exit = True
-            worker.join(timeout=15)
-            require(not worker.is_alive(), "inspector_server_shutdown")
 
 
 def _read(client: httpx.Client, base: str, selection: ArtifactSelection) -> api.Q008InspectorView:

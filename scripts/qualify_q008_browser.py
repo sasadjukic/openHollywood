@@ -15,20 +15,10 @@ from unittest.mock import patch
 from uuid import UUID
 
 from fastapi.staticfiles import StaticFiles
-from open_hollywood_api.app import create_q008_readonly_app
-from open_hollywood_api.persistence.database import DATABASE_PATH_VARIABLE, create_session_factory
-from open_hollywood_api.routes import (
-    artifact_provenance,
-    exports,
-    health,
-    workflow_events,
-    workspace,
-)
+from open_hollywood_api.persistence.database import create_session_factory
+from open_hollywood_api.readonly_workspace import navigation_app, serve_loopback
 from open_hollywood_api.services import assessment_completion as storage
 from open_hollywood_api.services import q008_inspector as api
-from open_hollywood_api.services.artifact_provenance import ArtifactProvenanceService
-from open_hollywood_api.services.exports import ProjectExportStore
-from open_hollywood_api.services.workflow_events import WorkflowEventStore
 from open_hollywood_api.services.workspace import WorkspaceStore
 from open_hollywood_engine.evaluations.assessment_completion import encoded
 from open_hollywood_engine.evaluations.review_evidence import require
@@ -37,35 +27,18 @@ from sqlalchemy.pool import NullPool
 
 from scripts import lookup_q008_completion as consumer
 from scripts.qualify_q008_inspector import _add_successor, _details
-from scripts.qualify_q008_inspector_api import ROOT, serve_local
 
+ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / "data/diagnostics/q008-browser-2026-11-21"
 WEB = ROOT / "apps/web"
 
 
 @contextmanager
 def navigation_server(authority: Path, engine: Engine, site: Path) -> Iterator[str]:
-    with patch.dict(os.environ, {DATABASE_PATH_VARIABLE: str(authority)}):
-        app = create_q008_readonly_app(consumer.lookup)
-    sessions = create_session_factory(engine)
-    app.state.workspace_store = WorkspaceStore(sessions)
-    app.state.project_export_store = ProjectExportStore(sessions)
-    app.state.workflow_event_store = WorkflowEventStore(sessions)
-    app.state.artifact_provenance_service = ArtifactProvenanceService(authority)
-    app.include_router(artifact_provenance.router, prefix="/api/v1")
-    # Only the GET handlers the regular artifact navigation actually uses.
-    for path, handler in (
-        ("/health", health.get_health),
-        ("/projects", workspace.list_projects),
-        ("/projects/{project_id}/workspace", workspace.get_project_workspace),
-        ("/artifact-versions/{artifact_version_id}", workspace.get_artifact_version),
-        ("/projects/{project_id}/exports", exports.list_project_exports),
-        ("/workflow-runs/{workflow_run_id}/events", workflow_events.list_workflow_run_events),
-    ):
-        app.add_api_route("/api/v1" + path, handler, methods=["GET"])
+    app = navigation_app(authority, engine, consumer.lookup)
     require(all(set(ops) == {"get"} for ops in app.openapi()["paths"].values()), "write_route")
     app.mount("/", StaticFiles(directory=site, html=True))
-    with serve_local(app) as base:
+    with serve_loopback(app) as base:
         yield base
 
 

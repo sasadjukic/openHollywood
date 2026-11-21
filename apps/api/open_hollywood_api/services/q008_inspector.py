@@ -202,7 +202,10 @@ def _stamp(path: Path) -> tuple[int, int, int, int]:
     return stat.st_dev, stat.st_ino, stat.st_size, stat.st_mtime_ns
 
 
-def _matches_workspace(path: Path, selected: ArtifactSelection) -> bool:
+def registered_image(path: Path) -> bytes:
+    """Return the sealed database bytes without opening the original in SQLite."""
+    require(path == REGISTERED.path, "unregistered_workspace")
+    before = _stamp(path)
     with path.open("rb") as stream:
         stat = os.fstat(stream.fileno())
         require(
@@ -211,6 +214,12 @@ def _matches_workspace(path: Path, selected: ArtifactSelection) -> bool:
         )
         image = stream.read(saved.CAPTURED_Q008.database_limit + 1)
     require(storage._sha(image) == REGISTERED.sha256, "workspace_changed")
+    require(before == _stamp(path), "workspace_changed_during_read")
+    return image
+
+
+def _matches_workspace(path: Path, selected: ArtifactSelection) -> bool:
+    image = registered_image(path)
     # SQLite only sees the authenticated image in a private scratch directory.
     with TemporaryDirectory() as tmp:
         scratch = Path(tmp) / "snapshot.db"

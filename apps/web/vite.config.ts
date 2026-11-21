@@ -4,6 +4,11 @@ import { defineConfig } from "vitest/config";
 export default defineConfig({
   plugins: [react()],
   publicDir: "../../images",
+  build: {
+    rolldownOptions: {
+      input: ["index.html", "archive.html"],
+    },
+  },
   server: {
     host: "127.0.0.1",
     port: 5173,

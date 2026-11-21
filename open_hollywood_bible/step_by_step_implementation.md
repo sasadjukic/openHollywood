@@ -13514,10 +13514,19 @@ one genuine review with an admitted claim.
   The sealed database and all 15 original publication files were preserved.
   All 2,642 Python tests, 44 web tests and the production build passed.
   Zero provider calls.
-- [ ] Provide a supported read-only operator launcher for the registered archive.
-  Exercise ordinary navigation on the actual saved versions and clean shutdown.
-  Add a real-browser control that restores a verified ordinary provenance
-  relationship after an unavailable assessment lookup.
+- [x] Provide the [supported read-only archive launcher](../docs/handoffs/read-only-archive-launcher-2026-11-21.md).
+  Chrome opened the actual Q008 critique v2 and draft v1 with one shared receipt.
+  In The Bone Labyrinth, returning from an unavailable assessment retrieved the
+  exact verified critique and draft relationship again. Both launchers exited
+  cleanly, released the same port and removed their private navigation snapshots.
+  All 18 checked source files retained their hashes and modification times.
+  A separate foreground Ctrl+C check also exited cleanly. All 2,644 Python
+  tests, 44 web tests, 11 HTTP inspector checks and the production build passed.
+  Zero provider calls.
+- [ ] Check newly saved ordinary v61 reviews from a second scene family for one
+  substantive factual claim with complete evidence. Freeze its whole-claim gold
+  and exact source versions before viewing assessor output. If none qualify,
+  document the gap and propose an isolated capture for approval.
 
 Step 19 **IN PROGRESS**. Step 20 **NOT STARTED**. Production prompts unchanged.
 Live calls paused and full workflow canary on hold.
