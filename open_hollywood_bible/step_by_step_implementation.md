@@ -13476,9 +13476,23 @@ one genuine review with an admitted claim.
   The full verification passed 2,624 Python tests, 34 web tests, lint, formatting,
   type checks and the production build. Zero live calls.
   [Decision](../docs/adr/0067-observed-saved-review-publication.md)
-- [ ] Rehearse a read-only consumer inventory for the pinned Q008 publication.
-  Verify one displayed assessment and one usage total across the two exact lookups,
-  and unavailable states for an adjacent version and damaged or incomplete evidence.
+- [x] Rehearse the [read-only Q008 consumer inventory](../docs/handoffs/q008-consumer-rehearsal-2026-11-21.md).
+  Both exact selections, in either order and on repeated opens, displayed one
+  assessment and counted one generation (58,894 input and 345 output tokens).
+  A same-text adjacent draft in a disposable copy and all seven damaged or absent
+  publication controls showed unavailable with no assessment or usage record.
+  All 63 focused tests passed. Zero live calls.
+- [x] Implement the [tracked read-only Q008 lookup](../docs/handoffs/q008-consumer-lookup-2026-11-21.md).
+  Both exact selections, in either order and on repeated opens, share one
+  assessment and one usage record (58,894 input and 345 output tokens).
+  The same-text successor was unavailable. Rereading a previously valid copy
+  after damage returned empty assessment and accounting lists and null totals.
+  The saved-capture replay matched the rehearsal and preserved all 58 original
+  files. All 2,635 Python tests (including the 22 lookup and publisher
+  regressions), 34 web tests and the production build passed. Zero live calls.
+- [ ] Qualify a read-only Q008 display in an isolated artifact inspector. Verify
+  exact-version workspace binding, shared accounting, switching to the adjacent
+  version during a pending lookup, and clearing the display on a damaged reread.
 
 Step 19 **IN PROGRESS**. Step 20 **NOT STARTED**. Production prompts unchanged.
 Live calls paused and full workflow canary on hold.

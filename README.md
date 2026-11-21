@@ -1687,6 +1687,23 @@ Open `delivery.json` for the original request identity and usage, `evidence.md`
 for the claim and cited passages, and `operator-score.json` for the separate
 adjudication. [Publisher qualification and limits](docs/handoffs/q008-observed-publication-2026-11-21.md)
 
+<a id="q008-lookup"></a>
+
+To look up the existing, registered Q008 publication, pass one or both exact
+selections from the project root. The command prints a JSON inventory. Each
+selection gets a status. Both available selections reference one assessment
+and one generation usage record.
+
+```powershell
+$q008Selections = 'data/diagnostics/q008-downstream-2026-11-20'
+uv run --extra api python -m scripts.lookup_q008_completion --selection "$q008Selections/original_review.json" --selection "$q008Selections/reviewed_draft.json"
+```
+
+Each invocation verifies the private publication at
+`data/diagnostics/q008-publication-2026-11-21/critique-first`. An adjacent
+draft or a damaged publication returns `unavailable`. If every selection is
+unavailable, the record lists are empty and the token totals are null. [Lookup contract and verification](docs/handoffs/q008-consumer-lookup-2026-11-21.md)
+
 ```powershell
 uv run --extra api python scripts/assessment_openai_compact_smoke.py verify `
   --plan data/diagnostics/assessment-openai-compact-smoke-2026-11-14/plan.json

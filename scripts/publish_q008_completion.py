@@ -31,7 +31,10 @@ AUDIT_SHA = "48efc5b0b38b1e6a25ca729e924df0df2d13878ffd561700d54a1e2e2728623d"
 JOURNAL_SHA = "3296473ea28363ae080e756f5a8a4b2d8c24c11aa61d3f7fdfd4f8c80cc7363e"
 
 
-def _collect(selection: ArtifactSelection) -> dict[str, bytes]:
+def collect_observed(
+    selection: ArtifactSelection,
+) -> tuple[dict[str, bytes], BoundAssessmentResult]:
+    """Rebuild the registered publication and its bound result without writing a bundle."""
     plan = smoke.source()
     pin = plan.source.pin
     require(selection in (pin.review, pin.draft), "q008_wrong_selection")
@@ -162,6 +165,11 @@ def _collect(selection: ArtifactSelection) -> dict[str, bytes]:
             "writer_dispatch_authorized": False,
         }
     )
+    return files, bound
+
+
+def _collect(selection: ArtifactSelection) -> dict[str, bytes]:
+    files, _ = collect_observed(selection)
     return files
 
 
