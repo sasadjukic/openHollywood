@@ -11,3 +11,7 @@ The publisher uses the existing manifest-last writer. Both selection orders must
 ## Second registration, 2026-11-22
 
 Q013 qualifies under the same contract. The operator chooses one of two fixed registrations. Each identifies its own sealed source, original critique request, audited journal and independent score. Each manifest carries the registration's existing source identity and both exact selectors. The publisher preserves each scorer's original fields, including Q013's separate claim and evidence judgments. Both registrations' source directories are protected from publication writes. The original Q008 command continues to select Q008 exclusively. [Q013 implementation and replay](../handoffs/q013-observed-publication-2026-11-22.md)
+
+## Shared operator lookup, 2026-11-22
+
+The read-only operator lookup routes each exact selector to its independently pinned publication. Every refresh checks the original delivery, canonical manifest and complete publication before returning that assessment. Lookup rows reference assessments by delivery and claim, and accounting records by delivery. Publication failure affects only the matching rows. The Q008-only command retains its original contract for existing callers, including the artifact inspector. [Consumer qualification](../handoffs/q008-q013-consumer-lookup-2026-11-22.md)

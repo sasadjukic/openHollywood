@@ -1745,6 +1745,24 @@ Each invocation verifies the private publication at
 draft or a damaged publication returns `unavailable`. If every selection is
 unavailable, the record lists are empty and the token totals are null. [Lookup contract and verification](docs/handoffs/q008-consumer-lookup-2026-11-21.md)
 
+<a id="saved-review-lookup"></a>
+
+To open saved Q008 and Q013 assessments together, pass their exact selection
+files to the shared read-only command. Run it from the project root.
+
+```powershell
+$q008Selections = 'data/diagnostics/q008-downstream-2026-11-20'
+$q013Selections = 'data/diagnostics/q013-downstream-2026-11-21'
+uv run --extra api python -m scripts.lookup_saved_review_completion --selection "$q008Selections/original_review.json" --selection "$q013Selections/reviewed_draft.json" --selection "$q013Selections/original_review.json"
+```
+
+The `saved-review-consumer-lookup-1` JSON inventory keeps lookup rows in
+request order and counts each available delivery once. Each call verifies the
+selected publications against their fixed manifests and original deliveries.
+If a publication becomes unavailable, its assessment and usage drop out on
+refresh. Other verified deliveries still contribute to the totals. An adjacent
+version receives its own unavailable row. [Shared lookup verification](docs/handoffs/q008-q013-consumer-lookup-2026-11-22.md)
+
 ```powershell
 uv run --extra api python scripts/assessment_openai_compact_smoke.py verify `
   --plan data/diagnostics/assessment-openai-compact-smoke-2026-11-14/plan.json

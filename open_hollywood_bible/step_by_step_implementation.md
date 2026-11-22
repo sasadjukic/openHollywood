@@ -13588,10 +13588,19 @@ one genuine review with an admitted claim.
   output). An additional exact Q013 selection retained its delivery when
   a neighbor was also requested. Restoring the copy recovered both records.
   All 29 inventories and 33 focused tests passed. Zero provider calls.
-- [ ] Implement the tracked read-only lookup for both fixed publications,
-  preserving the Q008 command and each registration's score fields. Add
-  portable mixed-order, adjacent-version, damaged-refresh and recovery
-  regressions before qualifying Q013 in the API or inspector.
+- [x] Implement the [tracked read-only Q008/Q013 lookup](../docs/handoffs/q008-q013-consumer-lookup-2026-11-22.md).
+  Mixed, repeated and reversed selections retained one assessment and one
+  usage record per delivery and each registration's original score fields.
+  Adjacent versions and damage cleared only the affected delivery. A fresh
+  read after restoration recovered it. Nine new portable regressions passed.
+  All 29 saved scenarios matched the rehearsal, and the Q008-only command
+  matched its previous output and exit status in four comparisons. All
+  2,671 Python tests and 44 web tests passed, along with lint, type checks
+  and production builds. Zero provider calls.
+- [ ] Qualify the read-only Q013 API and inspector adapter against the
+  registered workspace and both exact versions. Exercise copied workspace,
+  adjacent version, selection change mid-lookup and valid-then-damaged
+  refresh controls, including a Q008 compatibility replay.
 
 Step 19 **IN PROGRESS**. Step 20 **NOT STARTED**. Production prompts unchanged.
 Live calls paused and full workflow canary on hold.
