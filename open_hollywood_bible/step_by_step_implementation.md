@@ -13634,10 +13634,18 @@ one genuine review with an admitted claim.
   Both original intakes replayed, all 83 excerpts matched the complete drafts,
   and seven refusal controls passed. All 106 focused regressions passed.
   Zero assessor deliveries opened. Zero live calls.
-- [ ] Rehearse Q010 as the only pending factual claim in the Elias intake and
-  Q016 as an explicit mixed hold in the Elara intake. Verify neutral request
-  wording, gold exclusion and separate claim and evidence scoring for injected
-  answers before deciding whether a one-claim Q010 assessor smoke is warranted.
+- [x] [Rehearse Q010 as the sole factual target and Q016 as a mixed hold](../docs/handoffs/q010-intake-rehearsal-2026-11-22.md).
+  Both Q010 endpoint bodies reproduced with scorer gold excluded. Six
+  authored finals bound. Grounded uncertainty passed with the final excerpt
+  or a precisely located full-draft citation. Both entry and a definite stop
+  outside failed. The two disagreement controls separated label accuracy
+  from evidence coverage. Q016 produced zero assessor requests, including
+  with a populated declaration and brief. All 193 focused regressions passed.
+  Zero live calls.
+- [ ] Prepare a single-use Sol-high Q010 smoke for critique v2 with one
+  input count, at most one generation and zero retries. Bind the Q010 work,
+  both payload hashes and separate claim and evidence scoring. Verify the
+  count and interrupted-dispatch stops locally and submit the plan for approval.
 
 Step 19 **IN PROGRESS**. Step 20 **NOT STARTED**. Production prompts unchanged.
 Live calls paused and full workflow canary on hold.
