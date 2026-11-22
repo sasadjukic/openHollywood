@@ -13625,11 +13625,19 @@ one genuine review with an admitted claim.
   source and publication files retained their hashes and modification times.
   Q013 also exited cleanly on Ctrl+C. All 2,674 Python tests and 49 web
   tests passed, along with lint, type checks and both builds. Zero provider calls.
-- [ ] Audit the two unscored ending statements in the saved Q008 and Q013
-  critiques locally. Check Elias’s movement toward the threshold and Elara’s
-  inferred resolve against the exact plans and drafts. Freeze independent
-  gold for any admissible whole factual claim and record any editorial or
-  insufficient-evidence limit before considering further inference.
+- [x] [Audit the two unscored ending statements against the exact drafts and plans](../docs/handoffs/q008-q013-ending-claim-audit-2026-11-22.md).
+  Freeze `uncertain` for the Elias review’s Q010 field. The final sentence
+  establishes movement past the shoes and toward the threshold. His exact
+  position at the cut is unresolved. Hold the Elara review’s whole Q016 field
+  for editorial interpretation. The handwriting test and haunted outcome
+  are established, while obsession with proving a fake is explicitly inferred.
+  Both original intakes replayed, all 83 excerpts matched the complete drafts,
+  and seven refusal controls passed. All 106 focused regressions passed.
+  Zero assessor deliveries opened. Zero live calls.
+- [ ] Rehearse Q010 as the only pending factual claim in the Elias intake and
+  Q016 as an explicit mixed hold in the Elara intake. Verify neutral request
+  wording, gold exclusion and separate claim and evidence scoring for injected
+  answers before deciding whether a one-claim Q010 assessor smoke is warranted.
 
 Step 19 **IN PROGRESS**. Step 20 **NOT STARTED**. Production prompts unchanged.
 Live calls paused and full workflow canary on hold.
