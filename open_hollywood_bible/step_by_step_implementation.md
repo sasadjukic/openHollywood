@@ -13642,10 +13642,31 @@ one genuine review with an admitted claim.
   from evidence coverage. Q016 produced zero assessor requests, including
   with a populated declaration and brief. All 193 focused regressions passed.
   Zero live calls.
-- [ ] Prepare a single-use Sol-high Q010 smoke for critique v2 with one
-  input count, at most one generation and zero retries. Bind the Q010 work,
-  both payload hashes and separate claim and evidence scoring. Verify the
-  count and interrupted-dispatch stops locally and submit the plan for approval.
+- [x] [Freeze the one-claim Q010 Sol-high smoke for critique v2](../docs/handoffs/q010-sol-high-smoke-plan-2026-11-22.md).
+  Both exact bodies match the gold-excluded rehearsal. One count, at most
+  one generation, zero retries. The frozen criteria score the whole claim and
+  draft evidence independently. All 24 exact-request journal rehearsals passed.
+  Two competing processes sent one count and one generation in total. Fresh
+  launches after each rehearsal sent zero additional requests. At freeze,
+  the journal was ready, both slots were undispatched and Q016 was held.
+  All 2,681 Python regressions passed. Zero live calls.
+- [x] [Run the approved Q010 Sol-high smoke and score both judgments](../docs/handoffs/q010-sol-high-smoke-results-2026-11-22.md).
+  One count and one generation returned HTTP 200 with zero retries. The count
+  and generation agreed on 58,662 input tokens. Generation used 545 output
+  tokens, including 419 reasoning tokens. Claim correctness failed because Sol
+  returned `unsupported` against the frozen `uncertain` gold. Evidence coverage
+  passed because Sol located the final sentence in `E0883` and explained the limit of the
+  depicted movement. Offline replay verified both slot chains, usage and
+  the exact draft passage. The single-use journal is spent. Q016 stays held.
+- [x] [Preserve Q010 and audit the choice of `unsupported`](../docs/handoffs/q010-label-audit-2026-11-22.md).
+  The sealed 20-member regression reproduced the provider label and exact draft
+  citation. Claim fail and evidence pass were preserved. One component was
+  established and one unresolved. Sol identified no contradictory fact.
+  All seven negative controls and 292 focused tests passed. Zero live calls.
+- [ ] Prepare local controls across two scene families for a confirmed event,
+  an explicit contradiction, an unresolved event in a complete scene and an
+  unavailable source. Freeze gold and qualify the contrasts before proposing
+  a separate comparison for approval.
 
 Step 19 **IN PROGRESS**. Step 20 **NOT STARTED**. Production prompts unchanged.
 Live calls paused and full workflow canary on hold.

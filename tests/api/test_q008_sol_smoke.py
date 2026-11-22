@@ -1,4 +1,4 @@
-"""Exercise both single-claim journals at the HTTP boundary using a portable saved review."""
+"""Exercise the single-claim journals at the HTTP boundary using a portable saved review."""
 
 from __future__ import annotations
 
@@ -15,7 +15,7 @@ from open_hollywood_engine.evaluations.assessment_completion import encoded
 from open_hollywood_engine.evaluations.review_evidence import EvidenceError
 
 from scripts import ordinary_v61_capture as ledger
-from scripts import q008_sol_smoke, q013_sol_smoke
+from scripts import q008_sol_smoke, q010_assessment, q010_sol_smoke, q013_sol_smoke
 from tests.api.test_saved_review_completion import anyio_backend as anyio_backend
 from tests.api.test_saved_review_completion import archive as archive
 from tests.api.test_saved_review_completion import prepared as prepared
@@ -24,7 +24,9 @@ from tests.api.test_saved_review_completion import source as source
 pytestmark = pytest.mark.anyio
 
 
-@pytest.fixture(params=(q008_sol_smoke, q013_sol_smoke), ids=("q008", "q013"))
+@pytest.fixture(
+    params=(q008_sol_smoke, q013_sol_smoke, q010_sol_smoke), ids=("q008", "q013", "q010")
+)
 def smoke(request: pytest.FixtureRequest) -> ModuleType:
     runner = request.param
     assert isinstance(runner, ModuleType)
@@ -46,10 +48,15 @@ def issued(
     monkeypatch.setattr(smoke, "GOLD", gold)
     monkeypatch.setattr(smoke, "GOLD_SHA", ledger.file_hash(gold))
     p = wire._prepare("unit", None)
-    monkeypatch.setattr(smoke, "source", lambda: p)
+    binding = (
+        q010_assessment.Plan(p.work, p.source.selected, p.source.pin.draft, p.wire, p.files)
+        if smoke is q010_sol_smoke
+        else p
+    )
+    monkeypatch.setattr(smoke, "source", lambda: binding)
     folder = tmp_path / "qualification"
     folder.mkdir()
-    raw = smoke._plan(p)
+    raw = smoke._plan(binding)
     for name, body in (p.files | {"plan.json": raw}).items():
         (folder / name).write_bytes(body)
     digest = storage._sha(raw)
