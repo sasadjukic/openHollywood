@@ -17,26 +17,40 @@ from open_hollywood_api.routes import (
     exports,
     health,
     q008_inspector,
+    q013_inspector,
     workflow_events,
     workspace,
 )
 from open_hollywood_api.services.artifact_provenance import ArtifactProvenanceService
+from open_hollywood_api.services.assessment_inspector_workspace import Reader
 from open_hollywood_api.services.exports import ProjectExportStore
-from open_hollywood_api.services.q008_inspector import Q008InspectorService, Q008Reader
+from open_hollywood_api.services.q008_inspector import Q008InspectorService
+from open_hollywood_api.services.q013_inspector import Q013InspectorService
 from open_hollywood_api.services.workflow_events import WorkflowEventStore
 from open_hollywood_api.services.workspace import WorkspaceStore
+from open_hollywood_api.workspace_models import SavedAssessmentView
 
 
-def navigation_app(authority: Path, engine: Engine, reader: Q008Reader) -> FastAPI:
+def navigation_app(
+    authority: Path,
+    engine: Engine,
+    reader: Reader,
+    *,
+    assessment_view: SavedAssessmentView = "Q008",
+) -> FastAPI:
     app = FastAPI(title="Open Hollywood read-only workspace", docs_url=None, redoc_url=None)
     sessions = create_session_factory(engine)
     app.state.workspace_store = WorkspaceStore(sessions)
     app.state.project_export_store = ProjectExportStore(sessions)
     app.state.workflow_event_store = WorkflowEventStore(sessions)
     app.state.artifact_provenance_service = ArtifactProvenanceService(authority)
-    app.state.q008_inspector = Q008InspectorService(authority, reader)
     app.include_router(artifact_provenance.router, prefix="/api/v1")
-    app.include_router(q008_inspector.router, prefix="/api/v1")
+    if assessment_view == "Q013":
+        app.state.q013_inspector = Q013InspectorService(authority, reader)
+        app.include_router(q013_inspector.router, prefix="/api/v1")
+    else:
+        app.state.q008_inspector = Q008InspectorService(authority, reader)
+        app.include_router(q008_inspector.router, prefix="/api/v1")
     for path, handler in (
         ("/health", health.get_health),
         ("/projects", workspace.list_projects),

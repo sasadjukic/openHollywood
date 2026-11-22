@@ -2,8 +2,10 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import { chromium } from "playwright-core";
 
-const [mode, origin] = process.argv.slice(2);
+const [mode, origin, claimId = "Q008"] = process.argv.slice(2);
 assert.ok(["q008", "ordinary"].includes(mode));
+assert.ok(claimId === "Q008" || (mode === "ordinary" && claimId === "Q013"));
+const endpoint = claimId.toLowerCase() + "-assessment";
 assert.equal(new URL(origin).hostname, "127.0.0.1");
 const archive = mode === "q008";
 const diagnostics = "../../data/diagnostics";
@@ -37,7 +39,7 @@ try {
       problems.push("Unexpected method or origin");
       return route.abort();
     }
-    if (url.pathname.endsWith("/q008-assessment")) requests.push(url.pathname);
+    if (url.pathname.endsWith("-assessment")) requests.push(url.pathname);
     return route.continue();
   });
   const nav = page.getByRole("navigation", {
@@ -49,7 +51,9 @@ try {
   const provenance = inspector.getByRole("region", {
     name: "Review provenance",
   });
-  const assessment = inspector.getByRole("region", { name: "Q008 assessment" });
+  const assessment = inspector.getByRole("region", {
+    name: claimId + " assessment",
+  });
   const select = inspector.getByRole("combobox", { name: "Artifact version" });
   const results = [];
 
@@ -153,11 +157,13 @@ try {
     const { selection } = saved;
     await selectArtifact("Critique — s1", "Critique", selection);
     await expectVerified();
-    const view = await readResult(selection, "q008-assessment", () =>
+    const view = await readResult(selection, endpoint, () =>
       inspector.getByRole("button", { name: "View saved assessment" }).click(),
     );
     assert.deepEqual(view.lookups[0].selection, selection);
     assert.equal(view.lookups[0].reason, "unregistered_workspace");
+    assert.equal(view.contract, claimId.toLowerCase() + "-inspector-view-1");
+    assert.deepEqual(view.lookups[0].selection, selection);
     assert.deepEqual(view.assessments, []);
     assert.deepEqual(view.accounting_records, []);
     assert.equal(view.generation_totals, null);

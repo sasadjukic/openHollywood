@@ -4,9 +4,10 @@ from typing import Annotated
 from uuid import UUID
 
 import anyio
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 
 from open_hollywood_api.dependencies import get_workspace_store
+from open_hollywood_api.services import q013_inspector
 from open_hollywood_api.services.workspace import (
     WorkspaceArtifactVersionNotFoundError,
     WorkspaceProjectActiveError,
@@ -116,6 +117,7 @@ async def delete_story_project(
 )
 async def get_project_workspace(
     project_id: UUID,
+    request: Request,
     store: WorkspaceStoreDependency,
 ) -> ProjectWorkspace:
     """Load chat, workflow status, artifacts, and version metadata."""
@@ -129,7 +131,14 @@ async def get_project_workspace(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Project not found",
         ) from error
-    return ProjectWorkspace.from_record(record)
+    # This chooses the display contract. Only the subsequent exact-version GET grants access.
+    state = request.app.state
+    service = getattr(state, "q013_inspector", None)
+    use_q013 = isinstance(service, q013_inspector.Q013InspectorService) and (
+        getattr(state, "q008_inspector", None) is None
+        or service.database == q013_inspector.REGISTERED.path
+    )
+    return ProjectWorkspace.from_record(record, "Q013" if use_q013 else "Q008")
 
 
 @router.get(

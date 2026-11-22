@@ -1,6 +1,7 @@
 """Exact workspace, version, delivery and disclosure boundaries for the Q013 inspector."""
 
-from collections.abc import Sequence
+import sqlite3
+from collections.abc import Iterator, Sequence
 from pathlib import Path
 from shutil import copyfile
 from uuid import uuid4
@@ -8,9 +9,13 @@ from uuid import uuid4
 import pytest
 from httpx import ASGITransport, AsyncClient
 from open_hollywood_api.app import create_app, create_q013_readonly_app, lifespan
+from open_hollywood_api.dependencies import get_workspace_store
+from open_hollywood_api.persistence.database import create_session_factory
 from open_hollywood_api.services import q013_inspector as api
 from open_hollywood_api.services.production_association_records import ArtifactSelection
+from open_hollywood_api.services.workspace import WorkspaceStore
 from pydantic import BaseModel
+from sqlalchemy import create_engine
 
 from scripts import lookup_saved_review_completion as lookup
 from tests.api.test_q008_inspector_api import anyio_backend as anyio_backend
@@ -68,8 +73,28 @@ def empty(view: api.Q013InspectorView, reason: str) -> None:
     assert not view.assessments and not view.accounting_records and view.generation_totals is None
 
 
+@pytest.fixture
+def navigation_store(archive: Path, tmp_path: Path) -> Iterator[WorkspaceStore]:
+    # The archive browser reads navigation from its own immutable snapshot.
+    snapshot = tmp_path / "navigation.db"
+    copyfile(archive / "work/database/open_hollywood.db", snapshot)
+    uri = snapshot.as_uri() + "?mode=ro&immutable=1"
+    engine = create_engine(
+        "sqlite+pysqlite://",
+        creator=lambda: sqlite3.connect(uri, uri=True, check_same_thread=False),
+    )
+    try:
+        yield WorkspaceStore(create_session_factory(engine))
+    finally:
+        engine.dispose()
+
+
 async def test_workspace_pair_copy_and_source_refresh(
-    archive: Path, source: FixtureRegistration, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    archive: Path,
+    source: FixtureRegistration,
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    navigation_store: WorkspaceStore,
 ) -> None:
     db = archive / "work/database/open_hollywood.db"
     stat = db.stat()
@@ -135,17 +160,32 @@ async def test_workspace_pair_copy_and_source_refresh(
             assert await read(client, draft) == second
 
     # Also exercise the optional route through the normal application lifecycle.
-    monkeypatch.setenv("OPEN_HOLLYWOOD_DB_PATH", str(db))
-    for configured in (False, True):
+    def unexpected_q008(_: Sequence[ArtifactSelection]) -> BaseModel:
+        raise AssertionError("Workspace navigation unexpectedly opened a Q008 delivery")
+
+    for database, use_q008, use_q013, display in (
+        (db, False, False, "Q008"),
+        (db, False, True, "Q013"),
+        (db, True, True, "Q013"),
+        (copy, True, True, "Q008"),
+    ):
+        monkeypatch.setenv("OPEN_HOLLYWOOD_DB_PATH", str(database))
         app = create_app(
-            q013_reader=reader if configured else None, model_catalog_service=offline_catalog()
+            q008_reader=unexpected_q008 if use_q008 else None,
+            q013_reader=reader if use_q013 else None,
+            model_catalog_service=offline_catalog(),
         )
+        app.dependency_overrides[get_workspace_store] = lambda: navigation_store
         async with (
             lifespan(app),
             AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client,
         ):
+            opened_before = len(opened)
+            shell = await client.get(f"/api/v1/projects/{draft.project_id}/workspace")
+            assert shell.status_code == 200
+            assert shell.json()["saved_assessment_view"] == display and len(opened) == opened_before
             reply = await read(client, draft)
-            if configured:
+            if use_q013 and database == db:
                 assert reply == second
             else:
                 empty(reply, "unregistered_workspace")

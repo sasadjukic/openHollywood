@@ -1776,6 +1776,19 @@ recovery in the mounted inspector. It alters only a disposable publication.
 The supported archive launcher currently opens Q008.
 [Q013 inspector qualification](docs/handoffs/q013-api-inspector-qualification-2026-11-22.md)
 
+To replay **View saved assessment** from the artifact list in installed Google
+Chrome, use the following command with the saved Q013 archive and registered
+ordinary workspace available. Run the second command for Q008 compatibility.
+
+```powershell
+uv run --extra api python -m scripts.qualify_q013_browser
+uv run --extra api python -m scripts.qualify_q008_browser
+```
+
+The Q013 replay uses the original publication for the exact versions and a
+disposable publication for damaged refresh and recovery. It also checks the
+return to ordinary review provenance. [Browser qualification](docs/handoffs/q013-browser-navigation-2026-11-22.md)
+
 ```powershell
 uv run --extra api python scripts/assessment_openai_compact_smoke.py verify `
   --plan data/diagnostics/assessment-openai-compact-smoke-2026-11-14/plan.json

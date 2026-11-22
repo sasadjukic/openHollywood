@@ -675,6 +675,10 @@ export type ProjectWorkspace = {
   conversations: Array<WorkspaceConversation>;
   project: ProjectSummary;
   /**
+   * Saved Assessment View
+   */
+  saved_assessment_view?: "Q008" | "Q013";
+  /**
    * Workflow Runs
    */
   workflow_runs: Array<WorkspaceRun>;

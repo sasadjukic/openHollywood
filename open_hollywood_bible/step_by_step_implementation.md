@@ -13607,10 +13607,17 @@ one genuine review with an admitted claim.
   source and publication files retained their hashes and modification times.
   All 2,673 Python tests and 48 web tests passed, along with lint, type
   checks and both production builds. Zero provider calls.
-- [ ] Qualify Q013 from the **View saved assessment** action in a real browser.
-  Exercise both exact versions, adjacent versions, the copied workspace,
-  damaged refresh and return to verified provenance. Replay Q008 navigation
-  before extending the supported read-only archive launcher to Q013.
+- [x] [Qualify Q013 from artifact navigation in a real browser](../docs/handoffs/q013-browser-navigation-2026-11-22.md).
+  Chrome opened one shared assessment and usage record from critique v3 and
+  draft v1. Both adjacent versions cleared the previous result. A byte-identical
+  workspace copy was refused. Damaging a disposable publication cleared usage
+  on refresh, and restoring the bytes recovered the original response.
+  Returning to provenance restored the verified review-to-draft relationship
+  in The Bone Labyrinth. The Q008 navigation replay and both existing launcher
+  modes passed. All 2,673 Python tests and 49 web tests passed. Zero provider calls.
+- [ ] Extend the supported read-only archive launcher to Q013. Verify both
+  exact versions from the sealed archive, clean shutdown, snapshot cleanup
+  and port reuse. Replay the Q008 and ordinary launcher modes.
 
 Step 19 **IN PROGRESS**. Step 20 **NOT STARTED**. Production prompts unchanged.
 Live calls paused and full workflow canary on hold.

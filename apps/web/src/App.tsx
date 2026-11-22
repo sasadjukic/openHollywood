@@ -735,6 +735,7 @@ export function App() {
         </main>
 
         <ArtifactInspector
+          assessmentView={workspace?.saved_assessment_view}
           projectId={selectedProjectId}
           artifact={selectedArtifact}
           detail={artifactDetailQuery.data}

@@ -1,5 +1,6 @@
 import type {
   ArtifactVersionDetail,
+  ProjectWorkspace,
   WorkspaceArtifact,
 } from "@open-hollywood/contracts";
 import {
@@ -12,6 +13,7 @@ import {
 
 import { ArtifactProvenance } from "./ArtifactProvenance";
 import { Q008Assessment } from "./Q008Assessment";
+import { Q013Assessment } from "./SavedAssessment";
 import type { ReviewPanelProps } from "./artifactSelection";
 
 interface ArtifactInspectorProps {
@@ -24,6 +26,7 @@ interface ArtifactInspectorProps {
   selectedVersionId: string | null;
   projectId: string | null;
   ReviewPanel?: ComponentType<ReviewPanelProps>;
+  assessmentView?: ProjectWorkspace["saved_assessment_view"];
 }
 
 export function ArtifactInspector(props: ArtifactInspectorProps) {
@@ -45,6 +48,7 @@ function SelectedArtifactInspector({
   selectedVersionId,
   projectId,
   ReviewPanel,
+  assessmentView,
 }: ArtifactInspectorProps) {
   const [showAssessment, setShowAssessment] = useState(false);
   const reviewId = useId();
@@ -56,8 +60,10 @@ function SelectedArtifactInspector({
       focusOnToggle.current = false;
     }
   }, [showAssessment]);
+  const Assessment =
+    assessmentView === "Q013" ? Q013Assessment : Q008Assessment;
   const Panel =
-    ReviewPanel ?? (showAssessment ? Q008Assessment : ArtifactProvenance);
+    ReviewPanel ?? (showAssessment ? Assessment : ArtifactProvenance);
   const boundDetail =
     detail?.selected_version.id === selectedVersionId &&
     detail.artifact.id === artifact?.id

@@ -5,7 +5,7 @@ from __future__ import annotations
 from dataclasses import asdict
 from datetime import datetime
 from decimal import Decimal
-from typing import Any
+from typing import Any, Literal
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
@@ -194,6 +194,9 @@ class WorkspaceArtifact(WorkspaceModel):
         )
 
 
+SavedAssessmentView = Literal["Q008", "Q013"]
+
+
 class ProjectWorkspace(WorkspaceModel):
     """Persisted project shell consumed by the three-panel client."""
 
@@ -201,10 +204,14 @@ class ProjectWorkspace(WorkspaceModel):
     conversations: list[WorkspaceConversation]
     workflow_runs: list[WorkspaceRun]
     artifacts: list[WorkspaceArtifact]
+    saved_assessment_view: SavedAssessmentView = "Q008"
 
     @classmethod
-    def from_record(cls, record: ProjectWorkspaceRecord) -> ProjectWorkspace:
+    def from_record(
+        cls, record: ProjectWorkspaceRecord, saved_assessment_view: SavedAssessmentView = "Q008"
+    ) -> ProjectWorkspace:
         return cls(
+            saved_assessment_view=saved_assessment_view,
             project=ProjectSummary.from_record(record.project),
             conversations=[
                 WorkspaceConversation.from_record(conversation)

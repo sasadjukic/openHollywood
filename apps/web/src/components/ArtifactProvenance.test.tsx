@@ -2,18 +2,24 @@ import type {
   ArtifactProvenance,
   ArtifactSelection,
   ArtifactVersionDetail,
+  ProjectWorkspace,
 } from "@open-hollywood/contracts";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { act, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { fetchArtifactProvenance, fetchQ008Assessment } from "../api";
+import {
+  fetchArtifactProvenance,
+  fetchQ008Assessment,
+  fetchQ013Assessment,
+} from "../api";
 import { ArtifactInspector } from "./ArtifactInspector";
 
 vi.mock("../api", () => ({
   fetchArtifactProvenance: vi.fn(),
   fetchQ008Assessment: vi.fn(),
+  fetchQ013Assessment: vi.fn(),
 }));
 const fetchProvenance = vi.mocked(fetchArtifactProvenance);
 const fetchAssessment = vi.mocked(fetchQ008Assessment);
@@ -92,7 +98,11 @@ function view(selection: ArtifactSelection): ArtifactProvenance {
   };
 }
 
-function setup(initial = detail(), projectId = project) {
+function setup(
+  initial = detail(),
+  projectId = project,
+  assessmentView?: ProjectWorkspace["saved_assessment_view"],
+) {
   const client = new QueryClient({
     defaultOptions: { queries: { retry: false } },
   });
@@ -103,6 +113,7 @@ function setup(initial = detail(), projectId = project) {
   ) => (
     <QueryClientProvider client={client}>
       <ArtifactInspector
+        assessmentView={assessmentView}
         artifact={value.artifact}
         detail={value}
         selectedVersionId={selected}
@@ -135,9 +146,54 @@ function deferred<T>() {
 beforeEach(() => {
   fetchProvenance.mockReset();
   fetchAssessment.mockReset();
+  vi.mocked(fetchQ013Assessment).mockReset();
 });
 
 describe("exact-version provenance in the inspector", () => {
+  it("uses the workspace's Q013 reader on demand and returns to the same verified relationship", async () => {
+    fetchProvenance.mockImplementation((selection) =>
+      Promise.resolve(view(selection)),
+    );
+    vi.mocked(fetchQ013Assessment).mockImplementation((selection) =>
+      Promise.resolve({
+        contract: "q013-inspector-view-1",
+        lookups: [
+          {
+            selection,
+            status: "unavailable",
+            reason: "unregistered_workspace",
+            claim_id: null,
+            delivery_id: null,
+          },
+        ],
+        assessments: [],
+        accounting_records: [],
+        generation_totals: null,
+      }),
+    );
+    setup(detail(), project, "Q013");
+    await screen.findByText("Version relationship verified");
+    expect(fetchQ013Assessment).not.toHaveBeenCalled();
+    await userEvent.click(
+      screen.getByRole("button", { name: "View saved assessment" }),
+    );
+    await screen.findByText("Assessment unavailable in this workspace.");
+    expect(vi.mocked(fetchQ013Assessment).mock.calls[0]?.[0]).toEqual(
+      fetchProvenance.mock.calls[0]?.[0],
+    );
+    await userEvent.click(
+      screen.getByRole("button", { name: "Return to provenance" }),
+    );
+    await screen.findByText("Version relationship verified");
+    expect(fetchProvenance.mock.calls[1]?.[0]).toEqual(
+      fetchProvenance.mock.calls[0]?.[0],
+    );
+    expect(
+      screen.queryByRole("region", { name: "Q013 assessment" }),
+    ).not.toBeInTheDocument();
+    expect(fetchQ013Assessment).toHaveBeenCalledTimes(1);
+    expect(fetchAssessment).not.toHaveBeenCalled();
+  });
   it("returns to fresh provenance while a saved assessment request is still pending", async () => {
     const assessment =
       deferred<Awaited<ReturnType<typeof fetchQ008Assessment>>>();
