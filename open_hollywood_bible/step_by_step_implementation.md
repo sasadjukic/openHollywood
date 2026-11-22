@@ -13580,10 +13580,18 @@ one genuine review with an admitted claim.
   historical files, and the original and shared commands reused that
   historical publication. All 2,662 Python tests and 44 web tests passed,
   along with lint, type checks and production builds. Zero provider calls.
-- [ ] Rehearse read-only consumer lookup across both pinned publications.
-  Verify both exact Q013 selections, mixed and repeated Q008/Q013 lookups,
-  one usage record per delivery, and selective clearing of assessment and
-  usage after an adjacent selection or damage to a disposable publication.
+- [x] [Rehearse read-only consumer lookup across the pinned Q008 and Q013 publications](../docs/handoffs/q008-q013-consumer-rehearsal-2026-11-22.md).
+  Mixed and repeated exact selections returned two assessments and two usage
+  records (121,729 input and 772 output tokens). Switching the last exact
+  Q013 selection to either genuine adjacent version, or refreshing after
+  any of five publication faults, left only Q008 (58,894 input and 345
+  output). An additional exact Q013 selection retained its delivery when
+  a neighbor was also requested. Restoring the copy recovered both records.
+  All 29 inventories and 33 focused tests passed. Zero provider calls.
+- [ ] Implement the tracked read-only lookup for both fixed publications,
+  preserving the Q008 command and each registration's score fields. Add
+  portable mixed-order, adjacent-version, damaged-refresh and recovery
+  regressions before qualifying Q013 in the API or inspector.
 
 Step 19 **IN PROGRESS**. Step 20 **NOT STARTED**. Production prompts unchanged.
 Live calls paused and full workflow canary on hold.
