@@ -15,3 +15,7 @@ Q013 qualifies under the same contract. The operator chooses one of two fixed re
 ## Shared operator lookup, 2026-11-22
 
 The read-only operator lookup routes each exact selector to its independently pinned publication. Every refresh checks the original delivery, canonical manifest and complete publication before returning that assessment. Lookup rows reference assessments by delivery and claim, and accounting records by delivery. Publication failure affects only the matching rows. The Q008-only command retains its original contract for existing callers, including the artifact inspector. [Consumer qualification](../handoffs/q008-q013-consumer-lookup-2026-11-22.md)
+
+## Q013 inspector qualification, 2026-11-22
+
+The Q013 GET binds both selectors to the physical database registered for The Impossible Card. The artifact inspector can display the saved judgment, citations, separate claim-correctness and evidence-coverage scores, and the original critique's usage. Each successful refresh requires a new verification. The inspector clears the previous display while checking and accepts a result only for the current selection. Q008 retains its published API and its original score format. [API and inspector qualification](../handoffs/q013-api-inspector-qualification-2026-11-22.md)

@@ -383,6 +383,56 @@ export type HttpValidationError = {
 };
 
 /**
+ * InspectorAccounting
+ */
+export type InspectorAccounting = {
+  /**
+   * Actual Billed Cost
+   */
+  actual_billed_cost: null;
+  /**
+   * Delivery Id
+   */
+  delivery_id: string;
+  generation_usage: Usage;
+  /**
+   * Preflight Input Count
+   */
+  preflight_input_count: number;
+  request_selection: ArtifactSelection;
+};
+
+/**
+ * InspectorStatus
+ */
+export type InspectorStatus = {
+  /**
+   * Craft
+   */
+  craft: "unassessed";
+  /**
+   * Edit Necessity
+   */
+  edit_necessity: "unassessed";
+  /**
+   * Evidence Adequacy
+   */
+  evidence_adequacy: "unassessed";
+  /**
+   * Production Attachment Eligible
+   */
+  production_attachment_eligible: false;
+  /**
+   * Semantic Support
+   */
+  semantic_support: "unassessed";
+  /**
+   * Writer Dispatch Authorized
+   */
+  writer_dispatch_authorized: false;
+};
+
+/**
  * ModelAssessment
  *
  * Fallible model-authored values, explicitly separate from application authority.
@@ -855,6 +905,101 @@ export type Q008OperatorScore = {
    * Possible Judgments
    */
   possible_judgments: number;
+};
+
+/**
+ * Q013AssessmentView
+ */
+export type Q013AssessmentView = {
+  application_status: InspectorStatus;
+  /**
+   * Claim
+   */
+  claim: string;
+  /**
+   * Claim Id
+   */
+  claim_id: "Q013";
+  /**
+   * Delivery Id
+   */
+  delivery_id: string;
+  /**
+   * Model
+   */
+  model: string;
+  model_assessment: ModelAssessment;
+  operator_score: Q013OperatorScore;
+};
+
+/**
+ * Q013InspectorView
+ */
+export type Q013InspectorView = {
+  /**
+   * Accounting Records
+   */
+  accounting_records: Array<InspectorAccounting>;
+  /**
+   * Assessments
+   */
+  assessments: Array<Q013AssessmentView>;
+  /**
+   * Contract
+   */
+  contract: "q013-inspector-view-1";
+  generation_totals: Usage | null;
+  /**
+   * Lookups
+   */
+  lookups: Array<Q013LookupRow>;
+};
+
+/**
+ * Q013LookupRow
+ */
+export type Q013LookupRow = {
+  /**
+   * Claim Id
+   */
+  claim_id: "Q013" | null;
+  /**
+   * Delivery Id
+   */
+  delivery_id: string | null;
+  /**
+   * Reason
+   */
+  reason:
+    | "unregistered_workspace"
+    | "workspace_unavailable"
+    | "exact_selection_unavailable"
+    | "publication_missing"
+    | "publication_incomplete"
+    | "publication_manifest_changed"
+    | "publication_unexpected_member"
+    | "publication_member_changed"
+    | "publication_unavailable"
+    | null;
+  selection: ArtifactSelection;
+  /**
+   * Status
+   */
+  status: "available" | "unavailable";
+};
+
+/**
+ * Q013OperatorScore
+ */
+export type Q013OperatorScore = {
+  /**
+   * Claim Correctness
+   */
+  claim_correctness: "pass" | "fail";
+  /**
+   * Evidence Coverage
+   */
+  evidence_coverage: "pass" | "fail";
 };
 
 /**
@@ -1538,6 +1683,55 @@ export type GetQ008AssessmentResponses = {
 
 export type GetQ008AssessmentResponse =
   GetQ008AssessmentResponses[keyof GetQ008AssessmentResponses];
+
+export type GetQ013AssessmentData = {
+  body?: never;
+  path: {
+    /**
+     * Artifact Version Id
+     */
+    artifact_version_id: string;
+  };
+  query: {
+    /**
+     * Project Id
+     */
+    project_id: string;
+    /**
+     * Artifact Id
+     */
+    artifact_id: string;
+    /**
+     * Content Sha256
+     */
+    content_sha256: string;
+    /**
+     * Role
+     */
+    role: "original_review" | "reviewed_draft";
+  };
+  url: "/api/v1/artifact-versions/{artifact_version_id}/q013-assessment";
+};
+
+export type GetQ013AssessmentErrors = {
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type GetQ013AssessmentError =
+  GetQ013AssessmentErrors[keyof GetQ013AssessmentErrors];
+
+export type GetQ013AssessmentResponses = {
+  /**
+   * Successful Response
+   */
+  200: Q013InspectorView;
+};
+
+export type GetQ013AssessmentResponse =
+  GetQ013AssessmentResponses[keyof GetQ013AssessmentResponses];
 
 export type GetHealthData = {
   body?: never;

@@ -13597,10 +13597,20 @@ one genuine review with an admitted claim.
   matched its previous output and exit status in four comparisons. All
   2,671 Python tests and 44 web tests passed, along with lint, type checks
   and production builds. Zero provider calls.
-- [ ] Qualify the read-only Q013 API and inspector adapter against the
-  registered workspace and both exact versions. Exercise copied workspace,
-  adjacent version, selection change mid-lookup and valid-then-damaged
-  refresh controls, including a Q008 compatibility replay.
+- [x] [Qualify Q013 through the read-only API and mounted artifact inspector](../docs/handoffs/q013-api-inspector-qualification-2026-11-22.md).
+  Critique v3 and draft v1 opened one assessment and one usage record in the
+  registered workspace. Both adjacent versions and a byte-identical database
+  copy returned empty records. A late draft v1 success could not repopulate
+  draft v2. A damaged refresh cleared the claim, scores and usage, and
+  restoring the publication recovered the original record. Four Q013 and
+  eleven Q008 mounted inspector checks passed over loopback. All 26 Q013
+  source and publication files retained their hashes and modification times.
+  All 2,673 Python tests and 48 web tests passed, along with lint, type
+  checks and both production builds. Zero provider calls.
+- [ ] Qualify Q013 from the **View saved assessment** action in a real browser.
+  Exercise both exact versions, adjacent versions, the copied workspace,
+  damaged refresh and return to verified provenance. Replay Q008 navigation
+  before extending the supported read-only archive launcher to Q013.
 
 Step 19 **IN PROGRESS**. Step 20 **NOT STARTED**. Production prompts unchanged.
 Live calls paused and full workflow canary on hold.

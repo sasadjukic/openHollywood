@@ -2,9 +2,9 @@ import type {
   ArtifactSelection,
   ArtifactVersionDetail,
 } from "@open-hollywood/contracts";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { mountInspector } from "../test/mountAssessmentInspector";
 import { client } from "@open-hollywood/contracts/client";
-import { act, render, screen, waitFor, within } from "@testing-library/react";
+import { act, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 
@@ -15,17 +15,12 @@ import {
   savedReplay,
   withPublicationCopy,
 } from "../test/q008InspectorCases";
-import { ArtifactInspector } from "./ArtifactInspector";
 import {
   Q008Assessment,
   type Q008Inventory,
   type Q008Lookup,
 } from "./Q008Assessment";
-import {
-  sameSelection,
-  selectionForReview,
-  type ReviewPanelProps,
-} from "./artifactSelection";
+import { sameSelection, selectionForReview } from "./artifactSelection";
 
 const { project, details, views } = inspectorCases();
 const [claim] = views.draft.assessments;
@@ -50,42 +45,13 @@ function read(selection: ArtifactSelection) {
 }
 
 function mount(lookup: Q008Lookup | undefined, initial: ArtifactVersionDetail) {
-  const client = new QueryClient();
-  function Panel(props: ReviewPanelProps) {
-    return <Q008Assessment {...props} lookup={lookup} />;
-  }
-  function tree(
-    detail: ArtifactVersionDetail,
-    selected = detail.selected_version.id,
-  ) {
-    return (
-      <QueryClientProvider client={client}>
-        <ArtifactInspector
-          ReviewPanel={Panel}
-          projectId={project}
-          artifact={detail.artifact}
-          detail={detail}
-          selectedVersionId={selected}
-          isLoading={false}
-          isOpen
-          onClose={() => undefined}
-          onSelectVersion={(id) => {
-            const next = Object.values(details).find(
-              (d) => d.selected_version.id === id,
-            );
-            if (!next) throw new Error("Unknown version");
-            page.rerender(tree(next));
-          }}
-        />
-      </QueryClientProvider>
-    );
-  }
-  const page = render(tree(initial));
-  return (detail: ArtifactVersionDetail, selected?: string) => {
-    page.rerender(tree(detail, selected));
-  };
+  return mountInspector(
+    (props) => <Q008Assessment {...props} lookup={lookup} />,
+    project,
+    details,
+    initial,
+  );
 }
-
 const panel = () =>
   within(screen.getByRole("region", { name: "Q008 assessment" }));
 function expectCleared() {

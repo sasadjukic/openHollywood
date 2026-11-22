@@ -7,6 +7,7 @@ import {
   getArtifactVersion,
   getArtifactProvenance,
   getQ008Assessment,
+  getQ013Assessment,
   getHealth,
   getProjectWorkspace,
   listModelCatalog,
@@ -18,6 +19,7 @@ import {
   type ArtifactVersionDetail,
   type ArtifactProvenance,
   type Q008InspectorView,
+  type Q013InspectorView,
   type ArtifactSelection,
   type BlueprintDecisionAction,
   type BlueprintDecisionResponse,
@@ -137,22 +139,31 @@ export async function fetchArtifactProvenance(
   return requireData(result, "Review provenance could not be checked.");
 }
 
+function assessmentRequest(selection: ArtifactSelection, signal: AbortSignal) {
+  const { version_id, project_id, artifact_id, role, content_sha256 } =
+    selection;
+  return {
+    path: { artifact_version_id: version_id },
+    query: { project_id, artifact_id, role, content_sha256 },
+    signal,
+    cache: "no-store" as const,
+  };
+}
+
 export async function fetchQ008Assessment(
   selection: ArtifactSelection,
   signal: AbortSignal,
 ): Promise<Q008InspectorView> {
-  const result = await getQ008Assessment({
-    path: { artifact_version_id: selection.version_id },
-    query: {
-      project_id: selection.project_id,
-      artifact_id: selection.artifact_id,
-      content_sha256: selection.content_sha256,
-      role: selection.role,
-    },
-    signal,
-    cache: "no-store",
-  });
+  const result = await getQ008Assessment(assessmentRequest(selection, signal));
   return requireData(result, "The Q008 assessment could not be checked.");
+}
+
+export async function fetchQ013Assessment(
+  selection: ArtifactSelection,
+  signal: AbortSignal,
+): Promise<Q013InspectorView> {
+  const result = await getQ013Assessment(assessmentRequest(selection, signal));
+  return requireData(result, "The Q013 assessment could not be checked.");
 }
 
 export async function fetchWorkflowEvents(

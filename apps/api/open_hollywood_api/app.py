@@ -2,6 +2,7 @@
 
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
+from pathlib import Path
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -21,6 +22,7 @@ from open_hollywood_api.routes.exports import router as exports_router
 from open_hollywood_api.routes.health import router as health_router
 from open_hollywood_api.routes.model_profiles import router as model_profiles_router
 from open_hollywood_api.routes.q008_inspector import router as q008_inspector_router
+from open_hollywood_api.routes.q013_inspector import router as q013_inspector_router
 from open_hollywood_api.routes.run_controls import router as run_controls_router
 from open_hollywood_api.routes.workflow_events import router as workflow_events_router
 from open_hollywood_api.routes.workspace import router as workspace_router
@@ -33,6 +35,7 @@ from open_hollywood_api.services.model_profiles import (
     ModelProfileStore,
 )
 from open_hollywood_api.services.q008_inspector import Q008InspectorService, Q008Reader
+from open_hollywood_api.services.q013_inspector import Q013InspectorService, Q013Reader
 from open_hollywood_api.services.workflow_commands import WorkflowCommandService
 from open_hollywood_api.services.workflow_events import WorkflowEventStore
 from open_hollywood_api.services.workspace import WorkspaceStore
@@ -71,6 +74,10 @@ async def lifespan(application: FastAPI) -> AsyncIterator[None]:
             if application.state.q008_reader is not None:
                 application.state.q008_inspector = Q008InspectorService(
                     database_path, application.state.q008_reader
+                )
+            if application.state.q013_reader is not None:
+                application.state.q013_inspector = Q013InspectorService(
+                    database_path, application.state.q013_reader
                 )
         if owns_provenance_service:
             application.state.artifact_provenance_service = ArtifactProvenanceService(database_path)
@@ -132,6 +139,7 @@ async def lifespan(application: FastAPI) -> AsyncIterator[None]:
                 application.state.workflow_event_store = None
             if owns_workspace_store:
                 application.state.q008_inspector = None
+                application.state.q013_inspector = None
                 application.state.workspace_store = None
             if owns_project_export_store:
                 application.state.project_export_store = None
@@ -149,6 +157,7 @@ def create_app(
     workflow_command_service: WorkflowCommandService | None = None,
     artifact_provenance_service: ArtifactProvenanceService | None = None,
     q008_reader: Q008Reader | None = None,
+    q013_reader: Q013Reader | None = None,
 ) -> FastAPI:
     """Build the API application without starting process-level side effects."""
     application = FastAPI(
@@ -161,6 +170,8 @@ def create_app(
     application.state.blueprint_workflow_service = blueprint_workflow_service
     application.state.workflow_command_service = workflow_command_service
     application.state.workspace_store = workspace_store
+    application.state.q013_reader = q013_reader
+    application.state.q013_inspector = None
     application.state.q008_reader = q008_reader
     application.state.q008_inspector = None
     application.state.artifact_provenance_service = artifact_provenance_service
@@ -180,6 +191,7 @@ def create_app(
     application.include_router(workspace_router, prefix="/api/v1")
     application.include_router(artifact_provenance_router, prefix="/api/v1")
     application.include_router(q008_inspector_router, prefix="/api/v1")
+    application.include_router(q013_inspector_router, prefix="/api/v1")
     application.include_router(exports_router, prefix="/api/v1")
     application.include_router(model_profiles_router, prefix="/api/v1")
     application.include_router(run_controls_router, prefix="/api/v1")
@@ -196,6 +208,17 @@ def create_q008_readonly_app(reader: Q008Reader) -> FastAPI:
         CORSMiddleware, allow_origins=list(LOCAL_WEB_ORIGINS), allow_methods=["GET"]
     )
     application.include_router(q008_inspector_router, prefix="/api/v1")
+    return application
+
+
+def create_q013_readonly_app(database: Path, reader: Q013Reader) -> FastAPI:
+    """Serve only the Q013 assessment GET for the configured workspace."""
+    application = FastAPI(title="Open Hollywood read-only Q013 assessment", version=API_VERSION)
+    application.state.q013_inspector = Q013InspectorService(database, reader)
+    application.add_middleware(
+        CORSMiddleware, allow_origins=list(LOCAL_WEB_ORIGINS), allow_methods=["GET"]
+    )
+    application.include_router(q013_inspector_router, prefix="/api/v1")
     return application
 
 

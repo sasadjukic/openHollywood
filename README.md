@@ -1763,6 +1763,19 @@ If a publication becomes unavailable, its assessment and usage drop out on
 refresh. Other verified deliveries still contribute to the totals. An adjacent
 version receives its own unavailable row. [Shared lookup verification](docs/handoffs/q008-q013-consumer-lookup-2026-11-22.md)
 
+With the registered Q013 archive on this machine and the web dependencies
+installed, run the API and artifact-inspector qualification from the project root.
+
+```powershell
+uv run --extra api python -m scripts.qualify_q013_inspector
+```
+
+The replay opens critique v3 and draft v1 over loopback HTTP, rejects a separate
+copy of the workspace, and exercises a version switch, publication damage and
+recovery in the mounted inspector. It alters only a disposable publication.
+The supported archive launcher currently opens Q008.
+[Q013 inspector qualification](docs/handoffs/q013-api-inspector-qualification-2026-11-22.md)
+
 ```powershell
 uv run --extra api python scripts/assessment_openai_compact_smoke.py verify `
   --plan data/diagnostics/assessment-openai-compact-smoke-2026-11-14/plan.json

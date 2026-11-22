@@ -600,6 +600,84 @@
         "title": "HTTPValidationError",
         "type": "object"
       },
+      "InspectorAccounting": {
+        "additionalProperties": false,
+        "properties": {
+          "actual_billed_cost": {
+            "title": "Actual Billed Cost",
+            "type": "null"
+          },
+          "delivery_id": {
+            "title": "Delivery Id",
+            "type": "string"
+          },
+          "generation_usage": {
+            "$ref": "#/components/schemas/Usage"
+          },
+          "preflight_input_count": {
+            "minimum": 0.0,
+            "title": "Preflight Input Count",
+            "type": "integer"
+          },
+          "request_selection": {
+            "$ref": "#/components/schemas/ArtifactSelection"
+          }
+        },
+        "required": [
+          "delivery_id",
+          "request_selection",
+          "preflight_input_count",
+          "generation_usage",
+          "actual_billed_cost"
+        ],
+        "title": "InspectorAccounting",
+        "type": "object"
+      },
+      "InspectorStatus": {
+        "additionalProperties": false,
+        "properties": {
+          "craft": {
+            "const": "unassessed",
+            "title": "Craft",
+            "type": "string"
+          },
+          "edit_necessity": {
+            "const": "unassessed",
+            "title": "Edit Necessity",
+            "type": "string"
+          },
+          "evidence_adequacy": {
+            "const": "unassessed",
+            "title": "Evidence Adequacy",
+            "type": "string"
+          },
+          "production_attachment_eligible": {
+            "const": false,
+            "title": "Production Attachment Eligible",
+            "type": "boolean"
+          },
+          "semantic_support": {
+            "const": "unassessed",
+            "title": "Semantic Support",
+            "type": "string"
+          },
+          "writer_dispatch_authorized": {
+            "const": false,
+            "title": "Writer Dispatch Authorized",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "semantic_support",
+          "evidence_adequacy",
+          "edit_necessity",
+          "craft",
+          "production_attachment_eligible",
+          "writer_dispatch_authorized"
+        ],
+        "title": "InspectorStatus",
+        "type": "object"
+      },
       "ModelAssessment": {
         "additionalProperties": false,
         "description": "Fallible model-authored values, explicitly separate from application authority.",
@@ -1362,6 +1440,183 @@
         },
         "required": ["possible_judgments", "passed_judgments"],
         "title": "Q008OperatorScore",
+        "type": "object"
+      },
+      "Q013AssessmentView": {
+        "additionalProperties": false,
+        "properties": {
+          "application_status": {
+            "$ref": "#/components/schemas/InspectorStatus"
+          },
+          "claim": {
+            "title": "Claim",
+            "type": "string"
+          },
+          "claim_id": {
+            "const": "Q013",
+            "title": "Claim Id",
+            "type": "string"
+          },
+          "delivery_id": {
+            "title": "Delivery Id",
+            "type": "string"
+          },
+          "model": {
+            "title": "Model",
+            "type": "string"
+          },
+          "model_assessment": {
+            "$ref": "#/components/schemas/ModelAssessment"
+          },
+          "operator_score": {
+            "$ref": "#/components/schemas/Q013OperatorScore"
+          }
+        },
+        "required": [
+          "delivery_id",
+          "claim_id",
+          "claim",
+          "model",
+          "model_assessment",
+          "operator_score",
+          "application_status"
+        ],
+        "title": "Q013AssessmentView",
+        "type": "object"
+      },
+      "Q013InspectorView": {
+        "additionalProperties": false,
+        "properties": {
+          "accounting_records": {
+            "items": {
+              "$ref": "#/components/schemas/InspectorAccounting"
+            },
+            "title": "Accounting Records",
+            "type": "array"
+          },
+          "assessments": {
+            "items": {
+              "$ref": "#/components/schemas/Q013AssessmentView"
+            },
+            "title": "Assessments",
+            "type": "array"
+          },
+          "contract": {
+            "const": "q013-inspector-view-1",
+            "title": "Contract",
+            "type": "string"
+          },
+          "generation_totals": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Usage"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "lookups": {
+            "items": {
+              "$ref": "#/components/schemas/Q013LookupRow"
+            },
+            "title": "Lookups",
+            "type": "array"
+          }
+        },
+        "required": [
+          "contract",
+          "lookups",
+          "assessments",
+          "accounting_records",
+          "generation_totals"
+        ],
+        "title": "Q013InspectorView",
+        "type": "object"
+      },
+      "Q013LookupRow": {
+        "additionalProperties": false,
+        "properties": {
+          "claim_id": {
+            "anyOf": [
+              {
+                "const": "Q013",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Claim Id"
+          },
+          "delivery_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Delivery Id"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "enum": [
+                  "unregistered_workspace",
+                  "workspace_unavailable",
+                  "exact_selection_unavailable",
+                  "publication_missing",
+                  "publication_incomplete",
+                  "publication_manifest_changed",
+                  "publication_unexpected_member",
+                  "publication_member_changed",
+                  "publication_unavailable"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "selection": {
+            "$ref": "#/components/schemas/ArtifactSelection"
+          },
+          "status": {
+            "enum": ["available", "unavailable"],
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "selection",
+          "status",
+          "reason",
+          "delivery_id",
+          "claim_id"
+        ],
+        "title": "Q013LookupRow",
+        "type": "object"
+      },
+      "Q013OperatorScore": {
+        "additionalProperties": false,
+        "properties": {
+          "claim_correctness": {
+            "enum": ["pass", "fail"],
+            "title": "Claim Correctness",
+            "type": "string"
+          },
+          "evidence_coverage": {
+            "enum": ["pass", "fail"],
+            "title": "Evidence Coverage",
+            "type": "string"
+          }
+        },
+        "required": ["claim_correctness", "evidence_coverage"],
+        "title": "Q013OperatorScore",
         "type": "object"
       },
       "RunBudgetPatch": {
@@ -2521,6 +2776,87 @@
           }
         },
         "summary": "Read the saved Q008 assessment for an exact workspace version",
+        "tags": ["workspace"]
+      }
+    },
+    "/api/v1/artifact-versions/{artifact_version_id}/q013-assessment": {
+      "get": {
+        "operationId": "getQ013Assessment",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "artifact_version_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Artifact Version Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "project_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Project Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "artifact_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Artifact Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "content_sha256",
+            "required": true,
+            "schema": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Content Sha256",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "role",
+            "required": true,
+            "schema": {
+              "enum": ["original_review", "reviewed_draft"],
+              "title": "Role",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Q013InspectorView"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Read the saved Q013 assessment for an exact workspace version",
         "tags": ["workspace"]
       }
     },
