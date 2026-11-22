@@ -13615,9 +13615,21 @@ one genuine review with an admitted claim.
   Returning to provenance restored the verified review-to-draft relationship
   in The Bone Labyrinth. The Q008 navigation replay and both existing launcher
   modes passed. All 2,673 Python tests and 49 web tests passed. Zero provider calls.
-- [ ] Extend the supported read-only archive launcher to Q013. Verify both
-  exact versions from the sealed archive, clean shutdown, snapshot cleanup
-  and port reuse. Replay the Q008 and ordinary launcher modes.
+- [x] [Add `--workspace q013` to the supported read-only archive launcher](../docs/handoffs/q013-read-only-archive-launcher-2026-11-22.md).
+  Chrome opened critique v3 and *The Impossible Card* draft v1 with one
+  original assessment and receipt (62,835 input and 427 output tokens).
+  Q008 retained its shared receipt. In the ordinary workspace, returning
+  from the unavailable assessment restored the exact review-to-draft
+  relationship. All three processes exited cleanly on Enter, removed their
+  temporary snapshots and released the same port for reuse. All 44 checked
+  source and publication files retained their hashes and modification times.
+  Q013 also exited cleanly on Ctrl+C. All 2,674 Python tests and 49 web
+  tests passed, along with lint, type checks and both builds. Zero provider calls.
+- [ ] Audit the two unscored ending statements in the saved Q008 and Q013
+  critiques locally. Check Elias’s movement toward the threshold and Elara’s
+  inferred resolve against the exact plans and drafts. Freeze independent
+  gold for any admissible whole factual claim and record any editorial or
+  insufficient-evidence limit before considering further inference.
 
 Step 19 **IN PROGRESS**. Step 20 **NOT STARTED**. Production prompts unchanged.
 Live calls paused and full workflow canary on hold.

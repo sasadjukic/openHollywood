@@ -2,26 +2,45 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import { chromium } from "playwright-core";
 
-const [mode, origin, claimId = "Q008"] = process.argv.slice(2);
-assert.ok(["q008", "ordinary"].includes(mode));
-assert.ok(claimId === "Q008" || (mode === "ordinary" && claimId === "Q013"));
+const [mode, origin, claimId = mode === "q013" ? "Q013" : "Q008"] =
+  process.argv.slice(2);
+const archives = {
+  q008: {
+    directory: "q008-downstream-2026-11-20",
+    project: "Benchmark OH-V01-001 — cloud",
+    draftTitle: "The Pristine Lure",
+    critiqueVersion: 2,
+    usage: {
+      input_tokens: 58894,
+      output_tokens: 345,
+      reasoning_tokens: 165,
+      cached_input_tokens: 0,
+    },
+  },
+  q013: {
+    directory: "q013-downstream-2026-11-21",
+    project: "Benchmark OH-V01-002 — cloud",
+    draftTitle: "The Impossible Card",
+    critiqueVersion: 3,
+    usage: {
+      input_tokens: 62835,
+      output_tokens: 427,
+      reasoning_tokens: 255,
+      cached_input_tokens: 0,
+    },
+  },
+};
+assert.ok(["q008", "q013", "ordinary"].includes(mode));
+assert.ok(
+  ["Q008", "Q013"].includes(claimId) &&
+    (mode === "ordinary" || mode === claimId.toLowerCase()),
+);
 const endpoint = claimId.toLowerCase() + "-assessment";
 assert.equal(new URL(origin).hostname, "127.0.0.1");
-const archive = mode === "q008";
+const archive = archives[mode];
 const diagnostics = "../../data/diagnostics";
-const saved = JSON.parse(
-  await readFile(
-    `${diagnostics}/assessment-provenance-inspector-2026-11-19/selection-01.json`,
-    "utf8",
-  ),
-);
-const q008 = async (name) =>
-  JSON.parse(
-    await readFile(
-      `${diagnostics}/q008-downstream-2026-11-20/${name}.json`,
-      "utf8",
-    ),
-  );
+const fixture = async (file) =>
+  JSON.parse(await readFile(`${diagnostics}/${file}.json`, "utf8"));
 const browser = await chromium.launch({ channel: "chrome", headless: true });
 try {
   const page = await browser.newPage({
@@ -90,7 +109,7 @@ try {
       )
       .waitFor();
   }
-  async function expectVerified() {
+  async function expectVerified(saved) {
     await provenance
       .getByText("Version relationship verified", { exact: true })
       .waitFor();
@@ -103,9 +122,7 @@ try {
   }
   await page.goto(origin);
   await page.getByText("Read-only archive", { exact: true }).waitFor();
-  const project = archive
-    ? "Benchmark OH-V01-001 — cloud"
-    : "The Bone Labyrinth";
+  const project = archive?.project ?? "The Bone Labyrinth";
   await nav
     .getByRole("button")
     .filter({ has: page.getByText(project, { exact: true }) })
@@ -117,53 +134,91 @@ try {
     0,
   );
   if (archive) {
-    const review = await q008("original_review");
-    const draft = await q008("reviewed_draft");
+    const review = await fixture(archive.directory + "/original_review");
+    const draft = await fixture(archive.directory + "/reviewed_draft");
     const receipts = [];
-    for (const [selection, title, type] of [
-      [review, "Critique — scene_1", "Critique"],
-      [draft, "The Pristine Lure", "Scene Draft"],
+    const assessments = [];
+    for (const [selection, title, type, number] of [
+      [review, "Critique — scene_1", "Critique", archive.critiqueVersion],
+      [draft, archive.draftTitle, "Scene Draft", 1],
     ]) {
       await selectArtifact(title, type, selection);
-      if (selection === draft)
+      const label = await select.locator("option:checked").textContent();
+      assert.equal(label.split(" · ")[0], "v" + number);
+      if (mode === "q008" && selection === draft)
         assert.deepEqual(
           await select
             .locator("option")
             .evaluateAll((options) => options.map((o) => o.value)),
           [draft.version_id],
         );
-      const view = await readResult(selection, "q008-assessment", () =>
+      const view = await readResult(selection, endpoint, () =>
         inspector
           .getByRole("button", { name: "View saved assessment" })
           .click(),
       );
       assert.deepEqual(view.lookups[0].selection, selection);
+      assert.equal(view.contract, mode + "-inspector-view-1");
+      assert.equal(view.lookups.length, 1);
       assert.equal(view.lookups[0].status, "available");
+      assert.equal(view.lookups[0].claim_id, claimId);
       assert.equal(view.assessments.length, 1);
       assert.equal(view.accounting_records.length, 1);
-      assert.deepEqual(view.accounting_records[0].request_selection, review);
+      const [record] = view.accounting_records;
+      const [assessmentRow] = view.assessments;
+      assert.ok(record.delivery_id.startsWith(mode + "-"));
+      assert.equal(record.delivery_id, view.lookups[0].delivery_id);
+      assert.equal(record.delivery_id, assessmentRow.delivery_id);
+      assert.deepEqual(record.request_selection, review);
+      assert.deepEqual(record.generation_usage, archive.usage);
+      assert.deepEqual(view.generation_totals, archive.usage);
       await assessment
-        .getByText("58,894 input · 345 output", { exact: true })
+        .getByText(assessmentRow.claim, { exact: true })
         .waitFor();
-      receipts.push(view.accounting_records[0]);
+      const usageText =
+        archive.usage.input_tokens.toLocaleString("en-US") +
+        " input · " +
+        archive.usage.output_tokens +
+        " output";
+      await assessment.getByText(usageText, { exact: true }).waitFor();
+      if (mode === "q013") {
+        assert.equal(assessmentRow.model_assessment.support, "supported");
+        assert.deepEqual(assessmentRow.model_assessment.evidence, ["E0920"]);
+        assert.deepEqual(assessmentRow.operator_score, {
+          claim_correctness: "pass",
+          evidence_coverage: "pass",
+        });
+        for (const text of [
+          "Citations · E0920",
+          "Claim correctness · pass",
+          "Evidence coverage · pass",
+        ])
+          await assessment.getByText(text, { exact: true }).waitFor();
+      }
+      receipts.push(record);
+      assessments.push(assessmentRow);
       results.push({
         version: selection.version_id,
+        version_number: number,
         status: "available",
         delivery_id: view.lookups[0].delivery_id,
       });
     }
     assert.deepEqual(receipts[0], receipts[1]);
+    assert.deepEqual(assessments[0], assessments[1]);
   } else {
+    const saved = await fixture(
+      "assessment-provenance-inspector-2026-11-19/selection-01",
+    );
     const { selection } = saved;
     await selectArtifact("Critique — s1", "Critique", selection);
-    await expectVerified();
+    await expectVerified(saved);
     const view = await readResult(selection, endpoint, () =>
       inspector.getByRole("button", { name: "View saved assessment" }).click(),
     );
     assert.deepEqual(view.lookups[0].selection, selection);
     assert.equal(view.lookups[0].reason, "unregistered_workspace");
     assert.equal(view.contract, claimId.toLowerCase() + "-inspector-view-1");
-    assert.deepEqual(view.lookups[0].selection, selection);
     assert.deepEqual(view.assessments, []);
     assert.deepEqual(view.accounting_records, []);
     assert.equal(view.generation_totals, null);
@@ -184,7 +239,7 @@ try {
       "source_registration",
     ])
       assert.equal(restored.relationship[key], saved.relationship[key]);
-    await expectVerified();
+    await expectVerified(saved);
     assert.equal(await assessment.count(), 0);
     assert.equal(
       await inspector
@@ -202,7 +257,12 @@ try {
   assert.equal(requests.length, archive ? 2 : 1);
   assert.deepEqual(problems, []);
   console.log(
-    JSON.stringify({ browser: browser.version(), workspace: mode, results }),
+    JSON.stringify({
+      browser: browser.version(),
+      workspace: mode,
+      results,
+      generation_usage: archive?.usage,
+    }),
   );
 } finally {
   await browser.close();

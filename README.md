@@ -1092,15 +1092,26 @@ uv run --extra api python -m scripts.open_archive
 Open the printed loopback URL in a browser. The default opens the registered
 Q008 archive. Under **Benchmark OH-V01-001 — cloud**, select **Critique — scene_1**
 v2 or **The Pristine Lure** (Scene Draft) v1, then **View saved assessment**.
-Both open the same saved delivery. Press **Enter** or **Ctrl+C** in the launcher
-terminal to close the server and remove its temporary navigation snapshot.
+Both open the same saved delivery.
 
-Use `--workspace ordinary` for the registered ordinary workspace. Use `--port`
-to choose a specific loopback port. Both modes require their original local
-registrations. Navigation reflects the saved rows at launch. Assessment and
-provenance lookups recheck their sources on demand. The viewer starts
-independently of the workflow worker and Vite development server.
-[Operator guide and browser verification](docs/handoffs/read-only-archive-launcher-2026-11-21.md)
+For **The Impossible Card**, start the Q013 archive.
+
+```powershell
+uv run --extra api python -m scripts.open_archive --workspace q013
+```
+
+Open the printed URL and select **Benchmark OH-V01-002 — cloud**. Choose
+**Critique — scene_1** v3 or **The Impossible Card** (Scene Draft) v1, then
+**View saved assessment**. Both selections open one Q013 assessment and share
+its original generation usage.
+
+Use `--workspace ordinary` for the registered ordinary workspace. In any mode,
+`--port` selects a loopback port. Press **Enter** or **Ctrl+C** in the launcher
+terminal to stop the server and remove its temporary navigation snapshot.
+Each mode requires its original local registration. Navigation reflects saved
+rows at launch. Assessment and provenance lookups recheck their sources on
+demand. The viewer runs independently of the workflow worker and Vite server.
+[Three-mode launcher verification](docs/handoffs/q013-read-only-archive-launcher-2026-11-22.md)
 
 ## Development
 
@@ -1773,7 +1784,8 @@ uv run --extra api python -m scripts.qualify_q013_inspector
 The replay opens critique v3 and draft v1 over loopback HTTP, rejects a separate
 copy of the workspace, and exercises a version switch, publication damage and
 recovery in the mounted inspector. It alters only a disposable publication.
-The supported archive launcher currently opens Q008.
+The [read-only archive viewer](#open-the-read-only-archive-viewer) opens this
+archive with `--workspace q013`.
 [Q013 inspector qualification](docs/handoffs/q013-api-inspector-qualification-2026-11-22.md)
 
 To replay **View saved assessment** from the artifact list in installed Google

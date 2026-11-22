@@ -1,4 +1,4 @@
-"""Portable startup checks for the two read-only operator registrations."""
+"""Portable startup checks for the read-only operator registrations."""
 
 from __future__ import annotations
 
@@ -7,34 +7,38 @@ import shutil
 import sqlite3
 from contextlib import closing
 from pathlib import Path
+from typing import Literal
 
 import pytest
 from open_hollywood_api.services import production_association_lookup as associations
 from open_hollywood_api.services import q008_inspector as q008
+from open_hollywood_api.services import q013_inspector as q013
+from open_hollywood_api.services.assessment_inspector_workspace import WorkspacePin
 
 from scripts.open_archive import snapshot
 
 
+@pytest.mark.parametrize("workspace", ("q008", "q013"))
 def test_archive_snapshot_requires_the_registered_sealed_file(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, workspace: Literal["q008", "q013"]
 ) -> None:
     source = tmp_path / "sealed.db"
     source.write_bytes(b"sealed navigation image")
     stat = source.stat()
     monkeypatch.setattr(
-        q008,
+        q013 if workspace == "q013" else q008,
         "REGISTERED",
-        q008.WorkspacePin(
+        WorkspacePin(
             source, stat.st_dev, stat.st_ino, hashlib.sha256(source.read_bytes()).hexdigest()
         ),
     )
     dest = tmp_path / "viewer.db"
-    assert snapshot("q008", dest) == source
+    assert snapshot(workspace, dest) == source
     assert dest.read_bytes() == source.read_bytes()
     old = source.rename(tmp_path / "previous.db")
     shutil.copyfile(old, source)
     with pytest.raises(ValueError, match="workspace_replaced"):
-        snapshot("q008", tmp_path / "refused.db")
+        snapshot(workspace, tmp_path / "refused.db")
     assert not (tmp_path / "refused.db").exists()
 
 

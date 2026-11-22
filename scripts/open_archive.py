@@ -1,4 +1,4 @@
-"""Open the registered Q008 archive or ordinary workspace in a read-only local viewer."""
+"""Open the registered Q008, Q013 or ordinary workspace in a read-only local viewer."""
 
 from __future__ import annotations
 
@@ -17,23 +17,25 @@ from open_hollywood_api.persistence.database import DATABASE_PATH_VARIABLE
 from open_hollywood_api.readonly_workspace import navigation_app, serve_loopback
 from open_hollywood_api.services import production_association_lookup as associations
 from open_hollywood_api.services import q008_inspector as q008
+from open_hollywood_api.services import q013_inspector as q013
+from open_hollywood_api.services.assessment_inspector_workspace import registered_image
 from sqlalchemy import create_engine
 from sqlalchemy.pool import NullPool
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 
-from scripts.lookup_q008_completion import lookup
+from scripts import lookup_q008_completion, lookup_saved_review_completion
 
 ROOT = Path(__file__).resolve().parents[1]
 SITE = ROOT / "apps/web/dist"
-Workspace = Literal["q008", "ordinary"]
+Workspace = Literal["q008", "q013", "ordinary"]
 
 
 def snapshot(workspace: Workspace, destination: Path) -> Path:
     """Return the physical authority after making a private navigation snapshot."""
-    if workspace == "q008":
-        source = q008.REGISTERED.path
-        destination.write_bytes(q008.registered_image(source))
-        return source
+    if workspace in ("q008", "q013"):
+        pin = q013.REGISTERED if workspace == "q013" else q008.REGISTERED
+        destination.write_bytes(registered_image(pin.path, pin))
+        return pin.path
 
     (registered,) = associations.REGISTERED
     associations._source_stamp(registered)
@@ -79,7 +81,12 @@ def launch(workspace: Workspace, port: int) -> None:
             creator=lambda: sqlite3.connect(uri, uri=True, check_same_thread=False),
         )
         try:
-            app = navigation_app(authority, engine, lookup)
+            if workspace == "q013":
+                app = navigation_app(
+                    authority, engine, lookup_saved_review_completion.lookup, assessment_view="Q013"
+                )
+            else:
+                app = navigation_app(authority, engine, lookup_q008_completion.lookup)
             mount_viewer(app, SITE)
             with serve_loopback(app, port) as url:
                 print(f"Read-only {workspace} workspace at {url}", flush=True)
@@ -92,7 +99,7 @@ def launch(workspace: Workspace, port: int) -> None:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--workspace", choices=("q008", "ordinary"), default="q008")
+    parser.add_argument("--workspace", choices=("q008", "q013", "ordinary"), default="q008")
     parser.add_argument(
         "--port", type=int, default=0, help="Loopback port (default: automatically assigned)"
     )
