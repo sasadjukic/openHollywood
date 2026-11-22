@@ -13571,9 +13571,19 @@ one genuine review with an admitted claim.
   Existing operator publication and lookup refused Q013. All 340 focused
   tests passed, along with 41 completion/publication checks and two archive
   integrity checks. Zero provider calls.
-- [ ] Add Q013 as a second fixed read-only publisher registration. Verify
-  identical creation and reuse in both selection orders, single accounting,
-  source and journal rejection controls, and compatibility with Q008.
+- [x] Add [Q013 as the second fixed read-only publisher registration](../docs/handoffs/q013-observed-publication-2026-11-22.md).
+  Critique v3 and draft v1 each created the same 15-file bundle and reused
+  it through the opposite selection without changing bytes or modification
+  times. Both reach one original generation usage record (62,835 input and
+  427 output tokens) and the separate claim and evidence scores. All 16
+  archive rejection controls passed. A fresh Q008 export matched all 15
+  historical files, and the original and shared commands reused that
+  historical publication. All 2,662 Python tests and 44 web tests passed,
+  along with lint, type checks and production builds. Zero provider calls.
+- [ ] Rehearse read-only consumer lookup across both pinned publications.
+  Verify both exact Q013 selections, mixed and repeated Q008/Q013 lookups,
+  one usage record per delivery, and selective clearing of assessment and
+  usage after an adjacent selection or damage to a disposable publication.
 
 Step 19 **IN PROGRESS**. Step 20 **NOT STARTED**. Production prompts unchanged.
 Live calls paused and full workflow canary on hold.

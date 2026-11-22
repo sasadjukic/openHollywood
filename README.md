@@ -1709,6 +1709,25 @@ Open `delivery.json` for the original request identity and usage, `evidence.md`
 for the claim and cited passages, and `operator-score.json` for the separate
 adjudication. [Publisher qualification and limits](docs/handoffs/q008-observed-publication-2026-11-21.md)
 
+<a id="q013-publication"></a>
+
+The shared read-only publisher accepts `--registration q008` or `--registration q013`.
+For **Q013, The Impossible Card**, either critique v3 or draft v1 opens the
+same saved delivery. Run both commands with the same output directory to
+create the bundle and verify exact reuse.
+
+```powershell
+$q013Selections = 'data/diagnostics/q013-downstream-2026-11-21'
+$q013Output = 'data/diagnostics/q013-published'
+uv run --extra api python -m scripts.publish_saved_review_completion --registration q013 --selection "$q013Selections/original_review.json" --output $q013Output
+uv run --extra api python -m scripts.publish_saved_review_completion --registration q013 --selection "$q013Selections/reviewed_draft.json" --output $q013Output
+```
+
+Q013's `delivery.json` contains one generation usage record tied to the original
+critique request. Its `operator-score.json` records claim correctness and evidence
+coverage separately. The command requires the private source, original closed
+journal and score for the selected registration. [Q013 verification and limits](docs/handoffs/q013-observed-publication-2026-11-22.md)
+
 <a id="q008-lookup"></a>
 
 To look up the existing, registered Q008 publication, pass one or both exact

@@ -6,6 +6,7 @@ import json
 import shutil
 import sqlite3
 from contextlib import closing
+from dataclasses import replace
 from pathlib import Path
 from uuid import UUID, uuid4
 
@@ -17,9 +18,11 @@ from open_hollywood_engine.evaluations.assessment_completion import encoded
 
 from scripts import lookup_q008_completion as consumer
 from scripts import publish_q008_completion as publisher
+from scripts.publish_saved_review_completion import REGISTRATIONS
 from tests.api.test_q008_publisher import anyio_backend as anyio_backend
 from tests.api.test_q008_publisher import archive as archive
 from tests.api.test_q008_publisher import prepared as prepared
+from tests.api.test_q008_publisher import publication_case as publication_case
 from tests.api.test_q008_publisher import registered as registered
 from tests.api.test_q008_publisher import snapshot
 from tests.api.test_q008_publisher import source as source
@@ -29,7 +32,8 @@ pytestmark = pytest.mark.usefixtures("anyio_backend")
 
 @pytest.fixture
 def published(registered: wire._Plan, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
-    score = json.loads(publisher.SCORE.read_bytes())
+    registration = REGISTRATIONS["q008"]
+    score = json.loads(registration.score.read_bytes())
     score.update(
         passed_judgments=3,
         possible_judgments=3,
@@ -37,8 +41,11 @@ def published(registered: wire._Plan, tmp_path: Path, monkeypatch: pytest.Monkey
         plan_evidence={"score": "pass"},
         draft_ending_evidence={"score": "pass"},
     )
-    publisher.SCORE.write_bytes(encoded(score))
-    monkeypatch.setattr(publisher, "SCORE_SHA", storage._sha(publisher.SCORE.read_bytes()))
+    score_bytes = encoded(score)
+    registration.score.write_bytes(score_bytes)
+    monkeypatch.setitem(
+        REGISTRATIONS, "q008", replace(registration, score_sha256=storage._sha(score_bytes))
+    )
     directory = tmp_path / "publication"
     assert publisher.publish(registered.source.pin.review, directory) == "created"
     monkeypatch.setattr(consumer, "PUBLICATION", directory)
@@ -187,7 +194,7 @@ def test_unavailable_after_successful_read(
     elif fault == "extra_member":
         (published / "extra.json").write_bytes(b"{}")
     else:
-        publisher.SCORE.write_bytes(b"{}")
+        REGISTRATIONS["q008"].score.write_bytes(b"{}")
     before = snapshot(published) if published.exists() else None
     invalid = consumer.lookup(seq)
     assert_unavailable(invalid, reason)
