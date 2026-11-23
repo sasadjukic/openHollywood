@@ -13775,10 +13775,28 @@ one genuine review with an admitted claim.
   Two newly authored families supply eight version-bound cases with sealed
   gold for approach, arrival and a gap before or after renewed motion.
   All 53 focused tests passed. Zero live calls.
-- [ ] Prepare the proposed Sol-high transfer comparison for approval. Pair B
-  and E on all eight authored cases with opposite first arms across families.
-  Plan 16 counts before up to 16 generations, zero retries. Keep the five
-  observed Q011 pairs offline and report fresh baseline passes separately.
+- [x] [Freeze and verify the eight-case Sol-high B/E transfer comparison](../docs/handoffs/q011-sol-high-transfer-freeze-2026-11-23.md).
+  Both families have two B-first and two E-first pairs, with opposite order
+  for each ending type. All 32 exact bodies, prior gold, independent scoring,
+  budgets and stops are sealed. All 37 focused tests and all 2,803 full-suite
+  Python tests passed. A failed sixteenth count blocks generation. The
+  journal was ready with zero attempts.
+- [x] [Run the approved eight-case Sol-high B/E transfer comparison and inspect all 32 slots](../docs/handoffs/q011-sol-high-transfer-results-2026-11-23.md).
+  All 16 counts passed before 16 eligible generations, with zero retries.
+  E passed judgment and evidence on 8/8 cases. B passed both on 5/8.
+  E recovered approach in both families and the earlier gap in the stage
+  family. B already passed the harbor earlier gap and all four determinate
+  controls. Frozen decision `cross_family_recovery`. Evidence was sealed
+  before joining labels. The journal is closed and spent. B remains the default.
+- [x] [Preserve the eight transfer pairs and audit physical-position scope in six saved ordinary reviews](../docs/handoffs/q011-transfer-regressions-and-ordinary-scope-2026-11-23.md).
+  Replay reproduced the 32 slots, 16 observed finals and all paired scores,
+  including T08’s baseline pass. Of 59 whole fields, two qualified for E,
+  six for B and 51 were held. Both E fields came from the same Elias v61
+  review. The other v61 review and four v33 benchmark reviews supplied no
+  independent positive. All 38 focused tests passed. Zero live calls.
+- [ ] Rehearse local read-only selection for the two exact Elias position
+  fields, a factual B control and a held editorial field. Seek an independent
+  ordinary-review family with a qualifying claim before another live test.
 
 Step 19 **IN PROGRESS**. Step 20 **NOT STARTED**. Production prompts unchanged.
 Live calls paused and full workflow canary on hold.
