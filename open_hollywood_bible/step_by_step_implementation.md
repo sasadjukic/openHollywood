@@ -13749,9 +13749,16 @@ one genuine review with an admitted claim.
   controls with both scores. The genuine ending supplies direction. Only the
   stop-short ending places Elias an incompatible distance from the sill at the
   cut. The earlier stop is followed by renewed motion. Decision remains `hold`.
-- [ ] Rehearse the physical contradiction check locally on the three position
-  cases and two versions that place the same gap at different times. Verify
-  judgment and evidence separately and replay the three depiction controls.
+- [x] [Rehearse all five Q011 physical-position cases and replay the three saved depiction controls](../docs/handoffs/q011-position-gap-rehearsal-2026-11-23.md).
+  The same stride of ground rules out standing at the sill when observed at
+  the cut. Renewed motion after the measurement leaves final position open.
+  The five grounded authored answers passed judgment and evidence. The
+  earlier gap cited as final failed both. Flipping only a label kept its
+  evidence score. Sol’s saved original-position answer still failed both,
+  and all three saved depiction controls passed both. Zero live calls.
+- [ ] Freeze the paired Sol-high B versus evidence-check comparison on these
+  five position cases for approval. Plan ten counts before up to ten
+  generations, zero retries. Retain the three depiction controls offline.
 
 Step 19 **IN PROGRESS**. Step 20 **NOT STARTED**. Production prompts unchanged.
 Live calls paused and full workflow canary on hold.
