@@ -13701,9 +13701,14 @@ one genuine review with an admitted claim.
   the achieved position open. Whole-claim gold `uncertain` was sealed before
   assessor output. Q011 shares the Q010 draft. The neighboring narrative-boundary
   field remains held. All 112 focused tests passed. Zero live calls.
-- [ ] Rehearse Q011 locally with B, exact plan and draft sources, gold exclusion
-  and both overread fixtures. Assess readiness for a separately approved
-  two-cell destination-evidence comparison.
+- [x] [Rehearse Q011 locally with B against the exact plan and draft](../docs/handoffs/q011-endpoint-rehearsal-2026-11-23.md).
+  Grounded uncertainty passed judgment and evidence. Arrival inferred from the
+  plan and a definite stop short inferred from the cut each failed both. All
+  three cited the same passages. Gold exclusion and independent scoring
+  verified. All 147 focused tests passed. Zero live calls.
+- [ ] Prepare a separately approved two-case B comparison. Pair the genuine
+  Q011 ending with an explicitly authored arrival, bind each draft to its own
+  evidence, and freeze both scores and stops before inference.
 
 Step 19 **IN PROGRESS**. Step 20 **NOT STARTED**. Production prompts unchanged.
 Live calls paused and full workflow canary on hold.
