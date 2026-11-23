@@ -13706,9 +13706,29 @@ one genuine review with an admitted claim.
   plan and a definite stop short inferred from the cut each failed both. All
   three cited the same passages. Gold exclusion and independent scoring
   verified. All 147 focused tests passed. Zero live calls.
-- [ ] Prepare a separately approved two-case B comparison. Pair the genuine
-  Q011 ending with an explicitly authored arrival, bind each draft to its own
-  evidence, and freeze both scores and stops before inference.
+- [x] [Freeze the Q011 Sol-high B comparison for separate approval](../docs/handoffs/q011-sol-high-arrival-freeze-2026-11-23.md).
+  The original ends on approach. The separately versioned control adds “Elias
+  stood at the threshold.” Frozen whole-claim gold is `uncertain` and
+  `supported` respectively. Both packets preserve the genuine critic’s source
+  association. All four bodies, independent evidence scoring, the two-count
+  gate and interrupted-dispatch stops verified locally. All 122 focused tests
+  passed. Journal ready, zero live calls.
+- [x] [Run the frozen Q011 comparison and score both endings](../docs/handoffs/q011-sol-high-arrival-results-2026-11-23.md).
+  Both counts passed before both generations. All four slots returned HTTP 200
+  with zero retries. The original received `unsupported` against `uncertain`
+  gold and failed judgment and evidence. The authored arrival received
+  `supported` and passed both. Evidence decisions were sealed before the
+  label join. Frozen decision `hold`. Journal closed and spent.
+
+- [x] [Preserve both Q011 deliveries and audit the inference from approach to non-arrival](../docs/handoffs/q011-approach-arrival-audit-2026-11-23.md).
+  Offline replay reproduced the four observed slots, exact draft bindings and
+  separate scores. Sol located both plan fields and the correct closing passage.
+  In the original it treated an undepicted position as contradicted. The authored
+  arrival supplied direct evidence. Both scores and the `hold` decision stand.
+- [ ] Rehearse physical position versus what the closing paragraph depicts on
+  the original approach, authored arrival and explicit stop short. Qualify
+  both claim scopes locally before seeking approval for six counts followed
+  by up to six generations, with zero retries.
 
 Step 19 **IN PROGRESS**. Step 20 **NOT STARTED**. Production prompts unchanged.
 Live calls paused and full workflow canary on hold.
