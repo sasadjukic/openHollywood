@@ -1,0 +1,304 @@
+"""Freeze the source-only B/C endpoint controls and their operator-only scoring contract."""
+
+from __future__ import annotations
+
+import json
+from dataclasses import dataclass
+from decimal import Decimal
+from hashlib import sha256
+from pathlib import Path
+from uuid import UUID
+
+from open_hollywood_api.services.assessment_completion import _read, _unlinked
+from open_hollywood_api.services.assessment_delivery import _durable_write
+from open_hollywood_engine.evaluations.assessment_compact_presentation import SYSTEM, compact
+from open_hollywood_engine.evaluations.assessment_completion import encoded
+from open_hollywood_engine.evaluations.assessment_result import (
+    assessment_response_schema,
+    scope_for_batch,
+)
+from open_hollywood_engine.evaluations.assessment_work import AssessmentWork
+from open_hollywood_engine.evaluations.review_evidence import require
+from open_hollywood_engine.models.assessment_openai import WireEndpoint, WireMapping, _prepare_wire
+from open_hollywood_engine.models.contracts import (
+    InvocationContext,
+    MessageRole,
+    ModelCallBudget,
+    ModelDeployment,
+    ModelMessage,
+    ModelRequest,
+    ModelSettings,
+)
+from open_hollywood_engine.models.openai import _cost
+from open_hollywood_engine.models.openai_catalog import builtin_model_specs
+
+from scripts import ordinary_v61_capture as ledger
+from scripts import verify_q010_endpoint_controls as controls
+
+REPO = Path(__file__).resolve().parents[1]
+ROOT = controls.ROOT.parent / "q010-paired-uncertainty-2026-11-23"
+MODEL = "gpt-6.1-sol"
+BASE = (
+    "Uncertain means material evidence is unavailable and no supplied evidence "
+    "decisively contradicts the claim."
+)
+ADDITION = (
+    "Material evidence can be unavailable even when the relevant source is complete "
+    "but leaves the material fact undetermined."
+)
+FIRST_B = {"P01", "P02", "P05", "P08"}
+INPUT, OUTPUT = 8192, 4096
+COUNT_SECONDS, GENERATION_SECONDS, WALL_SECONDS = 120, 300, 1800
+BUDGET = ModelCallBudget(INPUT, OUTPUT, Decimal("0.06144"))
+RULES = {
+    "eligibility": (
+        "Score a terminal, observed, complete, budgeted response bound to the exact "
+        "request, work and citation registry. A stopped, missing, unclosed or invalid "
+        "delivery has two unscored axes. Preserve partial usage and report every slot."
+    ),
+    "label": (
+        "Pass exactly on the sealed whole-claim support label. Do not use the reason to "
+        "infer a different returned label."
+    ),
+    "evidence": (
+        "Adjudicate the cited sources and reason against the sealed versioned witnesses "
+        "before joining the returned label and arm. Require a located first action and a "
+        "located second action or availability limit at the specified instant. Allow "
+        "equivalent precise locators or paraphrases. A material overread, wrong "
+        "attribution, unlocated full draft or invented source fails."
+    ),
+    "complete": (
+        "First action: S01 or located S02. Second action: located S02. For confirmed, "
+        "establish the event at the cut. For contradicted, establish an incompatible event "
+        "at that instant. For unresolved, explain what the complete scene shows and what "
+        "it leaves open. Absence of proof alone cannot establish contradiction."
+    ),
+    "missing": (
+        "Require both S01 for the earlier observed action and S03 for absence of the "
+        "draft. Explain why the earlier witness cannot settle the endpoint. Inventory is "
+        "evidence of availability only."
+    ),
+    "comparison": (
+        "Report both axes and joint passes for B and C by case, family and state. Recovery "
+        "is a B joint miss and C joint pass on an unresolved case, independent of "
+        "presentation order. A retained pass is a tie. Report each axis loss on each of "
+        "the six other controls, even if both joint scores fail."
+    ),
+    "advance": (
+        "Recommend a fresh repeat only with all 16 generations eligible, both unresolved "
+        "cases jointly passing C, at least one unresolved recovery, all six C controls "
+        "jointly passing and no control-axis loss. If both open baselines already jointly "
+        "pass, record no recovery headroom. Incomplete is inconclusive. Otherwise hold. No "
+        "production or literary-quality inference."
+    ),
+}
+STOPS = (
+    (
+        "Verify seal, gold, implementation, all frozen bodies and unused single-use ledger "
+        "before dispatch. Fail closed on drift, preexisting output or interrupted "
+        "execution."
+    ),
+    (
+        "Serial, fixed order. Admit all 16 positive HTTP 200 counts within token, context "
+        "and frozen cost limits before generating anything. No retries, fallback, polling "
+        "or replacements."
+    ),
+    (
+        "Stop globally on first non-200, timeout, cancellation, transport/capture error, "
+        "invalid or duplicate-key JSON, changed model, ambiguous final, refusal, length, "
+        "invalid active claim/citation, missing required usage or exceeded "
+        "token/cost/deadline."
+    ),
+    (
+        "A valid semantic miss is a result; continue scheduled slots. Preserve intent and "
+        "terminal evidence, leave unknown usage null, never reopen spent or interrupted "
+        "journals."
+    ),
+)
+IMPLEMENTATION = (
+    "scripts/q010_uncertainty_plan.py",
+    "scripts/q010_uncertainty_run.py",
+    "scripts/verify_q010_endpoint_controls.py",
+    "scripts/ordinary_v61_capture.py",
+    "scripts/q008_sol_smoke.py",
+    "scripts/assessment_openai_authored_smoke.py",
+    "apps/api/open_hollywood_api/services/saved_review_openai_fixture.py",
+    "apps/api/open_hollywood_api/services/assessment_delivery.py",
+    "apps/api/open_hollywood_api/services/assessment_completion.py",
+    "engine/open_hollywood_engine/evaluations/assessment_result.py",
+    "engine/open_hollywood_engine/evaluations/assessment_work.py",
+    "engine/open_hollywood_engine/evaluations/assessment_compact_presentation.py",
+    "engine/open_hollywood_engine/evaluations/assessment_presentation.py",
+    "engine/open_hollywood_engine/models/assessment_openai.py",
+    "engine/open_hollywood_engine/models/openai.py",
+    "engine/open_hollywood_engine/models/openai_catalog.py",
+)
+
+
+def digest(raw: bytes) -> str:
+    return sha256(raw).hexdigest()
+
+
+@dataclass(frozen=True)
+class Cell:
+    name: str
+    work: AssessmentWork
+    wire: WireMapping
+
+
+def render() -> list[Cell]:
+    """Only the seal, qualified neutral previews and packet bodies are readable inputs."""
+    frozen = controls.ROOT / "frozen"
+    seal = _read(frozen / "seal.json")
+    require(digest(seal) == controls.SEAL and SYSTEM.count(BASE) == 1, "control_contract_drift")
+    require(
+        digest(SYSTEM.encode())
+        == "9b95b4fda41557bcc730fa821b7ba96cda2ab711cebd79d011730cd35686549b",
+        "baseline_drift",
+    )
+    spec = builtin_model_specs()[MODEL]
+    require(_cost(spec, INPUT, OUTPUT) == BUDGET.max_cost_usd, "cost_basis_changed")
+    cells = []
+    for key, pin in sorted(json.loads(seal)["packets_sha256"].items()):
+        raw = _read(frozen / "packets" / (key + ".json"))
+        require(digest(raw) == pin, "packet_drift")
+        packet = controls.Packet.model_validate_json(raw)
+        work = controls.native_work(packet, pin)
+        require(
+            AssessmentWork.model_validate_json(_read(controls.ROOT / "previews" / (key + ".json")))
+            == work,
+            "preview_drift",
+        )
+        msg = json.loads(work.context.messages[0].content)
+        docs = []
+        for doc in work.context.documents:
+            view = doc.model_dump(mode="json", exclude={"content_json"})
+            content = json.loads(doc.content_json)
+            if doc.kind == "registry":
+                view["columns"] = ["ref", "document_id", "field_pointer"]
+                view["whole_field_locations"] = [
+                    [e["ref"], e["document_id"], e["field_pointer"]] for e in content["entries"]
+                ]
+            else:
+                view["structured_content"] = content
+            docs.append(view)
+        msg.update(
+            active_unit_ids=[packet.claim_id], native_work_view={"context": {"documents": docs}}
+        )
+        user = compact(msg)
+        (batch,) = work.batches
+        pair = {}
+        for arm in "BC" if key in FIRST_B else "CB":
+            system = SYSTEM if arm == "B" else SYSTEM.replace(BASE, BASE + " " + ADDITION)
+            request_id = digest(encoded([work.fingerprint, MODEL, "high", system, user]))
+            scope = scope_for_batch(work, batch.batch_id, request_id)
+            request = ModelRequest(
+                model_identifier=MODEL,
+                provider="openai",
+                deployment=ModelDeployment.CLOUD,
+                messages=(
+                    ModelMessage(MessageRole.SYSTEM, system),
+                    ModelMessage(MessageRole.USER, user),
+                ),
+                invocation=InvocationContext(
+                    "endpoint_fact_assessment",
+                    "paired-uncertainty-1",
+                    tuple(UUID(s.version) for s in packet.sources),
+                ),
+                response_schema=assessment_response_schema(work, scope),
+                settings=ModelSettings(thinking="high"),
+                budget=BUDGET,
+            )
+            wire = _prepare_wire(work, scope, request, spec, guard=None)
+            cells.append(Cell(key + "-" + arm, work, wire))
+            pair[arm] = wire
+        for b, c in zip(pair["B"].endpoints, pair["C"].endpoints, strict=True):
+            require(
+                b.body_utf8.count(BASE) == 1
+                and ADDITION not in b.body_utf8
+                and b.body_utf8.replace(BASE, BASE + " " + ADDITION) == c.body_utf8,
+                "pair_not_isolated",
+            )
+    require(len(cells) == 16, "wrong_cell_count")
+    return cells
+
+
+def schedule(cells: list[Cell]) -> list[tuple[Cell, WireEndpoint]]:
+    return [(cell, cell.wire.endpoints[i]) for i in (0, 1) for cell in cells]
+
+
+def filename(cell: Cell, end: WireEndpoint) -> str:
+    return f"{cell.name}-{end.stage}.json"
+
+
+def materials() -> tuple[list[Cell], bytes]:
+    cells = render()
+    admitted = controls.verify()
+    manifest = encoded(
+        {
+            "contract": "q010-paired-uncertainty-1",
+            "model": MODEL,
+            "reasoning": "high",
+            "live_directory": ROOT.relative_to(REPO).as_posix(),
+            "source_verification": admitted,
+            "clarification": ADDITION,
+            "budget": {
+                "input_counts": 16,
+                "generations": 16,
+                "retries": 0,
+                "input_per_generation": INPUT,
+                "output_per_generation": OUTPUT,
+                "aggregate_generation_input": 16 * INPUT,
+                "aggregate_generation_output": 16 * OUTPUT,
+                "max_generation_usd": str(BUDGET.max_cost_usd),
+                "aggregate_generation_usd": str(16 * BUDGET.max_cost_usd),
+                "count_seconds": COUNT_SECONDS,
+                "generation_seconds": GENERATION_SECONDS,
+                "wall_seconds": WALL_SECONDS,
+            },
+            "slots": [
+                {
+                    "cell": c.name,
+                    "filename": filename(c, e),
+                    "work_sha256": c.work.fingerprint,
+                    "request_sha256": c.wire.native_request_sha256,
+                    "http_body_bytes": len(e.body_utf8.encode()),
+                    **e.model_dump(mode="json", exclude={"body_utf8"}),
+                }
+                for c, e in schedule(cells)
+            ],
+            "scoring": RULES,
+            "stops": STOPS,
+            "model_spec": cells[0].wire.model_spec.model_dump(mode="json"),
+            "implementation": {p: ledger.file_hash(REPO / p) for p in IMPLEMENTATION},
+        }
+    )
+    return cells, manifest
+
+
+def issue(root: Path) -> str:
+    cells, plan = materials()
+    _unlinked(root).mkdir(exist_ok=False)
+    (root / "requests").mkdir()
+    for cell, end in schedule(cells):
+        _durable_write(root / "requests" / filename(cell, end), end.body_utf8.encode())
+    _durable_write(root / "plan.json", plan)
+    approval = digest(plan)
+    ledger.initialize_ledger(root, approval)
+    return approval
+
+
+def verify(root: Path, approval: str) -> list[Cell]:
+    cells, plan = materials()
+    require(
+        digest(plan) == approval and _read(root / "plan.json") == plan, "approval_or_source_drift"
+    )
+    files = {filename(c, e): e.body_utf8.encode() for c, e in schedule(cells)}
+    folder = root / "requests"
+    require(
+        set(files) == {p.name for p in folder.iterdir()}
+        and all(_read(folder / k) == v for k, v in files.items()),
+        "frozen_request_drift",
+    )
+    ledger.ledger_state(root, approval)
+    return cells

@@ -13670,9 +13670,20 @@ one genuine review with an admitted claim.
   Gold preceded readback. All 22 witness spans resolved, six authored
   disagreement fixtures separated label from evidence, seven rejection controls
   held and 180 focused tests passed. Zero live calls.
-- [ ] Prepare the paired Sol-high diagnostic freeze using the eight admitted
-  cases. Hold the source and brief fixed within pairs, isolate the uncertainty
-  wording, and submit requests, independent scoring, budget and stops for approval.
+- [x] [Freeze the paired Sol-high uncertainty diagnostic](../docs/handoffs/q010-paired-uncertainty-freeze-2026-11-23.md).
+  Each of the eight admitted packets has a baseline and a one-sentence clarification.
+  The source, brief and schema match byte-for-byte within pairs at both endpoints.
+  Independent label and evidence scoring, balanced order, the 16-count gate,
+  16-generation ceiling and single-use stops are frozen. All 272 focused tests
+  passed. All 32 slots were unused when submitted for approval.
+- [x] [Run the frozen B/C comparison and independently score all eight pairs](../docs/handoffs/q010-paired-uncertainty-results-2026-11-23.md).
+  All 16 counts and 16 generations returned HTTP 200 with zero retries. Evidence
+  decisions were sealed before joining the returned labels. B passed both axes
+  on 7/8 cases and C on 8/8. C recovered the P01 threshold claim on both axes.
+  P06 was a retained pass, and all six controls passed in both arms. The journal
+  is closed and spent. The frozen criterion for a fresh repeat was met.
+- [ ] Prepare a paired repeat on fresh scene families, retain all four evidence
+  states and freeze gold and independent scoring before seeking live approval.
 
 Step 19 **IN PROGRESS**. Step 20 **NOT STARTED**. Production prompts unchanged.
 Live calls paused and full workflow canary on hold.
