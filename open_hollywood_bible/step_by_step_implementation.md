@@ -13756,9 +13756,29 @@ one genuine review with an admitted claim.
   earlier gap cited as final failed both. Flipping only a label kept its
   evidence score. Sol’s saved original-position answer still failed both,
   and all three saved depiction controls passed both. Zero live calls.
-- [ ] Freeze the paired Sol-high B versus evidence-check comparison on these
-  five position cases for approval. Plan ten counts before up to ten
-  generations, zero retries. Retain the three depiction controls offline.
+- [x] [Freeze and verify the five-case Q011 Sol-high B/evidence-check comparison](../docs/handoffs/q011-sol-high-evidence-check-freeze-2026-11-23.md).
+  All five pairs isolate one sentence in the diagnostic evidence obligation.
+  Twenty exact requests, rehearsed gold, separate judgment and evidence
+  scores, budget and global stops are sealed. All 74 focused tests passed.
+  Ten serial counts precede up to ten generations, zero retries. The
+  single-use journal was ready with zero attempts at freeze. Depiction controls stay offline.
+- [x] [Run the approved Q011 B/E comparison and inspect all twenty slots](../docs/handoffs/q011-sol-high-evidence-check-results-2026-11-23.md).
+  All ten counts passed before ten eligible generations, with zero retries.
+  On the genuine approach and the gap before renewed motion, B returned
+  `unsupported` and failed both scores. E returned `uncertain` and passed
+  both. Both arms passed arrival, stop short and the gap at the cut on both
+  axes. Frozen decision `genuine_paired_recovery`. No baseline recovery.
+  Evidence was sealed before the label join. The journal is closed and spent.
+- [x] [Preserve both Q011 B/E recoveries and three controls and audit fresh transfer families](../docs/handoffs/q011-evidence-check-transfer-audit-2026-11-23.md).
+  The sealed 78-member archive replays all 20 slots and reproduces both
+  scores for each of ten generations. None of six saved first scenes qualified.
+  Two newly authored families supply eight version-bound cases with sealed
+  gold for approach, arrival and a gap before or after renewed motion.
+  All 53 focused tests passed. Zero live calls.
+- [ ] Prepare the proposed Sol-high transfer comparison for approval. Pair B
+  and E on all eight authored cases with opposite first arms across families.
+  Plan 16 counts before up to 16 generations, zero retries. Keep the five
+  observed Q011 pairs offline and report fresh baseline passes separately.
 
 Step 19 **IN PROGRESS**. Step 20 **NOT STARTED**. Production prompts unchanged.
 Live calls paused and full workflow canary on hold.
