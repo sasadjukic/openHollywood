@@ -13725,10 +13725,33 @@ one genuine review with an admitted claim.
   separate scores. Sol located both plan fields and the correct closing passage.
   In the original it treated an undepicted position as contradicted. The authored
   arrival supplied direct evidence. Both scores and the `hold` decision stand.
-- [ ] Rehearse physical position versus what the closing paragraph depicts on
-  the original approach, authored arrival and explicit stop short. Qualify
-  both claim scopes locally before seeking approval for six counts followed
-  by up to six generations, with zero retries.
+- [x] [Rehearse Q011 physical position and paragraph depiction across all three endings](../docs/handoffs/q011-position-depiction-rehearsal-2026-11-23.md).
+  Gold was sealed before authoring the responses. Only the genuine cut split
+  the claims (`uncertain` position, `unsupported` depiction). All six grounded
+  fixtures passed judgment and evidence. Four challenge fixtures verified
+  separate scores, including correct labels backed by inadequate evidence.
+- [x] [Freeze and verify the six-case Q011 Sol-high B comparison](../docs/handoffs/q011-sol-high-scope-freeze-2026-11-23.md).
+  Twelve exact request bodies reproduce the rehearsed work. The original
+  position and depiction judgments are reported separately from the four
+  control cases. Gold, two-axis scoring, order, budget and stops are sealed.
+  Six counts must pass before up to six generations, zero retries. All 186
+  focused tests passed. The registered journal is ready and unused.
+- [x] [Run the approved six-case Q011 comparison and inspect all twelve slots](../docs/handoffs/q011-sol-high-scope-results-2026-11-23.md).
+  All six counts passed before six eligible generations, with zero retries.
+  On the original, Sol returned `unsupported` for both subjects. Physical
+  position failed judgment and evidence against `uncertain` gold. Paragraph
+  depiction passed both. All four arrival and stop controls passed both.
+  Evidence decisions were sealed before the label join. Frozen decision
+  `hold`. The journal is closed and spent.
+
+- [x] [Preserve all six Q011 scope deliveries and audit evidence for ruling out arrival at the cut](../docs/handoffs/q011-evidence-at-the-cut-audit-2026-11-23.md).
+  Sealed replay reproduced all twelve slots, the original pair and four
+  controls with both scores. The genuine ending supplies direction. Only the
+  stop-short ending places Elias an incompatible distance from the sill at the
+  cut. The earlier stop is followed by renewed motion. Decision remains `hold`.
+- [ ] Rehearse the physical contradiction check locally on the three position
+  cases and two versions that place the same gap at different times. Verify
+  judgment and evidence separately and replay the three depiction controls.
 
 Step 19 **IN PROGRESS**. Step 20 **NOT STARTED**. Production prompts unchanged.
 Live calls paused and full workflow canary on hold.
