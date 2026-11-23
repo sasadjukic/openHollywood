@@ -13663,10 +13663,16 @@ one genuine review with an admitted claim.
   citation. Claim fail and evidence pass were preserved. One component was
   established and one unresolved. Sol identified no contradictory fact.
   All seven negative controls and 292 focused tests passed. Zero live calls.
-- [ ] Prepare local controls across two scene families for a confirmed event,
-  an explicit contradiction, an unresolved event in a complete scene and an
-  unavailable source. Freeze gold and qualify the contrasts before proposing
-  a separate comparison for approval.
+- [x] [Freeze and qualify eight endpoint controls across two scene families](../docs/handoffs/q010-endpoint-controls-2026-11-23.md).
+  The historical Q010 anchor and a fresh moth-photography scene supply two
+  confirmed, two contradicted, two complete-but-open and two missing-source
+  cases. Each missing-source case retains an independent first-clause witness.
+  Gold preceded readback. All 22 witness spans resolved, six authored
+  disagreement fixtures separated label from evidence, seven rejection controls
+  held and 180 focused tests passed. Zero live calls.
+- [ ] Prepare the paired Sol-high diagnostic freeze using the eight admitted
+  cases. Hold the source and brief fixed within pairs, isolate the uncertainty
+  wording, and submit requests, independent scoring, budget and stops for approval.
 
 Step 19 **IN PROGRESS**. Step 20 **NOT STARTED**. Production prompts unchanged.
 Live calls paused and full workflow canary on hold.
