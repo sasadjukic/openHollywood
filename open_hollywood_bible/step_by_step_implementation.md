@@ -13693,9 +13693,17 @@ one genuine review with an admitted claim.
   zero retries. Evidence decisions were sealed before the label join. Both arms
   passed both axes on 8/8. R06 destination and R02 holder identity each retained
   a baseline pass. Zero fresh recoveries and zero control losses. Journal spent.
-- [ ] Compare P01/R06 locally and audit up to six unassessed ordinary-review
-  claims for motion underway versus achieved destination and visibility at the
-  cut. Record qualifying source-bound gold or the gap before more inference.
+- [x] Retain B as the default factual-assessment wording. C remains a diagnostic
+  variant; the fresh comparison produced two retained baseline passes.
+- [x] [Audit P01/R06 and six previously unassessed ordinary-review claims](../docs/handoffs/q011-motion-endpoint-audit-2026-11-23.md).
+  Elias Q011 is the sole new factual target. The plan assigns both attraction
+  and standing at the threshold; the draft establishes attraction and leaves
+  the achieved position open. Whole-claim gold `uncertain` was sealed before
+  assessor output. Q011 shares the Q010 draft. The neighboring narrative-boundary
+  field remains held. All 112 focused tests passed. Zero live calls.
+- [ ] Rehearse Q011 locally with B, exact plan and draft sources, gold exclusion
+  and both overread fixtures. Assess readiness for a separately approved
+  two-cell destination-evidence comparison.
 
 Step 19 **IN PROGRESS**. Step 20 **NOT STARTED**. Production prompts unchanged.
 Live calls paused and full workflow canary on hold.
