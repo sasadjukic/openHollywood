@@ -13682,8 +13682,20 @@ one genuine review with an admitted claim.
   on 7/8 cases and C on 8/8. C recovered the P01 threshold claim on both axes.
   P06 was a retained pass, and all six controls passed in both arms. The journal
   is closed and spent. The frozen criterion for a fresh repeat was met.
-- [ ] Prepare a paired repeat on fresh scene families, retain all four evidence
-  states and freeze gold and independent scoring before seeking live approval.
+- [x] [Freeze the B/C repeat on two fresh scene families](../docs/handoffs/q010-fresh-endpoint-repeat-freeze-2026-11-23.md).
+  The destination and holder-identity claims each have confirmed, contradicted,
+  complete-but-unresolved and missing-draft cases. Gold and scoring were sealed
+  before readback; all 22 witness spans and 32 request bodies verified. Evidence
+  decisions must be sealed before the label join. All 229 focused tests passed.
+  The repeat journal had all 32 live slots unused at approval.
+- [x] [Run the fresh B/C repeat and independently score all 16 eligible arms](../docs/handoffs/q010-fresh-endpoint-repeat-results-2026-11-23.md).
+  All 16 counts passed before 16 generations. All 32 slots returned HTTP 200 with
+  zero retries. Evidence decisions were sealed before the label join. Both arms
+  passed both axes on 8/8. R06 destination and R02 holder identity each retained
+  a baseline pass. Zero fresh recoveries and zero control losses. Journal spent.
+- [ ] Compare P01/R06 locally and audit up to six unassessed ordinary-review
+  claims for motion underway versus achieved destination and visibility at the
+  cut. Record qualifying source-bound gold or the gap before more inference.
 
 Step 19 **IN PROGRESS**. Step 20 **NOT STARTED**. Production prompts unchanged.
 Live calls paused and full workflow canary on hold.
