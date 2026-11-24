@@ -13799,10 +13799,12 @@ one genuine review with an admitted claim.
   E briefs. Q012 kept the default factual B brief for narrative coverage and
   the reserved voice. Q016 retained Elara’s whole interpretation on hold with
   zero pending units. All 126 focused tests passed. Zero live calls.
-- [ ] Screen up to six previously unscreened saved ordinary reviews from
-  other scene families for a whole factual position claim at an identifiable
-  instant. Freeze the field, source versions and independent scoring before
-  viewing assessor output if one qualifies. Otherwise record the admission gap.
+- [x] [Screen six unscreened ordinary reviews from other families and record the position-claim gap](../docs/handoffs/q011-independent-position-screen-2026-11-24.md).
+  The v61 metadata check found only the two previously screened invocations.
+  Across six further v33 families, none of 42 whole fields made a qualifying
+  position claim. No claim-specific gold, assessor output inspection or live
+  calls. All 13 related regressions passed. B remains the default. Reopen
+  admission when an independent ordinary review supplies a qualifying field.
 
 Step 19 **IN PROGRESS**. Step 20 **NOT STARTED**. Production prompts unchanged.
 Live calls paused and full workflow canary on hold.
