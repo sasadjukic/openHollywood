@@ -13794,9 +13794,15 @@ one genuine review with an admitted claim.
   six for B and 51 were held. Both E fields came from the same Elias v61
   review. The other v61 review and four v33 benchmark reviews supplied no
   independent positive. All 38 focused tests passed. Zero live calls.
-- [ ] Rehearse local read-only selection for the two exact Elias position
-  fields, a factual B control and a held editorial field. Seek an independent
-  ordinary-review family with a qualifying claim before another live test.
+- [x] [Rehearse read-only selection for the two Elias position claims and both controls](../docs/handoffs/q011-read-only-field-selection-rehearsal-2026-11-24.md).
+  Q010 retained entering and Q011 retained standing in separate single-field
+  E briefs. Q012 kept the default factual B brief for narrative coverage and
+  the reserved voice. Q016 retained Elara’s whole interpretation on hold with
+  zero pending units. All 126 focused tests passed. Zero live calls.
+- [ ] Screen up to six previously unscreened saved ordinary reviews from
+  other scene families for a whole factual position claim at an identifiable
+  instant. Freeze the field, source versions and independent scoring before
+  viewing assessor output if one qualifies. Otherwise record the admission gap.
 
 Step 19 **IN PROGRESS**. Step 20 **NOT STARTED**. Production prompts unchanged.
 Live calls paused and full workflow canary on hold.
