@@ -13880,6 +13880,26 @@ one genuine review with an admitted claim.
   measured stop. Q008 B retained 1/1 on narrated arrival. All 46 focused tests
   passed. Keep B as the default. Ready to freeze a seven-assessment comparison
   of B with and without supplied observations, retaining Q008 as a control.
+- [x] [Freeze the seven Sol-high Wading Path assessments with exact-observation pairs](../docs/handoffs/wading-path-sol-high-observations-freeze-2026-11-24.md).
+  Paired Q011 on ordinary B and B with verbatim observations for the original,
+  explicit arrival and measured stop. Q008 runs once on B. The original B and
+  Q008 B wires reproduce their historical bodies. The scorer seals masked evidence
+  decisions before comparing returned labels to gold. All 61 focused tests passed.
+  Approval fingerprint `8ba8473e3496a68ccb250c05b31b3aae217bda7a84aec19051913e619fe3ae82`.
+- [x] [Run the seven Sol-high Wading Path assessments and inspect all 14 slots](../docs/handoffs/wading-path-sol-high-observations-results-2026-11-24.md).
+  Seven counts passed before seven eligible generations, zero retries. Original Q011
+  scored 0/0 on B and 0/1 with exact observations (judgment/evidence). Neither
+  recovered the uncertainty judgment. Both explicit-arrival arms and Q008 B scored
+  1/1. Both measured-stop arms scored 1/0 after treating three strides short as
+  fulfillment of the exit position. Frozen decision `hold_controls`. Keep B as default.
+- [x] [Preserve all seven observed answers and audit the spatial meaning of Q011](../docs/handoffs/wading-path-observations-scope-audit-2026-11-24.md).
+  Replayed all 14 slots and both scores per assessment from a sealed 62-file
+  private archive. Both stop answers used the right gap and accepted the broader
+  reading of “before.” On the original, B treated omission as a physical conclusion,
+  while O identified a limit on proof and still chose `unsupported`. Q008 retained
+  1/1 for narrated arrival. All 72 focused tests passed. Keep B as default.
+  Next proposed local rehearsal separates narrated arrival, reaching during the
+  scene and position at the cut, including an authored arrival followed by retreat.
 
 Step 19 **IN PROGRESS**. Step 20 **NOT STARTED**. Production prompts unchanged.
 Live calls paused and full workflow canary on hold.
