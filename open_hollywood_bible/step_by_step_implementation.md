@@ -13907,6 +13907,25 @@ one genuine review with an admitted claim.
   wrong-scope explanations and a label-only error. Historical Q008 B retained
   1/1. All 55 focused tests passed. Ready to freeze a Sol-high B diagnostic on
   the original and retreat drafts with Q008 B as a separate narration control.
+- [x] [Freeze the three-claim Sol-high B diagnostic on the original and retreat drafts](../docs/handoffs/wading-path-three-claims-sol-high-freeze-2026-11-24.md).
+  Froze one request per claim and draft, plus the byte-identical Q008 B control.
+  Judgment and evidence score independently. All 48 focused tests passed.
+  Readback verified 14 unused slots and the single-use journal. Seven counts must
+  pass before up to seven generations, with zero retries.
+- [x] [Run and score the Wading Path three-claim Sol-high B diagnostic](../docs/handoffs/wading-path-three-claims-sol-high-results-2026-11-24.md).
+  Inspected all 14 slots. Seven counts passed before seven eligible generations,
+  with zero retries. On the original, narrated arrival earned both points. A visit
+  during the scene and position at the cut each drew `unsupported` against
+  `uncertain` gold and earned zero on both axes. All three retreat claims and
+  the separate Q008 B control earned both points. Frozen decision
+  `hold_claim_scope`. B remains the default.
+- [x] [Preserve both original failures and five passing controls, and audit visit and cut-position evidence](../docs/handoffs/wading-path-visit-position-audit-2026-11-24.md).
+  Replayed all 14 slots and both sealed scores for all seven responses. In the
+  four audited drafts, a persistent final gap settles position at the cut. It
+  leaves an earlier visit open in the stop-short draft and follows an explicit
+  visit in the retreat draft. None excludes a visit across the entire scene.
+  All 47 focused checks passed. Next proposed local rehearsal adds one full-scene
+  exclusion to the measured stop and scores two claims across five drafts.
 
 Step 19 **IN PROGRESS**. Step 20 **NOT STARTED**. Production prompts unchanged.
 Live calls paused and full workflow canary on hold.
