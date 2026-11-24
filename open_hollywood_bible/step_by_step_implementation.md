@@ -13847,6 +13847,32 @@ one genuine review with an admitted claim.
   uncertain. Froze separate judgment and passage-specific evidence criteria
   before assessor output. All 13 focused regressions passed. One new family, one
   review. The slot is spent and B stays the default.
+- [x] [Rehearse read-only selection for the Wading Path position claims and narrated-arrival control](../docs/handoffs/wading-path-read-only-selection-rehearsal-2026-11-24.md).
+  Q010 and Q011 each retained their whole claim and source context under B and E.
+  Frozen judgment is uncertain for standing and endpoint fulfillment. Q008 stayed
+  on B with unsupported gold for narrated arrival. Two offline replays reproduced
+  all five previews and verified seven closing excerpts. All 106 focused tests
+  passed. Ready to freeze five
+  counts before up to five generations, zero retries. Zero live calls in rehearsal.
+- [x] [Freeze the Wading Path Sol-high B/E comparison for approval](../docs/handoffs/wading-path-sol-high-be-freeze-2026-11-24.md).
+  Q010 B/E and Q011 E/B bracket the Q008 B narrated-arrival control. Verified
+  all ten endpoint bodies, separate judgment and evidence rules, all 1,420
+  citation IDs, and the single-use five-count gate. All 208 focused and related
+  tests passed. Five counts before up to five generations, zero retries.
+  Journal ready, all ten slots unused. Live approval pending.
+- [x] [Run the approved Wading Path Sol-high B/E comparison and score all five assessments](../docs/handoffs/wading-path-sol-high-be-results-2026-11-24.md).
+  Five counts passed before five eligible generations, zero retries. Inspected
+  all ten slots and sealed the evidence scores before joining judgments. Q010 B/E
+  both scored 0/0. Q011 B scored 0/1 and E scored 0/0. Q008 B scored 1/1
+  for narrated arrival (judgment/evidence). E recovered neither position
+  judgment and lost one evidence point. Hold E and retain B as the default.
+- [x] [Preserve both Wading Path B/E pairs and Q008, and audit the stop-short inference and Q011 B judgment](../docs/handoffs/wading-path-position-and-judgment-audit-2026-11-24.md).
+  Sealed 46 private archive members and reproduced all ten slots and five score
+  pairs offline. Q011 E added a stop the draft never locates. Q011 B identified
+  unestablished standing but returned the contradiction label. Q008 retained both
+  points for narrated arrival. All 209 focused tests passed. Keep B as the
+  default. Next proposed step is a local rehearsal with fixed evidence and
+  explicit arrival and separation controls.
 
 Step 19 **IN PROGRESS**. Step 20 **NOT STARTED**. Production prompts unchanged.
 Live calls paused and full workflow canary on hold.
