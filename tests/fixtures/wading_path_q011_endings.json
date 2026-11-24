@@ -1,0 +1,37 @@
+{
+  "contract": "wading-path-q011-local-endings-v1",
+  "archive_manifest_sha256": "3f4295306f6b366b19a292e0147d4fbb4992ce82fd3353581571a10ef2e2c303",
+  "claim": "The draft matches the outcome ('reach the breaker panel housing') and exit state ('standing before the final barrier') defined in the scene plan.",
+  "critique_version": "df932129-8005-49e8-bcf2-054546125288",
+  "plan_version": "152e58e1-57ee-5c48-8bb2-bf4f7e8e104e",
+  "original_draft_version": "38e82829-604f-40df-b5a0-1c968718573e",
+  "plan_refs": ["E0258", "E0254"],
+  "judgment_rule": "One point for the exact whole-claim gold label. A contradiction of either requirement rules out the conjunction. Both requirements must be established for support.",
+  "evidence_rule": "Score without the returned label. Resolve both plan assignments in their exact version. Use the complete selected draft for fulfillment. Account for both Elias and Maya, the housing as the final barrier and the final narrated instant. Require the observations below, allowing equivalent wording. An invented position, wrong draft or material overreach fails evidence even with the right label.",
+  "cases": {
+    "original": {
+      "append_paragraph": "",
+      "full_draft_sha256": "657324e144ebe41dc10fe3fbb197e29f04979a27e0abed26bf0a7bd2748dbf42",
+      "reach": "open",
+      "standing_at_cut": "open",
+      "gold": "uncertain",
+      "observation": "Both reach the wall, enter the plenum and look deeper. The housing stands at the end. The last narrated movement, view and object location leave attaining the housing and standing there open."
+    },
+    "arrival": {
+      "append_paragraph": "When the light steadied, Elias and Maya reached the master breaker panel housing and stood side by side before it.",
+      "full_draft_sha256": "f184d9677e644e6e56c0803efc4bf28f47711054a6d9b532b8e56a7dcb58f87f",
+      "reach": "established",
+      "standing_at_cut": "established",
+      "gold": "supported",
+      "observation": "The added final sentence places both people at the named housing and explicitly gives their standing position before it. The preceding ending identifies it as the barrier."
+    },
+    "stop_short": {
+      "append_paragraph": "When the light steadied, Elias and Maya stopped side by side three full strides short of the master breaker panel housing and stayed there.",
+      "full_draft_sha256": "3ca09ba71b8e79da1e6f5ecea31f8ea3032b5d0cee847f3e3db43c003c46922d",
+      "reach": "open",
+      "standing_at_cut": "contradicted",
+      "gold": "unsupported",
+      "observation": "The added final sentence keeps both people three strides short of the named housing at the cut. This contradicts the exit position and is sufficient for the conjunction. Earlier attainment of the housing is unresolved."
+    }
+  }
+}

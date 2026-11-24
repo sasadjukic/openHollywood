@@ -1,0 +1,17 @@
+{
+  "original": {
+    "evidence_view_sha256": "90473dd9cf4ece20655e4629a440f99f51586545713bb04580067195f650470a",
+    "adequate": true,
+    "basis": "Both assignments resolve in plan v1. Draft v1, 3995–4804, locates the pair at the wall and then inside the plenum. The account of their gaze and the housing preserves the limit on both fulfillment claims."
+  },
+  "arrival": {
+    "evidence_view_sha256": "705cc80eb6ea9b4d5b7bd2ef961bae2494f03ec18b3a74737be956eb8c3cef00",
+    "adequate": true,
+    "basis": "Both plan fields resolve. The barrier identification at 4707–4804 and the selected draft’s final sentence at 4806–4920 together support both people reaching and standing before the assigned landmark."
+  },
+  "stop_short": {
+    "evidence_view_sha256": "5669283f14fa03e6a44e20411c9d5e9479563f161cc0274ccd5b74a95f1b0ca4",
+    "adequate": true,
+    "basis": "Both plan fields and the barrier identification resolve. At 4806–4945 both people stop three strides short and stay there. The explanation uses this to rule out the exit position while preserving uncertainty about any earlier arrival."
+  }
+}

@@ -13873,6 +13873,13 @@ one genuine review with an admitted claim.
   points for narrated arrival. All 209 focused tests passed. Keep B as the
   default. Next proposed step is a local rehearsal with fixed evidence and
   explicit arrival and separation controls.
+- [x] [Rehearse Wading Path Q011 with fixed B/E explanations and three source-bound endings](../docs/handoffs/wading-path-q011-fixed-explanation-rehearsal-2026-11-24.md).
+  Changing only the original label to `uncertain` moved B from 0/1 to 1/1
+  and E from 0/0 to 1/0 (judgment/evidence). E kept the unsupported stop.
+  The grounded local answers scored 1/1 on the original, explicit arrival and
+  measured stop. Q008 B retained 1/1 on narrated arrival. All 46 focused tests
+  passed. Keep B as the default. Ready to freeze a seven-assessment comparison
+  of B with and without supplied observations, retaining Q008 as a control.
 
 Step 19 **IN PROGRESS**. Step 20 **NOT STARTED**. Production prompts unchanged.
 Live calls paused and full workflow canary on hold.
