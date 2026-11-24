@@ -13827,6 +13827,12 @@ one genuine review with an admitted claim.
   reproduced critique v2. Of 12 whole fields, three described Elias approaching
   the chair. None required his position at the cut. Zero position gold records.
   All 13 related regressions passed. Independent-family coverage remains open.
+- [x] [Preserve the three Price of Life approach fields as B controls and check for a fresh ordinary v61 review](../docs/handoffs/price-of-life-approach-controls-and-v61-screen-2026-11-24.md).
+  Q008, Q010 and Q011 retain their whole wording, distinct evidence obligations
+  and exact source versions. Across 68 Open Hollywood databases, all three
+  successful ordinary v61 reviews had already been screened. The fourth
+  invocation stopped before saving a critique. No fresh independent-family
+  claim or gold. All 17 focused regressions passed. B remains the default.
 
 Step 19 **IN PROGRESS**. Step 20 **NOT STARTED**. Production prompts unchanged.
 Live calls paused and full workflow canary on hold.

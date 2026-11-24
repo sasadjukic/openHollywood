@@ -1,0 +1,31 @@
+{
+  "invocation": "2a65af6a-e947-4aff-9090-0a7162dedaf1",
+  "critique": "d4dd0dab-70ee-4719-a8fa-6a4decbcf7c2",
+  "draft": "a35894d5-6d87-400d-b48b-fa84b8069dfd",
+  "plan": "aac632e7-27bb-5f71-a503-c97ab1cf0aa2",
+  "expected_brief": "B",
+  "requires_position_at_cut": false,
+  "controls": {
+    "Q008": {
+      "pointer": "/saved_native_audit/assignment_checks/outcome/assessment",
+      "text": "The transaction is initiated as the Broker accepts the agreement and directs Elias to the extraction equipment, and Elias physically moves toward the machine to begin the process (draft_evidence_0055, 0060).",
+      "evidence_obligation": "Check the assigned outcome, Elias's agreement, the Broker's response and direction, and Elias's movement toward the machine.",
+      "draft_excerpts": [53, 54, 55, 56, 57, 60],
+      "plan_fields": ["outcome"]
+    },
+    "Q010": {
+      "pointer": "/saved_native_audit/check/achieved_state",
+      "text": "Elias has agreed to the trade and is walking toward the extraction chair to begin the process.",
+      "evidence_obligation": "Locate Elias's assent, identify the chair as the extraction equipment and check the direction and purpose of his walk.",
+      "draft_excerpts": [53, 54, 55, 56, 57, 60],
+      "plan_fields": []
+    },
+    "Q011": {
+      "pointer": "/saved_native_audit/check/current_endpoint_comparison",
+      "text": "The draft aligns with the outcome 'The transaction is initiated' and the exit state 'Elias is prepared for extraction' by ending as he approaches the machine.",
+      "evidence_obligation": "Read both assignments in the plan. Check the agreement, preparation and final approach against the draft.",
+      "draft_excerpts": [53, 54, 55, 56, 57, 60],
+      "plan_fields": ["outcome", "exit_state"]
+    }
+  }
+}
