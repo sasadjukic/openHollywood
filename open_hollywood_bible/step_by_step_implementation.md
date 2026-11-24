@@ -13805,6 +13805,28 @@ one genuine review with an admitted claim.
   position claim. No claim-specific gold, assessor output inspection or live
   calls. All 13 related regressions passed. B remains the default. Reopen
   admission when an independent ordinary review supplies a qualifying field.
+- [x] [Freeze one isolated ordinary v61 Gemma critique of The Price of Life](../docs/handoffs/price-of-life-ordinary-v61-capture-plan-2026-11-24.md).
+  Bound scene two to its original five inputs, including the accepted scene-one
+  draft v2 and Story Bible v2. All 12 injected scenarios and 69 focused tests
+  passed. One generation, zero counts, zero retries. Operator slot ready and
+  unused at freeze. B remains the default.
+- [x] [Run the approved Price of Life capture and record the admission gap](../docs/handoffs/price-of-life-ordinary-v61-capture-results-2026-11-24.md).
+  One generation, zero retries. Ollama returned HTTP 200 and reported 26,025
+  input tokens against the frozen 24,000 limit, plus 1,092 output tokens.
+  The invocation stopped before schema validation. Zero new critique versions,
+  eligible reviews or gold records. Export and intake confirmed the stop.
+  Slot spent. Independent-family position coverage remains open.
+- [x] [Freeze a fresh Price of Life capture sized from the observed input usage](../docs/handoffs/price-of-life-v61-resized-capture-plan-2026-11-24.md).
+  Same five exact versions and messages. The new budget allows 28,000 input and
+  8,000 output tokens in a 36,000-token context. Injected usage of 26,025 and
+  28,000 passed. At 28,001 the capture stopped. All 14 scenarios and 71 focused
+  tests passed. Fresh slot ready, original slot spent, zero live calls at freeze.
+- [x] [Run the fresh Gemma capture and screen the saved Price of Life critique](../docs/handoffs/price-of-life-v61-resized-capture-results-2026-11-24.md).
+  One generation, zero counts or retries. The validated critique used 26,025 of
+  28,000 input tokens and 1,084 output tokens. Both native export and intake
+  reproduced critique v2. Of 12 whole fields, three described Elias approaching
+  the chair. None required his position at the cut. Zero position gold records.
+  All 13 related regressions passed. Independent-family coverage remains open.
 
 Step 19 **IN PROGRESS**. Step 20 **NOT STARTED**. Production prompts unchanged.
 Live calls paused and full workflow canary on hold.
