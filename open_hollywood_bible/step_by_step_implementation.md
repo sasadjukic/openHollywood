@@ -13833,6 +13833,20 @@ one genuine review with an admitted claim.
   successful ordinary v61 reviews had already been screened. The fourth
   invocation stopped before saving a critique. No fresh independent-family
   claim or gold. All 17 focused regressions passed. B remains the default.
+- [x] [Freeze one ordinary v61 Gemma capture for The Wading Path](../docs/handoffs/wading-path-ordinary-v61-capture-plan-2026-11-24.md).
+  OH-V01-010 scene four separates the characters' entry into the service
+  passage from the location of the breaker-panel housing at its far end.
+  Verified the seven exact inputs, 69 target excerpts and three accepted
+  earlier drafts. One generation, zero counts or retries, 40,000 input
+  and 8,000 output tokens. All 14 injected scenarios and 38 focused tests passed.
+  The operator slot was ready and unused at freeze. B remains the default.
+- [x] [Run the single Wading Path capture and freeze independent-family position gold](../docs/handoffs/wading-path-ordinary-v61-capture-results-2026-11-24.md).
+  One generation, zero retries, 34,174 input and 1,067 output tokens. Screened
+  12 whole fields in the validated critique. Q008’s narrated arrival is
+  unsupported. Q010’s standing position and Q011’s endpoint fulfillment are
+  uncertain. Froze separate judgment and passage-specific evidence criteria
+  before assessor output. All 13 focused regressions passed. One new family, one
+  review. The slot is spent and B stays the default.
 
 Step 19 **IN PROGRESS**. Step 20 **NOT STARTED**. Production prompts unchanged.
 Live calls paused and full workflow canary on hold.
