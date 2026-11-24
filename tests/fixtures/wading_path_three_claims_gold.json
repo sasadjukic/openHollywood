@@ -1,0 +1,63 @@
+{
+  "contract": "wading-path-three-claims-gold-1",
+  "archive_sha256": "f053b71703ef5d1df3a0aa76cbce3d18c99ebdbac7485504096757111b7ca980",
+  "historical_control": "Replay the observed Q008 B answer on original draft v1 under its own sealed rubric. Keep that whole reviewer field separate from the three authored factual claims.",
+  "claims": {
+    "narrated": "The ending explicitly narrates Elias and Maya reaching the master breaker panel housing.",
+    "reached": "Elias and Maya reached the master breaker panel housing at some time during scene four.",
+    "at_cut": "Elias and Maya are at the master breaker panel housing at scene four's final narrated instant."
+  },
+  "scope": {
+    "narrated": "Read the complete account of the ending. A completed ending that omits an account of arrival contradicts this textual claim.",
+    "reached": "An arrival at any point in scene four suffices. Missing narration or position at one instant alone cannot exclude earlier attainment during the scene.",
+    "at_cut": "At the housing means occupying the destination at the closing instant. Persistent separation of three strides is incompatible. This authored claim requires neither touch nor an inference about the ambiguous plan language 'standing before'."
+  },
+  "scoring": {
+    "judgment": "One point for exact whole-claim gold. Supported requires establishment, unsupported requires a material contradiction, and uncertain applies where both possibilities remain open.",
+    "evidence": "Independently inspect the reason and exact citations with the returned judgment masked. Award one point for an adequate version-bound explanation of the relevant people, landmark and time or narrative scope. Accept equivalent precise passages. A true label attached to an overread, a plan offered as proof of occurrence, or a final gap offered as a complete movement history earns zero evidence. An explicit arrival can prove an event despite later departure. For omissions in narration, inspect the complete selected ending.",
+    "binding": "Use zero-based, end-exclusive Unicode character offsets into the complete selected draft. Verify citations before grading. Wrong draft, invalid spans or modified quotations are ineligible. Unreviewed explanations require a new evidence decision."
+  },
+  "endings": {
+    "original": {
+      "source_case": "K1",
+      "version": "38e82829-604f-40df-b5a0-1c968718573e",
+      "prose_sha256": "657324e144ebe41dc10fe3fbb197e29f04979a27e0abed26bf0a7bd2748dbf42",
+      "cells": {
+        "narrated": ["unsupported", "Trace the ending from wall and plenum entry through the look deeper and final housing description. The housing is located at the end. The narration contains no arrival there by the pair."],
+        "reached": ["uncertain", "Distinguish the wall and plenum entry from the housing. The closing view supplies neither an arrival nor evidence ruling out attainment during the scene."],
+        "at_cut": ["uncertain", "The last narrated movement is entry. The closing description locates the housing. It leaves the pair's final position relative to it open."]
+      }
+    },
+    "arrival": {
+      "source_case": "K2",
+      "version": "02037781-6b73-5869-ba09-337008c50d4f",
+      "prose_sha256": "f184d9677e644e6e56c0803efc4bf28f47711054a6d9b532b8e56a7dcb58f87f",
+      "cells": {
+        "narrated": ["supported", "Locate the sentence explicitly narrating the named pair reaching the housing."],
+        "reached": ["supported", "That joint arrival is an event during scene four."],
+        "at_cut": ["supported", "The final sentence places both people at the housing and standing side by side before it, with no subsequent change of position."]
+      }
+    },
+    "stop": {
+      "source_case": "K3",
+      "version": "2f9e80a0-29b4-579f-8075-b6e064788b24",
+      "prose_sha256": "3ca09ba71b8e79da1e6f5ecea31f8ea3032b5d0cee847f3e3db43c003c46922d",
+      "cells": {
+        "narrated": ["unsupported", "Account for the complete ending, including entry, the view of the housing and the persistent three-stride gap. It narrates no arrival at the housing."],
+        "reached": ["uncertain", "Entry and sight of the housing do not establish arrival. The final gap fixes the endpoint and cannot exclude an earlier visit."],
+        "at_cut": ["unsupported", "Both people stop three full strides short of the named housing and stay there through the cut."]
+      }
+    },
+    "retreat": {
+      "source_case": "K2",
+      "append_paragraph": "Then Elias and Maya stepped back three full strides from the housing and stayed there.",
+      "version": "ae1fb3f6-5e23-597a-a61f-020b9cc8e254",
+      "prose_sha256": "51900dd0ff5d591e883e8d9d6b21408550ea8efea38963967db406b8217095ec",
+      "cells": {
+        "narrated": ["supported", "The ending includes the explicit arrival of both people before their retreat."],
+        "reached": ["supported", "The pair reach the housing during the scene. A later retreat preserves that event."],
+        "at_cut": ["unsupported", "After reaching the housing, both step back three full strides and stay there. The retreat fixes the later position at the cut."]
+      }
+    }
+  }
+}

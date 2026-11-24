@@ -13900,6 +13900,13 @@ one genuine review with an admitted claim.
   1/1 for narrated arrival. All 72 focused tests passed. Keep B as default.
   Next proposed local rehearsal separates narrated arrival, reaching during the
   scene and position at the cut, including an authored arrival followed by retreat.
+- [x] [Rehearse narrated arrival, reaching during the scene and position at the cut](../docs/handoffs/wading-path-three-claims-rehearsal-2026-11-24.md).
+  Froze gold and evidence criteria for 12 cells before authoring responses. All
+  12 grounded fixtures earned 1/1. In the retreat version the pair explicitly
+  arrive, then leave and stay three strides away. Five scoring controls exposed
+  wrong-scope explanations and a label-only error. Historical Q008 B retained
+  1/1. All 55 focused tests passed. Ready to freeze a Sol-high B diagnostic on
+  the original and retreat drafts with Q008 B as a separate narration control.
 
 Step 19 **IN PROGRESS**. Step 20 **NOT STARTED**. Production prompts unchanged.
 Live calls paused and full workflow canary on hold.

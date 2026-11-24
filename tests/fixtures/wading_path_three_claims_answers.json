@@ -1,0 +1,90 @@
+{
+  "original": {
+    "draft_version": "38e82829-604f-40df-b5a0-1c968718573e",
+    "responses": {
+      "narrated": {
+        "support": "unsupported", "spans": [[3995, 4804]],
+        "reason": "The closing paragraphs take Maya and Elias through the wall opening into the plenum. They look down the passage. The account ends by locating the housing and identifying it as the barrier, without narrating the pair reaching it."
+      },
+      "reached": {
+        "support": "uncertain", "spans": [[3995, 4804]],
+        "reason": "The wall is the destination of their narrated scramble. Their look into the plenum and the description of the housing give no event of reaching the housing and no observation excluding a visit during the scene."
+      },
+      "at_cut": {
+        "support": "uncertain", "spans": [[3995, 4804]],
+        "reason": "Both enter the plenum and look deeper. The final sentence identifies the object at the passage end. Their own position relative to the housing at the cut remains open."
+      },
+      "narrated/physical_impossibility": {
+        "support": "unsupported", "spans": [[4573, 4804]],
+        "reason": "Because the housing stood at the end of the passage, neither Elias nor Maya could physically have reached it."
+      },
+      "reached/omission": {
+        "support": "unsupported", "spans": [[3995, 4804]],
+        "reason": "The ending omits their arrival, so neither of them reached the housing at any point during the scene."
+      }
+    }
+  },
+  "arrival": {
+    "draft_version": "02037781-6b73-5869-ba09-337008c50d4f",
+    "responses": {
+      "narrated": {
+        "support": "supported", "spans": [[4806, 4920]],
+        "reason": "The closing sentence names Elias and Maya as the people who reached the master breaker panel housing. It directly narrates their arrival."
+      },
+      "reached": {
+        "support": "supported", "spans": [[4806, 4920]],
+        "reason": "When the light steadies, Elias and Maya reach the housing together. This is an occurrence of the required event within scene four."
+      },
+      "at_cut": {
+        "support": "supported", "spans": [[4806, 4920]],
+        "reason": "Scene four ends with both people at the housing, standing side by side before it. That is the final placement in this draft."
+      }
+    }
+  },
+  "stop": {
+    "draft_version": "2f9e80a0-29b4-579f-8075-b6e064788b24",
+    "responses": {
+      "narrated": {
+        "support": "unsupported", "spans": [[3995, 4804], [4806, 4945]],
+        "reason": "After the pair enter the plenum and look down the shaft, the narration locates the housing and ends with them stopping three strides short. It never depicts them arriving at the housing."
+      },
+      "reached": {
+        "support": "uncertain", "spans": [[3995, 4804], [4806, 4945]],
+        "reason": "The closing sequence shows entry and the housing down the passage. It then places both people short of the housing. That gap settles where they finish. It supplies no history ruling out a prior visit, and the draft gives no positive arrival."
+      },
+      "at_cut": {
+        "support": "unsupported", "spans": [[4806, 4945]],
+        "reason": "Elias and Maya stop together three full strides short of the housing and stay there. The gap persists through the closing instant."
+      },
+      "reached/final_position_only": {
+        "support": "uncertain", "spans": [[4806, 4945]],
+        "reason": "Both are three strides short of the housing at the cut."
+      }
+    }
+  },
+  "retreat": {
+    "draft_version": "ae1fb3f6-5e23-597a-a61f-020b9cc8e254",
+    "responses": {
+      "narrated": {
+        "support": "supported", "spans": [[4806, 4920], [4922, 5008]],
+        "reason": "The ending explicitly describes both people reaching the housing and standing together. Their retreat is narrated afterward."
+      },
+      "reached": {
+        "support": "supported", "spans": [[4806, 4920], [4922, 5008]],
+        "reason": "Elias and Maya reach the housing when the light steadies. Both later step back three strides. The earlier joint arrival establishes a visit during this scene."
+      },
+      "at_cut": {
+        "support": "unsupported", "spans": [[4806, 4920], [4922, 5008]],
+        "reason": "Both first reach the housing. By the final sentence they have stepped three strides back from it and stay there. That later position is the one at the cut."
+      },
+      "at_cut/denied_visit": {
+        "support": "unsupported", "spans": [[4922, 5008]],
+        "reason": "They were never at the housing in this scene, since the final sentence puts them three strides away."
+      },
+      "reached/changed_label": {
+        "support": "unsupported", "spans": [[4806, 4920], [4922, 5008]],
+        "reason": "Elias and Maya reach the housing when the light steadies. Both later step back three strides. The earlier joint arrival establishes a visit during this scene."
+      }
+    }
+  }
+}
