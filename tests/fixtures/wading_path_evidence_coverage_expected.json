@@ -1,0 +1,110 @@
+{
+  "contract": "wading-path-explanation-coverage-rehearsal-1",
+  "scope": "Twelve saved Sol explanations. Score the independent S2 endpoint control separately.",
+  "sources": {
+    "wading_path_sol_versions_observed.json": "1e742af64f6b5a38242733540cae4485e571fb7f568058ea05ffbccca828bd22",
+    "wading_path_measured_stop_observed.json": "b2c347d8c67b3339347b898df12ceb693e73b32078f3f118e3dcd0acaeb6adb3",
+    "wading_path_narration_event_gold.json": "d7673dfdeb96f609eb14eca399caa89bf05d033d49c728adb64a3c99e2a1bbb9"
+  },
+  "rubric": {
+    "narration": "A negative reading must address what the complete selected text recounts. Check any additional claim about physical occurrence independently. A narrated retrospective counts as an account.",
+    "event": "A positive visit needs an affirmative joint visit in this scene. Ruling it out needs evidence spanning the interval. Uncertainty must distinguish the established endpoint from the open earlier interval.",
+    "endpoint": "A separation of both people from the named housing that persists to the cut suffices for the negative position claim.",
+    "attribution": "Only credit source observations the explanation actually uses. A complete-draft citation or a correct returned label alone cannot supply a missing premise.",
+    "action": "Flag an explanation that exceeds its evidence for review. Preserve the original label and independent scores."
+  },
+  "saved": {
+    "S2-B": {
+      "terminal_sha256": "330659d4652b7f48bf5b9076d9f9200a7aa91d6aff8f5342c056f78fc6ea4d74",
+      "draft_version": "2f9e80a0-29b4-579f-8075-b6e064788b24",
+      "expected": "pass"
+    },
+    "SE-61": {
+      "terminal_sha256": "6d64f56b80dc6aa4b81f74c84c8c25ac5e5d666b9cd2b3e59437e6c5f0f8486d",
+      "draft_version": "2f9e80a0-29b4-579f-8075-b6e064788b24",
+      "expected": "flag"
+    },
+    "SE-62": {
+      "terminal_sha256": "3a4f130abeef928e4cb95ab5b477955132a2c8d8002b588a9e87442bf8dbe404",
+      "draft_version": "2f9e80a0-29b4-579f-8075-b6e064788b24",
+      "expected": "flag"
+    },
+    "SN-61": {
+      "terminal_sha256": "d5a766664efe7adf6cf87c45e4032992bff0e11fa7f83bfe0c0cbd4f8e68ee62",
+      "draft_version": "2f9e80a0-29b4-579f-8075-b6e064788b24",
+      "expected": "flag"
+    },
+    "SN-62": {
+      "terminal_sha256": "5e4e6333f15f924b1d8034be074e25299b5b39baf0c493400dfc5552518f92ea",
+      "draft_version": "2f9e80a0-29b4-579f-8075-b6e064788b24",
+      "expected": "flag"
+    },
+    "VE-61": {
+      "terminal_sha256": "48742ea43c830ef83f6dc04f3bedfcf69ebe29a48b16b56217591cae0537b5d5",
+      "draft_version": "58a48fd1-3acd-5e69-9f1b-a89c67170c20",
+      "expected": "pass"
+    },
+    "VE-62": {
+      "terminal_sha256": "4ba18e0f07c0347dc74a50be1ccc2cd0acbe1d730678cb7ed0d54de4de1dbe9c",
+      "draft_version": "58a48fd1-3acd-5e69-9f1b-a89c67170c20",
+      "expected": "pass"
+    },
+    "VN-61": {
+      "terminal_sha256": "64b4def7cd8a3800ab51bfa2f5fba852374a9b801aa02a9584cdccf9a7e9397d",
+      "draft_version": "58a48fd1-3acd-5e69-9f1b-a89c67170c20",
+      "expected": "pass"
+    },
+    "VN-62": {
+      "terminal_sha256": "201acab1edd9447c2f34903f85152947586b4e7ea969a424abc7be104a7238d6",
+      "draft_version": "58a48fd1-3acd-5e69-9f1b-a89c67170c20",
+      "expected": "pass"
+    },
+    "XE-61": {
+      "terminal_sha256": "7cc6ddf96f432caf8d6aa47ada095d2e26162e7796fee075dbb65bd21abae231",
+      "draft_version": "4da86d35-9337-54d8-896b-c212ba05516c",
+      "expected": "pass"
+    },
+    "XE-62": {
+      "terminal_sha256": "1a69c5d1adde9ed7317627eba4e93ed21f46ba550b45a14d984ec74333244a47",
+      "draft_version": "4da86d35-9337-54d8-896b-c212ba05516c",
+      "expected": "pass"
+    },
+    "XN-61": {
+      "terminal_sha256": "586797a2d491d5894ae8e33ea3f8cf26cdb4a9998c867786259b78da3755c14c",
+      "draft_version": "4da86d35-9337-54d8-896b-c212ba05516c",
+      "expected": "pass"
+    },
+    "XN-62": {
+      "terminal_sha256": "2c45e15ddfddb2449d20775e2b6780d4452dda194ac939371f7bfbd3f584895c",
+      "draft_version": "4da86d35-9337-54d8-896b-c212ba05516c",
+      "expected": "pass"
+    }
+  },
+  "authored": {
+    "paraphrased_exclusion": {
+      "source": "XE-61",
+      "reason": "From the opening huddle through the final moment, both remained outside touching distance of the breaker housing. That rules out a joint visit anywhere in that interval.",
+      "expected": "pass"
+    },
+    "gap_only_event": {
+      "source": "XE-61",
+      "reason": "Both stopped three strides from the housing and stayed there.",
+      "expected": "flag"
+    },
+    "gap_only_cut": {
+      "source": "S2-B",
+      "reason": "Both stopped three strides from the housing and stayed there.",
+      "expected": "pass"
+    },
+    "narration_only": {
+      "source": "SN-61",
+      "reason": "Reading the complete scene, the pair enter the plenum, see the housing and stop short. The narrator gives no account of their reaching the housing together.",
+      "expected": "pass"
+    },
+    "open_interval": {
+      "source": "SE-61",
+      "reason": "They finish three strides short of the housing. That fixes their final position and leaves an earlier joint visit unresolved.",
+      "expected": "pass"
+    }
+  }
+}

@@ -1,0 +1,180 @@
+{
+  "contract": "pristine-lure-coverage-transfer-1",
+  "scene": "The Pristine Lure",
+  "archive_sha256": "46bbeba44b2bf6fea881d5ad3014a8b680cd39ecd3e85a522f1508402ea411c0",
+  "claim_scopes": {
+    "position": "Elias is drawn to the entrance. At the scene cut he stands at the threshold.",
+    "depiction": "Elias is drawn to the entrance. The complete closing paragraph depicts him standing at the threshold at the scene cut."
+  },
+  "source_uses": {
+    "plan_outcome": [
+      "E0233"
+    ],
+    "plan_exit": [
+      "E0229"
+    ],
+    "closing": [
+      "D01",
+      "E0883"
+    ],
+    "approach": [
+      "D01",
+      "E0883"
+    ],
+    "draw": [
+      "D01",
+      "E0883"
+    ],
+    "placement": [
+      "D01",
+      "E0883"
+    ],
+    "gap": [
+      "D01",
+      "E0883"
+    ]
+  },
+  "rubric": [
+    "Both claims require the depicted attraction and the second proposition. Both plan fields establish the assignment. Cite and address the two obligations, and bind each story conclusion to a cited passage of the assessment draft.",
+    "For position at the cut, accept affirmative placement, incompatible separation at the cut, or an explicit acknowledgment that approach without placement or separation leaves position open. A report of approach alone cannot settle physical position.",
+    "For depiction, use the complete closing paragraph. An affirmative placement answers the positive case. A complete account of the approach without placement, or a final incompatible separation, answers the negative case. An omission concerns what the paragraph depicts.",
+    "Check every extra physical conclusion for support even when the active claim concerns depiction. Do not treat assignment, attraction, or merely seeing the destination as placement.",
+    "Record the primary contextual reading. Where a clause plausibly refers either to the last depicted action or to physical position, preserve an anchored alternative, its rationale and both decisions. Never use a prior label or score to choose a reading."
+  ],
+  "plan": {
+    "version": "b5179ac9-5585-5e5b-9555-20ca70b68f6a",
+    "spans": {
+      "plan_outcome": {
+        "field": "/outcome",
+        "start": 0,
+        "end": 58,
+        "quote": "Elias is drawn to the entrance of the windowless building."
+      },
+      "plan_exit": {
+        "field": "/exit_state",
+        "start": 0,
+        "end": 46,
+        "quote": "Elias stands at the threshold of the monolith."
+      }
+    }
+  },
+  "drafts": {
+    "approach": {
+      "origin": "saved original",
+      "version": "b74efc96-dbe6-4147-8dd3-a1c24f295321",
+      "prose_sha256": "56c826b3f37fe19ce65d4f7aa053cd622d9c26140f54707cfe3f290c712ca723",
+      "field": "/prose",
+      "spans": {
+        "closing": {
+          "start": 3085,
+          "end": 3284,
+          "quote": "He didn't look back at the way he had come. He stepped past the circle of shoes and moved toward the dark, open threshold of the monolith, drawn by the silent promise of the thing that waited inside."
+        },
+        "approach": {
+          "start": 3129,
+          "end": 3222,
+          "quote": "He stepped past the circle of shoes and moved toward the dark, open threshold of the monolith"
+        },
+        "draw": {
+          "start": 3224,
+          "end": 3283,
+          "quote": "drawn by the silent promise of the thing that waited inside"
+        }
+      }
+    },
+    "arrival": {
+      "origin": "authored ending on saved original",
+      "version": "4111438c-aff2-5041-8703-e1cbf6ce303b",
+      "prose_sha256": "9a701d2c266044c1f43270795e237725d2ab726c69a85f81ff29a4bd348ec4ee",
+      "field": "/prose",
+      "spans": {
+        "closing": {
+          "start": 3085,
+          "end": 3314,
+          "quote": "He didn't look back at the way he had come. He stepped past the circle of shoes and moved toward the dark, open threshold of the monolith, drawn by the silent promise of the thing that waited inside. Elias stood at the threshold."
+        },
+        "approach": {
+          "start": 3129,
+          "end": 3222,
+          "quote": "He stepped past the circle of shoes and moved toward the dark, open threshold of the monolith"
+        },
+        "draw": {
+          "start": 3224,
+          "end": 3283,
+          "quote": "drawn by the silent promise of the thing that waited inside"
+        },
+        "placement": {
+          "start": 3285,
+          "end": 3314,
+          "quote": "Elias stood at the threshold."
+        }
+      }
+    },
+    "stop": {
+      "origin": "authored ending on saved original",
+      "version": "974ba7f4-7d1f-5834-a5c3-889ff1b8626f",
+      "prose_sha256": "a3477d76bd293e429f5a9ec7772c22e745dbaedbcbacc915d30b2a08d92d0c6d",
+      "field": "/prose",
+      "spans": {
+        "closing": {
+          "start": 3085,
+          "end": 3372,
+          "quote": "He didn't look back at the way he had come. He stepped past the circle of shoes and moved toward the dark, open threshold of the monolith, drawn by the silent promise of the thing that waited inside. He came to a standstill a full stride short of the sill, both feet planted in the dirt."
+        },
+        "approach": {
+          "start": 3129,
+          "end": 3222,
+          "quote": "He stepped past the circle of shoes and moved toward the dark, open threshold of the monolith"
+        },
+        "draw": {
+          "start": 3224,
+          "end": 3283,
+          "quote": "drawn by the silent promise of the thing that waited inside"
+        },
+        "gap": {
+          "start": 3285,
+          "end": 3372,
+          "quote": "He came to a standstill a full stride short of the sill, both feet planted in the dirt."
+        }
+      }
+    }
+  },
+  "cases": {
+    "AP": {
+      "history": "approach",
+      "scope": "position",
+      "terminal_path": "run/output/07-AP-B-generation-outcome.json",
+      "terminal_sha256": "9a0b975142ab377c49b2acb73fd72bf6a45a9b490b8927acdad24632eb7c7d6b"
+    },
+    "AD": {
+      "history": "approach",
+      "scope": "depiction",
+      "terminal_path": "run/output/08-AD-B-generation-outcome.json",
+      "terminal_sha256": "8adc27692507c08f88c2723040ecc8c5989997d2b1c9afe2b02b567ed78dd914"
+    },
+    "RP": {
+      "history": "arrival",
+      "scope": "position",
+      "terminal_path": "run/output/10-RP-B-generation-outcome.json",
+      "terminal_sha256": "feef3177a034509c01ac85e4751a3e35f60f118bd62a2dab9d6270ca32665c98"
+    },
+    "RD": {
+      "history": "arrival",
+      "scope": "depiction",
+      "terminal_path": "run/output/09-RD-B-generation-outcome.json",
+      "terminal_sha256": "95a76fed3a834051dd91c938bb13af0e7ee5d65d512c0d4de86a676dfbc36c63"
+    },
+    "SP": {
+      "history": "stop",
+      "scope": "position",
+      "terminal_path": "run/output/11-SP-B-generation-outcome.json",
+      "terminal_sha256": "3b1326584dd09b4bd15c3ddae0c181509c913272506a0cfc82755b689d626cf9"
+    },
+    "SD": {
+      "history": "stop",
+      "scope": "depiction",
+      "terminal_path": "run/output/12-SD-B-generation-outcome.json",
+      "terminal_sha256": "b280c3c531ac400c4c5a1d44c8ba75bf11e7db64b7ad115666ece0c657e17a2e"
+    }
+  }
+}

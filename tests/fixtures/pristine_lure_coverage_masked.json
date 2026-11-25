@@ -1,0 +1,68 @@
+{
+  "545a482b52abe565": {
+    "claim": "Elias is drawn to the entrance. The complete closing paragraph depicts him standing at the threshold at the scene cut.",
+    "draft_version": "4111438c-aff2-5041-8703-e1cbf6ce303b",
+    "citations": [
+      "E0233",
+      "E0229",
+      "E0883",
+      "D01"
+    ],
+    "reason": "Scene_plan version b5179ac9-5585-5e5b-9555-20ca70b68f6a assigns being drawn to the entrance as the outcome and standing at the threshold as the exit state. These establish the requirements. Assessment_draft version 4111438c-aff2-5041-8703-e1cbf6ce303b (revision 0) establishes fulfillment: its complete prose and matching closing excerpt describe Elias moving toward the threshold, drawn by a 'silent promise,' and then explicitly conclude, 'Elias stood at the threshold.' Both the attraction toward the entrance and his standing there at the scene cut are narrated; arrival is not merely inferred from movement toward it."
+  },
+  "586a76ca6d7bb757": {
+    "claim": "Elias is drawn to the entrance. At the scene cut he stands at the threshold.",
+    "draft_version": "974ba7f4-7d1f-5834-a5c3-889ff1b8626f",
+    "citations": [
+      "E0233",
+      "E0229",
+      "E0883",
+      "D01"
+    ],
+    "reason": "The scene_plan (version b5179ac9-5585-5e5b-9555-20ca70b68f6a) separately requires an outcome of being drawn to the entrance and an exit state of standing at the threshold; these establish assignment obligations, not fulfillment. The assessment_draft (version 974ba7f4-7d1f-5834-a5c3-889ff1b8626f, revision 0) supports the first clause: Elias moves toward the open threshold, drawn by what waits inside. But its final sentence explicitly stops him “a full stride short of the sill, both feet planted in the dirt.” At the final narrated instant he remains short of the threshold, contradicting the second clause of the whole claim."
+  },
+  "8d42fedb18eebf82": {
+    "claim": "Elias is drawn to the entrance. The complete closing paragraph depicts him standing at the threshold at the scene cut.",
+    "draft_version": "b74efc96-dbe6-4147-8dd3-a1c24f295321",
+    "citations": [
+      "E0233",
+      "E0229",
+      "E0883",
+      "D01"
+    ],
+    "reason": "Scene plan b5179ac9-5585-5e5b-9555-20ca70b68f6a specifies being “drawn to the entrance” as the outcome (E0233) and standing at the threshold as the exit state (E0229). In assessed draft b74efc96-dbe6-4147-8dd3-a1c24f295321, the complete prose and closing paragraph (E0883, D01) support the first clause: Elias moves toward the entrance, drawn by what waits inside. But the second clause misdescribes that paragraph: it ends with him having “moved toward the dark, open threshold,” not with a depiction of him standing there. The planned exit state is an assignment requirement, not evidence that the draft depicts its fulfillment."
+  },
+  "b2874807c198a586": {
+    "claim": "Elias is drawn to the entrance. At the scene cut he stands at the threshold.",
+    "draft_version": "b74efc96-dbe6-4147-8dd3-a1c24f295321",
+    "citations": [
+      "E0233",
+      "E0229",
+      "E0883",
+      "D01"
+    ],
+    "reason": "Scene plan b5179ac9-5585-5e5b-9555-20ca70b68f6a requires both an outcome of being drawn to the entrance and an exit state of standing at the threshold. Draft b74efc96-dbe6-4147-8dd3-a1c24f295321 supports the first clause: Elias moves toward the entrance, drawn by the promise of something inside. But its complete closing paragraph ends with him moving “toward the dark, open threshold,” not standing there. At the final narrated instant, he is approaching; the claim incorrectly treats the plan’s required endpoint as an achieved draft event."
+  },
+  "e8abe5809d46813d": {
+    "claim": "Elias is drawn to the entrance. The complete closing paragraph depicts him standing at the threshold at the scene cut.",
+    "draft_version": "974ba7f4-7d1f-5834-a5c3-889ff1b8626f",
+    "citations": [
+      "E0233",
+      "E0229",
+      "E0883",
+      "D01"
+    ],
+    "reason": "Scene plan b5179ac9-5585-5e5b-9555-20ca70b68f6a specifies being drawn to the entrance as the outcome (E0233) and standing at the threshold as the exit state (E0229). In assessed draft 974ba7f4-7d1f-5834-a5c3-889ff1b8626f, the closing paragraph depicts Elias moving toward the threshold, drawn by what waits inside, supporting the claim's first sentence. However, the complete paragraph ends with him stopping 'a full stride short of the sill, both feet planted in the dirt' (E0883, D01). Thus the final narrated position contradicts the assertion that he stands at the threshold at the scene cut. The plan's required endpoint does not establish its fulfillment in the draft."
+  },
+  "fa23aaebd5f9b544": {
+    "claim": "Elias is drawn to the entrance. At the scene cut he stands at the threshold.",
+    "draft_version": "4111438c-aff2-5041-8703-e1cbf6ce303b",
+    "citations": [
+      "E0233",
+      "E0229",
+      "E0883",
+      "D01"
+    ],
+    "reason": "The scene_plan (version b5179ac9-5585-5e5b-9555-20ca70b68f6a) separately requires the outcome of Elias being drawn to the entrance and the exit state of standing at the monolith’s threshold. Those requirements alone do not establish fulfillment. The assessment_draft (version 4111438c-aff2-5041-8703-e1cbf6ce303b) fulfills both: its closing paragraph narrates Elias moving toward the open threshold, drawn by the promise of what waits inside, and its final sentence explicitly states, “Elias stood at the threshold.” Thus both the attraction toward the entrance and his position at the scene cut are established by the assessed prose."
+  }
+}

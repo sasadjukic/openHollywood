@@ -1,0 +1,114 @@
+{
+  "545a482b52abe565": {
+    "uses": {
+      "plan_outcome": "being drawn to the entrance as the outcome",
+      "plan_exit": "standing at the threshold as the exit state",
+      "draw": "drawn by a",
+      "approach": "moving toward the threshold",
+      "closing": "its complete prose and matching closing excerpt",
+      "placement": "Elias stood at the threshold."
+    },
+    "asserts": {
+      "drawn": "drawn by a",
+      "depicts_placement": "his standing there at the scene cut are narrated",
+      "at_cut": "Elias stood at the threshold."
+    },
+    "basis": "Explicitly attributes his standing to the closing account and grounds the consequent position in the same sentence.",
+    "alternatives": []
+  },
+  "586a76ca6d7bb757": {
+    "uses": {
+      "plan_outcome": "an outcome of being drawn to the entrance",
+      "plan_exit": "an exit state of standing at the threshold",
+      "draw": "drawn by what waits inside",
+      "approach": "moves toward the open threshold",
+      "closing": "its final sentence explicitly stops him",
+      "gap": "a full stride short of the sill, both feet planted in the dirt"
+    },
+    "asserts": {
+      "drawn": "drawn by what waits inside",
+      "away_at_cut": "At the final narrated instant he remains short of the threshold"
+    },
+    "basis": "The explicit final stop locates both feet relative to the sill.",
+    "alternatives": []
+  },
+  "8d42fedb18eebf82": {
+    "uses": {
+      "plan_outcome": "as the outcome (E0233)",
+      "plan_exit": "standing at the threshold as the exit state",
+      "draw": "drawn by what waits inside",
+      "approach": "moves toward the entrance",
+      "closing": "the complete prose and closing paragraph"
+    },
+    "asserts": {
+      "drawn": "drawn by what waits inside",
+      "no_depiction": "not with a depiction of him standing there"
+    },
+    "basis": "The phrase about what the paragraph depicts explicitly limits the negative to narration.",
+    "alternatives": []
+  },
+  "b2874807c198a586": {
+    "uses": {
+      "plan_outcome": "an outcome of being drawn to the entrance",
+      "plan_exit": "an exit state of standing at the threshold",
+      "draw": "drawn by the promise of something inside",
+      "approach": "moves toward the entrance",
+      "closing": "its complete closing paragraph ends"
+    },
+    "asserts": {
+      "drawn": "drawn by the promise of something inside",
+      "away_at_cut": "At the final narrated instant, he is approaching"
+    },
+    "basis": "The sentence following the description of the paragraph places him in approach at the final instant and treats standing there as an incorrect endpoint.",
+    "alternatives": [
+      {
+        "asserts": {
+          "drawn": "drawn by the promise of something inside",
+          "no_depiction": "its complete closing paragraph ends with him moving"
+        },
+        "basis": "Read the final sentences as a statement about the last narrated action and the plan being insufficient proof. That reading withdraws the physical denial, but never acknowledges that actual standing at the cut is unresolved."
+      }
+    ]
+  },
+  "e8abe5809d46813d": {
+    "uses": {
+      "plan_outcome": "being drawn to the entrance as the outcome",
+      "plan_exit": "standing at the threshold as the exit state",
+      "draw": "drawn by what waits inside",
+      "approach": "moving toward the threshold",
+      "closing": "the complete paragraph ends with him stopping",
+      "gap": "a full stride short of the sill, both feet planted in the dirt"
+    },
+    "asserts": {
+      "drawn": "drawn by what waits inside",
+      "no_depiction": "the complete paragraph ends with him stopping",
+      "away_at_cut": "the final narrated position contradicts the assertion that he stands at the threshold"
+    },
+    "basis": "In context the answer says what the complete paragraph depicts instead of standing, then draws the corresponding physical conclusion.",
+    "alternatives": [
+      {
+        "asserts": {
+          "drawn": "drawn by what waits inside",
+          "away_at_cut": "the final narrated position contradicts the assertion that he stands at the threshold"
+        },
+        "basis": "Read the conclusion narrowly by its grammatical object, the assertion that he stands there. On this reading the earlier paragraph reference locates the final stop, but the only conclusion about the second clause concerns actual position. The primary reading credits the preceding description as also answering the depiction question."
+      }
+    ]
+  },
+  "fa23aaebd5f9b544": {
+    "uses": {
+      "plan_outcome": "the outcome of Elias being drawn to the entrance",
+      "plan_exit": "the exit state of standing at the monolith",
+      "draw": "drawn by the promise of what waits inside",
+      "approach": "moving toward the open threshold",
+      "closing": "its closing paragraph narrates",
+      "placement": "Elias stood at the threshold."
+    },
+    "asserts": {
+      "drawn": "drawn by the promise of what waits inside",
+      "at_cut": "his position at the scene cut are established"
+    },
+    "basis": "The final placement sentence supplies the asserted position.",
+    "alternatives": []
+  }
+}

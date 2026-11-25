@@ -13990,6 +13990,22 @@ one genuine review with an admitted claim.
   All 41 targeted offline checks passed. Next proposed work is a local evidence-
   coverage rehearsal on the six cases with S2 as the endpoint control.
 
+- [x] [Freeze and rehearse evidence coverage on all twelve saved Sol explanations](../docs/handoffs/wading-path-evidence-coverage-rehearsal-2026-11-25.md).
+  Flagged both models' stop-only narration and event explanations. All eight
+  retrospective explanations passed, as did the separate S2 endpoint control.
+  A whole-scene paraphrase passed. The identical gap-only answer passed at the
+  cut and was flagged for the event claim. All five authored controls matched
+  expectations and all 41 focused offline tests passed. The next proposed
+  local check is transfer of the manually annotated rule to a fresh family.
+
+- [x] [Rehearse evidence coverage on six score-masked Pristine Lure explanations](../docs/handoffs/pristine-lure-evidence-coverage-transfer-2026-11-25.md).
+  Froze claim scopes, plan fields and draft spans before annotation. Five primary
+  readings passed. The original position answer was flagged under both plausible
+  readings. The measured-stop depiction answer passed in context and was flagged
+  under a physical-position-only reading. All six primary decisions matched the
+  archived evidence scores after unmasking. All 31 focused tests passed. A second
+  masked reader can test agreement on the two disputed readings locally.
+
 Step 19 **IN PROGRESS**. Step 20 **NOT STARTED**. Production prompts unchanged.
 Live calls paused and full workflow canary on hold.
 

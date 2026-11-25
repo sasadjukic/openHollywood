@@ -1,0 +1,169 @@
+{
+  "SN-61": {
+    "uses": {
+      "approach": "crossing together and entering the service plenum",
+      "gap": "three full strides short of the master breaker panel housing and stayed there"
+    },
+    "asserts": {
+      "no_visit": "contradicts the claim that they reach the housing during the scene"
+    }
+  },
+  "SN-62": {
+    "uses": {
+      "approach": "enter the service plenum together and see the master breaker panel housing",
+      "gap": "three full strides short of the housing and stay there"
+    },
+    "asserts": {
+      "no_visit": "do not reach it during the scene"
+    }
+  },
+  "SE-61": {
+    "uses": {
+      "approach": "reach the eastern wall, enter the service plenum and see the housing",
+      "gap": "three full strides short of the master breaker panel housing and stayed there"
+    },
+    "asserts": {
+      "no_visit": "with no earlier arrival followed by retreat"
+    }
+  },
+  "SE-62": {
+    "uses": {
+      "approach": "reach the eastern wall, and enter the service plenum",
+      "gap": "stop three full strides short and stay there"
+    },
+    "asserts": {
+      "short_at_cut": "stop three full strides short and stay there"
+    }
+  },
+  "XN-61": {
+    "uses": {
+      "account": "recounts Elias and Maya crossing together and entering the service plenum, not reaching the breaker housing",
+      "gap": "three full strides short",
+      "exclusion": "neither had been closer throughout the entire scene"
+    },
+    "asserts": {
+      "no_account": "not reaching the breaker housing",
+      "no_visit": "This contradicts arrival during the claimed interval"
+    }
+  },
+  "XN-62": {
+    "uses": {
+      "account": "recounts Elias and Maya entering the service plenum together, not reaching the housing",
+      "gap": "three full strides short",
+      "exclusion": "neither came any closer at any point in the scene"
+    },
+    "asserts": {
+      "no_account": "recounts Elias and Maya entering the service plenum together, not reaching the housing",
+      "no_visit": "neither came any closer at any point in the scene"
+    }
+  },
+  "XE-61": {
+    "uses": {
+      "approach": "enter the service plenum and see the housing",
+      "gap": "stop three full strides short and stay there",
+      "exclusion": "neither character was ever closer than three full strides throughout the scene"
+    },
+    "asserts": {
+      "no_visit": "ruling out arrival at the housing at any earlier time as well"
+    }
+  },
+  "XE-62": {
+    "uses": {
+      "approach": "entering the service plenum",
+      "gap": "stopping three full strides short of the housing",
+      "exclusion": "neither came any closer at any point in the scene"
+    },
+    "asserts": {
+      "no_visit": "ruling out an earlier arrival as well"
+    }
+  },
+  "VN-61": {
+    "uses": {
+      "visit": "Elias and Maya had reached the master breaker panel housing together and walked back up the passage",
+      "gap": "later position three strides short"
+    },
+    "asserts": {
+      "account_of_visit": "explicitly states that after entering the service plenum",
+      "visit_occurred": "their completed joint arrival during the scene"
+    }
+  },
+  "VN-62": {
+    "uses": {
+      "visit": "Elias and Maya reached the master breaker panel housing together after entering the service plenum and before the light steadied",
+      "gap": "final position three strides short"
+    },
+    "asserts": {
+      "account_of_visit": "explicitly recounts that Elias and Maya reached the master breaker panel housing together",
+      "visit_occurred": "does not negate their earlier arrival"
+    }
+  },
+  "VE-61": {
+    "uses": {
+      "visit": "Elias and Maya had reached the master breaker panel housing together and walked back up the passage",
+      "gap": "later stop three strides short"
+    },
+    "asserts": {
+      "visit_occurred": "completed arrival by both during the scene"
+    }
+  },
+  "VE-62": {
+    "uses": {
+      "visit": "Elias and Maya reached the master breaker panel housing together after entering the service plenum and before the light steadied",
+      "gap": "walked back and stopped three strides short"
+    },
+    "asserts": {
+      "visit_occurred": "Their later position does not negate the earlier arrival"
+    }
+  },
+  "S2-B": {
+    "uses": {
+      "approach": "their entry into the service plenum",
+      "gap": "three full strides short of the master breaker panel housing"
+    },
+    "asserts": {
+      "short_at_cut": "contradicting the claimed location at the final narrated instant"
+    }
+  },
+  "paraphrased_exclusion": {
+    "uses": {
+      "exclusion": "From the opening huddle through the final moment, both remained outside touching distance of the breaker housing"
+    },
+    "asserts": {
+      "no_visit": "rules out a joint visit anywhere in that interval"
+    }
+  },
+  "gap_only_event": {
+    "uses": {
+      "gap": "Both stopped three strides from the housing and stayed there"
+    },
+    "asserts": {
+      "short_at_cut": "Both stopped three strides from the housing and stayed there"
+    }
+  },
+  "gap_only_cut": {
+    "uses": {
+      "gap": "Both stopped three strides from the housing and stayed there"
+    },
+    "asserts": {
+      "short_at_cut": "Both stopped three strides from the housing and stayed there"
+    }
+  },
+  "narration_only": {
+    "uses": {
+      "account": "Reading the complete scene",
+      "approach": "enter the plenum, see the housing",
+      "gap": "stop short"
+    },
+    "asserts": {
+      "no_account": "The narrator gives no account of their reaching the housing together"
+    }
+  },
+  "open_interval": {
+    "uses": {
+      "gap": "They finish three strides short of the housing"
+    },
+    "asserts": {
+      "open_visit": "leaves an earlier joint visit unresolved"
+    }
+  }
+}
