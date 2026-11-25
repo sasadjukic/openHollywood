@@ -14006,6 +14006,13 @@ one genuine review with an admitted claim.
   archived evidence scores after unmasking. All 31 focused tests passed. A second
   masked reader can test agreement on the two disputed readings locally.
 
+- [x] [Compare a second independent, score-masked reading of The Pristine Lure](../docs/handoffs/pristine-lure-second-reading-2026-11-25.md).
+  Sealed reader two's annotations and decisions before comparison. Both readers
+  passed five explanations and flagged the original position answer under both
+  plausible readings. Only reader one recorded a narrower interpretation that
+  would flag the measured-stop depiction answer. Two additional textual assertions
+  marked by reader two left coverage unchanged. All 36 focused tests passed locally.
+
 Step 19 **IN PROGRESS**. Step 20 **NOT STARTED**. Production prompts unchanged.
 Live calls paused and full workflow canary on hold.
 

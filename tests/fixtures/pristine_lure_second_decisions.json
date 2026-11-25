@@ -1,0 +1,65 @@
+{
+  "packet_sha256": "f0dfc5cf21b5556c87f991585336e9b311c042efc09fe91561b5802d533a9732",
+  "source_freeze_sha256": "1ed474f1baa3759f7d5b7f94154c799d044f99d7b6610c9fb675f921b1e16773",
+  "annotations_sha256": "d6d0a258327f20a9fd5bf47bb2207be7bf6a885facec083cab2ee3c49b078751",
+  "rows": {
+    "R01": {
+      "primary": {
+        "declared": "pass",
+        "decision": "pass",
+        "findings": []
+      },
+      "alternatives": []
+    },
+    "R02": {
+      "primary": {
+        "declared": "pass",
+        "decision": "pass",
+        "findings": []
+      },
+      "alternatives": []
+    },
+    "R03": {
+      "primary": {
+        "declared": "pass",
+        "decision": "pass",
+        "findings": []
+      },
+      "alternatives": []
+    },
+    "R04": {
+      "primary": {
+        "declared": "pass",
+        "decision": "pass",
+        "findings": []
+      },
+      "alternatives": []
+    },
+    "R05": {
+      "primary": {
+        "declared": "pass",
+        "decision": "pass",
+        "findings": []
+      },
+      "alternatives": []
+    },
+    "R06": {
+      "primary": {
+        "declared": "flag",
+        "decision": "flag",
+        "findings": [
+          "insufficient_evidence_for_away_at_cut"
+        ]
+      },
+      "alternatives": [
+        {
+          "declared": "flag",
+          "decision": "flag",
+          "findings": [
+            "position_scope_unanswered"
+          ]
+        }
+      ]
+    }
+  }
+}

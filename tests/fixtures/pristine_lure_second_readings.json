@@ -1,0 +1,122 @@
+{
+  "R01": {
+    "uses": {
+      "plan_outcome": "being drawn to the entrance as the outcome (E0233)",
+      "plan_exit": "standing at the threshold as the exit state (E0229)",
+      "closing": "the complete paragraph ends with him stopping",
+      "approach": "Elias moving toward the threshold",
+      "draw": "drawn by what waits inside",
+      "gap": "a full stride short of the sill, both feet planted in the dirt"
+    },
+    "asserts": {
+      "drawn": "Elias moving toward the threshold, drawn by what waits inside",
+      "away_at_cut": "the final narrated position contradicts the assertion that he stands at the threshold at the scene cut",
+      "no_depiction": "the complete paragraph ends with him stopping 'a full stride short of the sill, both feet planted in the dirt'"
+    },
+    "basis": "The explanation identifies each plan obligation. It credits the attraction to Elias’s movement and motive in the assessed paragraph. It denies the claimed depiction by specifying exactly where the paragraph leaves his feet. That ending also warrants its conclusion about his physical position at the cut.",
+    "decision": "pass",
+    "alternatives": []
+  },
+  "R02": {
+    "uses": {
+      "plan_outcome": "an outcome of being drawn to the entrance",
+      "plan_exit": "an exit state of standing at the threshold",
+      "closing": "its final sentence explicitly stops him",
+      "approach": "Elias moves toward the open threshold",
+      "draw": "drawn by what waits inside",
+      "gap": "a full stride short of the sill, both feet planted in the dirt."
+    },
+    "asserts": {
+      "drawn": "Elias moves toward the open threshold, drawn by what waits inside",
+      "away_at_cut": "At the final narrated instant he remains short of the threshold"
+    },
+    "basis": "The explanation assigns both requirements to the plan and both story findings to the assessed draft. It identifies what draws Elias and quotes the distance between his planted feet and the sill in the final sentence. That distance directly answers the position claim at the cut.",
+    "decision": "pass",
+    "alternatives": []
+  },
+  "R03": {
+    "uses": {
+      "plan_outcome": "the outcome of Elias being drawn to the entrance",
+      "plan_exit": "the exit state of standing at the monolith’s threshold",
+      "closing": "its closing paragraph narrates Elias moving toward the open threshold",
+      "approach": "Elias moving toward the open threshold",
+      "draw": "drawn by the promise of what waits inside",
+      "placement": "Elias stood at the threshold."
+    },
+    "asserts": {
+      "drawn": "Elias moving toward the open threshold, drawn by the promise of what waits inside",
+      "at_cut": "both the attraction toward the entrance and his position at the scene cut are established by the assessed prose",
+      "depicts_placement": "its final sentence explicitly states, “Elias stood at the threshold.”"
+    },
+    "basis": "The explanation identifies the assigned outcome and exit state, gives the motive for Elias’s approach in the draft, and quotes the final sentence placing him at the threshold. Its physical conclusion has a precise time and a direct textual basis.",
+    "decision": "pass",
+    "alternatives": []
+  },
+  "R04": {
+    "uses": {
+      "plan_outcome": "being drawn to the entrance as the outcome",
+      "plan_exit": "standing at the threshold as the exit state",
+      "closing": "its complete prose and matching closing excerpt",
+      "approach": "Elias moving toward the threshold",
+      "draw": "drawn by a 'silent promise,'",
+      "placement": "Elias stood at the threshold."
+    },
+    "asserts": {
+      "drawn": "Elias moving toward the threshold, drawn by a 'silent promise,'",
+      "depicts_placement": "explicitly conclude, 'Elias stood at the threshold.'",
+      "at_cut": "his standing there at the scene cut are narrated"
+    },
+    "basis": "The explanation locates both requirements in the plan. It identifies the attraction in the closing paragraph and quotes its last sentence, which names Elias and places him at the threshold. This supports the asserted depiction and the conclusion that he stood there at the cut.",
+    "decision": "pass",
+    "alternatives": []
+  },
+  "R05": {
+    "uses": {
+      "plan_outcome": "being “drawn to the entrance” as the outcome (E0233)",
+      "plan_exit": "standing at the threshold as the exit state (E0229)",
+      "closing": "the complete prose and closing paragraph (E0883, D01)",
+      "approach": "moved toward the dark, open threshold",
+      "draw": "drawn by what waits inside"
+    },
+    "asserts": {
+      "drawn": "Elias moves toward the entrance, drawn by what waits inside",
+      "no_depiction": "it ends with him having “moved toward the dark, open threshold,” not with a depiction of him standing there"
+    },
+    "basis": "The explanation names both assignments, then follows Elias’s movement and its motive through the end of the assessed paragraph. Its objection specifically concerns the depiction requested in the claim. It identifies the last action and the absence of a narrated standing position, which answers that question.",
+    "decision": "pass",
+    "alternatives": []
+  },
+  "R06": {
+    "uses": {
+      "plan_outcome": "an outcome of being drawn to the entrance",
+      "plan_exit": "an exit state of standing at the threshold",
+      "closing": "its complete closing paragraph ends with him moving",
+      "approach": "toward the dark, open threshold",
+      "draw": "drawn by the promise of something inside"
+    },
+    "asserts": {
+      "drawn": "Elias moves toward the entrance, drawn by the promise of something inside",
+      "no_depiction": "its complete closing paragraph ends with him moving “toward the dark, open threshold,” not standing there",
+      "away_at_cut": "not standing there. At the final narrated instant, he is approaching"
+    },
+    "basis": "Both plan obligations and the draft’s depiction of attraction are identified. In the context of a claim about Elias’s actual position, the final two sentences read as an answer that he is still on his way at the cut. The draft supplies direction of movement and motive. It gives no remaining distance or other observation establishing that he is still short at that instant.",
+    "decision": "flag",
+    "alternatives": [
+      {
+        "uses": {
+          "plan_outcome": "an outcome of being drawn to the entrance",
+          "plan_exit": "an exit state of standing at the threshold",
+          "closing": "its complete closing paragraph ends with him moving",
+          "approach": "toward the dark, open threshold",
+          "draw": "drawn by the promise of something inside"
+        },
+        "asserts": {
+          "drawn": "Elias moves toward the entrance, drawn by the promise of something inside",
+          "no_depiction": "its complete closing paragraph ends with him moving “toward the dark, open threshold,” not standing there"
+        },
+        "basis": "The references to the complete paragraph, the narrated instant, and an achieved draft event can limit the objection to the last action the text depicts. On this reading the explanation correctly identifies approach as the last action and challenges the use of a plan as evidence of arrival. It leaves the reader to supply the answer about Elias’s physical position. The rubric requires the explanation to acknowledge explicitly that this position is unresolved.",
+        "decision": "flag"
+      }
+    ]
+  }
+}
