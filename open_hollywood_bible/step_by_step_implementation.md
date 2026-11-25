@@ -14042,6 +14042,34 @@ one genuine review with an admitted claim.
   rehearsal with six cases and four matched arms, 24 counts before up to 24
   generations, zero retries. The repeat awaits local freeze and separate approval.
 
+- [x] [Freeze the six-case planetarium transfer comparison for Sol 6.2 and Astra 6.2](../docs/handoffs/planetarium-sol-astra-scope-freeze-2026-11-25.md).
+  Three complete authored histories share the same blank dome at closing. Gold
+  distinguishes an unreported earlier projection from explicit exclusion and
+  confirmation. All four high-reasoning arms receive each claim. Judgment and
+  masked evidence are scored independently. All 24 counts must pass before up
+  to 24 generations, with zero retries and a $26.45760 estimated generation
+  ceiling. All 126 focused offline checks passed. The verified journal has 48
+  unattempted slots. Live execution awaits approval. B remains the default.
+
+- [x] [Run and score the six-case planetarium Sol 6.2/Astra 6.2 repeat](../docs/handoffs/planetarium-sol-astra-scope-results-2026-11-25.md).
+  All 24 counts passed before 24 eligible generations. Inspected all 48 slots
+  with zero retries. Every arm earned both points on the open event, including
+  Sol B. All 24 judgments and 21 evidence explanations passed. Evidence scores
+  were Sol B 4/6, Sol X 6/6, Astra B 5/6 and Astra X 6/6. The three misses
+  concerned the unreported middle cues or the image going out before Kit
+  returned. The frozen decision is shared open-event recovery. Estimated
+  generation cost was $0.4487075. B remains the default.
+
+- [x] [Audit all Sol/Astra B and explicit-scope scores across both scene families](../docs/handoffs/sol-astra-scope-score-audit-2026-11-25.md).
+  Replayed all 96 slots and both scores on 48 deliveries. In 24 matched B/X
+  comparisons, X gained six evidence points and one judgment point. Only
+  Astra X corrected the open Wading Path event. All four arms grounded the
+  planetarium event. Three evidence gains survived a retrospective check
+  limited to factual sufficiency and overreach. All 26 focused checks passed.
+  Next proposed work is an independent masked reading of 16 saved explanations,
+  then a conditional same-request repeat if model routing still needs testing.
+  B remains the default.
+
 Step 19 **IN PROGRESS**. Step 20 **NOT STARTED**. Production prompts unchanged.
 Live calls paused and full workflow canary on hold.
 

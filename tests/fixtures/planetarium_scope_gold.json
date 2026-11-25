@@ -1,0 +1,190 @@
+{
+  "DE": {
+    "claim": "The blue comet was projected onto the planetarium dome at some time during the scene-four rehearsal.",
+    "draft_version": "1a3d5a0f-bbfa-57e4-a896-464fd3b15c3b",
+    "evidence_criterion": "Use the sentence excluding projection from the opening bell through the closing cue and the blank dome through the end bell. Both intervals together cover the rehearsal.",
+    "gold": "unsupported",
+    "history": "excluded",
+    "kind": "event",
+    "prose_sha256": "997f3c21cebb6a4d49ae3e97a8e522b0335fb47d1fc1b45af634d17893a85fe3",
+    "ref": "E1420",
+    "spans": {
+      "closing": {
+        "end": 1408,
+        "quote": "At the closing cue the house lights came up on a blank dome. It stayed blank while Kit rang the bell to end the rehearsal.",
+        "start": 1286
+      },
+      "middle": {
+        "end": 1176,
+        "quote": "The two women worked through the middle pages in the hush between the fan and the ticking clock. By the time Kit got back to the desk the tea had a skin on it. Ada held the chipped cup for her while she wrote the final cue in her own hand.",
+        "start": 937
+      },
+      "retrospective": {
+        "end": 1284,
+        "quote": "From Kit's opening bell to the closing cue, no projection of the blue comet appeared anywhere on the dome.",
+        "start": 1178
+      },
+      "slide": {
+        "end": 651,
+        "quote": "On the console lay the blue comet slide in its cardboard mount. A boy had drawn the tail with a scratched needle forty years ago. Ada could feel the burr when she ran a thumb along the edge. On the running sheet the cue had a square beside it for a tick. Someone had sharpened a pencil and left the shavings in the square.",
+        "start": 329
+      }
+    },
+    "unit": "A001"
+  },
+  "DN": {
+    "claim": "The scene-four draft explicitly recounts the blue comet being projected onto the planetarium dome during the rehearsal.",
+    "draft_version": "1a3d5a0f-bbfa-57e4-a896-464fd3b15c3b",
+    "evidence_criterion": "Use the complete account including the whole-rehearsal exclusion. There is no affirmative narration of a projection.",
+    "gold": "unsupported",
+    "history": "excluded",
+    "kind": "narration",
+    "prose_sha256": "997f3c21cebb6a4d49ae3e97a8e522b0335fb47d1fc1b45af634d17893a85fe3",
+    "ref": "E1420",
+    "spans": {
+      "closing": {
+        "end": 1408,
+        "quote": "At the closing cue the house lights came up on a blank dome. It stayed blank while Kit rang the bell to end the rehearsal.",
+        "start": 1286
+      },
+      "middle": {
+        "end": 1176,
+        "quote": "The two women worked through the middle pages in the hush between the fan and the ticking clock. By the time Kit got back to the desk the tea had a skin on it. Ada held the chipped cup for her while she wrote the final cue in her own hand.",
+        "start": 937
+      },
+      "retrospective": {
+        "end": 1284,
+        "quote": "From Kit's opening bell to the closing cue, no projection of the blue comet appeared anywhere on the dome.",
+        "start": 1178
+      },
+      "slide": {
+        "end": 651,
+        "quote": "On the console lay the blue comet slide in its cardboard mount. A boy had drawn the tail with a scratched needle forty years ago. Ada could feel the burr when she ran a thumb along the edge. On the running sheet the cue had a square beside it for a tick. Someone had sharpened a pencil and left the shavings in the square.",
+        "start": 329
+      }
+    },
+    "unit": "A001"
+  },
+  "OE": {
+    "claim": "The blue comet was projected onto the planetarium dome at some time during the scene-four rehearsal.",
+    "draft_version": "d0d07651-afae-5a97-8e84-8b9bdd1fb7ee",
+    "evidence_criterion": "Locate the slide on the console, the unreported middle cues and the blank dome at closing. Neither staging the slide nor the closing observation decides whether it appeared earlier.",
+    "gold": "uncertain",
+    "history": "open",
+    "kind": "event",
+    "prose_sha256": "8a8a717d974f045c91f53fcfd6b164dde9136e5b1afb0d9d50e794ee8a8b5d04",
+    "ref": "E1420",
+    "spans": {
+      "closing": {
+        "end": 1300,
+        "quote": "At the closing cue the house lights came up on a blank dome. It stayed blank while Kit rang the bell to end the rehearsal.",
+        "start": 1178
+      },
+      "middle": {
+        "end": 1176,
+        "quote": "The two women worked through the middle pages in the hush between the fan and the ticking clock. By the time Kit got back to the desk the tea had a skin on it. Ada held the chipped cup for her while she wrote the final cue in her own hand.",
+        "start": 937
+      },
+      "slide": {
+        "end": 651,
+        "quote": "On the console lay the blue comet slide in its cardboard mount. A boy had drawn the tail with a scratched needle forty years ago. Ada could feel the burr when she ran a thumb along the edge. On the running sheet the cue had a square beside it for a tick. Someone had sharpened a pencil and left the shavings in the square.",
+        "start": 329
+      }
+    },
+    "unit": "A001"
+  },
+  "ON": {
+    "claim": "The scene-four draft explicitly recounts the blue comet being projected onto the planetarium dome during the rehearsal.",
+    "draft_version": "d0d07651-afae-5a97-8e84-8b9bdd1fb7ee",
+    "evidence_criterion": "Use the complete account to distinguish handling the mounted slide and passing over the middle cues from an explicit account of a projection. Keep the conclusion about narration.",
+    "gold": "unsupported",
+    "history": "open",
+    "kind": "narration",
+    "prose_sha256": "8a8a717d974f045c91f53fcfd6b164dde9136e5b1afb0d9d50e794ee8a8b5d04",
+    "ref": "E1420",
+    "spans": {
+      "closing": {
+        "end": 1300,
+        "quote": "At the closing cue the house lights came up on a blank dome. It stayed blank while Kit rang the bell to end the rehearsal.",
+        "start": 1178
+      },
+      "middle": {
+        "end": 1176,
+        "quote": "The two women worked through the middle pages in the hush between the fan and the ticking clock. By the time Kit got back to the desk the tea had a skin on it. Ada held the chipped cup for her while she wrote the final cue in her own hand.",
+        "start": 937
+      },
+      "slide": {
+        "end": 651,
+        "quote": "On the console lay the blue comet slide in its cardboard mount. A boy had drawn the tail with a scratched needle forty years ago. Ada could feel the burr when she ran a thumb along the edge. On the running sheet the cue had a square beside it for a tick. Someone had sharpened a pencil and left the shavings in the square.",
+        "start": 329
+      }
+    },
+    "unit": "A001"
+  },
+  "PE": {
+    "claim": "The blue comet was projected onto the planetarium dome at some time during the scene-four rehearsal.",
+    "draft_version": "8a4cc4a3-b766-53dc-8370-64ee8c2e2ead",
+    "evidence_criterion": "Locate that earlier projection and its extinction before Kit returns. The later blank dome is compatible with the established event.",
+    "gold": "supported",
+    "history": "confirmed",
+    "kind": "event",
+    "prose_sha256": "b91361f66828cb2f26f99d41aaf3d5c3030181935e349c40040e22426f2d683c",
+    "ref": "E1420",
+    "spans": {
+      "closing": {
+        "end": 1475,
+        "quote": "At the closing cue the house lights came up on a blank dome. It stayed blank while Kit rang the bell to end the rehearsal.",
+        "start": 1353
+      },
+      "middle": {
+        "end": 1176,
+        "quote": "The two women worked through the middle pages in the hush between the fan and the ticking clock. By the time Kit got back to the desk the tea had a skin on it. Ada held the chipped cup for her while she wrote the final cue in her own hand.",
+        "start": 937
+      },
+      "retrospective": {
+        "end": 1351,
+        "quote": "During the middle cues the projector cast the blue comet across the dome. Its tail crossed the seam over Kit's seat, then the image went out before she returned to the desk.",
+        "start": 1178
+      },
+      "slide": {
+        "end": 651,
+        "quote": "On the console lay the blue comet slide in its cardboard mount. A boy had drawn the tail with a scratched needle forty years ago. Ada could feel the burr when she ran a thumb along the edge. On the running sheet the cue had a square beside it for a tick. Someone had sharpened a pencil and left the shavings in the square.",
+        "start": 329
+      }
+    },
+    "unit": "A001"
+  },
+  "PN": {
+    "claim": "The scene-four draft explicitly recounts the blue comet being projected onto the planetarium dome during the rehearsal.",
+    "draft_version": "8a4cc4a3-b766-53dc-8370-64ee8c2e2ead",
+    "evidence_criterion": "Locate the narrator explicitly describing the projector casting the blue comet on the dome during the middle cues and its image going out.",
+    "gold": "supported",
+    "history": "confirmed",
+    "kind": "narration",
+    "prose_sha256": "b91361f66828cb2f26f99d41aaf3d5c3030181935e349c40040e22426f2d683c",
+    "ref": "E1420",
+    "spans": {
+      "closing": {
+        "end": 1475,
+        "quote": "At the closing cue the house lights came up on a blank dome. It stayed blank while Kit rang the bell to end the rehearsal.",
+        "start": 1353
+      },
+      "middle": {
+        "end": 1176,
+        "quote": "The two women worked through the middle pages in the hush between the fan and the ticking clock. By the time Kit got back to the desk the tea had a skin on it. Ada held the chipped cup for her while she wrote the final cue in her own hand.",
+        "start": 937
+      },
+      "retrospective": {
+        "end": 1351,
+        "quote": "During the middle cues the projector cast the blue comet across the dome. Its tail crossed the seam over Kit's seat, then the image went out before she returned to the desk.",
+        "start": 1178
+      },
+      "slide": {
+        "end": 651,
+        "quote": "On the console lay the blue comet slide in its cardboard mount. A boy had drawn the tail with a scratched needle forty years ago. Ada could feel the burr when she ran a thumb along the edge. On the running sheet the cue had a square beside it for a tick. Someone had sharpened a pencil and left the shavings in the square.",
+        "start": 329
+      }
+    },
+    "unit": "A001"
+  }
+}
