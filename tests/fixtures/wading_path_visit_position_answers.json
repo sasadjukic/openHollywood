@@ -1,0 +1,167 @@
+{
+  "original": {
+    "draft_version": "38e82829-604f-40df-b5a0-1c968718573e",
+    "responses": {
+      "reached": {
+        "support": "uncertain",
+        "reason": "They start in the flooded room and reach the wall and plenum. Looking deeper reveals the housing at the passage end. The scene gives no arrival there and leaves open whether they reached it during the scene.",
+        "spans": [
+          [
+            0,
+            488
+          ],
+          [
+            3995,
+            4804
+          ]
+        ]
+      },
+      "at_cut": {
+        "support": "uncertain",
+        "reason": "The last movement takes both people inside the plenum. They look deeper and the prose locates the housing down the passage. Their distance from the housing at the cut is left open.",
+        "spans": [
+          [
+            3995,
+            4804
+          ]
+        ]
+      }
+    }
+  },
+  "arrival": {
+    "draft_version": "02037781-6b73-5869-ba09-337008c50d4f",
+    "responses": {
+      "reached": {
+        "support": "supported",
+        "reason": "Elias and Maya reach the housing together when the light steadies. That records a visit during the scene.",
+        "spans": [
+          [
+            4806,
+            4920
+          ]
+        ]
+      },
+      "at_cut": {
+        "support": "supported",
+        "reason": "The final sentence places Elias and Maya side by side at the housing as the scene ends.",
+        "spans": [
+          [
+            4806,
+            4920
+          ]
+        ]
+      }
+    }
+  },
+  "stop": {
+    "draft_version": "2f9e80a0-29b4-579f-8075-b6e064788b24",
+    "responses": {
+      "reached": {
+        "support": "uncertain",
+        "reason": "The pair enter the plenum and look deeper. Their three-stride separation persists through the final instant. They could have reached the housing earlier in the scene. The draft supplies neither an arrival nor an exclusion covering that earlier time.",
+        "spans": [
+          [
+            3995,
+            4804
+          ],
+          [
+            4806,
+            4945
+          ]
+        ]
+      },
+      "at_cut": {
+        "support": "unsupported",
+        "reason": "Elias and Maya stop three full strides short of the housing and stay there through the cut.",
+        "spans": [
+          [
+            4806,
+            4945
+          ]
+        ]
+      },
+      "reached/gap_only": {
+        "support": "unsupported",
+        "reason": "Elias and Maya stop three full strides short of the housing and stay there through the cut.",
+        "spans": [
+          [
+            4806,
+            4945
+          ]
+        ]
+      }
+    }
+  },
+  "retreat": {
+    "draft_version": "ae1fb3f6-5e23-597a-a61f-020b9cc8e254",
+    "responses": {
+      "reached": {
+        "support": "supported",
+        "reason": "Both reach the housing before stepping away. Their later departure preserves that visit during the scene.",
+        "spans": [
+          [
+            4806,
+            4920
+          ],
+          [
+            4922,
+            5008
+          ]
+        ]
+      },
+      "at_cut": {
+        "support": "unsupported",
+        "reason": "After reaching the housing they step back three strides and stay there. Both finish away from it.",
+        "spans": [
+          [
+            4806,
+            4920
+          ],
+          [
+            4922,
+            5008
+          ]
+        ]
+      }
+    }
+  },
+  "exclusion": {
+    "draft_version": "4da86d35-9337-54d8-896b-c212ba05516c",
+    "responses": {
+      "reached": {
+        "support": "unsupported",
+        "reason": "Their huddle marks the opening of the scene. From that moment through the last instant in the plenum, neither Elias nor Maya ever came closer than three full strides to the housing. That continuous separation rules out a visit during scene four.",
+        "spans": [
+          [
+            0,
+            488
+          ],
+          [
+            4947,
+            5149
+          ]
+        ]
+      },
+      "at_cut": {
+        "support": "unsupported",
+        "reason": "Elias and Maya stop three full strides short of the housing and stay there through the cut.",
+        "spans": [
+          [
+            4806,
+            4945
+          ]
+        ]
+      },
+      "reached/gap_only": {
+        "support": "unsupported",
+        "reason": "Elias and Maya stop three full strides short of the housing and stay there through the cut.",
+        "spans": [
+          [
+            4806,
+            4945
+          ]
+        ]
+      }
+    }
+  }
+}

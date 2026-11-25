@@ -13926,6 +13926,35 @@ one genuine review with an admitted claim.
   visit in the retreat draft. None excludes a visit across the entire scene.
   All 47 focused checks passed. Next proposed local rehearsal adds one full-scene
   exclusion to the measured stop and scores two claims across five drafts.
+- [x] [Rehearse the ten visit and cut-position cases with a full-scene exclusion](../docs/handoffs/wading-path-visit-position-rehearsal-2026-11-25.md).
+  Froze gold before authoring answers. All ten grounded answers earned both
+  points. On the exclusion draft, citing only the final gap earned 1 for the
+  visit judgment and 0 for its evidence. The same answer earned both points for
+  position at the cut. The five passing observed controls and two failures replayed.
+  All 52 focused tests passed locally. Ready to freeze a six-assessment Sol-high B
+  comparison on the measured stop, full-scene exclusion and explicit arrival.
+- [x] [Freeze the six-case Sol-high B visit and cut-position comparison](../docs/handoffs/wading-path-visit-position-sol-high-freeze-2026-11-25.md).
+  Froze both claims on each exact draft, their gold and independent evidence
+  criteria. The explicit-arrival cells are positive controls. Six counts must
+  pass before up to six generations, with zero retries. All 41 focused tests
+  passed and all 12 registered slots were unused at freeze.
+- [x] [Run and score the six-case Sol-high B visit and cut-position comparison](../docs/handoffs/wading-path-visit-position-sol-high-results-2026-11-25.md).
+  Six counts preceded six eligible generations with zero retries. Inspected all
+  12 slots. Only the measured-stop visit failed both axes. Sol returned
+  `unsupported` against `uncertain` gold and used the final gap to dismiss
+  an earlier visit. The full-scene exclusion visit, both cut-position cases
+  on the matched drafts and both explicit-arrival controls passed both scores.
+  Frozen decision `hold_claim_scope`. B remains the default.
+
+- [x] [Preserve S1 and its five passing controls and audit the measured-stop inference locally](../docs/handoffs/wading-path-measured-stop-visit-audit-2026-11-25.md).
+  Replayed all 12 archived slots and reproduced judgment and evidence separately.
+  S1 scored 0/0 after using the final gap and an omitted arrival to rule out
+  a visit anywhere in the scene. X1's added whole-scene distance bound and S2's
+  narrower endpoint claim each scored 1/1. Both arrival controls and X2 also
+  passed both axes. The portable fixture retains all six observed explanations.
+  All 50 targeted checks passed locally with zero provider calls.
+  Next proposed work is a six-case local rehearsal separating explicit narration
+  from event truth across the same stop with open, excluded and confirmed histories.
 
 Step 19 **IN PROGRESS**. Step 20 **NOT STARTED**. Production prompts unchanged.
 Live calls paused and full workflow canary on hold.

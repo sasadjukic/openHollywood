@@ -1,0 +1,87 @@
+{
+  "contract": "wading-path-visit-position-rehearsal-1",
+  "archive_sha256": "344884c7adbb929cd2c57ecb16e9c6d319393730d374504180aa91b535e825ee",
+  "claims": {
+    "reached": "Elias and Maya reached the master breaker panel housing at some time during scene four.",
+    "at_cut": "Elias and Maya are at the master breaker panel housing at scene four's final narrated instant."
+  },
+  "scoring": {
+    "judgment": "One point for an exact whole-claim label.",
+    "evidence": "With the returned label hidden, award one point for an explanation supported by exact passages on the selected version covering the people, housing and time in the claim. Accept equivalent locators. An earlier unknown or an omitted arrival cannot establish a scene-wide negative. A final persistent gap covers the cut."
+  },
+  "endings": {
+    "original": {
+      "version": "38e82829-604f-40df-b5a0-1c968718573e",
+      "prose_sha256": "657324e144ebe41dc10fe3fbb197e29f04979a27e0abed26bf0a7bd2748dbf42",
+      "cells": {
+        "reached": [
+          "uncertain",
+          "Distinguish the wall and plenum entry from the housing. The closing view supplies neither an arrival nor evidence ruling out attainment during the scene."
+        ],
+        "at_cut": [
+          "uncertain",
+          "The last narrated movement is entry. The closing description locates the housing. It leaves the pair's final position relative to it open."
+        ]
+      }
+    },
+    "arrival": {
+      "version": "02037781-6b73-5869-ba09-337008c50d4f",
+      "prose_sha256": "f184d9677e644e6e56c0803efc4bf28f47711054a6d9b532b8e56a7dcb58f87f",
+      "cells": {
+        "reached": [
+          "supported",
+          "That joint arrival is an event during scene four."
+        ],
+        "at_cut": [
+          "supported",
+          "The final sentence places both people at the housing and standing side by side before it, with no subsequent change of position."
+        ]
+      }
+    },
+    "stop": {
+      "version": "2f9e80a0-29b4-579f-8075-b6e064788b24",
+      "prose_sha256": "3ca09ba71b8e79da1e6f5ecea31f8ea3032b5d0cee847f3e3db43c003c46922d",
+      "cells": {
+        "reached": [
+          "uncertain",
+          "Entry and sight of the housing do not establish arrival. The final gap fixes the endpoint and cannot exclude an earlier visit."
+        ],
+        "at_cut": [
+          "unsupported",
+          "Both people stop three full strides short of the named housing and stay there through the cut."
+        ]
+      }
+    },
+    "retreat": {
+      "version": "ae1fb3f6-5e23-597a-a61f-020b9cc8e254",
+      "prose_sha256": "51900dd0ff5d591e883e8d9d6b21408550ea8efea38963967db406b8217095ec",
+      "cells": {
+        "reached": [
+          "supported",
+          "The pair reach the housing during the scene. A later retreat preserves that event."
+        ],
+        "at_cut": [
+          "unsupported",
+          "After reaching the housing, both step back three full strides and stay there. The retreat fixes the later position at the cut."
+        ]
+      }
+    },
+    "exclusion": {
+      "parent": "stop",
+      "parent_version": "2f9e80a0-29b4-579f-8075-b6e064788b24",
+      "append_paragraph": "From the moment they huddled in the center of the flooded room to this last moment in the plenum, neither Elias nor Maya had ever been closer than three full strides to the master breaker panel housing.",
+      "version": "4da86d35-9337-54d8-896b-c212ba05516c",
+      "prose_sha256": "e6c313b43ef3ab6e4b424566e33831fbd4a903e738c50186e282551108b3b93b",
+      "cells": {
+        "reached": [
+          "unsupported",
+          "Identify both people and the housing. Cite the continuous lower bound on their distance from the opening huddle through the cut. A final gap alone leaves earlier visits open."
+        ],
+        "at_cut": [
+          "unsupported",
+          "Locate the persistent three-stride stop at the housing, or the interval-wide minimum distance explicitly extending to the final instant. Either establishes their separation at the cut."
+        ]
+      }
+    }
+  }
+}

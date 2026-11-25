@@ -1,0 +1,50 @@
+{
+  "1654345e9f30a99375ebf7d331cfe30f7675330a65de2f4f9981067f3307b84a": {
+    "adequate": false,
+    "basis": "4806-4945 sets the pair three strides away at the cut. It gives no earlier movement history, and the explanation leaves the question of a visit unanswered."
+  },
+  "16bfa2e458dcf017f4e490412eadfcc19c87e518737b84fd32850cf0a99c380a": {
+    "adequate": true,
+    "basis": "4806-4945 places both people at a measured gap and says they stay there. The added retrospective sentence records no new movement."
+  },
+  "306c18f50fea139699192cae841561e24a369daa8dade576d93cb17ce5f04d9c": {
+    "adequate": true,
+    "basis": "The opening huddle and the ending through 4804 distinguish wall and plenum entry from the housing. The explanation leaves a visit during the scene open."
+  },
+  "3ab1f19138749c85bb5771cb73d112689e8ef92f782b0501ca1aa86e026a5dc4": {
+    "adequate": true,
+    "basis": "The last paragraph at 4806-4945 locates both people three strides from the housing and preserves that position through the cut."
+  },
+  "4559f45559f5aefbdce6a283bce07d78e5f28ad962aa4368464cb3fac45d544b": {
+    "adequate": true,
+    "basis": "The closing movements and final stop establish entry and the endpoint gap. The explanation recognizes that this gap supplies no history excluding a prior visit."
+  },
+  "70af0914f825544fce969c908ad80d1ab1129cb31e2f116e6fc175631677df3d": {
+    "adequate": true,
+    "basis": "The opening at 0-488 anchors the huddle. The source at 4947-5149 names both people, the housing and a continuous minimum distance from that opening through the final instant."
+  },
+  "7e523ec34a506d3170fe55fade3334e2639100eaa16b907664f8a30fecd679cc": {
+    "adequate": false,
+    "basis": "4806-4945 establishes a persistent endpoint gap. The cited passage and the reason omit the observation covering the interval before that stop. The uncited sentence elsewhere in this version cannot supply the missing evidence point."
+  },
+  "96d9102072a6d3301686ab0d8be1b60fab8bbe82ef4c3cb663f4230e924eddbc": {
+    "adequate": true,
+    "basis": "4806-4920 explicitly places the joint arrival inside the scene."
+  },
+  "9e87ab9cda9a4d24d6f7126218faa89c13a5be38c7ee226755ab3ce79b95236b": {
+    "adequate": true,
+    "basis": "4806-4920 records the visit. The departure at 4922-5008 occurs afterward."
+  },
+  "a7a2014e3e62c8586931f30c7b6da2411aef475b46dae987b4ee91a653e5257e": {
+    "adequate": true,
+    "basis": "The later passage at 4922-5008 gives the persistent three-stride retreat and settles the final location after the earlier arrival."
+  },
+  "afdaa5207748b7707e8309d1498e33b0cac9f832b2f05337882b0607ea87caa7": {
+    "adequate": true,
+    "basis": "In this version the joint arrival and side-by-side position at 4806-4920 end the scene."
+  },
+  "b0c7d012115c4bf0fa31d04d9827ac019c06a2f2283ef8092e403237336ba397": {
+    "adequate": true,
+    "basis": "3995-4804 locates the entry, the look deeper and the housing. The explanation correctly leaves final proximity open."
+  }
+}

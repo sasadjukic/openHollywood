@@ -1,0 +1,90 @@
+{
+  "archive_sha256": "6339d86c0c033d470161f9b931f3bc09ac6bb3b06d522feb2ddc80e4ce132344",
+  "evidence_decisions_sha256": "c25863bfb6b4002cb9758d87c42f600abbadfeb9c6442b05edc1e630bde32b23",
+  "rows": {
+    "S1-B": {
+      "claim": "Elias and Maya reached the master breaker panel housing at some time during scene four.",
+      "draft_version": "2f9e80a0-29b4-579f-8075-b6e064788b24",
+      "gold": "uncertain",
+      "returned": "unsupported",
+      "judgment": "fail",
+      "evidence": "fail",
+      "citations": [
+        "E1420"
+      ],
+      "reason": "The complete selected scene-four draft (catalog-complete-current-draft, version 2f9e80a0-29b4-579f-8075-b6e064788b24) contradicts the claim. Elias and Maya cross the room, reach the eastern wall, enter the service plenum and see the housing farther down the passage. Their approach concludes when they stop “three full strides short of the master breaker panel housing and stayed there.” The full sequence shows no earlier arrival followed by retreat: they approach but stop short. Reaching the wall and seeing the housing do not establish reaching the housing at any time during the scene.",
+      "evidence_basis": "2f9e80a0-29b4-579f-8075-b6e064788b24 / Measured-stop E1420 [3995,4804) establishes entry into the plenum and locates the housing. The ending [4806,4945) fixes the final gap. The explanation treats the absence of a narrated arrival followed by retreat as grounds to exclude reaching the housing at any time in the scene. The cited sequence leaves an earlier visit open.",
+      "generation_terminal_sha256": "73b1d3f23f650bd041b3c2ab55cae5ae92df6ed5b766a361cc9a2dfe73ba1d1c"
+    },
+    "X1-B": {
+      "claim": "Elias and Maya reached the master breaker panel housing at some time during scene four.",
+      "draft_version": "4da86d35-9337-54d8-896b-c212ba05516c",
+      "gold": "unsupported",
+      "returned": "unsupported",
+      "judgment": "pass",
+      "evidence": "pass",
+      "citations": [
+        "E1420"
+      ],
+      "reason": "The selected scene-four draft, catalog-complete-current-draft version 4da86d35-9337-54d8-896b-c212ba05516c, contradicts the claim. Elias and Maya enter the service plenum and see the housing, but stop “three full strides short” and stay there. The final paragraph explicitly establishes that neither had ever been closer than three full strides throughout the scene, ruling out an earlier arrival as well. Seeing and approaching the housing do not establish reaching it.",
+      "evidence_basis": "4da86d35-9337-54d8-896b-c212ba05516c / Exclusion E1420 [4806,4945) provides the final gap. The answer separately identifies the final paragraph [4947,5149) and accurately explains its continuous minimum distance for both people throughout scene four, ruling out an earlier visit.",
+      "generation_terminal_sha256": "4f700ed0b178fda8263da602c92e668d6d3828cd48d7253c739c19b01ad42ca3"
+    },
+    "S2-B": {
+      "claim": "Elias and Maya are at the master breaker panel housing at scene four's final narrated instant.",
+      "draft_version": "2f9e80a0-29b4-579f-8075-b6e064788b24",
+      "gold": "unsupported",
+      "returned": "unsupported",
+      "judgment": "pass",
+      "evidence": "pass",
+      "citations": [
+        "E1420"
+      ],
+      "reason": "The selected scene-four draft (catalog-complete-current-draft, version 2f9e80a0-29b4-579f-8075-b6e064788b24) ends with Elias and Maya stopping side by side “three full strides short of the master breaker panel housing” and staying there. Earlier narration establishes their entry into the service plenum and the housing’s position at the passage’s end, but the final sentence explicitly places both characters short of it, contradicting the claimed location at the final narrated instant.",
+      "evidence_basis": "2f9e80a0-29b4-579f-8075-b6e064788b24 / Measured-stop E1420 [4806,4945) locates both characters three full strides short of the named housing and says they stay there. The explanation applies that persistent separation to the final instant.",
+      "generation_terminal_sha256": "330659d4652b7f48bf5b9076d9f9200a7aa91d6aff8f5342c056f78fc6ea4d74"
+    },
+    "X2-B": {
+      "claim": "Elias and Maya are at the master breaker panel housing at scene four's final narrated instant.",
+      "draft_version": "4da86d35-9337-54d8-896b-c212ba05516c",
+      "gold": "unsupported",
+      "returned": "unsupported",
+      "judgment": "pass",
+      "evidence": "pass",
+      "citations": [
+        "E1420"
+      ],
+      "reason": "The selected scene-four draft (catalog-complete-current-draft, version 4da86d35-9337-54d8-896b-c212ba05516c) explicitly ends with Elias and Maya stopping side by side three full strides short of the master breaker panel housing and staying there. Its final sentence confirms neither has been closer than three full strides throughout the scene. They are therefore still short of the housing at the final narrated instant, not at it.",
+      "evidence_basis": "4da86d35-9337-54d8-896b-c212ba05516c / Exclusion E1420 [4806,4945) places both people short and keeps them there. The answer also locates the retrospective [4947,5149), which extends through the cut. Either supports the final-position finding.",
+      "generation_terminal_sha256": "f3061d317ed444d6a1216e097e23e5b2589aa45bf0598273f78a0ffadcb87520"
+    },
+    "A1-B": {
+      "claim": "Elias and Maya reached the master breaker panel housing at some time during scene four.",
+      "draft_version": "02037781-6b73-5869-ba09-337008c50d4f",
+      "gold": "supported",
+      "returned": "supported",
+      "judgment": "pass",
+      "evidence": "pass",
+      "citations": [
+        "E1420"
+      ],
+      "reason": "The selected complete scene-four draft, catalog-complete-current-draft version 02037781-6b73-5869-ba09-337008c50d4f, ends: “When the light steadied, Elias and Maya reached the master breaker panel housing and stood side by side before it.” This narrates both characters’ completed arrival during the scene, not merely their sighting of the housing farther down the passage, and establishes the whole claim.",
+      "evidence_basis": "02037781-6b73-5869-ba09-337008c50d4f / Arrival E1420 [4806,4920) names Elias and Maya and explicitly records both reaching the housing during scene four. The quoted sentence supplies the scene event.",
+      "generation_terminal_sha256": "e1299427d0b8626de70fc9e5df77c406145a8d11e69f11f0c4640eaea8928f02"
+    },
+    "A2-B": {
+      "claim": "Elias and Maya are at the master breaker panel housing at scene four's final narrated instant.",
+      "draft_version": "02037781-6b73-5869-ba09-337008c50d4f",
+      "gold": "supported",
+      "returned": "supported",
+      "judgment": "pass",
+      "evidence": "pass",
+      "citations": [
+        "E1420"
+      ],
+      "reason": "The selected scene-four draft, catalog-complete-current-draft version 02037781-6b73-5869-ba09-337008c50d4f, ends: “When the light steadied, Elias and Maya reached the master breaker panel housing and stood side by side before it.” This explicitly establishes both characters’ completed arrival and presence at the housing at the final narrated instant, not merely their sight of it farther down the passage.",
+      "evidence_basis": "02037781-6b73-5869-ba09-337008c50d4f / Arrival E1420 [4806,4920) is the final sentence. It places the pair side by side at the housing, with no later position change. The reason uses that final observation.",
+      "generation_terminal_sha256": "6a9c82f202493a3043052281b47e56cdba9fbe95cbc699d1db2c2cc5a74fa36c"
+    }
+  }
+}
