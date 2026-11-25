@@ -14013,6 +14013,35 @@ one genuine review with an admitted claim.
   would flag the measured-stop depiction answer. Two additional textual assertions
   marked by reader two left coverage unchanged. All 36 focused tests passed locally.
 
+- [x] [Freeze the six-case Sol 6.2/Astra 6.2 high-reasoning B and explicit-scope comparison](../docs/handoffs/wading-path-sol-astra-scope-freeze-2026-11-25.md).
+  All four arms receive the same six claims across three fixed-stop histories. The
+  Sol B requests match the archived bytes. Explicit scope adds one claim-specific
+  field. Freeze judgment and masked evidence scores separately for the open visit,
+  its narration counterpart and four controls. All 24 counts precede up to 24
+  generations, with zero retries and a combined generation estimate capped at
+  $26.45760. All 139 offline checks passed. The single-use ledger has 48
+  unattempted slots. Live execution awaits approval. B remains the default.
+
+- [x] [Run and score the Wading Path Sol 6.2/Astra 6.2 scope comparison](../docs/handoffs/wading-path-sol-astra-scope-results-2026-11-25.md).
+  All 24 counts passed before 24 eligible generations. Inspected all 48 slots with
+  zero retries and sealed the masked evidence grades before joining labels. Sol B
+  and Astra B each scored 5/6 on judgment and 4/6 on evidence. Sol with explicit
+  scope scored 5/6 on both axes. Astra with explicit scope scored 6/6 on both and
+  alone left the earlier visit uncertain. Both explicit arms recovered the narration
+  evidence point. Every arm retained all four controls. The fresh Sol B repeated
+  both earlier misses. Estimated generation cost was $13.8125775 of $26.45760.
+  Astra with explicit scope qualifies on this scene family. B remains the default.
+
+- [x] [Preserve the Sol/Astra pairs and audit the open event](../docs/handoffs/wading-path-sol-astra-open-event-audit-2026-11-25.md).
+  Replayed all 48 slots and both scores on all 24 saved answers. All four open-event
+  answers used the same draft. Sol B left the earlier visit unanswered. Sol explicit
+  and Astra B denied a visit without whole-scene evidence. Only Astra explicit
+  limited the endpoint observation and left the earlier interval open. The same
+  uncertainty explanation failed on both determinate histories. All 33 focused
+  offline checks passed. B remains the default. Proposed a fresh planetarium
+  rehearsal with six cases and four matched arms, 24 counts before up to 24
+  generations, zero retries. The repeat awaits local freeze and separate approval.
+
 Step 19 **IN PROGRESS**. Step 20 **NOT STARTED**. Production prompts unchanged.
 Live calls paused and full workflow canary on hold.
 
