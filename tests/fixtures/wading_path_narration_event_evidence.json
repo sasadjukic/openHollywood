@@ -1,0 +1,50 @@
+{
+  "0d1fbbd2973725001b605df28f72b20fcb52f956e807ea1f6cc808d237b245f8": {
+    "adequate": false,
+    "basis": "The last gap leaves the earlier interval unaddressed and omits the narrated visit."
+  },
+  "51a52efeaa3e3906bc73ef4c2cff01ed4680a453b1269baa7a86d52ff4fb411e": {
+    "adequate": false,
+    "basis": "Only the terminal distance is cited. The interval-wide minimum is the passage that excludes an earlier visit."
+  },
+  "5c3e169a9bb80233aefe79a23d729cccd62657a0dd8995d44f1a599aca939827": {
+    "adequate": true,
+    "basis": "The cited retrospective expressly recounts both reaching the named housing together between entry and the stop."
+  },
+  "693ad0ae211d2f299c3be6e1291caa3fb1c21dff1fa5793c72354a86d00eb345": {
+    "adequate": false,
+    "basis": "Describing the last action overlooks the retrospective that explicitly recounts arrival."
+  },
+  "b616fd0f7b355c874e360a1ab31e48de3d43d29b3caf377d100619da4d717d45": {
+    "adequate": false,
+    "basis": "An endpoint observation alone cannot settle whether a visit happened earlier or identify what remains open."
+  },
+  "b6736bb819372cb8140e8ce0ee0c6d6bc9f30ff192c82214057d2bb754204f7c": {
+    "adequate": false,
+    "basis": "One sentence about the cut gives no account of whether the complete scene includes an explicit visit."
+  },
+  "bab502d524e36f29cf6f426f91de917ffb2440224b460abb0753b5c6ff5aaa7a": {
+    "adequate": true,
+    "basis": "The complete account is cited. The reason follows the pair to the wall and sightline and identifies the stop as the last narrated movement, covering the textual omission."
+  },
+  "ccac7fa0db53ade36f3afaa7a093cca64c7046b1e6c4dad24a88744f01b9a11e": {
+    "adequate": true,
+    "basis": "The citations cover the complete draft, including the added retrospective. The reason distinguishes its account of distance from an affirmative account of arrival."
+  },
+  "d14c79516c6df30759e45cf3b5dba69fa8a515f3089744aafab3d6bf757aa6a5": {
+    "adequate": true,
+    "basis": "The retrospective locates the joint arrival at this housing inside the scene; the explanation places the return before the fixed stop."
+  },
+  "dfc57e45245d622059fa6a830e4cad1990ccce45f8d40a3486d8660b5b100277": {
+    "adequate": false,
+    "basis": "The ending position alone cannot establish what was recounted throughout the full text, including the retrospective."
+  },
+  "e5cf9971cc97bb51065a0fc8e58c46b5c9f040bdbc529feaa01b7d9947d49ff3": {
+    "adequate": true,
+    "basis": "The opening and retrospective bound both people's distance from the housing throughout the scene, excluding a joint visit."
+  },
+  "f3da50965d14724ecde844286a44205e29c385a06cc85666d1150025720fb608": {
+    "adequate": true,
+    "basis": "The cited entry, location and stop explain why neither an earlier visit nor its exclusion is established."
+  }
+}

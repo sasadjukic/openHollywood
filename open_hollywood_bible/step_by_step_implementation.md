@@ -13956,6 +13956,40 @@ one genuine review with an admitted claim.
   Next proposed work is a six-case local rehearsal separating explicit narration
   from event truth across the same stop with open, excluded and confirmed histories.
 
+- [x] [Rehearse narration and event judgments across three fixed-stop histories](../docs/handoffs/wading-path-narration-event-rehearsal-2026-11-25.md).
+  Froze the three draft versions and six gold and evidence criteria before
+  authoring answers. All six grounded answers passed both scores. The same final-gap
+  answer matched three labels and failed evidence on all six. The stop-only
+  narration claim was unsupported and the event uncertain. S2 retained 1/1 at
+  the cut, and the historical S1 event failure retained 0/0. All 40 focused
+  tests passed. Ready to freeze a six-case Sol-high B diagnostic for approval.
+
+- [x] [Freeze the paired Sol 6.1/6.2 high-reasoning B narration/event diagnostic](../docs/handoffs/wading-path-sol-versions-narration-event-freeze-2026-11-25.md).
+  Both models receive all six one-claim cases. Paired bodies differ only in model ID.
+  All 12 counts precede up to 12 generations, six of each per model, with zero retries
+  and a $5.29152 combined generation ceiling. Judgment and masked evidence are scored
+  independently. The open event and its narration counterpart are reported separately.
+  All 32 targeted checks passed. The single-use journal is ready with 24 unattempted
+  slots. Live execution awaits approval of the frozen manifest.
+
+- [x] [Run and score the paired Sol 6.1/6.2 narration/event comparison](../docs/handoffs/wading-path-sol-versions-narration-event-results-2026-11-25.md).
+  All 12 counts passed before 12 eligible generations. Inspected all 24 slots,
+  with zero retries. Each model scored 5/6 on judgment, 4/6 on evidence and
+  4/6 on both axes together. Both scored 0/0 on the unresolved visit (SE)
+  and 1/0 on its narration counterpart (SN). All four retrospective controls
+  passed both axes for both models. No paired gains, losses or 6.2 recovery.
+  Generation time totaled 54.85 s for 6.1 and 29.17 s for 6.2. The combined
+  estimated generation cost was $2.76130. B remains the default.
+
+- [x] [Preserve the six Sol pairs and audit omitted arrival and OpenAI prefix handling](../docs/handoffs/wading-path-sol-omission-and-prefix-audit-2026-11-25.md).
+  Replayed all 24 slots and both grades for all 12 responses. The stop establishes
+  position at the cut. Both models overextended it to the earlier scene interval.
+  The narration and event declarations both use the observed-event predicate.
+  All 12 independent generations had an empty input-transformation list and no
+  earlier reasoning input. Recorded the developer-role and cache-layout opportunities.
+  All 41 targeted offline checks passed. Next proposed work is a local evidence-
+  coverage rehearsal on the six cases with S2 as the endpoint control.
+
 Step 19 **IN PROGRESS**. Step 20 **NOT STARTED**. Production prompts unchanged.
 Live calls paused and full workflow canary on hold.
 

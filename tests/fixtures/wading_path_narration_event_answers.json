@@ -1,0 +1,161 @@
+{
+  "stop": {
+    "draft_version": "2f9e80a0-29b4-579f-8075-b6e064788b24",
+    "responses": {
+      "narrated": {
+        "support": "unsupported",
+        "reason": "Across the complete scene, the pair cross the room, reach the eastern wall and see the housing down the plenum. The last movement recounted is their stop three strides short. The narrator never recounts both reaching the housing.",
+        "spans": [
+          [
+            0,
+            4945
+          ]
+        ]
+      },
+      "reached": {
+        "support": "uncertain",
+        "reason": "Entry into the plenum and sight of the housing leave arrival unestablished. The three-stride gap fixes their position from the stop through the cut. The draft gives neither a joint arrival nor a distance bound covering the time before the stop.",
+        "spans": [
+          [
+            3995,
+            4323
+          ],
+          [
+            4573,
+            4804
+          ],
+          [
+            4806,
+            4945
+          ]
+        ]
+      },
+      "narrated/gap_only": {
+        "support": "unsupported",
+        "reason": "At the cut Elias and Maya stop side by side three full strides short of the master breaker panel housing and stay there.",
+        "spans": [
+          [
+            4806,
+            4945
+          ]
+        ]
+      },
+      "reached/gap_only": {
+        "support": "unsupported",
+        "reason": "At the cut Elias and Maya stop side by side three full strides short of the master breaker panel housing and stay there.",
+        "spans": [
+          [
+            4806,
+            4945
+          ]
+        ]
+      }
+    }
+  },
+  "exclusion": {
+    "draft_version": "4da86d35-9337-54d8-896b-c212ba05516c",
+    "responses": {
+      "narrated": {
+        "support": "unsupported",
+        "reason": "The account takes the pair into the plenum and ends their movement three strides short. Its added retrospective reports their minimum distance since the opening huddle. Nowhere in this complete account does the narrator recount the pair reaching the housing.",
+        "spans": [
+          [
+            0,
+            4945
+          ],
+          [
+            4947,
+            5149
+          ]
+        ]
+      },
+      "reached": {
+        "support": "unsupported",
+        "reason": "From their huddle in the room through the last instant in the plenum, neither Elias nor Maya was ever closer than three strides to the housing. That bound covers the entire scene and rules out a joint visit anywhere in it.",
+        "spans": [
+          [
+            0,
+            488
+          ],
+          [
+            4947,
+            5149
+          ]
+        ]
+      },
+      "narrated/gap_only": {
+        "support": "unsupported",
+        "reason": "At the cut Elias and Maya stop side by side three full strides short of the master breaker panel housing and stay there.",
+        "spans": [
+          [
+            4806,
+            4945
+          ]
+        ]
+      },
+      "reached/gap_only": {
+        "support": "unsupported",
+        "reason": "At the cut Elias and Maya stop side by side three full strides short of the master breaker panel housing and stay there.",
+        "spans": [
+          [
+            4806,
+            4945
+          ]
+        ]
+      }
+    }
+  },
+  "visit": {
+    "draft_version": "58a48fd1-3acd-5e69-9f1b-a89c67170c20",
+    "responses": {
+      "narrated": {
+        "support": "supported",
+        "reason": "The retrospective explicitly recounts Elias and Maya reaching the master breaker panel housing together after entering the plenum and before the light steadied. The later stop is still the final action.",
+        "spans": [
+          [
+            4806,
+            4945
+          ],
+          [
+            4947,
+            5132
+          ]
+        ]
+      },
+      "reached": {
+        "support": "supported",
+        "reason": "The narrator places both at the housing together between their scramble into the plenum and the light steadying. They had already walked back up the passage when they stopped three strides short, so that earlier visit occurred within scene four.",
+        "spans": [
+          [
+            4806,
+            4945
+          ],
+          [
+            4947,
+            5132
+          ]
+        ]
+      },
+      "narrated/gap_only": {
+        "support": "unsupported",
+        "reason": "At the cut Elias and Maya stop side by side three full strides short of the master breaker panel housing and stay there.",
+        "spans": [
+          [
+            4806,
+            4945
+          ]
+        ]
+      },
+      "reached/gap_only": {
+        "support": "unsupported",
+        "reason": "At the cut Elias and Maya stop side by side three full strides short of the master breaker panel housing and stay there.",
+        "spans": [
+          [
+            4806,
+            4945
+          ]
+        ]
+      }
+    }
+  }
+}

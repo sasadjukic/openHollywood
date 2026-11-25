@@ -1,0 +1,66 @@
+{
+  "contract": "wading-path-narration-event-rehearsal-1",
+  "archive_sha256": "6339d86c0c033d470161f9b931f3bc09ac6bb3b06d522feb2ddc80e4ce132344",
+  "claims": {
+    "narrated": "The scene-four draft explicitly recounts Elias and Maya reaching the master breaker panel housing together during that scene.",
+    "reached": "Elias and Maya reached the master breaker panel housing at some time during scene four."
+  },
+  "fixed_stop": {
+    "start": 4806,
+    "end": 4945,
+    "quote": "When the light steadied, Elias and Maya stopped side by side three full strides short of the master breaker panel housing and stayed there."
+  },
+  "scoring": {
+    "judgment": "One point for the exact whole-claim label.",
+    "evidence": "Grade the reason and exact cited passages on the complete selected draft with returned labels hidden. Award one point for covering the people, place, time and claim-specific criterion. Accept equivalent locators. A final gap alone is insufficient on either scene-wide claim.",
+    "control": "Rejoin the observed S2 endpoint result separately under its original rubric."
+  },
+  "endings": {
+    "stop": {
+      "version": "2f9e80a0-29b4-579f-8075-b6e064788b24",
+      "prose_sha256": "3ca09ba71b8e79da1e6f5ecea31f8ea3032b5d0cee847f3e3db43c003c46922d",
+      "cells": {
+        "narrated": [
+          "unsupported",
+          "Use the complete selected scene. Distinguish the entry, sightline and stop from an explicit account of both people reaching the housing."
+        ],
+        "reached": [
+          "uncertain",
+          "Establish what the approach and final gap cover. The complete scene neither reports a joint visit nor rules it out earlier in the scene."
+        ]
+      }
+    },
+    "exclusion": {
+      "version": "4da86d35-9337-54d8-896b-c212ba05516c",
+      "prose_sha256": "e6c313b43ef3ab6e4b424566e33831fbd4a903e738c50186e282551108b3b93b",
+      "cells": {
+        "narrated": [
+          "unsupported",
+          "Account for the complete selected scene including the retrospective. It recounts a minimum distance through the scene and contains no affirmative account of a joint visit."
+        ],
+        "reached": [
+          "unsupported",
+          "Locate the retrospective naming both people and the housing and covering the opening huddle through the cut. A final gap alone cannot rule out a prior visit."
+        ]
+      },
+      "parent_version": "2f9e80a0-29b4-579f-8075-b6e064788b24",
+      "append_paragraph": "From the moment they huddled in the center of the flooded room to this last moment in the plenum, neither Elias nor Maya had ever been closer than three full strides to the master breaker panel housing."
+    },
+    "visit": {
+      "version": "58a48fd1-3acd-5e69-9f1b-a89c67170c20",
+      "prose_sha256": "5321caae49da7a4ad279c0f05eb3df87b7376f62b9a27df16c9885a643ec197f",
+      "cells": {
+        "narrated": [
+          "supported",
+          "Locate the retrospective in which the narrator explicitly recounts both people reaching the housing together within this scene. A retrospective is an explicit account."
+        ],
+        "reached": [
+          "supported",
+          "Locate the earlier joint arrival after plenum entry and before the light steadies. Their return up the passage and later stop leave that visit established."
+        ]
+      },
+      "parent_version": "2f9e80a0-29b4-579f-8075-b6e064788b24",
+      "append_paragraph": "Earlier, after their scramble into the service plenum and before the light steadied, Elias and Maya had reached the master breaker panel housing together and walked back up the passage."
+    }
+  }
+}
