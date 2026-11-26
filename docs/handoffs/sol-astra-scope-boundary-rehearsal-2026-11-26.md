@@ -1,0 +1,33 @@
+# Four explanation edits and what each fixes
+
+**Three edits supplied a missing passage reference. One answered a previously unresolved factual question.** All four locally authored revisions passed factual sufficiency and diagnostic completeness. The comparison uses the independent reader’s primary grades for the saved explanations. The prior grades and the reader’s alternatives remain available. B remains the default. [Independent reading](sol-astra-independent-reading-2026-11-26.md) · [Full verbatim pairs and scores](../../data/diagnostics/scope-boundary-rehearsal-2026-11-26/scores.json)
+
+## Paired scores
+
+A 1 means the explanation meets the criterion. Factual sufficiency asks whether it answers the whole claim from the selected draft without overreach. Diagnostic completeness also requires the source observations named in the case criterion. The unit in both columns is the explanation. Each pair retains its original claim, draft version and E1420 citation.
+
+| Saved explanation | Factual, saved → revised | Diagnostic, saved → revised | What the edit supplies |
+| --- | ---: | ---: | --- |
+| Wading Path SN · Astra X | 1 → 1 | 0 → 1 | The sightline between entering the service plenum and stopping short of the housing. |
+| Planetarium ON · Sol X | 1 → 1 | 0 → 1 | The summary of the middle pages, where the narration passes over what appeared on the dome. |
+| Planetarium ON · Astra X | 1 → 1 | 0 → 1 | The same omission, located by the narrative transition back to Kit at the desk. |
+| Wading Path SE · Sol B | 0 → 1 | 0 → 1 | An explicit answer about a possible joint visit **before** the final stop. |
+
+## The four minimal revisions
+
+1. **Wading Path SN, Astra X.** The saved answer already says the pair entered the plenum, stopped short and made a narrated approach. Add **“where they see the housing farther down the passage”** to the entry sentence. The view ahead identifies the required sightline while preserving the conclusion about narration. The sealed reader’s alternative had accepted entry and stop together as a locator for the intervening passage.
+2. **Planetarium ON, Sol X.** After the sentence about the slide on the console, insert **“Their work through the middle pages is summarized without describing an image on the dome.”** The original already limited the blank-dome observation to the close. The new sentence locates where the draft leaves the image unreported.
+3. **Planetarium ON, Astra X.** Before the closing observation, insert **“The narration moves from their work on the rehearsal pages to Kit back at the desk without reporting what appeared overhead.”** This locates the omission through a recognizable action and transition. Both planetarium originals also had plausible alternate diagnostic passes because they identified the earlier interval. The rehearsal requires the reader to be able to find its treatment in the prose.
+4. **Wading Path SE, Sol B.** Replace **“Their approach never reaches the housing.”** with **“The draft leaves open whether they reached it together before that stop.”** The preceding sentences already locate entry, sightline and closing gap. The replacement supplies the inference the any-time claim requires. The saved line also admits a reading limited to the described route, which the independent reader graded 1/0 as an alternative. On that reading, the edit makes an implicit factual answer explicit. The actual Sol B delivery returned `unsupported` against gold `uncertain`. Its historical judgment still scores zero. [Exact edits and source bindings](../../tests/fixtures/scope_boundary_rehearsal_pairs.json)
+
+## What counts as an equivalent reference
+
+A passage reference earns the diagnostic point when it identifies **what the passage shows or passes over**. A faithful paraphrase can do this without quoting the draft. Naming an earlier interval can suffice to qualify a factual conclusion while leaving the reader unable to locate the sightline or the summarized cues. For the any-time visit question, describing the final distance leaves a separate obligation to explain what can be concluded about the time before the stop.
+
+Six authored controls tested that distinction. A paraphrase of the panel coming into view, one keyed to Kit returning to her tea, and one explaining that the ending is compatible with either earlier history each scored **1/1**. A time-only planetarium qualification scored **1/0**. Appending a categorical denial to the otherwise complete Wading Path or planetarium explanation scored **0/0** in both cases. Both denials failed even with every requested passage detail present. [Frozen requirements and expected outcomes](../../tests/fixtures/scope_boundary_rehearsal_expected.json)
+
+## Verification and disposition
+
+The expected outcomes were frozen before the revisions were authored. Offline replay bound all four saved explanations to their original provider terminals and the sealed independent reading, checked the drafts and passage spans by hash, and applied exactly one contiguous edit per pair. The replay derives both scores from manually annotated propositions and passage references on these fixed texts. It records missing evidence and unsupported assertions separately. The four authored revisions demonstrate how the frozen criteria apply to these examples. Model repeatability requires fresh observations. All 31 focused offline tests passed, as did repository-wide Ruff lint, formatting and strict mypy across 486 Python files. [Replay](../../scripts/planetarium_scope/boundary_rehearsal.py) · [Regression checks](../../tests/evaluations/test_scope_boundary_rehearsal.py) · [Local test record](../../data/diagnostics/scope-boundary-rehearsal-2026-11-26/verification.xml)
+
+**Prepare the bounded Wading Path SE repeat for approval.** Use the identical measured-stop request for four fresh observations per arm, with Sol 6.2 and Astra 6.2 at high reasoning under B and X. Add one confirmed-visit and one whole-scene-exclusion control per arm. Budget **24 serial counts before up to 24 generations**, with zero retries. Counterbalance arm order and freeze label correctness, factual sufficiency and diagnostic completeness separately. Keep an explicit record of false scene-wide denials. The proposed threshold for pursuing Astra X is at least three of four hard-case answers with a correct label and sufficient evidence, at least two more than each other arm, and both determinate controls passing. Treat missing deliveries as inconclusive. A qualifying repeat would justify a held-out production-length family before changing routing. No provider calls were made in this rehearsal. The workflow canary stays on hold.

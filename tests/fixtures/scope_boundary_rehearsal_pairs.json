@@ -1,0 +1,188 @@
+{
+  "cases": {
+    "SN-AX": {
+      "claim": "The scene-four draft explicitly recounts Elias and Maya reaching the master breaker panel housing together during that scene.",
+      "source_version": "2f9e80a0-29b4-579f-8075-b6e064788b24",
+      "scoring_id": "43bffb891842ff14c7fca09782ee9f3d1727d6fa5c22f8d2bc1c40d49ed98311",
+      "explanation": "In the selected scene-four draft (catalog-complete-current-draft, version 2f9e80a0-29b4-579f-8075-b6e064788b24), Elias and Maya reach the eastern wall together and enter the service plenum. The final sentence says they stop side by side three full strides short of the master breaker panel housing and stay there. The scene thus recounts a shared approach, not an arrival at the housing.",
+      "saved_annotations": {
+        "entry": "enter the service plenum",
+        "stop": "they stop side by side three full strides short of the master breaker panel housing and stay there",
+        "narrated_approach": "The scene thus recounts a shared approach, not an arrival at the housing."
+      },
+      "revision": {
+        "before": "enter the service plenum.",
+        "after": "enter the service plenum, where they see the housing farther down the passage.",
+        "annotations": {
+          "view": "they see the housing farther down the passage"
+        }
+      }
+    },
+    "ON-SX": {
+      "claim": "The scene-four draft explicitly recounts the blue comet being projected onto the planetarium dome during the rehearsal.",
+      "source_version": "d0d07651-afae-5a97-8e84-8b9bdd1fb7ee",
+      "scoring_id": "a5266ffcc2bf36588e06c05c9ef3029267a0cca1956fe6fa1124798286d1175b",
+      "explanation": "The complete selected scene-four draft (version d0d07651-afae-5a97-8e84-8b9bdd1fb7ee) describes the blue comet slide lying on the console but never recounts its projection. The dome is blank at the closing cue and stays blank through the final bell. That establishes the dome's state at the close, not throughout the rehearsal.",
+      "saved_annotations": {
+        "mounted_slide": "blue comet slide lying on the console",
+        "no_projection_account": "never recounts its projection"
+      },
+      "revision": {
+        "before": "The dome is blank at the closing cue",
+        "after": "Their work through the middle pages is summarized without describing an image on the dome. The dome is blank at the closing cue",
+        "annotations": {
+          "summarized_cues": "Their work through the middle pages is summarized without describing an image on the dome."
+        }
+      }
+    },
+    "ON-AX": {
+      "claim": "The scene-four draft explicitly recounts the blue comet being projected onto the planetarium dome during the rehearsal.",
+      "source_version": "d0d07651-afae-5a97-8e84-8b9bdd1fb7ee",
+      "scoring_id": "999b31649fbdd2923e70d99e9893223004537d2fd2ee290f9d3e0f190dcf205c",
+      "explanation": "The complete scene-four draft (version d0d07651-afae-5a97-8e84-8b9bdd1fb7ee) describes the blue comet slide on the console and its cue on the running sheet, but never recounts the comet being projected. The dome is blank from the closing cue through the final bell; the draft does not establish whether a projection occurred earlier in the rehearsal.",
+      "saved_annotations": {
+        "mounted_slide": "blue comet slide on the console and its cue on the running sheet",
+        "no_projection_account": "never recounts the comet being projected"
+      },
+      "revision": {
+        "before": "The dome is blank from the closing cue",
+        "after": "The narration moves from their work on the rehearsal pages to Kit back at the desk without reporting what appeared overhead. The dome is blank from the closing cue",
+        "annotations": {
+          "summarized_cues": "from their work on the rehearsal pages to Kit back at the desk without reporting what appeared overhead"
+        }
+      }
+    },
+    "SE-SB": {
+      "claim": "Elias and Maya reached the master breaker panel housing at some time during scene four.",
+      "source_version": "2f9e80a0-29b4-579f-8075-b6e064788b24",
+      "scoring_id": "2f7cc8158aabfae9f195c0c8e39fd066cb0feafe38cb67475ed8cb2d57c01495",
+      "explanation": "In the complete selected scene-four draft (version 2f9e80a0-29b4-579f-8075-b6e064788b24), Elias and Maya cross the room, enter the service plenum, and see the housing farther down the passage. They stop three full strides short and stay there through the end of the scene. Their approach never reaches the housing.",
+      "saved_annotations": {
+        "entry": "enter the service plenum",
+        "view": "see the housing farther down the passage",
+        "stop": "They stop three full strides short and stay there through the end of the scene."
+      },
+      "revision": {
+        "before": "Their approach never reaches the housing.",
+        "after": "The draft leaves open whether they reached it together before that stop.",
+        "annotations": {
+          "earlier_visit_open": "leaves open whether they reached it together before that stop"
+        }
+      }
+    }
+  },
+  "sources": {
+    "2f9e80a0-29b4-579f-8075-b6e064788b24": {
+      "prose_sha256": "3ca09ba71b8e79da1e6f5ecea31f8ea3032b5d0cee847f3e3db43c003c46922d",
+      "passage_ref": "E1420",
+      "witnesses": {
+        "entry": {
+          "start": 3995,
+          "end": 4402,
+          "sha256": "9fb72c3a2d2cc14e2a9eaa8deb6b6bf029d3cb3db66dfa1fdb3112992894c6a2"
+        },
+        "view": {
+          "start": 4402,
+          "end": 4804,
+          "sha256": "fd9deb208edfe87232ebffed9f89e21cdd376278ffb5cb58871996cc38a1fda7"
+        },
+        "stop": {
+          "start": 4806,
+          "end": 4945,
+          "sha256": "8b145f940302579c4b870498ed8e9590ba1888914a09971d07b357b367b7c784"
+        },
+        "earlier_visit_open": {
+          "start": 0,
+          "end": 4945,
+          "sha256": "3ca09ba71b8e79da1e6f5ecea31f8ea3032b5d0cee847f3e3db43c003c46922d"
+        },
+        "narrated_approach": {
+          "start": 0,
+          "end": 4945,
+          "sha256": "3ca09ba71b8e79da1e6f5ecea31f8ea3032b5d0cee847f3e3db43c003c46922d"
+        }
+      }
+    },
+    "d0d07651-afae-5a97-8e84-8b9bdd1fb7ee": {
+      "prose_sha256": "8a8a717d974f045c91f53fcfd6b164dde9136e5b1afb0d9d50e794ee8a8b5d04",
+      "passage_ref": "E1420",
+      "witnesses": {
+        "mounted_slide": {
+          "start": 329,
+          "end": 651,
+          "sha256": "75286dbf7707abbfeea562f79928ea952a21156d4d9085b974711fcb2428f681"
+        },
+        "summarized_cues": {
+          "start": 937,
+          "end": 1176,
+          "sha256": "af05d5bb364ab7b428b12ab5f3e5d05858dc9fbe32735c35860bc8ef3a56fe41"
+        },
+        "no_projection_account": {
+          "start": 0,
+          "end": 1300,
+          "sha256": "8a8a717d974f045c91f53fcfd6b164dde9136e5b1afb0d9d50e794ee8a8b5d04"
+        }
+      }
+    }
+  },
+  "controls": {
+    "sightline_paraphrase": {
+      "base": "saved",
+      "edit": {
+        "before": "The final sentence says",
+        "after": "Ahead of them in the shaft the panel comes into view. The final sentence says",
+        "annotations": {
+          "view": "Ahead of them in the shaft the panel comes into view."
+        }
+      }
+    },
+    "middle_paraphrase": {
+      "base": "saved",
+      "edit": {
+        "before": "The dome is blank at the closing cue",
+        "after": "By the time Kit comes back to her tea, several cues have gone by with no account of the projected image. The dome is blank at the closing cue",
+        "annotations": {
+          "summarized_cues": "By the time Kit comes back to her tea, several cues have gone by with no account of the projected image."
+        }
+      }
+    },
+    "earlier_visit_paraphrase": {
+      "base": "saved",
+      "edit": {
+        "before": "Their approach never reaches the housing.",
+        "after": "That ending is compatible both with an earlier joint visit and with no visit at all.",
+        "annotations": {
+          "earlier_visit_open": "compatible both with an earlier joint visit and with no visit at all"
+        }
+      }
+    },
+    "time_only": {
+      "base": "saved",
+      "edit": {
+        "before": "the draft does not establish whether a projection occurred earlier in the rehearsal.",
+        "after": "the dome at closing cannot settle whether the comet appeared earlier in the rehearsal.",
+        "annotations": {}
+      }
+    },
+    "visit_denied": {
+      "base": "revision",
+      "edit": {
+        "before": "before that stop.",
+        "after": "before that stop. Even so, neither reached the housing at any time in the scene.",
+        "annotations": {
+          "scene_wide_denial": "neither reached the housing at any time in the scene"
+        }
+      }
+    },
+    "projection_denied": {
+      "base": "revision",
+      "edit": {
+        "before": "earlier in the rehearsal.",
+        "after": "earlier in the rehearsal. The comet therefore never appeared anywhere on the dome during rehearsal.",
+        "annotations": {
+          "scene_wide_denial": "The comet therefore never appeared anywhere on the dome during rehearsal."
+        }
+      }
+    }
+  }
+}

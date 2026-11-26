@@ -14079,6 +14079,15 @@ one genuine review with an admitted claim.
   and both seals. All 26 focused checks passed. Next proposed work is a local
   rehearsal of the four interpretive boundaries. B remains the default.
 
+- [x] [Rehearse the four interpretive boundaries with one-edit explanation pairs](../docs/handoffs/sol-astra-scope-boundary-rehearsal-2026-11-26.md).
+  Bound the four saved reasons to their terminals and exact drafts. Factual
+  sufficiency went from 3/4 to 4/4 and diagnostic completeness from 0/4 to
+  4/4 on the independent reader’s primary interpretation. Three edits located
+  a passage. One explicitly left the earlier visit unresolved. All six local
+  controls matched their frozen outcomes, including two unsupported denials.
+  Next proposed work is the 24-generation Wading Path SE repeat, subject to
+  a separate freeze and approval. B remains the default.
+
 Step 19 **IN PROGRESS**. Step 20 **NOT STARTED**. Production prompts unchanged.
 Live calls paused and full workflow canary on hold.
 

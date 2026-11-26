@@ -1,0 +1,147 @@
+{
+  "contract": "scope-boundary-rehearsal-1",
+  "packet_sha256": "90373e1c2d84ed2daa0b36b96ecfe721284d6a04001f6ed3664439f10fe5a130",
+  "reader_sha256": "d8b68ba4321a079cd48457ce4a9aee20f8441b20f3dc9edbab377b41ccaedd47",
+  "comparison_sha256": "75d55061f7077bc00b8f8940b00c68c45b4b543b97e80a5fc73280a9c5f796a1",
+  "axes": [
+    "factual_sufficiency",
+    "diagnostic_completeness"
+  ],
+  "policy": "Use the independent reader's primary interpretation for saved explanations. Require an identifiable source observation or narrative omission where the diagnostic names one. Accept any faithful paraphrase that locates it. A time boundary alone does not locate a sightline or the summary of the middle cues. For a claim about any time, answer the earlier interval explicitly and ground it in the complete draft. An unlicensed scene-wide denial fails both axes. Only explanations are being revised and scored.",
+  "requirements": {
+    "SN": {
+      "factual": [
+        "entry",
+        "stop",
+        "narrated_approach"
+      ],
+      "diagnostic": [
+        "entry",
+        "view",
+        "stop",
+        "narrated_approach"
+      ]
+    },
+    "ON": {
+      "factual": [
+        "mounted_slide",
+        "no_projection_account"
+      ],
+      "diagnostic": [
+        "mounted_slide",
+        "summarized_cues",
+        "no_projection_account"
+      ]
+    },
+    "SE": {
+      "factual": [
+        "stop",
+        "earlier_visit_open"
+      ],
+      "diagnostic": [
+        "entry",
+        "view",
+        "stop",
+        "earlier_visit_open"
+      ]
+    }
+  },
+  "cases": {
+    "SN-AX": {
+      "family": "wading-path",
+      "alias": "6f57d4ef05cb",
+      "discriminator": "Locate the sightline to the housing between entry and stop.",
+      "saved": [
+        1,
+        0
+      ],
+      "revision": [
+        1,
+        1
+      ]
+    },
+    "ON-SX": {
+      "family": "planetarium",
+      "alias": "7c3dbb38824c",
+      "discriminator": "Identify what the middle-page summary leaves unreported.",
+      "saved": [
+        1,
+        0
+      ],
+      "revision": [
+        1,
+        1
+      ]
+    },
+    "ON-AX": {
+      "family": "planetarium",
+      "alias": "c114f13a400e",
+      "discriminator": "Locate the same omission by a narrative transition rather than a cue number or a quotation.",
+      "saved": [
+        1,
+        0
+      ],
+      "revision": [
+        1,
+        1
+      ]
+    },
+    "SE-SB": {
+      "family": "wading-path",
+      "alias": "1c71371d580a",
+      "discriminator": "State what the stop leaves unresolved about a possible earlier joint visit.",
+      "saved": [
+        0,
+        0
+      ],
+      "revision": [
+        1,
+        1
+      ]
+    }
+  },
+  "controls": {
+    "sightline_paraphrase": {
+      "case": "SN-AX",
+      "expected": [
+        1,
+        1
+      ]
+    },
+    "middle_paraphrase": {
+      "case": "ON-SX",
+      "expected": [
+        1,
+        1
+      ]
+    },
+    "earlier_visit_paraphrase": {
+      "case": "SE-SB",
+      "expected": [
+        1,
+        1
+      ]
+    },
+    "time_only": {
+      "case": "ON-AX",
+      "expected": [
+        1,
+        0
+      ]
+    },
+    "visit_denied": {
+      "case": "SE-SB",
+      "expected": [
+        0,
+        0
+      ]
+    },
+    "projection_denied": {
+      "case": "ON-AX",
+      "expected": [
+        0,
+        0
+      ]
+    }
+  }
+}
