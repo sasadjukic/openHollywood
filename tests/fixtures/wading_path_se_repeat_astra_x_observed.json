@@ -1,0 +1,247 @@
+{
+  "approval_sha256": "91d46c7d2e445a47d72ede07919e5a44c666aa987a3705cb4bdf9bb8013698c8",
+  "archive_sha256": "abd2159feb1abfd60e201f28991581353be52337ff050752a8d815285538e739",
+  "evidence_decisions_sha256": "342777e1f71431e637d3328d6435ff92f2f697588486d9db7635358fdbe98106",
+  "rows": {
+    "SE-AX-1": {
+      "citations": [
+        "E1420"
+      ],
+      "claim": "Elias and Maya reached the master breaker panel housing at some time during scene four.",
+      "count": {
+        "input_tokens": 91155,
+        "request_sha256": "87c159cf1823ecc8e6c33f45b3f360538060230daf0302e8aa7ad376570d45bb",
+        "slot": 3,
+        "terminal_sha256": "123a0ef7ae22f2f3eace5e5fb61cea5f1b2cf2706dff87e3e59811f9c4c3d404"
+      },
+      "diagnostic_basis": "It locates entry, view and the closing stop and correctly dates the final observation, but overreads the earlier interval.",
+      "diagnostic_completeness": "fail",
+      "draft_excerpt": "They reached the eastern wall just as the next surge began to build. Maya slammed her body against the composite paneling, shielding Elias as they scrambled into the narrow void of the service plenum. They tumbled into the dark, narrow space, the water swirling around their waists, the walls of the conduit pressing in on them.\n\nThey gasped for air, the space smelling of hot copper and stagnant moisture. As they looked deeper into the plenum, the dim light of the living room faded, replaced by the flickering red glow of a secondary emergency light further down the shaft.\n\nAt the end of the narrow passage, partially submerged in the rising water, stood the heavy steel housing of the master breaker panel. It was the final barrier, the only thing standing between them and the silence of a dead machine.\n\nWhen the light steadied, Elias and Maya stopped side by side three full strides short of the master breaker panel housing and stayed there.",
+      "draft_version": "2f9e80a0-29b4-579f-8075-b6e064788b24",
+      "factual_basis": "The categorical final sentence treats the absence of a narrated arrival as proof no visit occurred.",
+      "factual_sufficiency": "fail",
+      "false_denial_excerpt": "They never reach the housing during scene four.",
+      "false_scene_wide_denial": true,
+      "generation": {
+        "request_sha256": "c43d2a3fb1d5dee0413f482f9660c8265da76ae1e2a682b5a2a01bf4b1099273",
+        "slot": 27,
+        "terminal_sha256": "a40d67f16d03b67e54cf359167538e974ea60669ba101fdfaa69e8a065ff8a97"
+      },
+      "gold": "uncertain",
+      "judgment": "fail",
+      "model": "gpt-6.2-astra",
+      "prose_sha256": "3ca09ba71b8e79da1e6f5ecea31f8ea3032b5d0cee847f3e3db43c003c46922d",
+      "reason": "The selected scene-four draft (version 2f9e80a0-29b4-579f-8075-b6e064788b24) follows Elias and Maya from the center of the room to the eastern wall and into the service plenum, where they see the housing ahead. When the light steadies, they stop three full strides short and stay there through the end of the scene. That final observation covers only the interval from the stop onward; the preceding action shows their approach, not an earlier arrival. They never reach the housing during scene four.",
+      "reasoning": "high",
+      "returned": "unsupported",
+      "scoring_id": "e25b32700eb0d88c403b6426978a6f622254405733864036e59264d6499c2b37",
+      "unit": "A001",
+      "usage": {
+        "cached_input_tokens": 0,
+        "input_tokens": 91155,
+        "output_tokens": 703,
+        "reasoning_tokens": 533
+      }
+    },
+    "SE-AX-2": {
+      "citations": [
+        "E1420"
+      ],
+      "claim": "Elias and Maya reached the master breaker panel housing at some time during scene four.",
+      "count": {
+        "input_tokens": 91155,
+        "request_sha256": "87c159cf1823ecc8e6c33f45b3f360538060230daf0302e8aa7ad376570d45bb",
+        "slot": 12,
+        "terminal_sha256": "66bba15ae50340bf0f360726faaba5c947431e96d8e7e43ced74cbd14ff9f5da"
+      },
+      "diagnostic_basis": "It correctly limits the final observation before overreading the earlier approach.",
+      "diagnostic_completeness": "fail",
+      "draft_excerpt": "They reached the eastern wall just as the next surge began to build. Maya slammed her body against the composite paneling, shielding Elias as they scrambled into the narrow void of the service plenum. They tumbled into the dark, narrow space, the water swirling around their waists, the walls of the conduit pressing in on them.\n\nThey gasped for air, the space smelling of hot copper and stagnant moisture. As they looked deeper into the plenum, the dim light of the living room faded, replaced by the flickering red glow of a secondary emergency light further down the shaft.\n\nAt the end of the narrow passage, partially submerged in the rising water, stood the heavy steel housing of the master breaker panel. It was the final barrier, the only thing standing between them and the silence of a dead machine.\n\nWhen the light steadied, Elias and Maya stopped side by side three full strides short of the master breaker panel housing and stayed there.",
+      "draft_version": "2f9e80a0-29b4-579f-8075-b6e064788b24",
+      "factual_basis": "Calling it a single approach and declaring a scene-wide non-arrival closes an interval the source leaves open.",
+      "factual_sufficiency": "fail",
+      "false_denial_excerpt": "They never reach it during the scene.",
+      "false_scene_wide_denial": true,
+      "generation": {
+        "request_sha256": "c43d2a3fb1d5dee0413f482f9660c8265da76ae1e2a682b5a2a01bf4b1099273",
+        "slot": 36,
+        "terminal_sha256": "af87e75d38f1a136af018c2129e800c555a3d136f350e70c98e2d3a8288b18dd"
+      },
+      "gold": "uncertain",
+      "judgment": "fail",
+      "model": "gpt-6.2-astra",
+      "prose_sha256": "3ca09ba71b8e79da1e6f5ecea31f8ea3032b5d0cee847f3e3db43c003c46922d",
+      "reason": "The selected scene-four draft (version 2f9e80a0-29b4-579f-8075-b6e064788b24) follows a single approach: Elias and Maya cross from the center of the room to the eastern wall, enter the service plenum, and see the housing ahead at the end of the passage. When the light steadies, they stop three full strides short and stay there. That final observation covers the stop through scene end; the preceding action shows them approaching the housing, not arriving at it earlier. They never reach it during the scene.",
+      "reasoning": "high",
+      "returned": "unsupported",
+      "scoring_id": "a19d6ea8184a75581b5152dbe7f154c5bd1ebbc937696fc7943a37dbcc6c3d07",
+      "unit": "A001",
+      "usage": {
+        "cached_input_tokens": 91152,
+        "input_tokens": 91155,
+        "output_tokens": 1430,
+        "reasoning_tokens": 1256
+      }
+    },
+    "SE-AX-3": {
+      "citations": [
+        "E1420"
+      ],
+      "claim": "Elias and Maya reached the master breaker panel housing at some time during scene four.",
+      "count": {
+        "input_tokens": 91155,
+        "request_sha256": "87c159cf1823ecc8e6c33f45b3f360538060230daf0302e8aa7ad376570d45bb",
+        "slot": 14,
+        "terminal_sha256": "46b3eef57b0aee2140799d07439bb8622895f469c18b32a63d761f23d86c9948"
+      },
+      "diagnostic_basis": "It locates the plenum entry, sightline, measured stop and stay, then explains what each interval allows.",
+      "diagnostic_completeness": "pass",
+      "draft_excerpt": "They reached the eastern wall just as the next surge began to build. Maya slammed her body against the composite paneling, shielding Elias as they scrambled into the narrow void of the service plenum. They tumbled into the dark, narrow space, the water swirling around their waists, the walls of the conduit pressing in on them.\n\nThey gasped for air, the space smelling of hot copper and stagnant moisture. As they looked deeper into the plenum, the dim light of the living room faded, replaced by the flickering red glow of a secondary emergency light further down the shaft.\n\nAt the end of the narrow passage, partially submerged in the rising water, stood the heavy steel housing of the master breaker panel. It was the final barrier, the only thing standing between them and the silence of a dead machine.\n\nWhen the light steadied, Elias and Maya stopped side by side three full strides short of the master breaker panel housing and stayed there.",
+      "draft_version": "2f9e80a0-29b4-579f-8075-b6e064788b24",
+      "factual_basis": "The final stop excludes arrival only from then onward, and seeing the housing beforehand leaves an earlier visit unresolved.",
+      "factual_sufficiency": "pass",
+      "false_denial_excerpt": null,
+      "false_scene_wide_denial": false,
+      "generation": {
+        "request_sha256": "c43d2a3fb1d5dee0413f482f9660c8265da76ae1e2a682b5a2a01bf4b1099273",
+        "slot": 38,
+        "terminal_sha256": "1bc6787d4490cd64a97617e8e38656bd4ba52f005c96a92f7018712fb4cbddce"
+      },
+      "gold": "uncertain",
+      "judgment": "pass",
+      "model": "gpt-6.2-astra",
+      "prose_sha256": "3ca09ba71b8e79da1e6f5ecea31f8ea3032b5d0cee847f3e3db43c003c46922d",
+      "reason": "In the selected scene-four draft (version 2f9e80a0-29b4-579f-8075-b6e064788b24), Elias and Maya stop three full strides short of the housing when the light steadies and stay there through the end of the scene. That rules out arrival from the stop onward. Earlier, they enter the plenum and see the housing ahead. Seeing it does not establish arrival, and the closing observation does not rule out an earlier arrival. The draft therefore leaves the claim about arrival at any time unresolved.",
+      "reasoning": "high",
+      "returned": "uncertain",
+      "scoring_id": "7eeafb5f7675c42ba2e762b39073ec528ecd5821c93a71bab6041c3c178a005e",
+      "unit": "A001",
+      "usage": {
+        "cached_input_tokens": 91152,
+        "input_tokens": 91155,
+        "output_tokens": 1358,
+        "reasoning_tokens": 1189
+      }
+    },
+    "SE-AX-4": {
+      "citations": [
+        "E1420"
+      ],
+      "claim": "Elias and Maya reached the master breaker panel housing at some time during scene four.",
+      "count": {
+        "input_tokens": 91155,
+        "request_sha256": "87c159cf1823ecc8e6c33f45b3f360538060230daf0302e8aa7ad376570d45bb",
+        "slot": 21,
+        "terminal_sha256": "bd675178c23eabbbc36727b037d8e947fa300b1d774598a31331db7aca27494d"
+      },
+      "diagnostic_basis": "The route and closing observations are located, but the added distance inference lacks a scene-wide witness.",
+      "diagnostic_completeness": "fail",
+      "draft_excerpt": "They reached the eastern wall just as the next surge began to build. Maya slammed her body against the composite paneling, shielding Elias as they scrambled into the narrow void of the service plenum. They tumbled into the dark, narrow space, the water swirling around their waists, the walls of the conduit pressing in on them.\n\nThey gasped for air, the space smelling of hot copper and stagnant moisture. As they looked deeper into the plenum, the dim light of the living room faded, replaced by the flickering red glow of a secondary emergency light further down the shaft.\n\nAt the end of the narrow passage, partially submerged in the rising water, stood the heavy steel housing of the master breaker panel. It was the final barrier, the only thing standing between them and the silence of a dead machine.\n\nWhen the light steadied, Elias and Maya stopped side by side three full strides short of the master breaker panel housing and stayed there.",
+      "draft_version": "2f9e80a0-29b4-579f-8075-b6e064788b24",
+      "factual_basis": "After bounding the final stop, the reason says neither covers the remaining distance. Read as a physical assertion about the earlier action, it excludes an earlier visit too.",
+      "factual_sufficiency": "fail",
+      "false_denial_excerpt": "neither covers the remaining distance.",
+      "false_scene_wide_denial": true,
+      "generation": {
+        "request_sha256": "c43d2a3fb1d5dee0413f482f9660c8265da76ae1e2a682b5a2a01bf4b1099273",
+        "slot": 45,
+        "terminal_sha256": "3b8c6dbd408bba690ca19cb1c227f313c7a31cb7bc1cf1a03347686f68fe033f"
+      },
+      "gold": "uncertain",
+      "judgment": "fail",
+      "model": "gpt-6.2-astra",
+      "prose_sha256": "3ca09ba71b8e79da1e6f5ecea31f8ea3032b5d0cee847f3e3db43c003c46922d",
+      "reason": "The selected scene-four draft (catalog-complete-current-draft, version 2f9e80a0-29b4-579f-8075-b6e064788b24) follows Elias and Maya from the room’s center to the eastern wall and into the service plenum, where they see the housing ahead. The final observation covers the interval from when the light steadies to the scene’s end: they stop three full strides short and stay there. The earlier action shows their approach, not a prior arrival, and neither covers the remaining distance.",
+      "reasoning": "high",
+      "returned": "unsupported",
+      "scoring_id": "736aa5499bd0dd0a14d3bb0469396914bf9191ed95480dfa102c0401af0a7c51",
+      "unit": "A001",
+      "usage": {
+        "cached_input_tokens": 91152,
+        "input_tokens": 91155,
+        "output_tokens": 947,
+        "reasoning_tokens": 779
+      }
+    },
+    "VE-AX-1": {
+      "citations": [
+        "E1420"
+      ],
+      "claim": "Elias and Maya reached the master breaker panel housing at some time during scene four.",
+      "count": {
+        "input_tokens": 91187,
+        "request_sha256": "7d934860dd6e034c44a35ec31e89a57e2b71a9f4d1d9cc1c27c4aca0726e4de0",
+        "slot": 5,
+        "terminal_sha256": "119288469fa3e31fa17ae5625ae442fcaa14e3b6bca55ef311bd2c6c5438eaf0"
+      },
+      "diagnostic_basis": "Locates entry, the interval before the light steadied, the return, and the later measured stop.",
+      "diagnostic_completeness": "pass",
+      "draft_excerpt": "Earlier, after their scramble into the service plenum and before the light steadied, Elias and Maya had reached the master breaker panel housing together and walked back up the passage.",
+      "draft_version": "58a48fd1-3acd-5e69-9f1b-a89c67170c20",
+      "factual_basis": "The joint visit is directly attested by the last sentence.",
+      "factual_sufficiency": "pass",
+      "false_denial_excerpt": null,
+      "false_scene_wide_denial": false,
+      "generation": {
+        "request_sha256": "e90adea5c9b620f589d73dbd849a338bcda239d17db97557dbc2960e7e5bcdf5",
+        "slot": 29,
+        "terminal_sha256": "e9c0bab2b5b0a1ead4e209fa0f5ccc887094d320ee022641dd84ed2e881ea3fe"
+      },
+      "gold": "supported",
+      "judgment": "pass",
+      "model": "gpt-6.2-astra",
+      "prose_sha256": "5321caae49da7a4ad279c0f05eb3df87b7376f62b9a27df16c9885a643ec197f",
+      "reason": "The final sentence of catalog-complete-current-draft (version 58a48fd1-3acd-5e69-9f1b-a89c67170c20) states that after entering the service plenum and before the light steadied, Elias and Maya reached the master breaker panel housing together and walked back up the passage. Their stop three strides short describes only where they stayed from the moment the light steadied through the end of the scene; it does not contradict their earlier arrival.",
+      "reasoning": "high",
+      "returned": "supported",
+      "scoring_id": "082166256e0334159847850a9d329ffc83bdc31f1f53d15b7065a1fe16bf75b9",
+      "unit": "A001",
+      "usage": {
+        "cached_input_tokens": 0,
+        "input_tokens": 91187,
+        "output_tokens": 154,
+        "reasoning_tokens": 0
+      }
+    },
+    "XE-AX-1": {
+      "citations": [
+        "E1420"
+      ],
+      "claim": "Elias and Maya reached the master breaker panel housing at some time during scene four.",
+      "count": {
+        "input_tokens": 91192,
+        "request_sha256": "65e6dff0567bbc669fe4df0aab48541a6806e61c758e85f05485d2a01c133487",
+        "slot": 20,
+        "terminal_sha256": "c60812024cda70829117896f6a27f544a86fd14b10cf2c0e181a742774c72338"
+      },
+      "diagnostic_basis": "It distinguishes the stop from the witness spanning the opening huddle and final moment in the plenum.",
+      "diagnostic_completeness": "pass",
+      "draft_excerpt": "From the moment they huddled in the center of the flooded room to this last moment in the plenum, neither Elias nor Maya had ever been closer than three full strides to the master breaker panel housing.",
+      "draft_version": "4da86d35-9337-54d8-896b-c212ba05516c",
+      "factual_basis": "The whole-scene minimum distance excludes either person reaching the housing.",
+      "factual_sufficiency": "pass",
+      "false_denial_excerpt": null,
+      "false_scene_wide_denial": false,
+      "generation": {
+        "request_sha256": "cf33ad4ae2d8b7bc18fb57b9fedadae027d365a37308dc0253182945b14c2680",
+        "slot": 44,
+        "terminal_sha256": "dbb210d4f006750771e998e8b092c5eef62d7b4e6cd64394dd6965440c81d12b"
+      },
+      "gold": "unsupported",
+      "judgment": "pass",
+      "model": "gpt-6.2-astra",
+      "prose_sha256": "e6c313b43ef3ab6e4b424566e33831fbd4a903e738c50186e282551108b3b93b",
+      "reason": "In the selected scene-four draft (catalog-complete-current-draft, version 4da86d35-9337-54d8-896b-c212ba05516c), Elias and Maya stop three full strides short of the master breaker panel housing. The final sentence covers the entire scene, from their huddle in the center of the flooded room to their last moment in the plenum: neither ever came closer than three full strides. That rules out either character reaching the housing at any point.",
+      "reasoning": "high",
+      "returned": "unsupported",
+      "scoring_id": "886adc5cfd8fc68c726128da4d0c37fceda5e6e5d8451eb31838e2d92b5bb1e3",
+      "unit": "A001",
+      "usage": {
+        "cached_input_tokens": 0,
+        "input_tokens": 91192,
+        "output_tokens": 154,
+        "reasoning_tokens": 0
+      }
+    }
+  }
+}

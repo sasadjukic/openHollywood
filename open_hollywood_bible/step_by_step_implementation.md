@@ -14104,6 +14104,17 @@ one genuine review with an admitted claim.
   The frozen advancement threshold was missed. Keep B as default and hold the
   held-out live test. Next proposed work is local regression preservation.
 
+- [x] [Preserve the six observed Wading Path Astra X regressions](../tests/fixtures/wading_path_se_repeat_astra_x_observed.json).
+  The four SE repeats share identical requests at both endpoints. Repeat 3
+  earned 1/1/1 for label, factual sufficiency and diagnostic completeness.
+  Repeats 1, 2 and 4 earned 0/0/0 with the three sealed false-denial excerpts.
+  The confirmed visit (VE) and whole-scene exclusion (XE) each earned 1/1/1.
+  Verified the 12 distinct receipts, exact drafts and sealed readings in an
+  [offline replay](../scripts/wading_path_se_repeat/regression.py). All
+  [23 focused checks](../data/diagnostics/wading-path-se-repeat-astra-x-regression-2026-11-26/verification.xml)
+  passed, including rejection of a swapped same-request delivery. B remains
+  the default. No live calls were made.
+
 Step 19 **IN PROGRESS**. Step 20 **NOT STARTED**. Production prompts unchanged.
 Live calls paused and full workflow canary on hold.
 
