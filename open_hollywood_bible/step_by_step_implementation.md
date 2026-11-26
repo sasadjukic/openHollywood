@@ -14126,6 +14126,10 @@ one genuine review with an admitted claim.
 - [ ] **Deferred · ordinary reports and repair advice (CW-002–005, CW-007–012).** Return to the affected issue’s saved failures and controls. A successful read-only binding, valid response shape, exact patch or no-op control settles only that property. Full ordinary-report delivery, supported advice and preservation of unaffected judgments still require their issue-specific evidence. [Original critic/writer retrospective](../docs/handoffs/critic-writer-retrospective-and-next-tests-2026-10-19.md) · [Issue-by-issue disposition](../issues/README.md)
 - [ ] **Separate writer and story-quality qualification (CW-006, CW-014).** Track unnecessary surrounding rewrites separately from whether readers prefer a story. The human review recorded nine paired literary ties. For future evaluation, have machines supply counts, differences and source passages, and have readers assess overall feel, flow, character and story-breaking details on meaningfully different stories. A diagnostic pass alone grants no writer dispatch or routing change. [Writer scope](../issues/006-writer-edit-scope.md) · [Whole-story qualification](../issues/014-story-quality-qualification.md) · [Human review](../docs/handoffs/critic-writer-human-review-results-2026-10-20.md)
 
+### Story-quality planning handoff
+
+- [x] [Review the whole-story evaluations and human craft feedback, and prepare the writing plan](../docs/handoffs/story-quality-writing-plan-and-handoff.md). Character depth and voice/prose each averaged 3.0/5 in all three v33 repeats. The plan starts with a local comparison of archived scene plans, writer inputs and prose, including a reader-valued example of slow scene description. Proposed tests address scene description, character choices and recurring prose habits, with blind whole-story review before broader adoption.
+
 Step 19 **IN PROGRESS**. Step 20 **NOT STARTED**. Production prompts unchanged.
 Live calls paused and full workflow canary on hold.
 
