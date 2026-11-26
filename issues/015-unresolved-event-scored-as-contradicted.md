@@ -1,0 +1,23 @@
+# A factual assessor can treat an unobserved event as contradicted
+
+Local ID **CW-015**. Open, work deferred. Evidence through November 26, 2026.
+
+## Problem
+
+A complete draft can leave a fact unresolved. When asked whether a scene establishes a character’s position or whether a visit occurred at any time, the factual assessor sometimes returns `unsupported` even though the cited observation covers only part of the claim. Under the tested brief, that label requires evidence contradicting a material part. A wrong negative could turn deliberate ambiguity into a request for unnecessary exposition if used to direct a writer. The assessment path tested here is read-only.
+
+## Recorded evidence
+
+- **A correct explanation can accompany the wrong label.** On Q010 in *The Pristine Lure*, the draft shows Elias stepping past the shoes and moving toward the threshold. Sol correctly located the final action and the gap in the evidence for entry. Its raw answer returned `unsupported` against frozen gold `uncertain`. Evidence passed and judgment failed. The mapper preserved the returned label. [Q010 source and delivery audit](https://github.com/sasadjukic/openHollywood/blob/e344df3143315dc4c158de62c60486e3351cebc4/docs/handoffs/q010-label-audit-2026-11-22.md)
+- **The same error can affect both label and explanation.** On the diagnostic measured-stop version of *The Wading Path*, Elias and Maya stop three strides short and stay there. That fixes their position from the stop onward. Among 16 fresh assessments of whether they ever reached the housing together, 15 returned `unsupported`. Twelve explanations asserted an unwarranted non-arrival. The only grounded pass was Astra with explicit scope (X), once in four identical requests. Both Sol arms and Astra with the ordinary brief (B) went 0/4. These were 16 observations of one open history. [Repeat results, including the denial excerpts](https://github.com/sasadjukic/openHollywood/blob/e344df3143315dc4c158de62c60486e3351cebc4/docs/handoffs/wading-path-se-repeat-results-2026-11-26.md)
+- **The controls identify the boundary.** With the same closing stop, an explicit earlier joint visit and return supports the claim. An explicit whole-scene minimum distance contradicts it. All four arms passed label correctness, factual sufficiency and diagnostic completeness on both controls. On the planetarium open-event case, all four arms correctly left an earlier projection unresolved. These results identify a reproducible failure case and leave its production frequency unknown. [Cross-family audit](https://github.com/sasadjukic/openHollywood/blob/e344df3143315dc4c158de62c60486e3351cebc4/docs/handoffs/sol-astra-scope-score-audit-2026-11-25.md)
+
+## Expected behavior and closure criteria
+
+- [ ] Evaluate the exact proposition and interval. A question about what the narrator explicitly recounts, a position at the cut and a visit at any time can have different answers on the same draft. Use `uncertain` where the event remains open. A definite negative needs evidence that rules out the event over the claimed interval.
+- [ ] Demonstrate repeatable grounded judgments on the preserved open cases and fresh held-out contexts while retaining the confirmed-visit and explicit-exclusion controls. Freeze gold and the comparison rule before examining new answers.
+- [ ] Report label correctness, factual sufficiency and diagnostic completeness separately. Inspect false scene-wide denials independently, including wrong labels whose explanations merely describe the depicted approach. Preserve the masked reading and any material alternative.
+
+**Deferred disposition.** B remains the default. Astra X’s one grounded pass and one-pass lead fell short of the frozen requirements of three passes in four and a two-pass lead. Both of its controls passed. The held-out live comparison stays on hold. The six saved Astra X deliveries can be replayed locally. [Portable regressions](https://github.com/sasadjukic/openHollywood/blob/e344df3143315dc4c158de62c60486e3351cebc4/tests/fixtures/wading_path_se_repeat_astra_x_observed.json) · [Offline replay](https://github.com/sasadjukic/openHollywood/blob/e344df3143315dc4c158de62c60486e3351cebc4/scripts/wading_path_se_repeat/regression.py)
+
+**Related issues.** CW-001 covers an explicitly fulfilled event that the ordinary critic treats as erased by a later violation. CW-013 covers unsupported premises in review explanations, including those accompanying correct verdicts. CW-015 can fail with a correctly grounded explanation and a wrong factual label, as Q010 demonstrates. [CW-001](https://github.com/sasadjukic/openHollywood/issues/97) · [CW-013](https://github.com/sasadjukic/openHollywood/issues/109)

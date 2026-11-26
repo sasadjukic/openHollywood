@@ -18,7 +18,7 @@ Replay the five saved outputs, examine which references are necessary, and decid
 
 ## Closure criteria
 
-- [ ] Document the intended evidence-selection policy and its finite limits before a new freeze.
+- [x] Document the intended evidence-selection policy and its finite limits before a new freeze. C2 specifies up to eight distinct references per array, normally two to four sufficient references, with uncertainty when the bound cannot support the judgment. The five original C1 failures passed the altered bound in replay. Later NC captures returned 14 distinct references where eight were allowed, so the issue remains open. [Policy decision](https://github.com/sasadjukic/openHollywood/blob/e344df3143315dc4c158de62c60486e3351cebc4/docs/handoffs/reviewer-interface-audit-2026-10-21.md) · [Whole-claim budget audit](https://github.com/sasadjukic/openHollywood/blob/e344df3143315dc4c158de62c60486e3351cebc4/docs/handoffs/reviewer-citation-relation-uncertainty-audit-2026-10-26.md)
 - [ ] Exercise lower-bound, exact-bound, excessive, duplicate, irrelevant and distributed-support cases offline.
 - [ ] Preserve enough support for each claim without silently trimming returned arrays.
 - [ ] Keep altered-contract replay separate from historical results; confirm any live improvement only in an approved bounded comparison.

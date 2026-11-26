@@ -18,6 +18,8 @@ Use a scene with an explicit agreement followed by forbidden departure. Compare 
 
 ## Closure criteria
 
+The November 26 inventory keeps this issue open for **an event already established in the draft**. The new local issue CW-015 tracks an assessor drawing a definite negative when the event remains unresolved. The measured-stop comparisons used a separate read-only assessor and did not qualify ordinary critic repair advice. [Wading Path comparison](https://github.com/sasadjukic/openHollywood/blob/e344df3143315dc4c158de62c60486e3351cebc4/docs/handoffs/wading-path-se-repeat-results-2026-11-26.md)
+
 - [ ] Correctly separate fulfilled events, genuine missing events, revoked states and explicit compound obligations on saved cases and fresh contexts.
 - [ ] Attribute repair advice to the actual failed condition without requiring redundant fulfillment.
 - [ ] Demonstrate valid, supported ordinary reports as well as correct raw labels under a separately frozen comparison.

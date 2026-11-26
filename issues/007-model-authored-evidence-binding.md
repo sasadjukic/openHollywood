@@ -19,6 +19,8 @@ Let the application bind the exact request, parent artifact and expanded quotati
 
 ## Closure criteria
 
+**Verified for two registered saved reviews by November 22.** Q008 and Q013 bind a saved assessment to either exact artifact selection, share one receipt per delivery, reject adjacent versions and clear stale results on damage. This settles identity and accounting on those read-only paths. Ordinary report references and correction-parent binding retain the criteria below. [Shared lookup](https://github.com/sasadjukic/openHollywood/blob/e344df3143315dc4c158de62c60486e3351cebc4/docs/handoffs/q008-q013-consumer-lookup-2026-11-22.md) · [Browser qualification](https://github.com/sasadjukic/openHollywood/blob/e344df3143315dc4c158de62c60486e3351cebc4/docs/handoffs/q013-browser-navigation-2026-11-22.md)
+
 - [ ] Bind every accepted reference to the exact input versions without model-authored identity copying.
 - [ ] Reject unknown, stale or cross-request references and apply corrections only to their exact parent.
 - [ ] Replay saved binding failures under a separately versioned candidate contract, clearly separating offline recovery from fresh live evidence.

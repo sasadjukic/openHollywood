@@ -19,6 +19,8 @@ Inspect claim support separately from the verdict. Contrast preparation with com
 
 ## Closure criteria
 
+**Open and deferred as of November 26.** In the first Wading Path comparison, both B answers correctly rejected explicit narration of a joint arrival, then asserted physical non-arrival. Masked grading and exact-source replay now expose that difference. The new local CW-015 covers the independently testable label error on an unresolved fact, which can occur even when the explanation correctly identifies the evidential gap. [Cross-family score audit](https://github.com/sasadjukic/openHollywood/blob/e344df3143315dc4c158de62c60486e3351cebc4/docs/handoffs/sol-astra-scope-score-audit-2026-11-25.md) · [Independent reading](https://github.com/sasadjukic/openHollywood/blob/e344df3143315dc4c158de62c60486e3351cebc4/docs/handoffs/sol-astra-independent-reading-2026-11-26.md)
+
 - [ ] Ground consequential factual premises in the full source context, including correct temporal and speaker scope.
 - [ ] Catch unsupported explanations even when every categorical label is correct.
 - [ ] Account for relevant additions and removals without treating every difference as reader harm.

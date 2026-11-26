@@ -3,6 +3,8 @@
 This file is the authoritative implementation progress tracker. Mark a step
 complete only when its deliverables exist and the relevant checks pass. Update the completion date and evidence in the same change.
 
+**Critic-behavior work is [deferred under Step 19](#deferred-critic-behavior-work).** The issue inventory and saved regressions are the starting point when this work resumes.
+
 ## Status legend
 
 - `[x]` COMPLETED
@@ -14114,6 +14116,15 @@ one genuine review with an admitted claim.
   [23 focused checks](../data/diagnostics/wading-path-se-repeat-astra-x-regression-2026-11-26/verification.xml)
   passed, including rejection of a swapped same-request delivery. B remains
   the default. No live calls were made.
+
+### Deferred critic behavior work
+
+**Deferred by project decision after the November 26 Wading Path replay.** B is the default factual assessment brief. The lookup and assessment path is read-only. The held-out Astra X comparison and the full workflow canary stay on hold. There is no active experiment or call budget. The [issue inventory](../issues/README.md) records the disposition of all 14 posted issues and the new local draft CW-015.
+
+- [x] Preserve the resumption baseline. The v61 fulfillment handoff, registered Q008/Q013 exact-version lookup and single-use diagnostic journal are verified within their recorded scopes. The four SE repeats and both controls retain the original request and receipt identities, frozen gold, three scores and denial excerpts. [Handoff](../docs/adr/0037-durable-writer-fulfillment-handoff.md) · [Registered lookup](../docs/handoffs/q008-q013-consumer-lookup-2026-11-22.md) · [Six portable regressions](../tests/fixtures/wading_path_se_repeat_astra_x_observed.json)
+- [ ] **Deferred · factual judgment and explanation (CW-001, CW-013, CW-015).** On resumption, replay the six local regressions first. Keep fulfilled obligations, explicit narration, position at the cut and occurrence at any time distinct. Preserve label correctness, factual sufficiency, diagnostic completeness and actual false denials separately. On the open Wading Path visit, Astra X earned 1/4 grounded passes and led by one. The frozen thresholds were 3/4 and a lead of two, with both controls passing. Reconsider live work only on a materially different hypothesis or new evidence and a separately approved comparison. [New issue and closure criteria](../issues/015-unresolved-event-scored-as-contradicted.md) · [Frozen decision and scores](../docs/handoffs/wading-path-se-repeat-results-2026-11-26.md)
+- [ ] **Deferred · ordinary reports and repair advice (CW-002–005, CW-007–012).** Return to the affected issue’s saved failures and controls. A successful read-only binding, valid response shape, exact patch or no-op control settles only that property. Full ordinary-report delivery, supported advice and preservation of unaffected judgments still require their issue-specific evidence. [Original critic/writer retrospective](../docs/handoffs/critic-writer-retrospective-and-next-tests-2026-10-19.md) · [Issue-by-issue disposition](../issues/README.md)
+- [ ] **Separate writer and story-quality qualification (CW-006, CW-014).** Track unnecessary surrounding rewrites separately from whether readers prefer a story. The human review recorded nine paired literary ties. For future evaluation, have machines supply counts, differences and source passages, and have readers assess overall feel, flow, character and story-breaking details on meaningfully different stories. A diagnostic pass alone grants no writer dispatch or routing change. [Writer scope](../issues/006-writer-edit-scope.md) · [Whole-story qualification](../issues/014-story-quality-qualification.md) · [Human review](../docs/handoffs/critic-writer-human-review-results-2026-10-20.md)
 
 Step 19 **IN PROGRESS**. Step 20 **NOT STARTED**. Production prompts unchanged.
 Live calls paused and full workflow canary on hold.
