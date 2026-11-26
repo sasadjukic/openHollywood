@@ -14070,6 +14070,15 @@ one genuine review with an admitted claim.
   then a conditional same-request repeat if model routing still needs testing.
   B remains the default.
 
+- [x] [Seal and compare an independent masked reading of 16 saved explanations](../docs/handoffs/sol-astra-independent-reading-2026-11-26.md).
+  The independent reader agreed on all 16 primary factual-sufficiency verdicts
+  and 13 of 16 diagnostic grades. Three factual gains with X survived review.
+  The three disputed diagnostic grades turn on what qualifies as an equivalent
+  passage reference. One alternate factual reading of Wading Path SE Sol B
+  also changes its verdict. Verified all 16 original deliveries, 32 quotations
+  and both seals. All 26 focused checks passed. Next proposed work is a local
+  rehearsal of the four interpretive boundaries. B remains the default.
+
 Step 19 **IN PROGRESS**. Step 20 **NOT STARTED**. Production prompts unchanged.
 Live calls paused and full workflow canary on hold.
 
