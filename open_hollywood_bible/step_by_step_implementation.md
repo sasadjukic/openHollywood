@@ -14088,6 +14088,22 @@ one genuine review with an admitted claim.
   Next proposed work is the 24-generation Wading Path SE repeat, subject to
   a separate freeze and approval. B remains the default.
 
+- [x] [Freeze the bounded Wading Path SE repeat for approval](../docs/handoffs/wading-path-se-repeat-freeze-2026-11-26.md).
+  Four fresh measured-stop observations and one of each determinate control
+  per Sol/Astra B/X arm. Verified all 48 archived request bodies, the global
+  24-count barrier, independent grading and the single-use journal. All 125
+  focused local checks passed. All 48 slots were unused at freeze.
+  B remains the default.
+
+- [x] [Run and score the Wading Path measured-stop repeat](../docs/handoffs/wading-path-se-repeat-results-2026-11-26.md).
+  All 24 counts passed before 24 eligible generations. Inspected all 48 slots
+  and sealed 24 masked readings before joining labels. On the open visit claim
+  Astra X earned one grounded pass in four. Each other arm earned zero. Twelve
+  of 16 explanations made a false scene-wide denial. All eight determinate
+  controls passed label, factual sufficiency and diagnostic completeness.
+  The frozen advancement threshold was missed. Keep B as default and hold the
+  held-out live test. Next proposed work is local regression preservation.
+
 Step 19 **IN PROGRESS**. Step 20 **NOT STARTED**. Production prompts unchanged.
 Live calls paused and full workflow canary on hold.
 
